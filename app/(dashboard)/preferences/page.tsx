@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { FaSearch } from 'react-icons/fa';
@@ -13,7 +13,6 @@ import {
   toggleAddDeckModal,
 } from '@/provider/redux/modalSlice';
 import Loader from '@/components/Loader';
-// import Loader from '@/components/Loader';
 
 interface User {
   first_name: string;
@@ -93,7 +92,7 @@ const Preferences = () => {
     (state: any) => state.modal.isStoreOnBoardModalOpen
   );
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [bargesResponse, decksResponse, storeOnBoardResponse] =
@@ -124,10 +123,11 @@ const Preferences = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.token]);
+
   useEffect(() => {
     fetchData();
-  }, [user, isBargeModalOpen, isDeckModalOpen, isStoreOnBoardModalOpen]);
+  }, [fetchData, isBargeModalOpen, isDeckModalOpen, isStoreOnBoardModalOpen]);
 
   return (
     <div>

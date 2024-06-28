@@ -5,7 +5,7 @@ import {
   toggleLocationModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -34,7 +34,7 @@ const LocationPage = () => {
     (state: any) => state.modal.isLocationModalOpen
   );
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get(`${process.env.BASEURL}/location`, {
@@ -49,11 +49,11 @@ const LocationPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.token]);
 
   useEffect(() => {
     fetchData();
-  }, [user, isLocationModalOpen]);
+  }, [fetchData, isLocationModalOpen]);
 
   return (
     <section>

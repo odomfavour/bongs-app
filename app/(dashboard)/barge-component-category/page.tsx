@@ -6,7 +6,7 @@ import {
   toggleUomModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -28,8 +28,7 @@ const BargeComponentPage = () => {
   );
   const [bargeComponents, setBargeComponent] = useState<BargeComponent[]>([]);
   console.log('user', user);
-  const fetchData = async () => {
-    console.log('user', user);
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get(
@@ -42,17 +41,16 @@ const BargeComponentPage = () => {
       );
       console.log('ree', response);
       setBargeComponent(response?.data?.data?.data);
-      // setDecks(decksResponse.data);
-      // setStoreItems(storeItemsResponse.data);
     } catch (error) {
       console.error('Error fetching data', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.token]);
+
   useEffect(() => {
     fetchData();
-  }, [user, user?.token, isBargeComponentModalOpen]);
+  }, [fetchData, isBargeComponentModalOpen]);
 
   return (
     <section>

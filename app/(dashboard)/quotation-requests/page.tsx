@@ -60,7 +60,7 @@ const UomPage = () => {
             Add UoM
           </button>
         </div>
-        <UoMListTable data={uom} />
+        {/* <UoMListTable data={uom} /> */}
       </div>
     </section>
   );

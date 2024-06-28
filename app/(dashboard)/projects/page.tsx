@@ -3,7 +3,7 @@
 import ProjectsListTable from '@/components/projects/ProjectsTableList';
 import { toggleAddProjectModal } from '@/provider/redux/modalSlice';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -32,7 +32,7 @@ const ProjectsPage = () => {
   );
   const [loading, setLoading] = useState(false);
   const [projects, setProjects] = useState<Projects[]>([]);
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get(`${process.env.BASEURL}/getProjects`, {
@@ -47,11 +47,11 @@ const ProjectsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     fetchData();
-  }, [user, isProjectModalOpen]);
+  }, [fetchData, isProjectModalOpen]);
 
   return (
     <section>

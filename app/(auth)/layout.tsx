@@ -15,8 +15,8 @@ const anybody = Anybody({
 });
 
 export const metadata: Metadata = {
-  title: 'Verifix',
-  description: 'Find. Verify. Connect',
+  title: 'Bongs APP',
+  description: 'Lets ship',
 };
 
 // Define the props type for RootLayout

@@ -13,6 +13,7 @@ import {
   toggleAddDeckModal,
 } from '@/provider/redux/modalSlice';
 import Loader from '@/components/Loader';
+import { toast } from 'react-toastify';
 
 interface User {
   first_name: string;
@@ -118,8 +119,15 @@ const Preferences = () => {
       setDecks(decksResponse?.data?.data?.data);
       setStoreItems(storeOnBoardResponse?.data?.data?.data);
       // You can similarly setStoreItems if needed
-    } catch (error) {
-      console.error('Error fetching data', error);
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
     } finally {
       setLoading(false);
     }

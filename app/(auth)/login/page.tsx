@@ -6,6 +6,7 @@ import axios from 'axios';
 import { setUser } from '@/provider/redux/userSlice';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 interface FormData {
   email: string;
@@ -42,11 +43,19 @@ const Login: React.FC = () => {
       if (typeof window !== 'undefined') {
         localStorage.setItem('bongsUser', JSON.stringify(currentUser));
       }
+      toast.success(`${response?.data?.message}`);
       setIsLoading(false);
       router.push('/preferences');
       // Handle success (e.g., redirect to another page)
-    } catch (error) {
-      console.error('Login error:', error);
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
       // Handle error (e.g., show an error message)
     } finally {
       setIsLoading(false);

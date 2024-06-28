@@ -13,6 +13,7 @@ import {
   displayBargeValue,
   toggleSafetyCategoryModal,
 } from '@/provider/redux/modalSlice';
+import { toast } from 'react-toastify';
 
 interface User {
   first_name: string;
@@ -74,8 +75,15 @@ const SafetyCategoryListTable: React.FC<SafetyCategoryListTableProps> = ({
       } else {
         // Handle error
       }
-    } catch (error) {
-      console.error('Delete Error:', error);
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
       // Handle error
     } finally {
       setLoadingStates((prevState) => ({ ...prevState, [id]: false }));

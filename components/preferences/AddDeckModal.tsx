@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useState, FormEvent, useEffect } from 'react';
 import { toggleAddDeckModal } from '@/provider/redux/modalSlice';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 interface Subscriber {
   id: number;
@@ -56,8 +57,15 @@ const AddDeckModal: React.FC<AddDeckModalProps> = ({ subscribers, user }) => {
           },
         });
         setBarges(response?.data?.data?.data);
-      } catch (error) {
-        console.error('Error fetching barges:', error);
+      } catch (error: any) {
+        console.error('Error:', error);
+
+        const errorMessage =
+          error?.response?.data?.message ||
+          error?.response?.data?.errors ||
+          error?.message ||
+          'Unknown error';
+        toast.error(`${errorMessage}`);
       } finally {
         setLoading(false);
       }
@@ -88,10 +96,22 @@ const AddDeckModal: React.FC<AddDeckModalProps> = ({ subscribers, user }) => {
       });
 
       console.log('Response:', response);
+      if (response?.status == 200) {
+        toast.success(
+          `Deck ${bargeValues ? 'updated' : 'created'} successfully`
+        );
+      }
 
       // Handle success (e.g., close modal, show success message)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
       // Handle error (e.g., show error message)
     } finally {
       setLoading(false);

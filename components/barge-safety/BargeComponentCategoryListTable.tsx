@@ -14,6 +14,7 @@ import { FaMagnifyingGlass, FaRegFolderClosed } from 'react-icons/fa6';
 import { IoFilter } from 'react-icons/io5';
 import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 interface BargeComponent {
   id: number;
@@ -78,8 +79,15 @@ const BargeComponentCategoryListTable: React.FC<
       } else {
         // Handle error
       }
-    } catch (error) {
-      console.error('Delete Error:', error);
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
       // Handle error
     } finally {
       setLoadingStates((prevState) => ({ ...prevState, [id]: false }));

@@ -9,6 +9,7 @@ import { FaMagnifyingGlass, FaRegFolderClosed } from 'react-icons/fa6';
 import { IoFilter } from 'react-icons/io5';
 import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 interface User {
   first_name: string;
@@ -75,8 +76,15 @@ const UoMListTable: React.FC<UoMListTableProps> = ({ data, fetchData }) => {
       } else {
         // Handle error
       }
-    } catch (error) {
-      console.error('Delete Error:', error);
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
       // Handle error
     } finally {
       setLoadingStates((prevState) => ({ ...prevState, [id]: false }));
@@ -105,7 +113,7 @@ const UoMListTable: React.FC<UoMListTableProps> = ({ data, fetchData }) => {
         </thead>
         <tbody>
           {currentItems.length > 0 &&
-            currentItems.map((item) => {
+            currentItems.map((item, index) => {
               const {
                 id,
                 name,
@@ -118,7 +126,9 @@ const UoMListTable: React.FC<UoMListTableProps> = ({ data, fetchData }) => {
               } = item;
               return (
                 <tr className="border-b" key={id}>
-                  <td className="py-2 text-center text-[#344054]">{id}</td>
+                  <td className="py-2 text-center text-[#344054]">
+                    {index + 1}
+                  </td>
                   <td className="py-2 text-center">{name}</td>
                   <td className="py-2 text-center">{unit}</td>
                   <td className="py-2 text-center">{description}</td>

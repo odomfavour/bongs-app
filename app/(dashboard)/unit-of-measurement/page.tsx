@@ -5,6 +5,7 @@ import axios from 'axios';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 interface User {
   first_name: string;
@@ -43,8 +44,15 @@ const UomPage = () => {
       console.log('resp', response);
       setUom(response?.data?.data?.data);
       // You can similarly setStoreItems if needed
-    } catch (error) {
-      console.error('Error fetching data', error);
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
     } finally {
       setLoading(false);
     }

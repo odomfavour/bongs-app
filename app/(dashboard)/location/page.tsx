@@ -8,6 +8,7 @@ import axios from 'axios';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 interface Deck {
   name: string;
@@ -44,8 +45,15 @@ const LocationPage = () => {
       });
       console.log('resp', response);
       setLocations(response?.data?.data?.data);
-    } catch (error) {
-      console.error('Error fetching data', error);
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
     } finally {
       setLoading(false);
     }

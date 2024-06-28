@@ -13,7 +13,7 @@ import AddVendorModal from '@/components/vendors/AddVendorModal';
 import React, { ReactNode, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 
 interface DashboardWrapperProps {
@@ -38,8 +38,15 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
         console.log('resp', response);
         setSubscribers(response?.data?.data?.data);
         // Handle success (e.g., redirect to another page)
-      } catch (error) {
-        console.error('Login error:', error);
+      } catch (error: any) {
+        console.error('Error:', error);
+
+        const errorMessage =
+          error?.response?.data?.message ||
+          error?.response?.data?.errors ||
+          error?.message ||
+          'Unknown error';
+        toast.error(`${errorMessage}`);
         // Handle error (e.g., show an error message)
       } finally {
         setLoading(false);

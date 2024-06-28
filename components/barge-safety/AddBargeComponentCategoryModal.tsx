@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useState, FormEvent } from 'react';
 import { toggleBargeComponentModal } from '@/provider/redux/modalSlice';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 interface Subscriber {
   id: number;
@@ -51,8 +52,15 @@ const AddBargeComponentCategoryModal: React.FC<
       console.log('Response:', response);
 
       // Handle success (e.g., close modal, show success message)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
       // Handle error (e.g., show error message)
     } finally {
       setLoading(false);

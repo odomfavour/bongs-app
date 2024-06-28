@@ -15,6 +15,7 @@ import { FaMagnifyingGlass, FaRegFolderClosed } from 'react-icons/fa6';
 import { IoFilter } from 'react-icons/io5';
 import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 interface User {
   first_name: string;
   last_name: string;
@@ -91,13 +92,19 @@ const DeckListTable: React.FC<DeckListTableProps> = ({ data, fetchdata }) => {
       console.log('Delete Response:', response);
       fetchdata();
 
-      if (response.status === 200) {
-        // Handle success
-      } else {
-        // Handle error
-      }
-    } catch (error) {
-      console.error('Delete Error:', error);
+      // if (response.status === 200) {
+      // Handle success
+
+      toast.success(`${response?.data?.message}`);
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
       // Handle error
     } finally {
       setLoadingStates((prevState) => ({ ...prevState, [id]: false }));

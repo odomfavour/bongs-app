@@ -63,8 +63,15 @@ const AddUomModal = () => {
       });
       dispatch(toggleUomModal());
       // Handle success (e.g., close modal, show success message)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
       // Handle error (e.g., show error message)
     } finally {
       setLoading(false);

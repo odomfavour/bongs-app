@@ -52,9 +52,10 @@ const Login: React.FC = () => {
 
       const errorMessage =
         error?.response?.data?.message ||
-        error?.response?.data?.errors ||
+        error?.response?.data?.data?.errors ||
         error?.message ||
         'Unknown error';
+      console.log(`${errorMessage}`);
       toast.error(`${errorMessage}`);
       // Handle error (e.g., show an error message)
     } finally {

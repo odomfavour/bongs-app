@@ -15,7 +15,7 @@ import { IoFilter } from 'react-icons/io5';
 import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-
+import Swal from 'sweetalert2';
 interface Deck {
   id: number;
   deck_number: string;
@@ -77,7 +77,7 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 20;
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -95,32 +95,42 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
     dispatch(toggleStoreOnBoardModal());
   };
   const handleDelete = async (id: number) => {
-    setLoadingStates((prevState) => ({ ...prevState, [id]: true }));
-    try {
-      const response = await axios.delete(
-        `${process.env.BASEURL}/keystore/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
-      console.log('Delete Response:', response);
-      fetchdata();
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+    });
 
-      toast.success(`${response?.data?.message}`);
-    } catch (error: any) {
-      console.error('Error:', error);
+    if (result.isConfirmed) {
+      setLoadingStates((prevState) => ({ ...prevState, [id]: true }));
+      try {
+        const response = await axios.delete(
+          `${process.env.BASEURL}/keystore/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        console.log('Delete Response:', response);
+        fetchdata();
 
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.response?.data?.errors ||
-        error?.message ||
-        'Unknown error';
-      toast.error(`${errorMessage}`);
-      // Handle error
-    } finally {
-      setLoadingStates((prevState) => ({ ...prevState, [id]: false }));
+        Swal.fire('Deleted!', 'Keystore deleted successfull.', 'success');
+      } catch (error: any) {
+        console.error('Error:', error);
+        const errorMessage =
+          error?.response?.data?.message ||
+          error?.response?.data?.errors ||
+          error?.message ||
+          'Unknown error';
+        toast.error(`${errorMessage}`);
+      } finally {
+        setLoadingStates((prevState) => ({ ...prevState, [id]: false }));
+      }
     }
   };
 
@@ -205,10 +215,11 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
                     </div>
                     <div className="mt-5">
                       <p className="font-medium text-[#475467]">
-                        No Decks found
+                        No Keystore found
                       </p>
                       <p className="font-normal text-sm mt-3">
-                        Click “add deck” button to get started in doing your
+                        Click “add store on board” button to get started in
+                        doing your
                         <br /> first transaction on the platform
                       </p>
                     </div>

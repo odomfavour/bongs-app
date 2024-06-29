@@ -1,7 +1,7 @@
 'use client';
 import { BsXLg } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { toggleAddProjectModal } from '@/provider/redux/modalSlice';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -36,6 +36,21 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
     subscriber_id: '' as string | number,
     project_manager_id: '' as string | number,
   });
+
+  useEffect(() => {
+    if (Object.keys(bargeValues).length > 0) {
+      setFormData({
+        project_name: bargeValues.project_name,
+        project_title: bargeValues.project_title,
+        project_description: bargeValues.project_description,
+        project_duration: bargeValues.project_duration,
+        project_start_date: bargeValues.project_start_date,
+        project_end_date: bargeValues.project_end_date,
+        subscriber_id: bargeValues.subscriber_id,
+        project_manager_id: bargeValues.project_manager_id,
+      });
+    }
+  }, [bargeValues]);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -45,7 +60,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
       setLoading(true);
       const url =
         Object.keys(bargeValues).length > 0
-          ? `${process.env.BASEURL}/safety-category/${bargeValues.id}`
+          ? `${process.env.BASEURL}/project/update/${bargeValues.id}`
           : `${process.env.BASEURL}/project/create`;
       const method = Object.keys(bargeValues).length > 0 ? 'PUT' : 'POST';
 
@@ -60,9 +75,9 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
         },
       });
       console.log('Response:', response);
-      if (response?.status == 201) {
-        toast.success(`${response?.data?.message}`);
-      }
+
+      toast.success(`${response?.data?.message}`);
+
       setFormData({
         project_name: '',
         project_title: '',

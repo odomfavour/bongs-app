@@ -1,4 +1,5 @@
 'use client';
+import Loader from '@/components/Loader';
 import UoMListTable from '@/components/uom/UomListTable';
 import { displayBargeValue, toggleUomModal } from '@/provider/redux/modalSlice';
 import axios from 'axios';
@@ -97,7 +98,11 @@ const UomPage = () => {
             Add UoM
           </button>
         </div>
-        <UoMListTable data={uom} fetchData={fetchData} />
+        {loading ? (
+          <Loader />
+        ) : (
+          <UoMListTable data={uom} fetchData={fetchData} />
+        )}
       </div>
     </section>
   );

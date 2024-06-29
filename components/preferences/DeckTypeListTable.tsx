@@ -2,8 +2,9 @@
 
 import {
   displayBargeValue,
-  toggleAddProjectModal,
-  toggleSafetyCategoryModal,
+  toggleAddBargeModal,
+  toggleAddDeckModal,
+  toggleAddDeckTypeModal,
 } from '@/provider/redux/modalSlice';
 import { formatDate } from '@/utils/utils';
 import axios from 'axios';
@@ -17,29 +18,54 @@ import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-interface ProjectManager {
-  id: number;
+
+interface User {
   first_name: string;
   last_name: string;
 }
 
-interface Project {
+interface Barge {
   id: number;
-  project_name: string;
-  project_title: string;
-  project_duration: string;
-  project_start_date: string;
-  project_end_date: string;
-  project_manager: ProjectManager;
+  barge_number: string;
+  name: string;
+  rooms: number;
+  store_location: number;
+  deck_level: number;
+  addedBy: string;
   created_at: string;
+  status: string;
+  user: User;
 }
 
-interface ProjectsListTableProps {
-  data: Project[];
+interface Deck {
+  id: number;
+  deck_number: string;
+  name: string;
+  deck_type: string;
+  barge: Barge;
+  user: User;
+  created_at: string;
+  status: string;
+}
+
+interface DeckType {
+  id: number;
+  deck_number: string;
+  type: string;
+  name: string;
+  deck: Deck;
+  barge: Barge;
+  user: User;
+  created_at: string;
+  status: string;
+}
+
+interface DeckTypeListTableProps {
+  data: DeckType[];
   fetchdata: () => void;
 }
 
-const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
+const DeckTypeListTable: React.FC<DeckTypeListTableProps> = ({
   data,
   fetchdata,
 }) => {
@@ -58,34 +84,37 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 20;
+
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
 
   // Function to change page
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
+  const handleEdit = (item: DeckType) => {
+    dispatch(displayBargeValue(item));
+    dispatch(toggleAddDeckTypeModal());
+  };
   const handleDelete = async (id: number) => {
-    // Display SweetAlert confirmation dialog
-    const confirmResult = await Swal.fire({
+    const result = await Swal.fire({
       title: 'Are you sure?',
-      text: 'You will not be able to recover this project!',
+      text: "You won't be able to revert this!",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
       confirmButtonText: 'Yes, delete it!',
     });
 
-    // If user confirms deletion
-    if (confirmResult.isConfirmed) {
+    if (result.isConfirmed) {
       setLoadingStates((prevState) => ({ ...prevState, [id]: true }));
       try {
         const response = await axios.delete(
-          `${process.env.BASEURL}/project/delete/${id}`,
+          `${process.env.BASEURL}/deck-type/${id}`,
           {
             headers: {
               Authorization: `Bearer ${user?.token}`,
@@ -94,21 +123,9 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
         );
         console.log('Delete Response:', response);
         fetchdata();
-
-        if (response.status === 200) {
-          Swal.fire('Deleted!', 'Your project has been deleted.', 'success');
-          // Handle success
-        } else {
-          // Handle error
-          Swal.fire(
-            'Failed to delete!',
-            'An error occurred while deleting the project.',
-            'error'
-          );
-        }
+        Swal.fire('Deleted!', 'Your deck has been deleted.', 'success');
       } catch (error: any) {
         console.error('Error:', error);
-
         const errorMessage =
           error?.response?.data?.message ||
           error?.response?.data?.errors ||
@@ -121,53 +138,45 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
     }
   };
 
-  const handleEdit = (item: Project) => {
-    dispatch(displayBargeValue(item));
-    dispatch(toggleAddProjectModal());
-  };
   return (
     <div className="bg-white">
       <table className="table-auto w-full text-primary rounded-2xl mb-5">
         <thead>
           <tr className="border-b bg-[#E9EDF4]">
             <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
+            <th className="text-sm text-center py-3">Deck Type No.</th>
             <th className="text-sm text-center py-3">Name</th>
-            <th className="text-sm text-center py-3">Title.</th>
-            <th className="text-sm text-center py-3">Duration</th>
-            <th className="text-sm text-center py-3">Start Date</th>
-            <th className="text-sm text-center py-3">End Date</th>
-            <th className="text-sm text-center py-3">Project managers</th>
+            <th className="text-sm text-center py-3">Barge</th>
+            <th className="text-sm text-center py-3">Type</th>
+            <th className="text-sm text-center py-3">Added By</th>
+            <th className="text-sm text-center py-3">Status</th>
             <th className="text-sm text-center py-3">Created On</th>
             <th className="text-sm text-center py-3">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {currentItems?.length > 0 &&
-            currentItems.map((item) => {
-              const {
-                id,
-                project_title,
-                project_name,
-                project_duration,
-                project_start_date,
-                project_end_date,
-                project_manager,
-                created_at,
-              } = item;
+          {currentItems.length > 0 &&
+            currentItems.map((item, index) => {
+              const { id, name, deck, barge, user, status, type, created_at } =
+                item;
               return (
                 <tr className="border-b" key={id}>
-                  <td className="py-2 text-center text-[#344054]">{id}</td>
-
-                  <td className="py-2 text-center">{project_name}</td>
-                  <td className="py-2 text-center">{project_title}</td>
-                  <td className="py-2 text-center">{project_duration}</td>
-                  <td className="py-2 text-center">{project_start_date}</td>
-                  <td className="py-2 text-center">{project_end_date}</td>
-                  <td className="py-2 text-center">
-                    {project_manager.first_name}
-
-                    {project_manager.last_name}
+                  <td className="py-2 text-center text-[#344054]">
+                    {index + 1}
                   </td>
+
+                  <td className="py-2 text-center">
+                    deckType-
+                    {id}
+                  </td>
+                  <td className="py-2 text-center">{name}</td>
+                  <td className="py-2 text-center">{barge?.name}</td>
+                  {/* <td className="py-2 text-center">{deck.deck_number}</td> */}
+                  <td className="py-2 text-center">{type}</td>
+                  <td className="py-2 text-center">
+                    {user.first_name} {user.last_name}
+                  </td>
+                  <td className="py-2 text-center">{status}</td>
                   <td className="py-2 text-center">{formatDate(created_at)}</td>
 
                   <td className="py-2 text-center flex justify-center items-center">
@@ -194,7 +203,7 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
                 </tr>
               );
             })}
-          {currentItems?.length == 0 && (
+          {currentItems.length == 0 && (
             <tr className="text-center text-primary bg-white">
               <td className="py-2 text-center" colSpan={10}>
                 <div className="flex justify-center items-center  min-h-[60vh]">
@@ -204,10 +213,11 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
                     </div>
                     <div className="mt-5">
                       <p className="font-medium text-[#475467]">
-                        No Project found
+                        No Deck types found
                       </p>
                       <p className="font-normal text-sm mt-3">
-                        Click “add project” button to get started in doing your
+                        Click “add deck type” button to get started in doing
+                        your
                         <br /> first transaction on the platform
                       </p>
                     </div>
@@ -272,4 +282,4 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
   );
 };
 
-export default ProjectsListTable;
+export default DeckTypeListTable;

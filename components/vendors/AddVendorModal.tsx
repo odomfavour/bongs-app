@@ -1,8 +1,13 @@
 'use client';
 import { BsXLg } from 'react-icons/bs';
-import { useDispatch } from 'react-redux';
-import { useState } from 'react';
-import { toggleVendorModal } from '@/provider/redux/modalSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
+import {
+  toggleVendorCategoryModal,
+  toggleVendorModal,
+} from '@/provider/redux/modalSlice';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 interface Subscriber {
   id: number;
@@ -11,6 +16,13 @@ interface Subscriber {
 
 interface User {
   token: string;
+}
+
+interface VendorCategory {
+  id: number;
+  name: string;
+  status: string;
+  created_at: string;
 }
 
 interface AddVendorModalProps {
@@ -23,18 +35,127 @@ const AddVendorModal: React.FC<AddVendorModalProps> = ({
   user,
 }) => {
   const dispatch = useDispatch();
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const [formData, setFormData] = useState({
     vendor_name: '',
     vendor_website: '',
     vendor_country: '',
-    vendor_category: '',
+    vendor_category_id: '',
     vendor_phone_number: '',
     vendor_founded_at: '',
     vendor_email: '',
     vendor_description: '',
     vendor_address: '',
     subscriber_id: '' as string | number,
+    status: false,
   });
+  const [vendorCats, setVendorCats] = useState<VendorCategory[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const fetchVendorCategories = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(
+        `${process.env.BASEURL}/getVendorCategories`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+      console.log('resp', response);
+      setVendorCats(response?.data?.data?.data);
+      // You can similarly setStoreItems if needed
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user?.token]);
+  useEffect(() => {
+    fetchVendorCategories();
+  }, [fetchVendorCategories]);
+
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    if (Object.keys(bargeValues).length > 0) {
+      setFormData({
+        vendor_name: bargeValues.vendor_name,
+        vendor_website: bargeValues.vendor_website,
+        vendor_country: bargeValues.vendor_country,
+        vendor_category_id: bargeValues.vendor_category,
+        vendor_phone_number: bargeValues.vendor_phone_number,
+        vendor_founded_at: bargeValues.vendor_founded_at,
+        vendor_email: bargeValues.vendor_email,
+        vendor_description: bargeValues.vendor_description,
+        vendor_address: bargeValues.vendor_address,
+        subscriber_id: bargeValues.subscriber_id,
+        status: bargeValues.status === 'active',
+      });
+    }
+  }, [bargeValues]);
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const url =
+        Object.keys(bargeValues).length > 0
+          ? `${process.env.BASEURL}/vendor/update/${bargeValues.id}`
+          : `${process.env.BASEURL}/vendor/create`;
+      const method = Object.keys(bargeValues).length > 0 ? 'PUT' : 'POST';
+
+      const response = await axios({
+        method,
+        url,
+        data: {
+          ...formData,
+          status: formData.status ? 'active' : 'inactive',
+        },
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      console.log('Response:', response);
+      if (response?.status == 200) {
+        toast.success(`${response?.data?.message}`);
+      }
+      setFormData({
+        vendor_name: '',
+        vendor_website: '',
+        vendor_country: '',
+        vendor_category_id: '',
+        vendor_phone_number: '',
+        vendor_founded_at: '',
+        vendor_email: '',
+        vendor_description: '',
+        vendor_address: '',
+        subscriber_id: '' as string | number,
+        status: false,
+      });
+      dispatch(toggleVendorModal());
+      // Handle success (e.g., close modal, show success message)
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+      // Handle error (e.g., show error message)
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="z-50 top-0 min-h-screen bg-[#101010c8] fixed w-full flex justify-center items-center text-veriDark">
@@ -53,7 +174,7 @@ const AddVendorModal: React.FC<AddVendorModalProps> = ({
           />
         </div>
 
-        <form action="">
+        <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-3 gap-5">
             <div>
               <div className="mb-4">
@@ -94,19 +215,20 @@ const AddVendorModal: React.FC<AddVendorModalProps> = ({
                   id="vendor_category"
                   name="vendor_category"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.vendor_category}
+                  value={formData.vendor_category_id}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      vendor_category: e.target.value,
+                      vendor_category_id: e.target.value,
                     })
                   }
                 >
                   <option value="">Select Vendor Category</option>
-                  <option value="US">United States</option>
-                  <option value="CA">Canada</option>
-                  <option value="FR">France</option>
-                  <option value="DE">Germany</option>
+                  {vendorCats.map((category) => (
+                    <option value={category.id} key={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="mb-4">
@@ -305,13 +427,46 @@ const AddVendorModal: React.FC<AddVendorModalProps> = ({
                 </label>
               </div> */}
             </div>
+            <div className="mb-4">
+              <label
+                htmlFor="status"
+                className="block mb-2 text-sm font-medium text-gray-900 "
+              >
+                Status
+              </label>
+              <label className="inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  value=""
+                  className="sr-only peer"
+                  checked={formData.status}
+                  onChange={(e) =>
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      status: e.target.checked,
+                    }))
+                  }
+                />
+                <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                <span className="ms-3 text-sm font-medium text-gray-900 ">
+                  {formData.status ? 'Active' : 'Inactive'}
+                </span>
+              </label>
+            </div>
           </div>
-          <div className="flex justify-end mt-4">
+          <div className="flex justify-end">
             <button
               type="submit"
-              className="text-white bg-primary focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
+              className={`bg-blue-600 text-white p-3 rounded-lg ${
+                loading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              disabled={loading}
             >
-              Add Vendor
+              {loading
+                ? 'Submitting...'
+                : Object.keys(bargeValues).length > 0
+                ? 'Update Vendor Category'
+                : 'Add Vendor Category'}
             </button>
           </div>
         </form>

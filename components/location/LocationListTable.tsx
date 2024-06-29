@@ -15,6 +15,7 @@ import { IoFilter } from 'react-icons/io5';
 import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 interface Deck {
   name: string;
@@ -73,6 +74,22 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
     dispatch(toggleLocationModal());
   };
 
+  const confirmDelete = (id: number) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you really want to delete this location?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteLocation(id);
+      }
+    });
+  };
+
   const deleteLocation = async (id: number) => {
     try {
       // Send a DELETE request to your API
@@ -89,6 +106,7 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
 
       // Assuming your API returns success or error
       if (response.status === 200) {
+        toast.success(`${response?.data?.message}`);
         // Update your local data state or refetch data from the server
         // For example, if data is stored in Redux, dispatch an action to remove the location from the store
         // Or refetch data from the server to update the table
@@ -125,7 +143,7 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
         </thead>
         <tbody>
           {currentItems.length > 0 &&
-            currentItems.map((item) => {
+            currentItems.map((item, index) => {
               const {
                 id,
                 name,
@@ -137,8 +155,13 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
               } = item;
               return (
                 <tr className="border-b" key={id}>
-                  <td className="py-2 text-center text-[#344054]">{id}</td>
-                  <td className="py-2 text-center">{location_number}</td>
+                  <td className="py-2 text-center text-[#344054]">
+                    {index + 1}
+                  </td>
+                  <td className="py-2 text-center">
+                    {location_number}
+                    {id}
+                  </td>
                   <td className="py-2 text-center">{name}</td>
                   <td className="py-2 text-center">{address}</td>
                   <td className="py-2 text-center">{deck_id}</td>
@@ -154,7 +177,7 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
                       </button>
                       <button
                         className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                        onClick={() => deleteLocation(id)}
+                        onClick={() => confirmDelete(id)}
                         disabled={loadingStates[id]}
                       >
                         {loadingStates[id] ? (
@@ -181,7 +204,7 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
                         No Locations found
                       </p>
                       <p className="font-normal text-sm mt-3">
-                        Click “add deck” button to get started in doing your
+                        Click “add location” button to get started in doing your
                         <br /> first transaction on the platform
                       </p>
                     </div>
@@ -225,14 +248,17 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
                 <p>{pageNumber}</p>
               </div>
             ))}
+
             <p
-              className={`text-[#4C4C4C] text-base cursor-pointer ${
+              className={`text-[#9F9F9F] text-base cursor-pointer ${
                 currentPage === Math.ceil(data.length / itemsPerPage)
                   ? 'text-gray-400 cursor-not-allowed'
                   : 'text-primary'
               }`}
               onClick={() => {
-                if (currentPage !== Math.ceil(data.length / itemsPerPage)) {
+                if (
+                  currentPage !== Math.ceil(data.length / itemsPerPage)
+                ) {
                   paginate(currentPage + 1);
                 }
               }}

@@ -14,6 +14,7 @@ import {
   toggleSafetyCategoryModal,
 } from '@/provider/redux/modalSlice';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 interface User {
   first_name: string;
@@ -57,41 +58,64 @@ const SafetyCategoryListTable: React.FC<SafetyCategoryListTableProps> = ({
   };
 
   const handleDelete = async (id: number) => {
-    setLoadingStates((prevState) => ({ ...prevState, [id]: true }));
-    try {
-      const response = await axios.delete(
-        `${process.env.BASEURL}/safety-category/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
+    // Display SweetAlert confirmation dialog
+    const confirmResult = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this safety category!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    });
+
+    // If user confirms deletion
+    if (confirmResult.isConfirmed) {
+      setLoadingStates((prevState) => ({ ...prevState, [id]: true }));
+      try {
+        const response = await axios.delete(
+          `${process.env.BASEURL}/safety-category/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        console.log('Delete Response:', response);
+        fetchdata();
+
+        if (response.status === 200) {
+          // Handle success
+          Swal.fire(
+            'Deleted!',
+            'Your safety category has been deleted.',
+            'success'
+          );
+        } else {
+          // Handle error
+          Swal.fire(
+            'Failed to delete!',
+            'An error occurred while deleting the safety category.',
+            'error'
+          );
         }
-      );
-      console.log('Delete Response:', response);
-      fetchdata();
+      } catch (error: any) {
+        console.error('Error:', error);
 
-      if (response.status === 200) {
-        // Handle success
-      } else {
-        // Handle error
+        const errorMessage =
+          error?.response?.data?.message ||
+          error?.response?.data?.errors ||
+          error?.message ||
+          'Unknown error';
+        toast.error(`${errorMessage}`);
+      } finally {
+        setLoadingStates((prevState) => ({ ...prevState, [id]: false }));
       }
-    } catch (error: any) {
-      console.error('Error:', error);
-
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.response?.data?.errors ||
-        error?.message ||
-        'Unknown error';
-      toast.error(`${errorMessage}`);
-      // Handle error
-    } finally {
-      setLoadingStates((prevState) => ({ ...prevState, [id]: false }));
     }
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 20;
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -124,7 +148,7 @@ const SafetyCategoryListTable: React.FC<SafetyCategoryListTableProps> = ({
         </thead>
         <tbody>
           {currentItems.length > 0 &&
-            currentItems.map((item) => {
+            currentItems.map((item, index) => {
               const {
                 id,
                 name,
@@ -137,8 +161,13 @@ const SafetyCategoryListTable: React.FC<SafetyCategoryListTableProps> = ({
               } = item;
               return (
                 <tr className="border-b" key={id}>
-                  <td className="py-2 text-center text-[#344054]">{id}</td>
-                  <td className="py-2 text-center">{safety_number}</td>
+                  <td className="py-2 text-center text-[#344054]">
+                    {index + 1}
+                  </td>
+                  <td className="py-2 text-center">
+                    {safety_number}
+                    {id}
+                  </td>
                   <td className="py-2 text-center">{name}</td>
                   <td className="py-2 text-center">{description}</td>
                   <td className="py-2 text-center">
@@ -183,8 +212,8 @@ const SafetyCategoryListTable: React.FC<SafetyCategoryListTableProps> = ({
                         No Safety Category found
                       </p>
                       <p className="font-normal text-sm mt-3">
-                        Click “add safety category button to get started in
-                        doing your
+                        Click &apos;add safety category&apos; button to get
+                        started in doing your
                         <br /> first transaction on the platform
                       </p>
                     </div>

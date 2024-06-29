@@ -15,6 +15,8 @@ import { useSelector } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
+import AddDeckTypeModal from '@/components/preferences/AddDeckTypeModal';
+import AddVendorCategoryModal from '@/components/vendors/AddVendorCategoryModal';
 
 interface DashboardWrapperProps {
   children: ReactNode;
@@ -60,6 +62,9 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
   const isDeckModalOpen = useSelector(
     (state: any) => state.modal.isDeckModalOpen
   );
+  const isDeckTypeModalOpen = useSelector(
+    (state: any) => state.modal.isDeckTypeModalOpen
+  );
 
   const isStoreOnBoardModalOpen = useSelector(
     (state: any) => state.modal.isStoreOnBoardModalOpen
@@ -75,6 +80,9 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
   );
   const isVendorModalOpen = useSelector(
     (state: any) => state.modal.isVendorModalOpen
+  );
+  const isVendorCategoryModalOpen = useSelector(
+    (state: any) => state.modal.isVendorCategoryModalOpen
   );
   const isLocationModalOpen = useSelector(
     (state: any) => state.modal.isLocationModalOpen
@@ -103,6 +111,9 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
       {isDeckModalOpen && (
         <AddDeckModal subscribers={subscribers} user={user} />
       )}
+      {isDeckTypeModalOpen && (
+        <AddDeckTypeModal subscribers={subscribers} user={user} />
+      )}
       {isStoreOnBoardModalOpen && (
         <AddStoreOnBoardModal subscribers={subscribers} user={user} />
       )}
@@ -113,6 +124,9 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
       {isSafetyCategoryModalOpen && <AddSafetyCategoryModal />}
       {isVendorModalOpen && (
         <AddVendorModal subscribers={subscribers} user={user} />
+      )}
+      {isVendorCategoryModalOpen && (
+        <AddVendorCategoryModal subscribers={subscribers} user={user} />
       )}
       {isLocationModalOpen && (
         <AddLocationModal subscribers={subscribers} user={user} />

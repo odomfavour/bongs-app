@@ -15,6 +15,7 @@ import { IoFilter } from 'react-icons/io5';
 import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 interface BargeComponent {
   id: number;
@@ -39,6 +40,7 @@ const BargeComponentCategoryListTable: React.FC<
   const [loadingStates, setLoadingStates] = useState<{
     [key: number]: boolean;
   }>({});
+
   const toggleDropdown = (index: number) => {
     if (openDropdownIndex === index) {
       setOpenDropdownIndex(null);
@@ -61,39 +63,53 @@ const BargeComponentCategoryListTable: React.FC<
   };
 
   const handleDelete = async (id: number) => {
-    setLoadingStates((prevState) => ({ ...prevState, [id]: true }));
-    try {
-      const response = await axios.delete(
-        `${process.env.BASEURL}/BargeComponentCategory/delete/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
+    const confirmResult = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this safety category!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    });
+
+    // If user confirms deletion
+    if (confirmResult.isConfirmed) {
+      setLoadingStates((prevState) => ({ ...prevState, [id]: true }));
+      try {
+        const response = await axios.delete(
+          `${process.env.BASEURL}/BargeComponentCategory/delete/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        console.log('Delete Response:', response);
+        fetchdata();
+
+        if (response.status === 200) {
+          Swal.fire('Deleted!', 'Your item has been deleted.', 'success');
+          // Handle success
+        } else {
+          Swal.fire('Error!', 'Failed to delete item.', 'error');
+          // Handle error
         }
-      );
-      console.log('Delete Response:', response);
-      fetchdata();
+      } catch (error: any) {
+        console.error('Error:', error);
 
-      if (response.status === 200) {
-        // Handle success
-      } else {
+        const errorMessage =
+          error?.response?.data?.message ||
+          error?.response?.data?.errors ||
+          error?.message ||
+          'Unknown error';
+        toast.error(`${errorMessage}`);
         // Handle error
+      } finally {
+        setLoadingStates((prevState) => ({ ...prevState, [id]: false }));
       }
-    } catch (error: any) {
-      console.error('Error:', error);
-
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.response?.data?.errors ||
-        error?.message ||
-        'Unknown error';
-      toast.error(`${errorMessage}`);
-      // Handle error
-    } finally {
-      setLoadingStates((prevState) => ({ ...prevState, [id]: false }));
     }
   };
-
   const handleEdit = (item: BargeComponent) => {
     dispatch(displayBargeValue(item));
     dispatch(toggleBargeComponentModal());
@@ -114,13 +130,15 @@ const BargeComponentCategoryListTable: React.FC<
         </thead>
         <tbody>
           {currentItems.length > 0 &&
-            currentItems.map((item) => {
+            currentItems.map((item, index) => {
               const { id, name, storeNo, description, status, created_at } =
                 item;
               return (
                 <tr className="border-b" key={id}>
-                  <td className="py-2 text-center text-[#344054]">{id}</td>
-                  <td className="py-2 text-center">{storeNo}</td>
+                  <td className="py-2 text-center text-[#344054]">
+                    {index + 1}
+                  </td>
+                  <td className="py-2 text-center">store-{id}</td>
                   <td className="py-2 text-center">{name}</td>
                   <td className="py-2 text-center">{description}</td>
                   <td className="py-2 text-center">{status}</td>
@@ -159,10 +177,11 @@ const BargeComponentCategoryListTable: React.FC<
                     </div>
                     <div className="mt-5">
                       <p className="font-medium text-[#475467]">
-                        No Decks found
+                        No Barge Components found
                       </p>
                       <p className="font-normal text-sm mt-3">
-                        Click “add deck” button to get started in doing your
+                        Click “add barge components” button to get started in
+                        doing your
                         <br /> first transaction on the platform
                       </p>
                     </div>

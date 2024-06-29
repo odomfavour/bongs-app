@@ -1,4 +1,5 @@
 'use client';
+import Loader from '@/components/Loader';
 import LocationListTable from '@/components/location/LocationListTable';
 import {
   displayBargeValue,
@@ -98,7 +99,11 @@ const LocationPage = () => {
             Add Location
           </button>
         </div>
-        <LocationListTable data={locations} fetchData={fetchData} />
+        {loading ? (
+          <Loader />
+        ) : (
+          <LocationListTable data={locations} fetchData={fetchData} />
+        )}
       </div>
     </section>
   );

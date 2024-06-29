@@ -14,6 +14,9 @@ import {
   displayBargeValue,
   toggleAddBargeModal,
 } from '@/provider/redux/modalSlice';
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
+
 interface User {
   first_name: string;
   last_name: string;
@@ -69,29 +72,44 @@ const BargeListTable: React.FC<BargeListTableProps> = ({ data, fetchdata }) => {
   };
 
   const handleDelete = async (id: number) => {
-    setLoadingStates((prevState) => ({ ...prevState, [id]: true }));
-    try {
-      const response = await axios.delete(
-        `${process.env.BASEURL}/barge/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
-      console.log('Delete Response:', response);
-      fetchdata();
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+    });
 
-      if (response.status === 200) {
-        // Handle success
-      } else {
+    if (result.isConfirmed) {
+      setLoadingStates((prevState) => ({ ...prevState, [id]: true }));
+      try {
+        const response = await axios.delete(
+          `${process.env.BASEURL}/barge/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        console.log('Delete Response:', response);
+        // toast.success(`${response?.data?.message}`);
+        fetchdata();
+
+        if (response.status === 200) {
+          // Handle success
+          Swal.fire('Deleted!', 'Your barge has been deleted.', 'success');
+        } else {
+          // Handle error
+        }
+      } catch (error) {
+        console.error('Delete Error:', error);
         // Handle error
+        Swal.fire('Error!', 'There was a problem deleting the barge.', 'error');
+      } finally {
+        setLoadingStates((prevState) => ({ ...prevState, [id]: false }));
       }
-    } catch (error) {
-      console.error('Delete Error:', error);
-      // Handle error
-    } finally {
-      setLoadingStates((prevState) => ({ ...prevState, [id]: false }));
     }
   };
 

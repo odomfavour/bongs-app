@@ -1,7 +1,11 @@
 'use client';
 
+import Loader from '@/components/Loader';
 import ProjectsListTable from '@/components/projects/ProjectsTableList';
-import { toggleAddProjectModal } from '@/provider/redux/modalSlice';
+import {
+  displayBargeValue,
+  toggleAddProjectModal,
+} from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
@@ -88,12 +92,19 @@ const ProjectsPage = () => {
         <div className="flex justify-end mb-6">
           <button
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-            onClick={() => dispatch(toggleAddProjectModal())}
+            onClick={() => {
+              dispatch(displayBargeValue({}));
+              dispatch(toggleAddProjectModal());
+            }}
           >
             Add Projects
           </button>
         </div>
-        <ProjectsListTable data={projects} fetchdata={fetchData} />
+        {loading ? (
+          <Loader />
+        ) : (
+          <ProjectsListTable data={projects} fetchdata={fetchData} />
+        )}
       </div>
     </section>
   );

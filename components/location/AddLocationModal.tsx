@@ -71,9 +71,9 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
         },
       });
       console.log('Response:', response);
-      if (response?.status == 200) {
-        toast.success(`${response?.data?.message}`);
-      }
+      // if (response?.status == 200) {
+      toast.success(`${response?.data?.message}`);
+      // }
       dispatch(toggleLocationModal());
       // Handle success (e.g., close modal, show success message)
       // dispatch(toggleLocationModal());

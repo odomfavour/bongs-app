@@ -10,6 +10,7 @@ import { IoFilter } from 'react-icons/io5';
 import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 interface User {
   first_name: string;
@@ -48,46 +49,70 @@ const UoMListTable: React.FC<UoMListTableProps> = ({ data, fetchData }) => {
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-
-  const reversedData = [...data].reverse();
+  const itemsPerPage = 20;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = reversedData.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
 
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
 
   const deleteUom = async (id: number) => {
-    setLoadingStates((prevState) => ({ ...prevState, [id]: true }));
-    try {
-      const response = await axios.delete(`${process.env.BASEURL}/uom/${id}`, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      console.log('Delete Response:', response);
-      fetchData();
+    // Display SweetAlert confirmation dialog
+    const confirmResult = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this unit of measurement!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    });
 
-      if (response.status === 200) {
-        // Handle success
-      } else {
-        // Handle error
+    // If user confirms deletion
+    if (confirmResult.isConfirmed) {
+      setLoadingStates((prevState) => ({ ...prevState, [id]: true }));
+      try {
+        const response = await axios.delete(
+          `${process.env.BASEURL}/uom/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        console.log('Delete Response:', response);
+        fetchData();
+
+        if (response.status === 200) {
+          // Handle success
+          Swal.fire(
+            'Deleted!',
+            'Your unit of measurement has been deleted.',
+            'success'
+          );
+        } else {
+          // Handle error
+          Swal.fire(
+            'Failed to delete!',
+            'An error occurred while deleting the unit of measurement.',
+            'error'
+          );
+        }
+      } catch (error: any) {
+        console.error('Error:', error);
+
+        const errorMessage =
+          error?.response?.data?.message ||
+          error?.response?.data?.errors ||
+          error?.message ||
+          'Unknown error';
+        toast.error(`${errorMessage}`);
+      } finally {
+        setLoadingStates((prevState) => ({ ...prevState, [id]: false }));
       }
-    } catch (error: any) {
-      console.error('Error:', error);
-
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.response?.data?.errors ||
-        error?.message ||
-        'Unknown error';
-      toast.error(`${errorMessage}`);
-      // Handle error
-    } finally {
-      setLoadingStates((prevState) => ({ ...prevState, [id]: false }));
     }
   };
 
@@ -174,7 +199,7 @@ const UoMListTable: React.FC<UoMListTableProps> = ({ data, fetchData }) => {
                         No Unit of Measurement found
                       </p>
                       <p className="font-normal text-sm mt-3">
-                        Click “add deck” button to get started in doing your
+                        Click “add UOM” button to get started in doing your
                         <br /> first transaction on the platform
                       </p>
                     </div>

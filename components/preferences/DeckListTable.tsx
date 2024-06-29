@@ -16,6 +16,8 @@ import { IoFilter } from 'react-icons/io5';
 import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
+
 interface User {
   first_name: string;
   last_name: string;
@@ -66,7 +68,7 @@ const DeckListTable: React.FC<DeckListTableProps> = ({ data, fetchdata }) => {
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 20;
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -82,34 +84,44 @@ const DeckListTable: React.FC<DeckListTableProps> = ({ data, fetchdata }) => {
     dispatch(toggleAddDeckModal());
   };
   const handleDelete = async (id: number) => {
-    setLoadingStates((prevState) => ({ ...prevState, [id]: true }));
-    try {
-      const response = await axios.delete(`${process.env.BASEURL}/deck/${id}`, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      console.log('Delete Response:', response);
-      fetchdata();
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+    });
 
-      // if (response.status === 200) {
-      // Handle success
-
-      toast.success(`${response?.data?.message}`);
-    } catch (error: any) {
-      console.error('Error:', error);
-
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.response?.data?.errors ||
-        error?.message ||
-        'Unknown error';
-      toast.error(`${errorMessage}`);
-      // Handle error
-    } finally {
-      setLoadingStates((prevState) => ({ ...prevState, [id]: false }));
+    if (result.isConfirmed) {
+      setLoadingStates((prevState) => ({ ...prevState, [id]: true }));
+      try {
+        const response = await axios.delete(
+          `${process.env.BASEURL}/deck/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        console.log('Delete Response:', response);
+        fetchdata();
+        Swal.fire('Deleted!', 'Your deck has been deleted.', 'success');
+      } catch (error: any) {
+        console.error('Error:', error);
+        const errorMessage =
+          error?.response?.data?.message ||
+          error?.response?.data?.errors ||
+          error?.message ||
+          'Unknown error';
+        toast.error(`${errorMessage}`);
+      } finally {
+        setLoadingStates((prevState) => ({ ...prevState, [id]: false }));
+      }
     }
   };
+
   return (
     <div className="bg-white">
       <table className="table-auto w-full text-primary rounded-2xl mb-5">

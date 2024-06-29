@@ -11,9 +11,11 @@ import {
   displayBargeValue,
   toggleAddBargeModal,
   toggleAddDeckModal,
+  toggleAddDeckTypeModal,
 } from '@/provider/redux/modalSlice';
 import Loader from '@/components/Loader';
 import { toast } from 'react-toastify';
+import DeckTypeListTable from '@/components/preferences/DeckTypeListTable';
 
 interface User {
   first_name: string;
@@ -53,6 +55,17 @@ interface Deck {
   created_at: string;
   status: string;
 }
+interface DeckType {
+  id: number;
+  deck_number: string;
+  name: string;
+  deck: Deck;
+  barge: Barge;
+  type: string;
+  user: User;
+  created_at: string;
+  status: string;
+}
 
 interface StoreBoard {
   id: number;
@@ -77,6 +90,7 @@ const Preferences = () => {
   ]);
   const [barges, setBarges] = useState<Barge[]>([]);
   const [decks, setDecks] = useState<Deck[]>([]);
+  const [deckTypes, setDeckTypes] = useState<DeckType[]>([]);
   const [storeItems, setStoreItems] = useState<StoreBoard[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -88,6 +102,9 @@ const Preferences = () => {
   const isDeckModalOpen = useSelector(
     (state: any) => state.modal.isDeckModalOpen
   );
+  const isDeckTypeModalOpen = useSelector(
+    (state: any) => state.modal.isDeckTypeModalOpen
+  );
 
   const isStoreOnBoardModalOpen = useSelector(
     (state: any) => state.modal.isStoreOnBoardModalOpen
@@ -96,27 +113,36 @@ const Preferences = () => {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [bargesResponse, decksResponse, storeOnBoardResponse] =
-        await Promise.all([
-          axios.get(`${process.env.BASEURL}/barge`, {
-            headers: {
-              Authorization: `Bearer ${user?.token}`,
-            },
-          }),
-          axios.get(`${process.env.BASEURL}/deck`, {
-            headers: {
-              Authorization: `Bearer ${user?.token}`,
-            },
-          }),
-          axios.get(`${process.env.BASEURL}/keystore`, {
-            headers: {
-              Authorization: `Bearer ${user?.token}`,
-            },
-          }),
-        ]);
+      const [
+        bargesResponse,
+        decksResponse,
+        deckTypesResponse,
+        storeOnBoardResponse,
+      ] = await Promise.all([
+        axios.get(`${process.env.BASEURL}/barge`, {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }),
+        axios.get(`${process.env.BASEURL}/deck`, {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }),
+        axios.get(`${process.env.BASEURL}/deck-type`, {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }),
+        axios.get(`${process.env.BASEURL}/keystore`, {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }),
+      ]);
       setBarges(bargesResponse?.data?.data?.data);
-      console.log('decks', storeOnBoardResponse);
       setDecks(decksResponse?.data?.data?.data);
+      setDeckTypes(deckTypesResponse?.data?.data?.data);
       setStoreItems(storeOnBoardResponse?.data?.data?.data);
       // You can similarly setStoreItems if needed
     } catch (error: any) {
@@ -135,7 +161,13 @@ const Preferences = () => {
 
   useEffect(() => {
     fetchData();
-  }, [fetchData, isBargeModalOpen, isDeckModalOpen, isStoreOnBoardModalOpen]);
+  }, [
+    fetchData,
+    isBargeModalOpen,
+    isDeckModalOpen,
+    isStoreOnBoardModalOpen,
+    isDeckTypeModalOpen,
+  ]);
 
   return (
     <div>
@@ -182,7 +214,13 @@ const Preferences = () => {
             Add Deck
           </button>
         ) : activeTab == 'Deck Type' ? (
-          <button className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]">
+          <button
+            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+            onClick={() => {
+              dispatch(displayBargeValue({}));
+              dispatch(toggleAddDeckTypeModal());
+            }}
+          >
             Add Deck Type
           </button>
         ) : (
@@ -216,8 +254,8 @@ const Preferences = () => {
             {activeTab === 'Deck' && (
               <DeckListTable data={decks} fetchdata={fetchData} />
             )}
-            {activeTab === 'DeckType' && (
-              <BargeListTable data={barges} fetchdata={fetchData} />
+            {activeTab === 'Deck Type' && (
+              <DeckTypeListTable data={deckTypes} fetchdata={fetchData} />
             )}
             {activeTab === 'Store - on - Board' && (
               <StoreOnBoardListTable data={storeItems} fetchdata={fetchData} />

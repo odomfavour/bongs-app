@@ -1,4 +1,5 @@
 'use client';
+import Loader from '@/components/Loader';
 import BargeComponentCategoryListTable from '@/components/barge-safety/BargeComponentCategoryListTable';
 import UoMListTable from '@/components/uom/UomListTable';
 import {
@@ -92,10 +93,14 @@ const BargeComponentPage = () => {
             Add Category
           </button>
         </div>
-        <BargeComponentCategoryListTable
-          data={bargeComponents}
-          fetchdata={fetchData}
-        />
+        {loading ? (
+          <Loader />
+        ) : (
+          <BargeComponentCategoryListTable
+            data={bargeComponents}
+            fetchdata={fetchData}
+          />
+        )}
       </div>
     </section>
   );

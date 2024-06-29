@@ -1,4 +1,5 @@
 'use client';
+import Loader from '@/components/Loader';
 import SafetyCategoryListTable from '@/components/safety-category/SafetyCategoryListTable';
 import {
   displayBargeValue,
@@ -102,7 +103,11 @@ const SafetyCategoryPage = () => {
             Add Safety Category
           </button>
         </div>
-        <SafetyCategoryListTable data={safetyCat} fetchdata={fetchData} />
+        {loading ? (
+          <Loader />
+        ) : (
+          <SafetyCategoryListTable data={safetyCat} fetchdata={fetchData} />
+        )}
       </div>
     </section>
   );

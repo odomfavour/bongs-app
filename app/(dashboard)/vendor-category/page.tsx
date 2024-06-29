@@ -1,9 +1,11 @@
 'use client';
 import Loader from '@/components/Loader';
 import UoMListTable from '@/components/uom/UomListTable';
+import VendorCategoryListTable from '@/components/vendors/VendorCategoryListTable';
 import VendorListTable from '@/components/vendors/VendorListTable';
 import {
   displayBargeValue,
+  toggleVendorCategoryModal,
   toggleVendorModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
@@ -12,17 +14,6 @@ import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
-interface Vendor {
-  id: number;
-  vendor_number: string;
-  vendor_name: string;
-  vendor_category_id: number;
-  vendor_description: string;
-  vendor_email: string;
-  status: string;
-  created_at: string;
-}
-
 interface VendorCategory {
   id: number;
   name: string;
@@ -30,41 +21,18 @@ interface VendorCategory {
   created_at: string;
 }
 
-const VendorsPage = () => {
+const VendorCategoryPage = () => {
   const dispatch = useDispatch();
-  const [vendors, setVendors] = useState<Vendor[]>([]);
-  const [vendorCats, setVendorCats] = useState<VendorCategory[]>([]);
+  const [vendorCat, setVendorCat] = useState<VendorCategory[]>([]);
+
   const [loading, setLoading] = useState(false);
+
   const user = useSelector((state: any) => state.user.user);
-  const isVendorModalOpen = useSelector(
-    (state: any) => state.modal.isVendorModalOpen
+  const isVendorCategoryModalOpen = useSelector(
+    (state: any) => state.modal.isVendorCategoryModalOpen
   );
 
-  const fetchVendors = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(`${process.env.BASEURL}/getVendors`, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      console.log('resp', response);
-      setVendors(response?.data?.data?.data);
-      // You can similarly setStoreItems if needed
-    } catch (error: any) {
-      console.error('Error:', error);
-
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.response?.data?.errors ||
-        error?.message ||
-        'Unknown error';
-      toast.error(`${errorMessage}`);
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.token]);
-  const fetchCategories = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get(
@@ -76,7 +44,7 @@ const VendorsPage = () => {
         }
       );
       console.log('resp', response);
-      setVendorCats(response?.data?.data?.data);
+      setVendorCat(response?.data?.data?.data);
       // You can similarly setStoreItems if needed
     } catch (error: any) {
       console.error('Error:', error);
@@ -93,14 +61,12 @@ const VendorsPage = () => {
   }, [user?.token]);
 
   useEffect(() => {
-    fetchVendors();
-    fetchCategories();
-  }, [fetchVendors, fetchCategories, isVendorModalOpen]);
-
+    fetchData();
+  }, [fetchData, isVendorCategoryModalOpen]);
   return (
     <section>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
-        <p className="text-[32px] font-medium">Vendors</p>
+        <p className="text-[32px] font-medium">Vendor Category</p>
         <div className="flex items-center gap-2 w-2/5">
           <div className="w-4/5">
             <div className="w-full relative">
@@ -126,24 +92,20 @@ const VendorsPage = () => {
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
               dispatch(displayBargeValue({}));
-              dispatch(toggleVendorModal());
+              dispatch(toggleVendorCategoryModal());
             }}
           >
-            Add Vendor
+            Add Vendor Category
           </button>
         </div>
         {loading ? (
           <Loader />
         ) : (
-          <VendorListTable
-            data={vendors}
-            fetchData={fetchVendors}
-            vendorCats={vendorCats}
-          />
+          <VendorCategoryListTable data={vendorCat} fetchData={fetchData} />
         )}
       </div>
     </section>
   );
 };
 
-export default VendorsPage;
+export default VendorCategoryPage;

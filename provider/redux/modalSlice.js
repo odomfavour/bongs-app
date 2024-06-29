@@ -3,10 +3,12 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   isBargeModalOpen: false,
   isDeckModalOpen: false,
+  isDeckTypeModalOpen: false,
   isStoreOnBoardModalOpen: false,
   isProjectModalOpen: false,
   isUomModalOpen: false,
   isSafetyCategoryModalOpen: false,
+  isVendorCategoryModalOpen: false,
   isVendorModalOpen: false,
   isLocationModalOpen: false,
   isBargeComponentModalOpen: false,
@@ -26,6 +28,9 @@ export const modalSlice = createSlice({
     toggleAddDeckModal: (state) => {
       state.isDeckModalOpen = !state.isDeckModalOpen;
     },
+    toggleAddDeckTypeModal: (state) => {
+      state.isDeckTypeModalOpen = !state.isDeckTypeModalOpen;
+    },
     toggleStoreOnBoardModal: (state) => {
       state.isStoreOnBoardModalOpen = !state.isStoreOnBoardModalOpen;
     },
@@ -40,6 +45,9 @@ export const modalSlice = createSlice({
     },
     toggleVendorModal: (state) => {
       state.isVendorModalOpen = !state.isVendorModalOpen;
+    },
+    toggleVendorCategoryModal: (state) => {
+      state.isVendorCategoryModalOpen = !state.isVendorCategoryModalOpen;
     },
     toggleLocationModal: (state) => {
       state.isLocationModalOpen = !state.isLocationModalOpen;
@@ -62,6 +70,8 @@ export const {
   toggleLocationModal,
   toggleBargeComponentModal,
   displayBargeValue,
+  toggleAddDeckTypeModal,
+  toggleVendorCategoryModal,
 } = modalSlice.actions;
 
 export default modalSlice.reducer;

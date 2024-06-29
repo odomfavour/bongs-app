@@ -2,8 +2,7 @@
 
 import {
   displayBargeValue,
-  toggleAddProjectModal,
-  toggleSafetyCategoryModal,
+  toggleVendorCategoryModal,
 } from '@/provider/redux/modalSlice';
 import { formatDate } from '@/utils/utils';
 import axios from 'axios';
@@ -17,38 +16,29 @@ import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-interface ProjectManager {
-  id: number;
-  first_name: string;
-  last_name: string;
-}
 
-interface Project {
+interface VendorCategory {
   id: number;
-  project_name: string;
-  project_title: string;
-  project_duration: string;
-  project_start_date: string;
-  project_end_date: string;
-  project_manager: ProjectManager;
+  name: string;
+  status: string;
   created_at: string;
 }
 
-interface ProjectsListTableProps {
-  data: Project[];
-  fetchdata: () => void;
+interface VendorListTableProps {
+  data: VendorCategory[];
+  fetchData: () => void;
 }
 
-const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
+const VendorCategoryListTable: React.FC<VendorListTableProps> = ({
   data,
-  fetchdata,
+  fetchData,
 }) => {
-  const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
-  const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
+  const dispatch = useDispatch();
   const [loadingStates, setLoadingStates] = useState<{
     [key: number]: boolean;
   }>({});
+  const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
   const toggleDropdown = (index: number) => {
     if (openDropdownIndex === index) {
       setOpenDropdownIndex(null);
@@ -58,7 +48,8 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 20;
+
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -72,7 +63,7 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
     // Display SweetAlert confirmation dialog
     const confirmResult = await Swal.fire({
       title: 'Are you sure?',
-      text: 'You will not be able to recover this project!',
+      text: 'You will not be able to recover this vendor category!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -85,7 +76,7 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
       setLoadingStates((prevState) => ({ ...prevState, [id]: true }));
       try {
         const response = await axios.delete(
-          `${process.env.BASEURL}/project/delete/${id}`,
+          `${process.env.BASEURL}/vendorCategory/delete/${id}`,
           {
             headers: {
               Authorization: `Bearer ${user?.token}`,
@@ -93,16 +84,20 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
           }
         );
         console.log('Delete Response:', response);
-        fetchdata();
+        fetchData();
 
         if (response.status === 200) {
-          Swal.fire('Deleted!', 'Your project has been deleted.', 'success');
           // Handle success
+          Swal.fire(
+            'Deleted!',
+            'Your vendor category has been deleted.',
+            'success'
+          );
         } else {
           // Handle error
           Swal.fire(
             'Failed to delete!',
-            'An error occurred while deleting the project.',
+            'An error occurred while deleting the unit of measurement.',
             'error'
           );
         }
@@ -121,9 +116,9 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
     }
   };
 
-  const handleEdit = (item: Project) => {
+  const handleEdit = (item: VendorCategory) => {
     dispatch(displayBargeValue(item));
-    dispatch(toggleAddProjectModal());
+    dispatch(toggleVendorCategoryModal());
   };
   return (
     <div className="bg-white">
@@ -131,45 +126,26 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
         <thead>
           <tr className="border-b bg-[#E9EDF4]">
             <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
-            <th className="text-sm text-center py-3">Name</th>
-            <th className="text-sm text-center py-3">Title.</th>
-            <th className="text-sm text-center py-3">Duration</th>
-            <th className="text-sm text-center py-3">Start Date</th>
-            <th className="text-sm text-center py-3">End Date</th>
-            <th className="text-sm text-center py-3">Project managers</th>
+            <th className="text-sm text-center py-3">Category No.</th>
+            <th className="text-sm text-center py-3">name</th>
+            <th className="text-sm text-center py-3">Status</th>
             <th className="text-sm text-center py-3">Created On</th>
             <th className="text-sm text-center py-3">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {currentItems?.length > 0 &&
-            currentItems.map((item) => {
-              const {
-                id,
-                project_title,
-                project_name,
-                project_duration,
-                project_start_date,
-                project_end_date,
-                project_manager,
-                created_at,
-              } = item;
+          {currentItems.length > 0 &&
+            currentItems.map((item, index) => {
+              const { id, name, created_at, status } = item;
               return (
                 <tr className="border-b" key={id}>
-                  <td className="py-2 text-center text-[#344054]">{id}</td>
-
-                  <td className="py-2 text-center">{project_name}</td>
-                  <td className="py-2 text-center">{project_title}</td>
-                  <td className="py-2 text-center">{project_duration}</td>
-                  <td className="py-2 text-center">{project_start_date}</td>
-                  <td className="py-2 text-center">{project_end_date}</td>
-                  <td className="py-2 text-center">
-                    {project_manager.first_name}
-
-                    {project_manager.last_name}
+                  <td className="py-2 text-center text-[#344054]">
+                    {index + 1}
                   </td>
+                  <td className="py-2 text-center">vendorCat-{id}</td>
+                  <td className="py-2 text-center">{name}</td>
+                  <td className="py-2 text-center">{status}</td>
                   <td className="py-2 text-center">{formatDate(created_at)}</td>
-
                   <td className="py-2 text-center flex justify-center items-center">
                     <div className="flex gap-3">
                       <button
@@ -194,7 +170,7 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
                 </tr>
               );
             })}
-          {currentItems?.length == 0 && (
+          {currentItems.length == 0 && (
             <tr className="text-center text-primary bg-white">
               <td className="py-2 text-center" colSpan={10}>
                 <div className="flex justify-center items-center  min-h-[60vh]">
@@ -204,10 +180,11 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
                     </div>
                     <div className="mt-5">
                       <p className="font-medium text-[#475467]">
-                        No Project found
+                        No vendor category found
                       </p>
                       <p className="font-normal text-sm mt-3">
-                        Click “add project” button to get started in doing your
+                        Click “add vendor category” button to get started in
+                        doing your
                         <br /> first transaction on the platform
                       </p>
                     </div>
@@ -272,4 +249,4 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
   );
 };
 
-export default ProjectsListTable;
+export default VendorCategoryListTable;

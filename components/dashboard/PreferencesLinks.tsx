@@ -14,6 +14,7 @@ const links = [
   { href: '/preferences/general', label: 'Equipment Type' },
   { href: '/preferences/general', label: 'Manufacturer' },
   { href: '/vendors', label: 'Vendor' },
+  { href: '/vendor-category', label: 'Vendor Category' },
   { href: '/barge-component-category', label: 'Barge Component Category' },
 ];
 

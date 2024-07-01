@@ -57,7 +57,7 @@ const Sidebar: React.FC = () => {
                 <div className="flex justify-center items-center">
                   <div className="relative w-[28px] h-[28px]">
                     <Image
-                      src="/icons/sidebar_dashboard.png"
+                      src="/icons/dashboard-2.png"
                       width={28}
                       height={38}
                       priority
@@ -152,7 +152,7 @@ const Sidebar: React.FC = () => {
                 <div className="flex justify-center items-center">
                   <div className="relative w-[28px] h-[28px]">
                     <Image
-                      src="/icons/sidebar_dashboard.png"
+                      src="/icons/human-resource.png"
                       width={28}
                       height={38}
                       priority

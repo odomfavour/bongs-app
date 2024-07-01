@@ -73,7 +73,7 @@ const PreferencesLinks: React.FC<PreferencesLinksProps> = ({
     <div>
       <ul>
         {links.map((link, index) => (
-          <li key={index} className="border-b text-center py-3 pl-2">
+          <li key={index} className="text-center py-3 pl-2">
             <Link href={link.href} onClick={closeInnerSidebar}>
               <div
                 className="w-full flex gap-3 items-center"
@@ -88,7 +88,7 @@ const PreferencesLinks: React.FC<PreferencesLinksProps> = ({
                     alt="avatar"
                   />
                 </div>
-                <p>{link.label}</p>
+                <p className="text-[14px]">{link.label}</p>
               </div>
             </Link>
           </li>

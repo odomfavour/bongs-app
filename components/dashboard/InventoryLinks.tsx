@@ -26,28 +26,39 @@ const links: LinkItem[] = [
   },
 ];
 
-const InventoryLinks: React.FC = () => {
+interface InventoryLinksProps {
+  closeInnerSidebar: () => void;
+}
+
+const InventoryLinks: React.FC<InventoryLinksProps> = ({
+  closeInnerSidebar,
+}) => {
   return (
-    <ul>
-      {links.map((link, index) => (
-        <li key={index} className="border-b text-center">
-          <Link href={link.href}>
-            <div className="w-full h-[80px] flex justify-center items-center">
-              <div className="relative w-[28px] h-[28px] mr-2">
-                <Image
-                  src={`/icons/${link.img}`}
-                  width={28}
-                  height={28}
-                  priority
-                  alt={link.text}
-                />
+    <div>
+      <ul>
+        {links.map((link, index) => (
+          <li key={index} className="text-center py-3 pl-2">
+            <Link href={link.href} onClick={closeInnerSidebar}>
+              <div
+                className="w-full flex gap-3 items-center"
+                onClick={closeInnerSidebar}
+              >
+                <div className="relative w-[28px] h-[28px]">
+                  <Image
+                    src={`/icons/${link.img}`}
+                    width={28}
+                    height={38}
+                    priority
+                    alt="avatar"
+                  />
+                </div>
+                <p className="text-[14px]">{link.text}</p>
               </div>
-              <div>{link.text}</div>
-            </div>
-          </Link>
-        </li>
-      ))}
-    </ul>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 

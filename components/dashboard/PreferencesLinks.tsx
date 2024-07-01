@@ -49,11 +49,11 @@ const links = [
     label: 'Manufacturer',
     img: 'preference_manufacturer.png',
   },
-  { href: '/vendors', label: 'Vendor', img: 'Preference_supplier.png' },
+  { href: '/vendors', label: 'Vendor', img: 'vendor.png' },
   {
     href: '/vendor-category',
     label: 'Vendor Category',
-    img: 'Preference_supplier.png',
+    img: 'vendor_category.png',
   },
   {
     href: '/barge-component-category',

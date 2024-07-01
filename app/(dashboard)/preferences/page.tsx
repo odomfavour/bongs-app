@@ -85,8 +85,8 @@ const Preferences = () => {
   const [tabs, setTabs] = useState([
     { id: 1, name: 'Barge', count: '' },
     { id: 2, name: 'Deck', count: '' },
-    { id: 3, name: 'Deck Type', count: '' },
-    { id: 4, name: 'Store - on - Board', count: '' },
+    // { id: 3, name: 'Deck Type', count: '' },
+    { id: 3, name: 'Store - on - Board', count: '' },
   ]);
   const [barges, setBarges] = useState<Barge[]>([]);
   const [decks, setDecks] = useState<Deck[]>([]);

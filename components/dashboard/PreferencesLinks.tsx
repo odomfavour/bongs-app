@@ -11,12 +11,12 @@ const links = [
   {
     href: '/projects',
     label: 'Projects',
-    img: 'preference_barge_setup_deck.png',
+    img: 'project.png',
   },
   {
     href: '/preferences/general',
     label: 'Inventory Types',
-    img: 'Preferences_units.png',
+    img: 'inventory_types.png',
   },
   { href: '/unit-of-measurement', label: 'UoM', img: 'Preferences_units.png' },
   {
@@ -32,7 +32,7 @@ const links = [
   {
     href: '/preferences/general',
     label: 'Department',
-    img: 'preference_barge_setup_deck.png',
+    img: 'department.png',
   },
   {
     href: '/location',
@@ -58,7 +58,7 @@ const links = [
   {
     href: '/barge-component-category',
     label: 'Barge Equipment',
-    img: 'preference_barge_setup_deck.png',
+    img: 'categories.png',
   },
 ];
 

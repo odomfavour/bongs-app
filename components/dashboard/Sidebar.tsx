@@ -78,7 +78,7 @@ const Sidebar: React.FC = () => {
                 <div className="flex justify-center items-center">
                   <div className="relative w-[28px] h-[28px]">
                     <Image
-                      src="/icons/sidebar_dashboard.png"
+                      src="/icons/inventories.png"
                       width={28}
                       height={38}
                       priority
@@ -97,7 +97,7 @@ const Sidebar: React.FC = () => {
                   <div className="flex justify-center items-center">
                     <div className="relative w-[28px] h-[28px]">
                       <Image
-                        src="/icons/sidebar_dashboard.png"
+                        src="/icons/sidebar_Reports.png"
                         width={28}
                         height={38}
                         priority
@@ -134,7 +134,7 @@ const Sidebar: React.FC = () => {
                 <div className="flex justify-center items-center">
                   <div className="relative w-[28px] h-[28px]">
                     <Image
-                      src="/icons/sidebar_dashboard.png"
+                      src="/icons/sidebar_users.png"
                       width={28}
                       height={38}
                       priority
@@ -170,7 +170,7 @@ const Sidebar: React.FC = () => {
                 <div className="flex justify-center items-center">
                   <div className="relative w-[28px] h-[28px]">
                     <Image
-                      src="/icons/sidebar_dashboard.png"
+                      src="/icons/sidebar_finance.png"
                       width={28}
                       height={38}
                       priority
@@ -185,7 +185,7 @@ const Sidebar: React.FC = () => {
         </ul>
       </div>
       {showInnerSidebar && (
-        <div className="w-[200px] bg-slate-200 z-30">
+        <div className="w-[250px] px-3 bg-white rounded-md shadow-md z-30">
           <div className="flex justify-end p-2">
             <button onClick={closeInnerSidebar} className="text-red-700">
               <FaX />

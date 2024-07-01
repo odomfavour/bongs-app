@@ -3,19 +3,63 @@ import Link from 'next/link';
 import React from 'react';
 
 const links = [
-  { href: '/preferences', label: 'Barge Setup' },
-  { href: '/projects', label: 'Projects' },
-  { href: '/preferences/general', label: 'Inventory Types' },
-  { href: '/unit-of-measurement', label: 'UoM' },
-  { href: '/safety-category', label: 'Safety Category' },
-  { href: '/preferences/general', label: 'Asset Category' },
-  { href: '/preferences/general', label: 'Department' },
-  { href: '/location', label: 'Location' },
-  { href: '/preferences/general', label: 'Equipment Type' },
-  { href: '/preferences/general', label: 'Manufacturer' },
-  { href: '/vendors', label: 'Vendor' },
-  { href: '/vendor-category', label: 'Vendor Category' },
-  { href: '/barge-component-category', label: 'Barge Component Category' },
+  {
+    href: '/preferences',
+    label: 'Barge Setup',
+    img: 'preference_barge_setup_deck.png',
+  },
+  {
+    href: '/projects',
+    label: 'Projects',
+    img: 'preference_barge_setup_deck.png',
+  },
+  {
+    href: '/preferences/general',
+    label: 'Inventory Types',
+    img: 'Preferences_units.png',
+  },
+  { href: '/unit-of-measurement', label: 'UoM', img: 'Preferences_units.png' },
+  {
+    href: '/safety-category',
+    label: 'Safety Category',
+    img: 'preference_safety_category.png',
+  },
+  {
+    href: '/preferences/general',
+    label: 'Asset Category',
+    img: 'preference_asset_category.png',
+  },
+  {
+    href: '/preferences/general',
+    label: 'Department',
+    img: 'preference_barge_setup_deck.png',
+  },
+  {
+    href: '/location',
+    label: 'Location',
+    img: 'Preferences_location.png',
+  },
+  {
+    href: '/preferences/general',
+    label: 'Equipment Type',
+    img: 'preference_Equipment_type.png',
+  },
+  {
+    href: '/preferences/general',
+    label: 'Manufacturer',
+    img: 'preference_manufacturer.png',
+  },
+  { href: '/vendors', label: 'Vendor', img: 'Preference_supplier.png' },
+  {
+    href: '/vendor-category',
+    label: 'Vendor Category',
+    img: 'Preference_supplier.png',
+  },
+  {
+    href: '/barge-component-category',
+    label: 'Barge Equipment',
+    img: 'preference_barge_setup_deck.png',
+  },
 ];
 
 interface PreferencesLinksProps {
@@ -37,7 +81,7 @@ const PreferencesLinks: React.FC<PreferencesLinksProps> = ({
               >
                 <div className="relative w-[28px] h-[28px]">
                   <Image
-                    src="/icons/sidebar_dashboard.png"
+                    src={`/icons/${link.img}`}
                     width={28}
                     height={38}
                     priority

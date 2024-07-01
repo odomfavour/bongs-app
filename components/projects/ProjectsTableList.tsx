@@ -58,7 +58,7 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 20;
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;

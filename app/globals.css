@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Hide scrollbar for WebKit browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 5px; /* Adjust the width here */
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Adjust the track background color here */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #eae8e8; /* Adjust the handle color here */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Adjust the handle hover color here */
+}

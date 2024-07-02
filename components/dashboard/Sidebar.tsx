@@ -42,8 +42,8 @@ const Sidebar: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex h-[90vh] fixed top-[70px] z-40 overflow-y-auto">
-      <div className="w-[120px] rounded-t-md shadow bg-white">
+    <div className="flex  fixed top-[70px] z-40 ">
+      <div className="w-[120px] h-[90vh] pb-5 overflow-y-auto rounded-t-md shadow bg-white">
         <ul>
           <li className="border-b text-center">
             <Link href="/dashboard" onClick={closeInnerSidebar}>
@@ -204,7 +204,7 @@ const Sidebar: React.FC = () => {
       {showInnerSidebar && (
         <div
           ref={innerSidebarRef}
-          className="w-[230px] px-3 bg-white rounded-md shadow-md z-30 h-[90vh] overflow-y-auto"
+          className="w-[230px] px-3 bg-white rounded-md shadow-md z-30 h-[90vh]"
         >
           <div className="flex justify-end p-2">
             <button onClick={closeInnerSidebar} className="text-red-700">

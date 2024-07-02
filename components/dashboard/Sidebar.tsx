@@ -25,16 +25,16 @@ const Sidebar: React.FC = () => {
     setActiveTab('');
   };
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      innerSidebarRef.current &&
-      !innerSidebarRef.current.contains(event.target as Node)
-    ) {
-      closeInnerSidebar();
-    }
-  };
-
   useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        innerSidebarRef.current &&
+        !innerSidebarRef.current.contains(event.target as Node)
+      ) {
+        closeInnerSidebar();
+      }
+    };
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -42,7 +42,7 @@ const Sidebar: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex h-[90vh] fixed top-[70px] z-40">
+    <div className="flex h-[90vh] fixed top-[70px] z-40 overflow-y-auto">
       <div className="w-[120px] rounded-t-md shadow bg-white">
         <ul>
           <li className="border-b text-center">
@@ -204,7 +204,7 @@ const Sidebar: React.FC = () => {
       {showInnerSidebar && (
         <div
           ref={innerSidebarRef}
-          className="w-[230px] px-3 bg-white rounded-md shadow-md z-30"
+          className="w-[230px] px-3 bg-white rounded-md shadow-md z-30 h-[90vh] overflow-y-auto"
         >
           <div className="flex justify-end p-2">
             <button onClick={closeInnerSidebar} className="text-red-700">

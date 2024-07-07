@@ -1,11 +1,9 @@
-'use client';
 import React, { useCallback, useEffect, useState } from 'react';
-import GeneratorTableList from './GeneratorTableList';
-import EngineStrip from './EngineStrip';
+import RadarsTableList from './RadarsTableList';
+import DeckStrip from './DeckStrip';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import Loader from '../Loader';
-import { useSelector } from 'react-redux';
+import GeneratorTableList from './GeneratorTableList';
 
 interface Generator {
   id: number;
@@ -18,34 +16,25 @@ interface Generator {
   location: string;
   warranty_days: string;
 }
-
 interface User {
   token: string;
 }
 
-interface EnginePanelProps {
-  engineCategories: { id: number; name: string; count: string }[];
+interface DeckPanelProps {
+  deckCategories: { id: number; name: string; count: string }[];
   user: User;
-  fetchLoading: boolean;
 }
 
-const EnginePanel: React.FC<EnginePanelProps> = ({
-  engineCategories,
-  user,
-  fetchLoading,
-}) => {
-  console.log('engine', engineCategories?.[0]?.name);
+const DeckPanel: React.FC<DeckPanelProps> = ({ deckCategories, user }) => {
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
   const [spareparts, setSpareparts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const isAddEngineModalOpen = useSelector(
-    (state: any) => state.modal.isAddEngineModalOpen
-  );
+
   const fetchData = useCallback(async () => {
     try {
       const response = await axios.get(
-        `${process.env.BASEURL}/sparepart/engine/${activeId}`,
+        `${process.env.BASEURL}/sparepart/deck/${activeId}`,
         {
           headers: {
             Authorization: `Bearer ${user?.token}`,
@@ -69,23 +58,21 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
   }, [activeId, user?.token]);
 
   useEffect(() => {
-    if (engineCategories && engineCategories.length > 0) {
-      setActiveTab(engineCategories[0].name);
-      setActiveId(engineCategories[0].id);
+    if (deckCategories && deckCategories.length > 0) {
+      setActiveTab(deckCategories[0].name);
+      setActiveId(deckCategories[0].id);
     }
-  }, [engineCategories]);
+  }, [deckCategories]);
   useEffect(() => {
     fetchData();
-  }, [activeId, fetchData, isAddEngineModalOpen]);
-
+  }, [activeId, fetchData]);
   return (
     <div>
       <div className="my-4">
-        <EngineStrip />
+        <DeckStrip />
       </div>
-      {activeTab}
       <div className="grid grid-cols-6 gap-2">
-        {engineCategories.map((tab) => (
+        {deckCategories.map((tab) => (
           <button
             key={tab.id}
             className={`p-3 w-full ${
@@ -102,20 +89,14 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
           </button>
         ))}
       </div>
-      {/* {activeTab === engineCategories && ( */}
-      {loading ? (
-        <Loader />
-      ) : (
-        <GeneratorTableList
-          data={spareparts}
-          fetchdata={fetchData}
-          parent={'Engine'}
-        />
-      )}
 
-      {/* )} */}
+      <GeneratorTableList
+        data={spareparts}
+        fetchdata={fetchData}
+        parent={'Deck'}
+      />
     </div>
   );
 };
 
-export default EnginePanel;
+export default DeckPanel;

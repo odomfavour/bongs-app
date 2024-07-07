@@ -1,8 +1,11 @@
 'use client';
+import { logOut } from '@/provider/redux/userSlice';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { FaRegBell } from 'react-icons/fa';
 import { GiHamburgerMenu } from 'react-icons/gi';
+import { useDispatch } from 'react-redux';
 
 const MainHeader = () => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -12,8 +15,14 @@ const MainHeader = () => {
       assetUrl: '',
     },
   };
+  const router = useRouter();
+  const dispatch = useDispatch();
 
-  const handleLogout = () => {};
+  const handleLogout = () => {
+    dispatch(logOut());
+    router.push('/login');
+    localStorage.removeItem('bongsUser');
+  };
   return (
     <div className="relative bg-white">
       <div className="fixed top-0 right-0 bg-white text-primary z-50 shadow-sm w-full">

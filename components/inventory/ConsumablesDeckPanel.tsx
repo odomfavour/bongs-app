@@ -1,59 +1,48 @@
-'use client';
 import React, { useCallback, useEffect, useState } from 'react';
-import GeneratorTableList from './GeneratorTableList';
 import EngineStrip from './EngineStrip';
-import { toast } from 'react-toastify';
+import GeneratorTableList from './GeneratorTableList';
 import axios from 'axios';
-import Loader from '../Loader';
 import { useSelector } from 'react-redux';
-
-interface Generator {
-  id: number;
-  project: string;
-  description: string;
-  quantity: number;
-  part_number: string;
-  model: string;
-  threshold: number;
-  location: string;
-  warranty_days: string;
-}
+import { toast } from 'react-toastify';
+import ConsDeckStrip from './ConsDeckStrip';
+import ConsumablesableList from './ConsumablesTableList';
 
 interface User {
   token: string;
 }
 
-interface EnginePanelProps {
-  engineCategories: { id: number; name: string; count: string }[];
+interface CEnginePanelProps {
+  deckCategories: { id: number; name: string; count: string }[];
   user: User;
-  fetchLoading: boolean;
 }
 
-const EnginePanel: React.FC<EnginePanelProps> = ({
-  engineCategories,
+const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
+  deckCategories,
   user,
-  fetchLoading,
 }) => {
-  console.log('engine', engineCategories?.[0]?.name);
+  console.log('engine', deckCategories?.[0]?.name);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
-  const [spareparts, setSpareparts] = useState<any[]>([]);
+  const [consumables, setConsumables] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const isAddEngineModalOpen = useSelector(
-    (state: any) => state.modal.isAddEngineModalOpen
+  const isAddConsumeablesModalOpen = useSelector(
+    (state: any) => state.modal.isAddConsumeablesModalOpen
   );
+
   const fetchData = useCallback(async () => {
+    if (activeId === undefined) return; // Ensure activeId is defined before making the request
+    setLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.BASEURL}/sparepart/engine/${activeId}`,
+        `${process.env.BASEURL}/consumable/deck/${activeId}`,
         {
           headers: {
             Authorization: `Bearer ${user?.token}`,
           },
         }
       );
-      console.log('resp', response);
-      setSpareparts(response?.data?.data?.data);
+      console.log('resp', response, activeId);
+      setConsumables(response?.data?.data?.data);
     } catch (error: any) {
       console.error('Error:', error);
 
@@ -69,23 +58,26 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
   }, [activeId, user?.token]);
 
   useEffect(() => {
-    if (engineCategories && engineCategories.length > 0) {
-      setActiveTab(engineCategories[0].name);
-      setActiveId(engineCategories[0].id);
+    if (deckCategories && deckCategories.length > 0) {
+      console.log(deckCategories);
+      setActiveTab(deckCategories[0].name);
+      setActiveId(deckCategories[0].id);
     }
-  }, [engineCategories]);
+  }, [deckCategories]);
+
   useEffect(() => {
-    fetchData();
-  }, [activeId, fetchData, isAddEngineModalOpen]);
+    if (activeId !== undefined) {
+      fetchData();
+    }
+  }, [activeId, fetchData, isAddConsumeablesModalOpen]);
 
   return (
     <div>
       <div className="my-4">
-        <EngineStrip />
+        <ConsDeckStrip />
       </div>
-      {activeTab}
       <div className="grid grid-cols-6 gap-2">
-        {engineCategories.map((tab) => (
+        {deckCategories.map((tab: any) => (
           <button
             key={tab.id}
             className={`p-3 w-full ${
@@ -95,27 +87,21 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
             }`}
             onClick={() => {
               setActiveTab(tab.name);
-              setActiveId(tab.id);
+              setActiveId(tab.id); // Ensure both states are updated together
             }}
           >
             {tab.name}
           </button>
         ))}
       </div>
-      {/* {activeTab === engineCategories && ( */}
-      {loading ? (
-        <Loader />
-      ) : (
-        <GeneratorTableList
-          data={spareparts}
-          fetchdata={fetchData}
-          parent={'Engine'}
-        />
-      )}
 
-      {/* )} */}
+      <ConsumablesableList
+        data={consumables}
+        fetchdata={fetchData}
+        parent={'Deck'}
+      />
     </div>
   );
 };
 
-export default EnginePanel;
+export default ConsumablesEnginePanel;

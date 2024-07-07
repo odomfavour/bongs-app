@@ -12,6 +12,9 @@ const initialState = {
   isVendorModalOpen: false,
   isLocationModalOpen: false,
   isBargeComponentModalOpen: false,
+  isAddEngineModalOpen: false,
+  isAddConsumeablesModalOpen: false,
+  inventoryType: '',
   bargeValues: {},
 };
 
@@ -55,6 +58,14 @@ export const modalSlice = createSlice({
     toggleBargeComponentModal: (state) => {
       state.isBargeComponentModalOpen = !state.isBargeComponentModalOpen;
     },
+    toggleAddEngineModal: (state, action) => {
+      state.inventoryType = action.payload;
+      state.isAddEngineModalOpen = !state.isAddEngineModalOpen;
+    },
+    toggleAddConsumeablesModal: (state, action) => {
+      state.inventoryType = action.payload;
+      state.isAddConsumeablesModalOpen = !state.isAddConsumeablesModalOpen;
+    },
   },
 });
 
@@ -72,6 +83,8 @@ export const {
   displayBargeValue,
   toggleAddDeckTypeModal,
   toggleVendorCategoryModal,
+  toggleAddEngineModal,
+  toggleAddConsumeablesModal,
 } = modalSlice.actions;
 
 export default modalSlice.reducer;

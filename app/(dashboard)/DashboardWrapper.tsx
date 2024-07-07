@@ -17,6 +17,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import AddDeckTypeModal from '@/components/preferences/AddDeckTypeModal';
 import AddVendorCategoryModal from '@/components/vendors/AddVendorCategoryModal';
+import AddEngineModal from '@/components/inventory/AddEngineModal';
+import AddConsumablesModal from '@/components/inventory/AddConsumablesModal';
 
 interface DashboardWrapperProps {
   children: ReactNode;
@@ -90,6 +92,12 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
   const isBargeComponentModalOpen = useSelector(
     (state: any) => state.modal.isBargeComponentModalOpen
   );
+  const isAddEngineModalOpen = useSelector(
+    (state: any) => state.modal.isAddEngineModalOpen
+  );
+  const isAddConsumeablesModalOpen = useSelector(
+    (state: any) => state.modal.isAddConsumeablesModalOpen
+  );
   return (
     <>
       <section>
@@ -133,6 +141,12 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
       )}
       {isBargeComponentModalOpen && (
         <AddBargeComponentCategoryModal subscribers={subscribers} user={user} />
+      )}
+      {isAddEngineModalOpen && (
+        <AddEngineModal subscribers={subscribers} user={user} />
+      )}
+      {isAddConsumeablesModalOpen && (
+        <AddConsumablesModal subscribers={subscribers} user={user} />
       )}
       <ToastContainer />
     </>

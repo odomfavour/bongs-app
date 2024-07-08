@@ -269,19 +269,26 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
                     className="bg-blue-500 text-white p-2 rounded-md"
                     onClick={() => handleEdit(item)}
                   >
-                    <FaPenAlt />
+                    Edit
                   </button>
-                  <button
+                  {/* <button
                     className="bg-red-500 text-white p-2 rounded-md"
                     onClick={() => handleDelete([item.id])}
                     disabled={loadingStates[item.id]}
                   >
                     {loadingStates[item.id] ? (
                       <span className="loader"></span>
-                    ) : (
-                      <FaTrashAlt />
-                    )}
+                    ) : ( */}
+                  <button
+                    className={`bg-red-700 p-2 rounded-md text-white cursor-pointer ${
+                      loadingStates[item.id] ? 'animate-spin' : ''
+                    }`}
+                    onClick={() => handleDelete([item.id])}
+                  >
+                    Delete
                   </button>
+                  {/* )}
+                  </button> */}
                 </div>
               </td>
             </tr>
@@ -290,7 +297,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
       </table>
 
       {/* Pagination */}
-      <div className="flex justify-end mt-4">
+      {/* <div className="flex justify-end mt-4">
         <button
           className={`px-4 py-2 mx-1 rounded ${
             currentPage === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'
@@ -326,7 +333,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
         >
           Next
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

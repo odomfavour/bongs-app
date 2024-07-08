@@ -66,7 +66,7 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
         {hospitalCategories.map((tab) => (
           <button
             key={tab.id}
-            className={`p-3 w-full ${
+            className={`p-3 w-full capitalize ${
               activeTab === tab.name
                 ? 'bg-black text-white'
                 : 'bg-[#D9D9D9] text-black'

@@ -10,19 +10,9 @@ interface LinkItem {
 
 const links: LinkItem[] = [
   {
-    href: '/preferences/general',
-    text: 'Oil and Lubricant',
+    href: '/inventories',
+    text: 'Projects',
     img: 'inventories.png',
-  },
-  {
-    href: '/preferences/security',
-    text: 'Chipping and paints',
-    img: 'inventory_chipping_and_painting.png',
-  },
-  {
-    href: '/preferences/notifications',
-    text: 'Spare Part List',
-    img: 'inventory_all_spare_parts.png',
   },
 ];
 

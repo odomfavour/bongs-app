@@ -2,7 +2,7 @@
 
 import {
   displayBargeValue,
-  toggleStoreOnBoardModal,
+  toggleBargeComponentModal,
 } from '@/provider/redux/modalSlice';
 import { formatDate } from '@/utils/utils';
 import axios from 'axios';
@@ -16,58 +16,35 @@ import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-interface Deck {
-  id: number;
-  deck_number: string;
-  name: string;
-  deck_type: string;
-  created_at: string;
-  status: string;
-}
 
-interface User {
-  first_name: string;
-  last_name: string;
-}
-
-interface Project {
+interface Generator {
   id: number;
-  project_name: string;
-  project_title: string;
-  project_duration: string;
-  project_start_date: string;
-  project_end_date: string;
-  created_at: string;
-}
-
-interface StoreBoard {
-  id: number;
-  project: Project;
+  project: string;
   description: string;
-  deck: Deck;
-  key: string;
-  room_number: string;
-  addedBy: string;
-  created_at: string;
-  status: string;
-  user: User;
+  quantity: number;
+  part_number: string;
+  model: string;
+  threshold: number;
+  location: string;
+  warranty_days: string;
 }
 
-interface StoreOnBoardListTableProps {
-  data: StoreBoard[];
+interface GeneratorListTableProps {
+  data: Generator[];
   fetchdata: () => void;
 }
 
-const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
+const RadarsTableList: React.FC<GeneratorListTableProps> = ({
   data,
   fetchdata,
 }) => {
   const dispatch = useDispatch();
-  const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
   const user = useSelector((state: any) => state.user.user);
+  const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
   const [loadingStates, setLoadingStates] = useState<{
     [key: number]: boolean;
   }>({});
+
   const toggleDropdown = (index: number) => {
     if (openDropdownIndex === index) {
       setOpenDropdownIndex(null);
@@ -77,39 +54,35 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
+  const itemsPerPage = 5;
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
-  console.log('current', currentItems);
+  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 
   // Function to change page
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
 
-  const handleEdit = (item: StoreBoard) => {
-    dispatch(displayBargeValue(item));
-    dispatch(toggleStoreOnBoardModal());
-  };
   const handleDelete = async (id: number) => {
-    const result = await Swal.fire({
+    const confirmResult = await Swal.fire({
       title: 'Are you sure?',
-      text: "You won't be able to revert this!",
+      text: 'You will not be able to recover this safety category!',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, delete it!',
     });
 
-    if (result.isConfirmed) {
+    // If user confirms deletion
+    if (confirmResult.isConfirmed) {
       setLoadingStates((prevState) => ({ ...prevState, [id]: true }));
       try {
         const response = await axios.delete(
-          `${process.env.BASEURL}/keystore/${id}`,
+          `${process.env.BASEURL}/BargeComponentCategory/delete/${id}`,
           {
             headers: {
               Authorization: `Bearer ${user?.token}`,
@@ -119,21 +92,32 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
         console.log('Delete Response:', response);
         fetchdata();
 
-        Swal.fire('Deleted!', 'Keystore deleted successfull.', 'success');
+        if (response.status === 200) {
+          Swal.fire('Deleted!', 'Your item has been deleted.', 'success');
+          // Handle success
+        } else {
+          Swal.fire('Error!', 'Failed to delete item.', 'error');
+          // Handle error
+        }
       } catch (error: any) {
         console.error('Error:', error);
+
         const errorMessage =
           error?.response?.data?.message ||
           error?.response?.data?.errors ||
           error?.message ||
           'Unknown error';
         toast.error(`${errorMessage}`);
+        // Handle error
       } finally {
         setLoadingStates((prevState) => ({ ...prevState, [id]: false }));
       }
     }
   };
-
+  const handleEdit = (item: Generator) => {
+    dispatch(displayBargeValue(item));
+    dispatch(toggleBargeComponentModal());
+  };
   return (
     <div className="bg-white">
       <table className="table-auto w-full text-primary rounded-2xl mb-5">
@@ -142,12 +126,12 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
             <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
             <th className="text-sm text-center py-3">Project</th>
             <th className="text-sm text-center py-3">Description</th>
-            <th className="text-sm text-center py-3">Deck</th>
-            <th className="text-sm text-center py-3">Key</th>
-            <th className="text-sm text-center py-3">Room Number</th>
-            <th className="text-sm text-center py-3">Added By</th>
-            <th className="text-sm text-center py-3">Status</th>
-            <th className="text-sm text-center py-3">Created On</th>
+            <th className="text-sm text-center py-3">Qty</th>
+            <th className="text-sm text-center py-3">Part No.</th>
+            <th className="text-sm text-center py-3">Model</th>
+            <th className="text-sm text-center py-3">Threshold</th>
+            <th className="text-sm text-center py-3">Location</th>
+            <th className="text-sm text-center py-3">Warranty Days</th>
             <th className="text-sm text-center py-3">Actions</th>
           </tr>
         </thead>
@@ -156,33 +140,29 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
             currentItems.map((item, index) => {
               const {
                 id,
-                deck,
                 project,
                 description,
-                key,
-                room_number,
-                addedBy,
-                user,
-                status,
-                created_at,
+                quantity,
+                part_number,
+                warranty_days,
+                threshold,
+                location,
+                model,
               } = item;
               return (
                 <tr className="border-b" key={id}>
                   <td className="py-2 text-center text-[#344054]">
                     {index + 1}
                   </td>
+                  <td className="py-2 text-center">{project}</td>
 
-                  <td className="py-2 text-center">{project?.project_name}</td>
                   <td className="py-2 text-center">{description}</td>
-                  <td className="py-2 text-center">{deck?.name}</td>
-                  <td className="py-2 text-center">{key}</td>
-                  <td className="py-2 text-center">{room_number}</td>
-                  <td className="py-2 text-center">
-                    {user?.first_name} {user?.last_name}
-                  </td>
-                  <td className="py-2 text-center">{status}</td>
-                  <td className="py-2 text-center">{formatDate(created_at)}</td>
-
+                  <td className="py-2 text-center">{quantity}</td>
+                  <td className="py-2 text-center">{part_number}</td>
+                  <td className="py-2 text-center">{model}</td>
+                  <td className="py-2 text-center">{threshold}</td>
+                  <td className="py-2 text-center">{location}</td>
+                  <td className="py-2 text-center">{warranty_days}</td>
                   <td className="py-2 text-center flex justify-center items-center">
                     <div className="flex gap-3">
                       <button
@@ -217,10 +197,10 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
                     </div>
                     <div className="mt-5">
                       <p className="font-medium text-[#475467]">
-                        No Keystore found
+                        No Barge Components found
                       </p>
                       <p className="font-normal text-sm mt-3">
-                        Click “add store on board” button to get started in
+                        Click “add barge components” button to get started in
                         doing your
                         <br /> first transaction on the platform
                       </p>
@@ -286,4 +266,4 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
   );
 };
 
-export default StoreOnBoardListTable;
+export default RadarsTableList;

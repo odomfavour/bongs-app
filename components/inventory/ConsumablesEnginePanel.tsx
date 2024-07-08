@@ -1,51 +1,38 @@
-'use client';
 import React, { useCallback, useEffect, useState } from 'react';
-import GeneratorTableList from './GeneratorTableList';
 import EngineStrip from './EngineStrip';
-import { toast } from 'react-toastify';
+import GeneratorTableList from './GeneratorTableList';
 import axios from 'axios';
-import Loader from '../Loader';
 import { useSelector } from 'react-redux';
-
-interface Generator {
-  id: number;
-  project: string;
-  description: string;
-  quantity: number;
-  part_number: string;
-  model: string;
-  threshold: number;
-  location: string;
-  warranty_days: string;
-}
+import { toast } from 'react-toastify';
+import ConsEngineStrip from './ConsEngineStrip';
+import ConsumablesableList from './ConsumablesTableList';
 
 interface User {
   token: string;
 }
 
-interface EnginePanelProps {
+interface CEnginePanelProps {
   engineCategories: { id: number; name: string; count: string }[];
   user: User;
-  fetchLoading: boolean;
 }
 
-const EnginePanel: React.FC<EnginePanelProps> = ({
+const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   engineCategories,
   user,
-  fetchLoading,
 }) => {
   console.log('engine', engineCategories?.[0]?.name);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
-  const [spareparts, setSpareparts] = useState<any[]>([]);
+  const [consumables, setConsumables] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const isAddEngineModalOpen = useSelector(
-    (state: any) => state.modal.isAddEngineModalOpen
+  const isAddConsumeablesModalOpen = useSelector(
+    (state: any) => state.modal.isAddConsumeablesModalOpen
   );
   const fetchData = useCallback(async () => {
+    if (activeId === undefined) return;
     try {
       const response = await axios.get(
-        `${process.env.BASEURL}/sparepart/engine/${activeId}`,
+        `${process.env.BASEURL}/consumable/engine/${activeId}`,
         {
           headers: {
             Authorization: `Bearer ${user?.token}`,
@@ -53,7 +40,7 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
         }
       );
       console.log('resp', response);
-      setSpareparts(response?.data?.data?.data);
+      setConsumables(response?.data?.data?.data);
     } catch (error: any) {
       console.error('Error:', error);
 
@@ -74,18 +61,18 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
       setActiveId(engineCategories[0].id);
     }
   }, [engineCategories]);
+
   useEffect(() => {
     fetchData();
-  }, [activeId, fetchData, isAddEngineModalOpen]);
+  }, [activeId, fetchData, isAddConsumeablesModalOpen]);
 
   return (
     <div>
       <div className="my-4">
-        <EngineStrip />
+        <ConsEngineStrip />
       </div>
-      {activeTab}
       <div className="grid grid-cols-6 gap-2">
-        {engineCategories.map((tab) => (
+        {engineCategories.map((tab: any) => (
           <button
             key={tab.id}
             className={`p-3 w-full ${
@@ -95,27 +82,21 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
             }`}
             onClick={() => {
               setActiveTab(tab.name);
-              setActiveId(tab.id);
+              setActiveId(tab.id); // Ensure both states are updated together
             }}
           >
             {tab.name}
           </button>
         ))}
       </div>
-      {/* {activeTab === engineCategories && ( */}
-      {loading ? (
-        <Loader />
-      ) : (
-        <GeneratorTableList
-          data={spareparts}
-          fetchdata={fetchData}
-          parent={'Engine'}
-        />
-      )}
 
-      {/* )} */}
+      <ConsumablesableList
+        data={consumables}
+        fetchdata={fetchData}
+        parent={'Engine'}
+      />
     </div>
   );
 };
 
-export default EnginePanel;
+export default ConsumablesEnginePanel;

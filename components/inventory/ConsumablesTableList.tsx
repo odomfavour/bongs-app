@@ -282,16 +282,20 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
                   <td className="py-2 text-center">{waranty_period}</td>
                   <td className="py-2 text-center relative">
                     <div className="flex items-center justify-center gap-2">
-                      <FaPenAlt
-                        className="w-4 h-4 text-primary cursor-pointer"
+                      <button
+                        className="bg-blue-700 text-white p-2 rounded-md"
                         onClick={() => handleEdit(item)}
-                      />
-                      <FaTrashAlt
-                        className={`w-4 h-4 text-red-700 cursor-pointer ${
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className={`bg-red-700 p-2 rounded-md text-white cursor-pointer ${
                           loadingStates[id] ? 'animate-spin' : ''
                         }`}
                         onClick={() => handleDelete([id])}
-                      />
+                      >
+                        Delete{' '}
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -299,7 +303,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
             })}
         </tbody>
       </table>
-      {data.length > itemsPerPage && (
+      {/* {data.length > itemsPerPage && (
         <nav className="flex justify-center">
           <ul className="flex list-none">
             {[...Array(Math.ceil(data.length / itemsPerPage))].map(
@@ -320,7 +324,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
             )}
           </ul>
         </nav>
-      )}
+      )} */}
     </div>
   );
 };

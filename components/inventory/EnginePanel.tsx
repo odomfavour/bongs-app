@@ -88,7 +88,7 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
         {engineCategories.map((tab) => (
           <button
             key={tab.id}
-            className={`p-3 w-full ${
+            className={`p-3 w-full capitalize ${
               activeTab === tab.name
                 ? 'bg-black text-white'
                 : 'bg-[#D9D9D9] text-black'

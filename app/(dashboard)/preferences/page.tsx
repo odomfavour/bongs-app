@@ -140,6 +140,7 @@ const Preferences = () => {
           },
         }),
       ]);
+      console.log('barge', bargesResponse);
       setBarges(bargesResponse?.data?.data?.data);
       setDecks(decksResponse?.data?.data?.data);
       setDeckTypes(deckTypesResponse?.data?.data?.data);

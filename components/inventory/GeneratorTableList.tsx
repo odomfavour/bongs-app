@@ -104,6 +104,8 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
 }) => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
+  const inventoryType = useSelector((state: any) => state.modal.inventoryType);
+
   const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
   const [loadingStates, setLoadingStates] = useState<{
     [key: number]: boolean;
@@ -152,7 +154,15 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
 
       try {
         const response = await axios.post(
-          `${process.env.BASEURL}/sparepart/engine/bulk-delete`,
+          `${process.env.BASEURL}/sparepart/${
+            parent === 'Engine'
+              ? 'engine'
+              : parent === 'Deck'
+              ? 'deck'
+              : parent === 'Safety'
+              ? 'safety'
+              : 'hospital'
+          }/bulk-delete`,
           { ids },
           {
             headers: {
@@ -206,7 +216,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
 
   return (
     <div className="bg-white">
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end mb-4 mt-2">
         <button
           className="bg-red-700 text-white p-2 rounded-md"
           onClick={() => handleDelete(selectedItems)}
@@ -262,7 +272,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
               <td className="text-center py-3">{item.model_number}</td>
               <td className="text-center py-3">{item.threshold}</td>
               <td className="text-center py-3">{item.location.name}</td>
-              <td className="text-center py-3">{item.warranty_days}</td>
+              <td className="text-center py-3">{item.waranty_period}</td>
               <td className="text-center py-3">
                 <div className="flex justify-center space-x-2">
                   <button
@@ -280,13 +290,37 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
                       <span className="loader"></span>
                     ) : ( */}
                   <button
-                    className={`bg-red-700 p-2 rounded-md text-white cursor-pointer ${
-                      loadingStates[item.id] ? 'animate-spin' : ''
-                    }`}
+                    className="bg-red-700 p-2 rounded-md text-white cursor-pointer flex items-center justify-center
+                    "
                     onClick={() => handleDelete([item.id])}
+                    disabled={loadingStates[item.id]} // Optional: Disable button while loading
                   >
-                    Delete
+                    {loadingStates[item.id] ? (
+                      <svg
+                        className="animate-spin h-5 w-5 mr-2 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v8H4z"
+                        ></path>
+                      </svg>
+                    ) : (
+                      'Delete'
+                    )}
                   </button>
+
                   {/* )}
                   </button> */}
                 </div>

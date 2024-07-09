@@ -155,7 +155,17 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
 
       try {
         const response = await axios.post(
-          `${process.env.BASEURL}/api/v1/consumable/safety/bulk-delete`,
+          `${process.env.BASEURL}/consumable/${
+            parent === 'Engine'
+              ? 'engine'
+              : parent === 'Deck'
+              ? 'deck'
+              : parent === 'Safety'
+              ? 'safety'
+              : parent === 'Hospital'
+              ? 'hospital'
+              : 'galleylaundry'
+          }/bulk-delete`,
           { ids }, // Send the IDs in the request body
           {
             headers: {
@@ -214,7 +224,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
   };
 
   return (
-    <div className="bg-white">
+    <div className="bg-white pt-2">
       <div className="flex justify-end mb-4">
         <button
           className="bg-red-700 text-white p-2 rounded-md"
@@ -289,12 +299,35 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
                         Edit
                       </button>
                       <button
-                        className={`bg-red-700 p-2 rounded-md text-white cursor-pointer ${
-                          loadingStates[id] ? 'animate-spin' : ''
-                        }`}
+                        className="bg-red-700 p-2 rounded-md text-white cursor-pointer flex items-center justify-center
+                    "
                         onClick={() => handleDelete([id])}
+                        disabled={loadingStates[item.id]} // Optional: Disable button while loading
                       >
-                        Delete{' '}
+                        {loadingStates[id] ? (
+                          <svg
+                            className="animate-spin h-5 w-5 mr-2 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8v8H4z"
+                            ></path>
+                          </svg>
+                        ) : (
+                          'Delete'
+                        )}
                       </button>
                     </div>
                   </td>

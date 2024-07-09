@@ -43,6 +43,7 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
     (state: any) => state.modal.isAddEngineModalOpen
   );
   const fetchData = useCallback(async () => {
+    if (activeId === undefined) return;
     try {
       const response = await axios.get(
         `${process.env.BASEURL}/sparepart/engine/${activeId}`,

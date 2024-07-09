@@ -40,8 +40,8 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
     vendor_id: 0,
     safety_category_id: null,
     barge_equipment_id: 0,
-    stock_quantity: 0,
-    threshold: 0,
+    stock_quantity: 0 as number | string,
+    threshold: 0 as number | string,
     critical_level: '',
     part_number: '',
     model_number: '',
@@ -138,8 +138,8 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
         vendor_id: 0,
         safety_category_id: null,
         barge_equipment_id: 0,
-        stock_quantity: 0,
-        threshold: 0,
+        stock_quantity: 0 as number | string,
+        threshold: 0 as number | string,
         critical_level: '',
         part_number: '',
         model_number: '',
@@ -270,33 +270,33 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
     fetchData();
   }, [fetchData]);
 
-  const increaseQuantity = () => {
-    setFormData((prev) => ({
-      ...prev,
-      stock_quantity: prev.stock_quantity + 1,
-    }));
-  };
+  // const increaseQuantity = () => {
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     stock_quantity: prev.stock_quantity + 1,
+  //   }));
+  // };
 
-  const decreaseQuantity = () => {
-    setFormData((prev) => ({
-      ...prev,
-      stock_quantity: prev.stock_quantity > 0 ? prev.stock_quantity - 1 : 0,
-    }));
-  };
+  // const decreaseQuantity = () => {
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     stock_quantity: prev.stock_quantity > 0 ? prev.stock_quantity - 1 : 0,
+  //   }));
+  // };
 
-  const increaseThreshold = () => {
-    setFormData((prev) => ({
-      ...prev,
-      threshold: prev.threshold + 1,
-    }));
-  };
+  // const increaseThreshold = () => {
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     threshold: prev.threshold + 1,
+  //   }));
+  // };
 
-  const decreaseThreshold = () => {
-    setFormData((prev) => ({
-      ...prev,
-      threshold: prev.threshold > 0 ? prev.threshold - 1 : 0,
-    }));
-  };
+  // const decreaseThreshold = () => {
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     threshold: prev.threshold > 0 ? prev.threshold - 1 : 0,
+  //   }));
+  // };
 
   return (
     <div className="z-50 top-0 min-h-screen bg-[#101010c8] fixed w-full flex justify-center items-center text-veriDark">
@@ -337,7 +337,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                     })
                   }
                 >
-                  <option value="">Select Project</option>
+                  <option value="">Select Subscriber</option>
                   {subscribers?.map((subscriber) => (
                     <option value={subscriber.id} key={subscriber.id}>
                       {subscriber.name}
@@ -445,7 +445,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                     })
                   }
                 >
-                  <option value="">Select Subscriber</option>
+                  <option value="">Select store on board</option>
                   {storeItems?.map((storeItem: any) => (
                     <option value={storeItem.id} key={storeItem.id}>
                       {storeItem.project.project_name}
@@ -472,7 +472,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                     })
                   }
                 >
-                  <option value="">Select Subscriber</option>
+                  <option value="">Select Barge Equipment</option>
                   {bEquipment?.map((equipment: any) => (
                     <option value={equipment.id} key={equipment.id}>
                       {equipment.name}
@@ -506,14 +506,21 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
             <div>
               <div className="mb-4">
                 <label
-                  htmlFor="subscriber"
+                  htmlFor="sparepart_type"
                   className="block mb-2 text-sm font-medium text-gray-900"
                 >
-                  EngineType
+                  {inventoryType === 'Engine'
+                    ? 'Engine'
+                    : inventoryType === 'Deck'
+                    ? 'Deck'
+                    : inventoryType === 'Safety'
+                    ? 'Safety'
+                    : 'Hospital'}
+                  Type
                 </label>
                 <select
-                  id="subscriber"
-                  name="subscriber_id"
+                  id="sparepart_type"
+                  name="sparepart_type"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   value={
                     inventoryType === 'Engine'
@@ -552,14 +559,14 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
 
               <div className="mb-4">
                 <label
-                  htmlFor="subscriber"
+                  htmlFor="uom"
                   className="block mb-2 text-sm font-medium text-gray-900"
                 >
                   Unit of Measurement
                 </label>
                 <select
-                  id="subscriber"
-                  name="subscriber_id"
+                  id="uom"
+                  name="uom"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   value={formData.uom_id}
                   onChange={(e) =>
@@ -569,7 +576,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                     })
                   }
                 >
-                  <option value="">Select Project</option>
+                  <option value="">Select UoM</option>
                   {uom?.map((unit: any) => (
                     <option value={unit.id} key={unit.id}>
                       {unit.name}
@@ -580,15 +587,15 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
 
               <div className="mb-4">
                 <label
-                  htmlFor="project_name"
+                  htmlFor="part_number"
                   className="block mb-2 text-sm font-medium"
                 >
                   Part Number
                 </label>
                 <input
                   type="text"
-                  id="project_name"
-                  name="project_name"
+                  id="part_number"
+                  name="part_number"
                   placeholder="Input project name"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   value={formData.part_number}
@@ -606,8 +613,8 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  id="project_name"
-                  name="project_name"
+                  id="part_number"
+                  name="part_number"
                   placeholder="Input project name"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   value={formData.model_number}
@@ -618,14 +625,14 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
               </div>
               <div className="mb-4">
                 <label
-                  htmlFor="subscriber"
+                  htmlFor="location"
                   className="block mb-2 text-sm font-medium text-gray-900"
                 >
                   Location
                 </label>
                 <select
-                  id="subscriber"
-                  name="subscriber_id"
+                  id="location"
+                  name="location"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   value={formData.location_id}
                   onChange={(e) =>
@@ -635,7 +642,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                     })
                   }
                 >
-                  <option value="">Select Project</option>
+                  <option value="">Select Location</option>
                   {locations?.map((location: any) => (
                     <option value={location.id} key={location.id}>
                       {location.name}
@@ -645,14 +652,14 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
               </div>
               <div className="mb-4">
                 <label
-                  htmlFor="subscriber"
+                  htmlFor="vendor"
                   className="block mb-2 text-sm font-medium text-gray-900"
                 >
                   Vendor
                 </label>
                 <select
-                  id="subscriber"
-                  name="subscriber_id"
+                  id="vendor"
+                  name="vendor"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   value={formData.vendor_id}
                   onChange={(e) =>
@@ -662,7 +669,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                     })
                   }
                 >
-                  <option value="">Select Project</option>
+                  <option value="">Select Vendor</option>
                   {vendors?.map((vendor: any) => (
                     <option value={vendor.id} key={vendor.id}>
                       {vendor.vendor_name}
@@ -682,7 +689,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                       >
                         Stock Quantity
                       </label>
-                      <div className="flex items-center">
+                      {/* <div className="flex items-center">
                         <button
                           type="button"
                           className="p-2 bg-gray-200 rounded-l-lg"
@@ -705,9 +712,26 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                         >
                           <FaPlus />
                         </button>
-                      </div>
-                    </div>
+                      </div> */}
 
+                      <input
+                        type="number"
+                        id="part_number"
+                        name="part_number"
+                        placeholder="Input project name"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                        value={formData.stock_quantity}
+                        min="0"
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            stock_quantity: parseInt(e.target.value),
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div>
                     <div className="mb-4">
                       <label
                         htmlFor="threshold"
@@ -715,7 +739,23 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                       >
                         Threshold
                       </label>
-                      <div className="flex items-center">
+
+                      <input
+                        type="number"
+                        id="part_number"
+                        name="part_number"
+                        placeholder="Input treshold number"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                        value={formData.threshold}
+                        min="0"
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            threshold: parseInt(e.target.value),
+                          })
+                        }
+                      />
+                      {/* <div className="flex items-center">
                         <button
                           type="button"
                           className="p-2 bg-gray-200 rounded-l-lg"
@@ -738,7 +778,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                         >
                           <FaPlus />
                         </button>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>

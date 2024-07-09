@@ -120,110 +120,115 @@ const BargeListTable: React.FC<BargeListTableProps> = ({ data, fetchdata }) => {
 
   return (
     <div className="bg-white">
-      <table className="table-auto w-full text-primary rounded-2xl mb-5">
-        <thead>
-          <tr className="border-b bg-[#E9EDF4]">
-            <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
-            <th className="text-sm text-center py-3">Barge No</th>
-            <th className="text-sm text-center py-3">Name</th>
-            <th className="text-sm text-center py-3">Rooms</th>
-            <th className="text-sm text-center py-3">Store Location</th>
-            <th className="text-sm text-center py-3">Deck Level</th>
-            <th className="text-sm text-center py-3">Added By</th>
-            <th className="text-sm text-center py-3">Status</th>
-            <th className="text-sm text-center py-3">Created On</th>
-            <th className="text-sm text-center py-3">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentItems.length > 0 &&
-            currentItems.map((item, index) => {
-              const {
-                id,
-                barge_number,
-                name,
-                rooms,
-                store_location,
-                deck_level,
-                status,
-                created_at,
-                user,
-              } = item;
-              return (
-                <tr className="border-b" key={id}>
-                  <td className="py-2 text-center text-[#344054]">
-                    {index + 1}
-                  </td>
+      <div className="overflow-x-auto">
+        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+          <thead>
+            <tr className="border-b bg-[#E9EDF4]">
+              <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
+              <th className="text-sm text-center py-3">Barge No</th>
+              <th className="text-sm text-center py-3">Name</th>
+              <th className="text-sm text-center py-3">Rooms</th>
+              <th className="text-sm text-center py-3">Stores</th>
+              <th className="text-sm text-center py-3">Deck Level</th>
+              <th className="text-sm text-center py-3">Added By</th>
+              <th className="text-sm text-center py-3">Status</th>
+              <th className="text-sm text-center py-3">Created On</th>
+              <th className="text-sm text-center py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentItems.length > 0 &&
+              currentItems.map((item, index) => {
+                const {
+                  id,
+                  barge_number,
+                  name,
+                  rooms,
+                  store_location,
+                  deck_level,
+                  status,
+                  created_at,
+                  user,
+                } = item;
+                return (
+                  <tr className="border-b" key={id}>
+                    <td className="py-2 text-center text-[#344054]">
+                      {index + 1}
+                    </td>
 
-                  <td className="py-2 text-center">
-                    {barge_number}
-                    {id}
-                  </td>
-                  <td className="py-2 text-center">{name}</td>
-                  <td className="py-2 text-center">{rooms}</td>
-                  <td className="py-2 text-center">{store_location}</td>
-                  <td className="py-2 text-center">{deck_level}</td>
-                  <td className="py-2 text-center">
-                    {user.first_name} {user.last_name}
-                  </td>
-                  <td className="py-2 text-center">{status}</td>
-                  <td className="py-2 text-center">{formatDate(created_at)}</td>
+                    <td className="py-2 text-center">
+                      {barge_number}
+                      {id}
+                    </td>
+                    <td className="py-2 text-center">{name}</td>
+                    <td className="py-2 text-center">{rooms}</td>
+                    <td className="py-2 text-center">{store_location}</td>
+                    <td className="py-2 text-center">{deck_level}</td>
+                    <td className="py-2 text-center">
+                      {user.first_name} {user.last_name}
+                    </td>
+                    <td className="py-2 text-center">{status}</td>
+                    <td className="py-2 text-center">
+                      {formatDate(created_at)}
+                    </td>
 
-                  <td className="py-2 text-center flex justify-center items-center">
-                    <div className="flex gap-3">
-                      {/* <FaExternalLinkAlt title="view" role="button" />
+                    <td className="py-2 text-center flex justify-center items-center">
+                      <div className="flex gap-3">
+                        {/* <FaExternalLinkAlt title="view" role="button" />
                       <FaPenAlt title="edit" role="button" />
                       <FaTrashAlt
                         title="delete"
                         role="button"
                         className="text-red-600"
                       /> */}
-                      <button
-                        className="bg-blue-300 text-white p-2 rounded-md"
-                        onClick={() => handleEdit(item)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                        onClick={() => handleDelete(id)}
-                        disabled={loadingStates[id]}
-                      >
-                        {loadingStates[id] ? (
-                          <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                        ) : (
-                          'Delete'
-                        )}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          {currentItems.length == 0 && (
-            <tr className="text-center text-primary bg-white">
-              <td className="py-2 text-center" colSpan={10}>
-                <div className="flex justify-center items-center  min-h-[60vh]">
-                  <div>
-                    <div className="flex justify-center items-center">
-                      <FaRegFolderClosed className="text-4xl" />
-                    </div>
-                    <div className="mt-5">
-                      <p className="font-medium text-[#475467]">
-                        No Barge found
-                      </p>
-                      <p className="font-normal text-sm mt-3">
-                        Click “add barge” button to get started in doing your
-                        <br /> first transaction on the platform
-                      </p>
+                        <button
+                          className="bg-blue-300 text-white p-2 rounded-md"
+                          onClick={() => handleEdit(item)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                          onClick={() => handleDelete(id)}
+                          disabled={loadingStates[id]}
+                        >
+                          {loadingStates[id] ? (
+                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                          ) : (
+                            'Delete'
+                          )}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            {currentItems.length == 0 && (
+              <tr className="text-center text-primary bg-white">
+                <td className="py-2 text-center" colSpan={10}>
+                  <div className="flex justify-center items-center  min-h-[60vh]">
+                    <div>
+                      <div className="flex justify-center items-center">
+                        <FaRegFolderClosed className="text-4xl" />
+                      </div>
+                      <div className="mt-5">
+                        <p className="font-medium text-[#475467]">
+                          No Barge found
+                        </p>
+                        <p className="font-normal text-sm mt-3">
+                          Click “add barge” button to get started in doing your
+                          <br /> first transaction on the platform
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
       {/* {data.length > itemsPerPage && (
         <div className="pagination px-5">
           <div className="flex items-center gap-6 text-primary">

@@ -7,7 +7,11 @@ import { FaRegBell } from 'react-icons/fa';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { useDispatch } from 'react-redux';
 
-const MainHeader = () => {
+interface MainHeaderProps {
+  toggleSidebar: () => void;
+}
+
+const MainHeader: React.FC<MainHeaderProps> = ({ toggleSidebar }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const user = {
     firstName: '',
@@ -28,7 +32,7 @@ const MainHeader = () => {
       <div className="fixed top-0 right-0 bg-white text-primary z-50 shadow-sm w-full">
         <div className="flex justify-between items-center py-3 px-5">
           <div>
-            <GiHamburgerMenu />
+            <GiHamburgerMenu role="button" onClick={toggleSidebar} />
           </div>
           {/* <div className="w-1/2 relative">
             <input

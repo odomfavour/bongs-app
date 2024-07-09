@@ -172,10 +172,10 @@ const Preferences = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-5 pb-10 border-b">
-        <p className="text-[32px] font-medium">Barge Setup</p>
-        <div className="flex items-center gap-2 w-2/5">
-          <div className="w-4/5">
+      <div className="flex md:flex-row gap-5 flex-col justify-between md:items-center items-start mb-5 pb-10 border-b">
+        <p className="text-[32px] font-medium ">Barge Setup</p>
+        <div className="flex items-center gap-2 md:w-2/5 w-full">
+          <div className="md:w-4/5 w-3/5">
             <div className="w-full relative">
               <input
                 type="search"
@@ -229,7 +229,7 @@ const Preferences = () => {
         )}
       </div>
 
-      <div className="grid grid-cols-4 items-center gap-2">
+      <div className="grid md:grid-cols-4 grid-cols-2 flex-wrap items-center gap-2">
         {tabs.map((tab) => (
           <button
             key={tab.id}

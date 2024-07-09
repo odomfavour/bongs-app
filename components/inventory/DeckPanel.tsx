@@ -72,7 +72,7 @@ const DeckPanel: React.FC<DeckPanelProps> = ({ deckCategories, user }) => {
       <div className="my-4">
         <DeckStrip />
       </div>
-      <div className="grid grid-cols-6 gap-2">
+      <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2  gap-2">
         {deckCategories.map((tab) => (
           <button
             key={tab.id}

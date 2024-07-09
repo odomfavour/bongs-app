@@ -225,118 +225,121 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
 
   return (
     <div className="bg-white pt-2">
-      <div className="flex justify-end mb-4">
-        <button
-          className="bg-red-700 text-white p-2 rounded-md"
-          onClick={() => handleDelete(selectedItems)}
-          disabled={selectedItems.length === 0}
-        >
-          Delete Selected
-        </button>
-      </div>
-      <table className="table-auto w-full text-primary rounded-2xl mb-5">
-        <thead>
-          <tr className="border-b bg-[#E9EDF4]">
-            <th className="text-sm text-center pl-3 py-3 rounded">
-              <input
-                type="checkbox"
-                checked={selectedItems.length === currentItems.length}
-                onChange={handleSelectAll}
-              />
-            </th>
-            <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
-            <th className="text-sm text-center py-3">Project</th>
-            <th className="text-sm text-center py-3">Description</th>
-            <th className="text-sm text-center py-3">Qty</th>
-            {/* <th className="text-sm text-center py-3">Part No.</th> */}
-            <th className="text-sm text-center py-3">Model</th>
-            <th className="text-sm text-center py-3">Threshold</th>
-            <th className="text-sm text-center py-3">Location</th>
-            <th className="text-sm text-center py-3">Warranty Days</th>
-            <th className="text-sm text-center py-3">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentItems.length > 0 &&
-            currentItems.map((item: SparePart, index) => {
-              const {
-                id,
-                project,
-                description,
-                stock_quantity,
-                part_number,
-                waranty_period,
-                threshold,
-                location,
-                model_grade,
-              } = item;
-              return (
-                <tr className="border-b" key={id}>
-                  <td className="py-2 text-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedItems.includes(id)}
-                      onChange={() => handleSelectItem(id)}
-                    />
-                  </td>
-                  <td className="py-2 text-center text-[#344054]">
-                    {index + 1}
-                  </td>
-                  <td className="py-2 text-center">{project?.project_name}</td>
-                  <td className="py-2 text-center">{description}</td>
-                  <td className="py-2 text-center">{stock_quantity}</td>
-                  {/* <td className="py-2 text-center">{part_number}</td> */}
-                  <td className="py-2 text-center">{model_grade || 'nil'}</td>
-                  <td className="py-2 text-center">{threshold}</td>
-                  <td className="py-2 text-center">{location?.name}</td>
-                  <td className="py-2 text-center">{waranty_period}</td>
-                  <td className="py-2 text-center relative">
-                    <div className="flex items-center justify-center gap-2">
-                      <button
-                        className="bg-blue-700 text-white p-2 rounded-md"
-                        onClick={() => handleEdit(item)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="bg-red-700 p-2 rounded-md text-white cursor-pointer flex items-center justify-center
+      <div className="overflow-x-auto">
+        <div className="flex justify-end mb-4">
+          <button
+            className="bg-red-700 text-white p-2 rounded-md"
+            onClick={() => handleDelete(selectedItems)}
+            disabled={selectedItems.length === 0}
+          >
+            Delete Selected
+          </button>
+        </div>
+        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+          <thead>
+            <tr className="border-b bg-[#E9EDF4]">
+              <th className="text-sm text-center pl-3 py-3 rounded">
+                <input
+                  type="checkbox"
+                  checked={selectedItems.length === currentItems.length}
+                  onChange={handleSelectAll}
+                />
+              </th>
+              <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
+              <th className="text-sm text-center py-3">Project</th>
+              <th className="text-sm text-center py-3">Description</th>
+              <th className="text-sm text-center py-3">Qty</th>
+              {/* <th className="text-sm text-center py-3">Part No.</th> */}
+              <th className="text-sm text-center py-3">Model</th>
+              <th className="text-sm text-center py-3">Threshold</th>
+              <th className="text-sm text-center py-3">Location</th>
+              <th className="text-sm text-center py-3">Warranty Days</th>
+              <th className="text-sm text-center py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentItems.length > 0 &&
+              currentItems.map((item: SparePart, index) => {
+                const {
+                  id,
+                  project,
+                  description,
+                  stock_quantity,
+                  part_number,
+                  waranty_period,
+                  threshold,
+                  location,
+                  model_grade,
+                } = item;
+                return (
+                  <tr className="border-b" key={id}>
+                    <td className="py-2 text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.includes(id)}
+                        onChange={() => handleSelectItem(id)}
+                      />
+                    </td>
+                    <td className="py-2 text-center text-[#344054]">
+                      {index + 1}
+                    </td>
+                    <td className="py-2 text-center">
+                      {project?.project_name}
+                    </td>
+                    <td className="py-2 text-center">{description}</td>
+                    <td className="py-2 text-center">{stock_quantity}</td>
+                    {/* <td className="py-2 text-center">{part_number}</td> */}
+                    <td className="py-2 text-center">{model_grade || 'nil'}</td>
+                    <td className="py-2 text-center">{threshold}</td>
+                    <td className="py-2 text-center">{location?.name}</td>
+                    <td className="py-2 text-center">{waranty_period}</td>
+                    <td className="py-2 text-center relative">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          className="bg-blue-700 text-white p-2 rounded-md"
+                          onClick={() => handleEdit(item)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="bg-red-700 p-2 rounded-md text-white cursor-pointer flex items-center justify-center
                     "
-                        onClick={() => handleDelete([id])}
-                        disabled={loadingStates[item.id]} // Optional: Disable button while loading
-                      >
-                        {loadingStates[id] ? (
-                          <svg
-                            className="animate-spin h-5 w-5 mr-2 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8v8H4z"
-                            ></path>
-                          </svg>
-                        ) : (
-                          'Delete'
-                        )}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-        </tbody>
-      </table>
-      {/* {data.length > itemsPerPage && (
+                          onClick={() => handleDelete([id])}
+                          disabled={loadingStates[item.id]} // Optional: Disable button while loading
+                        >
+                          {loadingStates[id] ? (
+                            <svg
+                              className="animate-spin h-5 w-5 mr-2 text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v8H4z"
+                              ></path>
+                            </svg>
+                          ) : (
+                            'Delete'
+                          )}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        </table>
+        {/* {data.length > itemsPerPage && (
         <nav className="flex justify-center">
           <ul className="flex list-none">
             {[...Array(Math.ceil(data.length / itemsPerPage))].map(
@@ -358,6 +361,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
           </ul>
         </nav>
       )} */}
+      </div>
     </div>
   );
 };

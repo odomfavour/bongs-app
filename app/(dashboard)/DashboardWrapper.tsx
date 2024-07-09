@@ -27,7 +27,11 @@ interface DashboardWrapperProps {
 const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
   const [subscribers, setSubscribers] = useState<any>([]);
   const [loading, setLoading] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const user = useSelector((state: any) => state?.user?.user);
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
   useEffect(() => {
     const getSubscribers = async () => {
       try {
@@ -41,23 +45,21 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
         );
         console.log('resp', response);
         setSubscribers(response?.data?.data?.data);
-        // Handle success (e.g., redirect to another page)
       } catch (error: any) {
         console.error('Error:', error);
-
         const errorMessage =
           error?.response?.data?.message ||
           error?.response?.data?.errors ||
           error?.message ||
           'Unknown error';
         toast.error(`${errorMessage}`);
-        // Handle error (e.g., show an error message)
       } finally {
         setLoading(false);
       }
     };
     getSubscribers();
   }, [user?.token]);
+
   const isBargeModalOpen = useSelector(
     (state: any) => state.modal.isBargeModalOpen
   );
@@ -67,7 +69,6 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
   const isDeckTypeModalOpen = useSelector(
     (state: any) => state.modal.isDeckTypeModalOpen
   );
-
   const isStoreOnBoardModalOpen = useSelector(
     (state: any) => state.modal.isStoreOnBoardModalOpen
   );
@@ -98,17 +99,24 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
   const isAddConsumeablesModalOpen = useSelector(
     (state: any) => state.modal.isAddConsumeablesModalOpen
   );
+
   return (
     <>
       <section>
-        <MainHeader />
-        <div className="flex pt-[100px] bg-slate-50 gap-6">
-          <Sidebar />
-          <main
-            className="ml-[120px] px-5 min-h-[100vh]"
-            style={{ width: 'calc(100% - 120px)' }}
+        <MainHeader toggleSidebar={toggleSidebar} />
+        <div className="flex pt-[100px] bg-slate-50 gap-2">
+          <div
+            className={`fixed z-40 h-full bg-white shadow-lg lg:static lg:w-[120px] lg:block ${
+              isSidebarOpen ? 'block' : 'hidden'
+            }`}
           >
-            {' '}
+            <Sidebar />
+          </div>
+          <main
+            className={`flex-1 w-full px-5 min-h-[100vh] transition-all duration-300 ${
+              isSidebarOpen ? 'ml-0 lg:ml-[120px]' : 'ml-0'
+            }`}
+          >
             {children}
           </main>
         </div>

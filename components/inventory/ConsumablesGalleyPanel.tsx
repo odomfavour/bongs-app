@@ -70,7 +70,7 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
       <div className="my-4">
         <ConsGalleyStrip />
       </div>
-      <div className="grid grid-cols-6 gap-2">
+      <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2  gap-2">
         {galleyCategories.map((tab: any) => (
           <button
             key={tab.id}

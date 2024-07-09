@@ -104,6 +104,8 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
 }) => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
+  const inventoryType = useSelector((state: any) => state.modal.inventoryType);
+
   const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
   const [loadingStates, setLoadingStates] = useState<{
     [key: number]: boolean;
@@ -152,7 +154,15 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
 
       try {
         const response = await axios.post(
-          `${process.env.BASEURL}/sparepart/engine/bulk-delete`,
+          `${process.env.BASEURL}/sparepart/${
+            parent === 'Engine'
+              ? 'engine'
+              : parent === 'Deck'
+              ? 'deck'
+              : parent === 'Safety'
+              ? 'safety'
+              : 'hospital'
+          }/bulk-delete`,
           { ids },
           {
             headers: {
@@ -206,72 +216,77 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
 
   return (
     <div className="bg-white">
-      <div className="flex justify-end mb-4">
-        <button
-          className="bg-red-700 text-white p-2 rounded-md"
-          onClick={() => handleDelete(selectedItems)}
-          disabled={selectedItems.length === 0}
-        >
-          Delete Selected
-        </button>
-      </div>
-      <table className="table-auto w-full text-primary rounded-2xl mb-5">
-        <thead>
-          <tr className="border-b bg-[#E9EDF4]">
-            <th className="text-sm text-center pl-3 py-3 rounded">
-              <input
-                type="checkbox"
-                onChange={(e) =>
-                  setSelectedItems(
-                    e.target.checked ? currentItems.map((item) => item.id) : []
-                  )
-                }
-                checked={
-                  selectedItems.length === currentItems.length &&
-                  currentItems.length > 0
-                }
-              />
-            </th>
-            <th className="text-sm text-center py-3">S/N</th>
-            <th className="text-sm text-center py-3">Project</th>
-            <th className="text-sm text-center py-3">Description</th>
-            <th className="text-sm text-center py-3">Qty</th>
-            <th className="text-sm text-center py-3">Part No.</th>
-            <th className="text-sm text-center py-3">Model</th>
-            <th className="text-sm text-center py-3">Threshold</th>
-            <th className="text-sm text-center py-3">Location</th>
-            <th className="text-sm text-center py-3">Warranty Days</th>
-            <th className="text-sm text-center py-3">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentItems.map((item, index) => (
-            <tr key={item.id} className="border-b">
-              <td className="text-center py-3">
+      <div className="overflow-x-auto">
+        <div className="flex justify-end mb-4 mt-2">
+          <button
+            className="bg-red-700 text-white p-2 rounded-md"
+            onClick={() => handleDelete(selectedItems)}
+            disabled={selectedItems.length === 0}
+          >
+            Delete Selected
+          </button>
+        </div>
+        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+          <thead>
+            <tr className="border-b bg-[#E9EDF4]">
+              <th className="text-sm text-center pl-3 py-3 rounded">
                 <input
                   type="checkbox"
-                  checked={selectedItems.includes(item.id)}
-                  onChange={() => handleSelect(item.id)}
+                  onChange={(e) =>
+                    setSelectedItems(
+                      e.target.checked
+                        ? currentItems.map((item) => item.id)
+                        : []
+                    )
+                  }
+                  checked={
+                    selectedItems.length === currentItems.length &&
+                    currentItems.length > 0
+                  }
                 />
-              </td>
-              <td className="text-center py-3">{index + 1}</td>
-              <td className="text-center py-3">{item.project.project_name}</td>
-              <td className="text-center py-3">{item.description}</td>
-              <td className="text-center py-3">{item.quantity}</td>
-              <td className="text-center py-3">{item.part_number}</td>
-              <td className="text-center py-3">{item.model_number}</td>
-              <td className="text-center py-3">{item.threshold}</td>
-              <td className="text-center py-3">{item.location.name}</td>
-              <td className="text-center py-3">{item.warranty_days}</td>
-              <td className="text-center py-3">
-                <div className="flex justify-center space-x-2">
-                  <button
-                    className="bg-blue-500 text-white p-2 rounded-md"
-                    onClick={() => handleEdit(item)}
-                  >
-                    Edit
-                  </button>
-                  {/* <button
+              </th>
+              <th className="text-sm text-center py-3">S/N</th>
+              <th className="text-sm text-center py-3">Project</th>
+              <th className="text-sm text-center py-3">Description</th>
+              <th className="text-sm text-center py-3">Qty</th>
+              <th className="text-sm text-center py-3">Part No.</th>
+              <th className="text-sm text-center py-3">Model</th>
+              <th className="text-sm text-center py-3">Threshold</th>
+              <th className="text-sm text-center py-3">Location</th>
+              <th className="text-sm text-center py-3">Warranty Days</th>
+              <th className="text-sm text-center py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentItems.map((item, index) => (
+              <tr key={item.id} className="border-b">
+                <td className="text-center py-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedItems.includes(item.id)}
+                    onChange={() => handleSelect(item.id)}
+                  />
+                </td>
+                <td className="text-center py-3">{index + 1}</td>
+                <td className="text-center py-3">
+                  {item.project.project_name}
+                </td>
+                <td className="text-center py-3">{item.description}</td>
+                <td className="text-center py-3">{item.quantity}</td>
+                <td className="text-center py-3">{item.part_number}</td>
+                <td className="text-center py-3">{item.model_number}</td>
+                <td className="text-center py-3">{item.threshold}</td>
+                <td className="text-center py-3">{item.location.name}</td>
+                <td className="text-center py-3">{item.waranty_period}</td>
+                <td className="text-center py-3">
+                  <div className="flex justify-center space-x-2">
+                    <button
+                      className="bg-blue-500 text-white p-2 rounded-md"
+                      onClick={() => handleEdit(item)}
+                    >
+                      Edit
+                    </button>
+                    {/* <button
                     className="bg-red-500 text-white p-2 rounded-md"
                     onClick={() => handleDelete([item.id])}
                     disabled={loadingStates[item.id]}
@@ -279,25 +294,49 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
                     {loadingStates[item.id] ? (
                       <span className="loader"></span>
                     ) : ( */}
-                  <button
-                    className={`bg-red-700 p-2 rounded-md text-white cursor-pointer ${
-                      loadingStates[item.id] ? 'animate-spin' : ''
-                    }`}
-                    onClick={() => handleDelete([item.id])}
-                  >
-                    Delete
-                  </button>
-                  {/* )}
-                  </button> */}
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                    <button
+                      className="bg-red-700 p-2 rounded-md text-white cursor-pointer flex items-center justify-center
+                    "
+                      onClick={() => handleDelete([item.id])}
+                      disabled={loadingStates[item.id]} // Optional: Disable button while loading
+                    >
+                      {loadingStates[item.id] ? (
+                        <svg
+                          className="animate-spin h-5 w-5 mr-2 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v8H4z"
+                          ></path>
+                        </svg>
+                      ) : (
+                        'Delete'
+                      )}
+                    </button>
 
-      {/* Pagination */}
-      {/* <div className="flex justify-end mt-4">
+                    {/* )}
+                  </button> */}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Pagination */}
+        {/* <div className="flex justify-end mt-4">
         <button
           className={`px-4 py-2 mx-1 rounded ${
             currentPage === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'
@@ -334,6 +373,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
           Next
         </button>
       </div> */}
+      </div>
     </div>
   );
 };

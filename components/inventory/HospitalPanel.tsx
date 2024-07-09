@@ -23,6 +23,7 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
   const [loading, setLoading] = useState(false);
 
   const fetchData = useCallback(async () => {
+    if (activeId === undefined) return;
     try {
       const response = await axios.get(
         `${process.env.BASEURL}/sparepart/hospital/${activeId}`,
@@ -62,7 +63,7 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
       <div className="my-4">
         <HospitalStrip />
       </div>
-      <div className="grid grid-cols-6 gap-2">
+      <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2  gap-2">
         {hospitalCategories.map((tab) => (
           <button
             key={tab.id}

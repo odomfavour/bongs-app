@@ -43,6 +43,7 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
     (state: any) => state.modal.isAddEngineModalOpen
   );
   const fetchData = useCallback(async () => {
+    if (activeId === undefined) return;
     try {
       const response = await axios.get(
         `${process.env.BASEURL}/sparepart/engine/${activeId}`,
@@ -83,25 +84,27 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
       <div className="my-4">
         <EngineStrip />
       </div>
-      {activeTab}
-      <div className="grid grid-cols-6 gap-2">
-        {engineCategories.map((tab) => (
-          <button
-            key={tab.id}
-            className={`p-3 w-full capitalize ${
-              activeTab === tab.name
-                ? 'bg-black text-white'
-                : 'bg-[#D9D9D9] text-black'
-            }`}
-            onClick={() => {
-              setActiveTab(tab.name);
-              setActiveId(tab.id);
-            }}
-          >
-            {tab.name}
-          </button>
-        ))}
+      <div className="overflow-y-auto">
+        <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2 gap-2">
+          {engineCategories.map((tab) => (
+            <button
+              key={tab.id}
+              className={`p-3 w-full capitalize ${
+                activeTab === tab.name
+                  ? 'bg-black text-white'
+                  : 'bg-[#D9D9D9] text-black'
+              }`}
+              onClick={() => {
+                setActiveTab(tab.name);
+                setActiveId(tab.id);
+              }}
+            >
+              {tab.name}
+            </button>
+          ))}
+        </div>
       </div>
+
       {/* {activeTab === engineCategories && ( */}
       {loading ? (
         <Loader />

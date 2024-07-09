@@ -128,93 +128,99 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
 
   return (
     <div className="bg-white">
-      <table className="table-auto w-full text-primary rounded-2xl mb-5">
-        <thead>
-          <tr className="border-b bg-[#E9EDF4]">
-            <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
-            <th className="text-sm text-center py-3">Location No</th>
-            <th className="text-sm text-center py-3">Name</th>
-            <th className="text-sm text-center py-3">Address</th>
-            <th className="text-sm text-center py-3">Deck</th>
-            <th className="text-sm text-center py-3">Status</th>
-            <th className="text-sm text-center py-3">Created On</th>
-            <th className="text-sm text-center py-3">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentItems.length > 0 &&
-            currentItems.map((item, index) => {
-              const {
-                id,
-                name,
-                location_number,
-                address,
-                deck_id,
-                status,
-                created_at,
-              } = item;
-              return (
-                <tr className="border-b" key={id}>
-                  <td className="py-2 text-center text-[#344054]">
-                    {index + 1}
-                  </td>
-                  <td className="py-2 text-center">
-                    {location_number}
-                    {id}
-                  </td>
-                  <td className="py-2 text-center">{name}</td>
-                  <td className="py-2 text-center">{address}</td>
-                  <td className="py-2 text-center">{deck_id}</td>
-                  <td className="py-2 text-center">{status}</td>
-                  <td className="py-2 text-center">{formatDate(created_at)}</td>
-                  <td className="py-2 text-center flex justify-center items-center">
-                    <div className="flex gap-3">
-                      <button
-                        className="bg-blue-700 text-white p-2 rounded-md"
-                        onClick={() => handleEdit(item)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                        onClick={() => confirmDelete(id)}
-                        disabled={loadingStates[id]}
-                      >
-                        {loadingStates[id] ? (
-                          <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                        ) : (
-                          'Delete'
-                        )}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          {currentItems.length == 0 && (
-            <tr className="text-center text-primary bg-white">
-              <td className="py-2 text-center" colSpan={10}>
-                <div className="flex justify-center items-center  min-h-[60vh]">
-                  <div>
-                    <div className="flex justify-center items-center">
-                      <FaRegFolderClosed className="text-4xl" />
-                    </div>
-                    <div className="mt-5">
-                      <p className="font-medium text-[#475467]">
-                        No Locations found
-                      </p>
-                      <p className="font-normal text-sm mt-3">
-                        Click “add location” button to get started in doing your
-                        <br /> first transaction on the platform
-                      </p>
+      <div className="overflow-x-auto">
+        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+          <thead>
+            <tr className="border-b bg-[#E9EDF4]">
+              <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
+              <th className="text-sm text-center py-3">Location No</th>
+              <th className="text-sm text-center py-3">Name</th>
+              <th className="text-sm text-center py-3">Address</th>
+              <th className="text-sm text-center py-3">Deck</th>
+              <th className="text-sm text-center py-3">Status</th>
+              <th className="text-sm text-center py-3">Created On</th>
+              <th className="text-sm text-center py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentItems.length > 0 &&
+              currentItems.map((item, index) => {
+                const {
+                  id,
+                  name,
+                  location_number,
+                  address,
+                  deck_id,
+                  status,
+                  created_at,
+                } = item;
+                return (
+                  <tr className="border-b" key={id}>
+                    <td className="py-2 text-center text-[#344054]">
+                      {index + 1}
+                    </td>
+                    <td className="py-2 text-center">
+                      {location_number}
+                      {id}
+                    </td>
+                    <td className="py-2 text-center">{name}</td>
+                    <td className="py-2 text-center">{address}</td>
+                    <td className="py-2 text-center">{deck_id}</td>
+                    <td className="py-2 text-center">{status}</td>
+                    <td className="py-2 text-center">
+                      {formatDate(created_at)}
+                    </td>
+                    <td className="py-2 text-center flex justify-center items-center">
+                      <div className="flex gap-3">
+                        <button
+                          className="bg-blue-700 text-white p-2 rounded-md"
+                          onClick={() => handleEdit(item)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                          onClick={() => confirmDelete(id)}
+                          disabled={loadingStates[id]}
+                        >
+                          {loadingStates[id] ? (
+                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                          ) : (
+                            'Delete'
+                          )}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            {currentItems.length == 0 && (
+              <tr className="text-center text-primary bg-white">
+                <td className="py-2 text-center" colSpan={10}>
+                  <div className="flex justify-center items-center  min-h-[60vh]">
+                    <div>
+                      <div className="flex justify-center items-center">
+                        <FaRegFolderClosed className="text-4xl" />
+                      </div>
+                      <div className="mt-5">
+                        <p className="font-medium text-[#475467]">
+                          No Locations found
+                        </p>
+                        <p className="font-normal text-sm mt-3">
+                          Click “add location” button to get started in doing
+                          your
+                          <br /> first transaction on the platform
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
       {/* {data.length > itemsPerPage && (
         <div className="pagination px-5">
           <div className="flex items-center gap-6 text-primary">

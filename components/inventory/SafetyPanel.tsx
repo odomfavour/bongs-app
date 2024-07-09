@@ -24,6 +24,7 @@ const SafetyPanel: React.FC<SafetyPanelProps> = ({
   const [loading, setLoading] = useState(false);
 
   const fetchData = useCallback(async () => {
+    if (activeId === undefined) return;
     try {
       const response = await axios.get(
         `${process.env.BASEURL}/sparepart/safety/${activeId}`,
@@ -63,7 +64,7 @@ const SafetyPanel: React.FC<SafetyPanelProps> = ({
       <div className="my-4">
         <SafetyStrip />
       </div>
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2  gap-2">
         {safetyCategories.map((tab) => (
           <button
             key={tab.id}

@@ -11,7 +11,12 @@ interface LinkItem {
 const links: LinkItem[] = [
   {
     href: '/inventories',
-    text: 'Projects',
+    text: 'Project-based Inventories',
+    img: 'inventories.png',
+  },
+  {
+    href: '#',
+    text: 'MIV Inventories',
     img: 'inventories.png',
   },
 ];

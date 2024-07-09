@@ -204,7 +204,7 @@ const Sidebar: React.FC = () => {
       {showInnerSidebar && (
         <div
           ref={innerSidebarRef}
-          className="w-[230px] px-3 bg-white rounded-md shadow-md z-30 h-[90vh] overflow-y-auto"
+          className="w-[250px] px-3 bg-white rounded-md shadow-md z-30 h-[90vh] overflow-y-auto"
         >
           <div className="flex justify-end p-2">
             <button onClick={closeInnerSidebar} className="text-red-700">

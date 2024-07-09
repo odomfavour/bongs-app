@@ -32,6 +32,7 @@ const DeckPanel: React.FC<DeckPanelProps> = ({ deckCategories, user }) => {
   const [loading, setLoading] = useState(false);
 
   const fetchData = useCallback(async () => {
+    if (activeId === undefined) return;
     try {
       const response = await axios.get(
         `${process.env.BASEURL}/sparepart/deck/${activeId}`,

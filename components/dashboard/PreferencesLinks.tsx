@@ -14,7 +14,7 @@ const links = [
     img: 'project.png',
   },
   {
-    href: '/preferences/general',
+    href: '#l',
     label: 'Inventory Types',
     img: 'inventory_types.png',
   },
@@ -25,12 +25,12 @@ const links = [
     img: 'preference_safety_category.png',
   },
   {
-    href: '/preferences/general',
+    href: '#',
     label: 'Asset Category',
     img: 'preference_asset_category.png',
   },
   {
-    href: '/preferences/general',
+    href: '#',
     label: 'Department',
     img: 'department.png',
   },
@@ -39,13 +39,13 @@ const links = [
     label: 'Location',
     img: 'Preferences_location.png',
   },
+  // {
+  //   href: '/preferences/general',
+  //   label: 'Equipment Type',
+  //   img: 'preference_Equipment_type.png',
+  // },
   {
-    href: '/preferences/general',
-    label: 'Equipment Type',
-    img: 'preference_Equipment_type.png',
-  },
-  {
-    href: '/preferences/general',
+    href: '#',
     label: 'Manufacturer',
     img: 'preference_manufacturer.png',
   },

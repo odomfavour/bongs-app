@@ -191,12 +191,12 @@ const AddBargeModal: React.FC<AddBargeModalProps> = ({ subscribers, user }) => {
                   htmlFor="store_location"
                   className="block mb-2 text-sm font-medium"
                 >
-                  Store Location
+                  Stores
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   id="store_location"
-                  placeholder="Input store location"
+                  placeholder="Input store number"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   value={formData.store_location}
                   onChange={(e) =>
@@ -213,7 +213,22 @@ const AddBargeModal: React.FC<AddBargeModalProps> = ({ subscribers, user }) => {
                     >
                       Rooms
                     </label>
-                    <div className="flex gap-3 items-center">
+                    <input
+                      type="number"
+                      id="rooms"
+                      name="rooms"
+                      placeholder="Input project name"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                      value={formData.rooms}
+                      min="0"
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          rooms: parseInt(e.target.value),
+                        })
+                      }
+                    />
+                    {/* <div className="flex gap-3 items-center">
                       <button
                         type="button"
                         className="border rounded-md flex justify-center items-center h-[48px] w-[48px]"
@@ -229,7 +244,7 @@ const AddBargeModal: React.FC<AddBargeModalProps> = ({ subscribers, user }) => {
                       >
                         <FaPlus />
                       </button>
-                    </div>
+                    </div> */}
                   </div>
                   <div>
                     <label
@@ -238,7 +253,7 @@ const AddBargeModal: React.FC<AddBargeModalProps> = ({ subscribers, user }) => {
                     >
                       Deck Level
                     </label>
-                    <div className="flex gap-3 items-center">
+                    {/* <div className="flex gap-3 items-center">
                       <button
                         type="button"
                         className="border rounded-md flex justify-center items-center h-[48px] w-[48px]"
@@ -254,7 +269,22 @@ const AddBargeModal: React.FC<AddBargeModalProps> = ({ subscribers, user }) => {
                       >
                         <FaPlus />
                       </button>
-                    </div>
+                    </div> */}
+                    <input
+                      type="number"
+                      id="part_number"
+                      name="part_number"
+                      placeholder="Input project name"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                      value={formData.deck_level}
+                      min="0"
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          deck_level: parseInt(e.target.value),
+                        })
+                      }
+                    />
                   </div>
                 </div>
               </div>

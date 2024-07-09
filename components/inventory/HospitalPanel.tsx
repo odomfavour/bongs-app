@@ -23,6 +23,7 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
   const [loading, setLoading] = useState(false);
 
   const fetchData = useCallback(async () => {
+    if (activeId === undefined) return;
     try {
       const response = await axios.get(
         `${process.env.BASEURL}/sparepart/hospital/${activeId}`,

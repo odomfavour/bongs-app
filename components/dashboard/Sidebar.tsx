@@ -146,22 +146,24 @@ const Sidebar: React.FC = () => {
             </div>
           </li>
           <li className="border-b text-center">
-            <div className="w-full h-[90px] flex justify-center items-center">
-              <div>
-                <div className="flex justify-center items-center">
-                  <div className="relative w-[28px] h-[28px]">
-                    <Image
-                      src="/icons/sidebar_users.png"
-                      width={28}
-                      height={38}
-                      priority
-                      alt="avatar"
-                    />
+            <Link href="/users" onClick={closeInnerSidebar}>
+              <div className="w-full h-[90px] flex justify-center items-center">
+                <div>
+                  <div className="flex justify-center items-center">
+                    <div className="relative w-[28px] h-[28px]">
+                      <Image
+                        src="/icons/sidebar_users.png"
+                        width={28}
+                        height={38}
+                        priority
+                        alt="avatar"
+                      />
+                    </div>
                   </div>
+                  <p className="mt-2 text-[13px]">Users</p>
                 </div>
-                <p className="mt-2 text-[13px]">Users</p>
               </div>
-            </div>
+            </Link>
           </li>
           <li className="border-b text-center">
             <div className="w-full h-[90px] flex justify-center items-center">

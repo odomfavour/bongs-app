@@ -14,6 +14,10 @@ const initialState = {
   isBargeComponentModalOpen: false,
   isAddEngineModalOpen: false,
   isAddConsumeablesModalOpen: false,
+  isAddUserModalOpen: false,
+  isAddUserTypeModalOpen: false,
+  isAddPermissionModalOpen: false,
+  isAddDepartmentModalOpen: false,
   inventoryType: '',
   bargeValues: {},
 };
@@ -58,6 +62,18 @@ export const modalSlice = createSlice({
     toggleBargeComponentModal: (state) => {
       state.isBargeComponentModalOpen = !state.isBargeComponentModalOpen;
     },
+    toggleAddUserTypeModal: (state) => {
+      state.isAddUserTypeModalOpen = !state.isAddUserTypeModalOpen; // Toggle modal state
+    },
+    toggleAddPermissionModal: (state) => {
+      state.isAddPermissionModalOpen = !state.isAddPermissionModalOpen; // Toggle modal state
+    },
+    toggleAddUserModal: (state) => {
+      state.isAddUserModalOpen = !state.isAddUserModalOpen; // Toggle modal state
+    },
+    toggleAddDepartmentModal: (state) => {
+      state.isAddDepartmentModalOpen = !state.isAddDepartmentModalOpen; // Toggle modal state
+    },
     toggleAddEngineModal: (state, action) => {
       state.inventoryType = action.payload;
       state.isAddEngineModalOpen = !state.isAddEngineModalOpen;
@@ -85,6 +101,10 @@ export const {
   toggleVendorCategoryModal,
   toggleAddEngineModal,
   toggleAddConsumeablesModal,
+  toggleAddDepartmentModal,
+  toggleAddUserModal,
+  toggleAddUserTypeModal,
+  toggleAddPermissionModal,
 } = modalSlice.actions;
 
 export default modalSlice.reducer;

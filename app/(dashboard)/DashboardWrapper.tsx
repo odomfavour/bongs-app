@@ -19,6 +19,10 @@ import AddDeckTypeModal from '@/components/preferences/AddDeckTypeModal';
 import AddVendorCategoryModal from '@/components/vendors/AddVendorCategoryModal';
 import AddEngineModal from '@/components/inventory/AddEngineModal';
 import AddConsumablesModal from '@/components/inventory/AddConsumablesModal';
+import AddPermissionModal from '@/components/users/AddPermissionModal';
+import AddUserModal from '@/components/users/AddUserModal';
+import AddUserTypeModal from '@/components/users/AddUserTypeModal';
+import AddDeptModal from '@/components/users/AddDeptModal';
 
 interface DashboardWrapperProps {
   children: ReactNode;
@@ -99,6 +103,18 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
   const isAddConsumeablesModalOpen = useSelector(
     (state: any) => state.modal.isAddConsumeablesModalOpen
   );
+  const isAddUserModalOpen = useSelector(
+    (state: any) => state.modal.isAddUserModalOpen
+  );
+  const isAddUserTypeModalOpen = useSelector(
+    (state: any) => state.modal.isAddUserTypeModalOpen
+  );
+  const isAddDepartmentModalOpen = useSelector(
+    (state: any) => state.modal.isAddDepartmentModalOpen
+  );
+  const isAddPermissionModalOpen = useSelector(
+    (state: any) => state.modal.isAddPermissionModalOpen
+  );
 
   return (
     <>
@@ -156,6 +172,10 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
       {isAddConsumeablesModalOpen && (
         <AddConsumablesModal subscribers={subscribers} user={user} />
       )}
+      {isAddPermissionModalOpen && <AddPermissionModal />}
+      {isAddUserModalOpen && <AddUserModal />}
+      {isAddUserTypeModalOpen && <AddUserTypeModal />}
+      {isAddDepartmentModalOpen && <AddDeptModal />}
       <ToastContainer />
     </>
   );

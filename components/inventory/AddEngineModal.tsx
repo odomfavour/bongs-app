@@ -264,7 +264,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [user?.token]);
+  }, [inventoryType, user?.token]);
 
   useEffect(() => {
     fetchData();

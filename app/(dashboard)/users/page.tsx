@@ -175,7 +175,7 @@ const Page = () => {
           </button>
         ))}
       </div>
-      <div className="mt-5">
+      <div className="">
         {loading ? (
           <Loader />
         ) : (

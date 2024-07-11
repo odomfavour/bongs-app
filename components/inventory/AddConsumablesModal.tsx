@@ -400,14 +400,14 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
               </div>
               <div className="mb-4">
                 <label
-                  htmlFor="subscriber"
+                  htmlFor="deck"
                   className="block mb-2 text-sm font-medium text-gray-900"
                 >
                   Deck
                 </label>
                 <select
-                  id="subscriber"
-                  name="subscriber_id"
+                  id="deck"
+                  name="deck"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   value={formData.deck_id}
                   onChange={(e) =>
@@ -460,8 +460,8 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                   Store - on - Board
                 </label>
                 <select
-                  id="subscriber"
-                  name="subscriber_id"
+                  id="keystore"
+                  name="keystore"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   value={formData.keystore_id}
                   onChange={(e) =>
@@ -471,24 +471,24 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                     })
                   }
                 >
-                  <option value="">Select Subscriber</option>
+                  <option value="">Select Store on Board</option>
                   {storeItems?.map((storeItem: any) => (
                     <option value={storeItem.id} key={storeItem.id}>
-                      {storeItem.project.project_name}
+                      {storeItem.description}
                     </option>
                   ))}
                 </select>
               </div>
               <div className="mb-4">
                 <label
-                  htmlFor="subscriber"
+                  htmlFor="bargeEquipment"
                   className="block mb-2 text-sm font-medium text-gray-900"
                 >
                   Barge Equipment
                 </label>
                 <select
-                  id="subscriber"
-                  name="subscriber_id"
+                  id="bargeEquipment"
+                  name="bargeEquipment"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   value={formData.barge_component_category_id}
                   onChange={(e) =>
@@ -498,7 +498,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                     })
                   }
                 >
-                  <option value="">Select Subscriber</option>
+                  <option value="">Select Barge equipment</option>
                   {bEquipment?.map((equipment: any) => (
                     <option value={equipment.id} key={equipment.id}>
                       {equipment.name}
@@ -564,11 +564,20 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                   htmlFor="subscriber"
                   className="block mb-2 text-sm font-medium text-gray-900"
                 >
-                  EngineType
+                  {inventoryType === 'Engine'
+                    ? 'Engine'
+                    : inventoryType === 'Deck'
+                    ? 'Deck'
+                    : inventoryType === 'Safety'
+                    ? 'Safety'
+                    : inventoryType === 'Hospital'
+                    ? 'Hospital'
+                    : 'Galleylaundry'}
+                  Type
                 </label>
                 <select
-                  id="subscriber"
-                  name="subscriber_id"
+                  id="engineType"
+                  name="engineType"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   value={
                     inventoryType === 'Engine'
@@ -600,7 +609,19 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                     });
                   }}
                 >
-                  <option value="">Select Project</option>
+                  <option value="">
+                    Select{' '}
+                    {inventoryType === 'Engine'
+                      ? 'Engine'
+                      : inventoryType === 'Deck'
+                      ? 'Deck'
+                      : inventoryType === 'Safety'
+                      ? 'Safety'
+                      : inventoryType === 'Hospital'
+                      ? 'Hospital'
+                      : 'Galleylaundry'}
+                    Type
+                  </option>
                   {engineTypes?.map((engineType: any) => (
                     <option value={engineType.id} key={engineType.id}>
                       {engineType.name}
@@ -611,14 +632,14 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
 
               <div className="mb-4">
                 <label
-                  htmlFor="subscriber"
+                  htmlFor="uom"
                   className="block mb-2 text-sm font-medium text-gray-900"
                 >
                   Unit of Measurement
                 </label>
                 <select
-                  id="subscriber"
-                  name="subscriber_id"
+                  id="uom"
+                  name="uom"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   value={formData.unit_of_measurement_id}
                   onChange={(e) =>
@@ -658,16 +679,16 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
               </div> */}
               <div className="mb-4">
                 <label
-                  htmlFor="project_name"
+                  htmlFor="model_grade"
                   className="block mb-2 text-sm font-medium"
                 >
                   Model Grade
                 </label>
                 <input
                   type="text"
-                  id="project_name"
-                  name="project_name"
-                  placeholder="Input project name"
+                  id="model_grade"
+                  name="model_grade"
+                  placeholder="Input model grade"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   value={formData.model_grade}
                   onChange={(e) =>
@@ -677,14 +698,14 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
               </div>
               <div className="mb-4">
                 <label
-                  htmlFor="subscriber"
+                  htmlFor="location"
                   className="block mb-2 text-sm font-medium text-gray-900"
                 >
                   Location
                 </label>
                 <select
-                  id="subscriber"
-                  name="subscriber_id"
+                  id="location"
+                  name="location"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   value={formData.location_id}
                   onChange={(e) =>
@@ -694,7 +715,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                     })
                   }
                 >
-                  <option value="">Select Project</option>
+                  <option value="">Select Location</option>
                   {locations?.map((location: any) => (
                     <option value={location.id} key={location.id}>
                       {location.name}
@@ -721,7 +742,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                     })
                   }
                 >
-                  <option value="">Select Project</option>
+                  <option value="">Select Vendor</option>
                   {vendors?.map((vendor: any) => (
                     <option value={vendor.id} key={vendor.id}>
                       {vendor.vendor_name}
@@ -884,7 +905,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                     })
                   }
                 >
-                  <option value="">Select Project</option>
+                  <option value="">Select Level</option>
                   <option value="low">Low</option>
                   <option value="mid">Mid</option>
                   <option value="high">High</option>
@@ -927,7 +948,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                   name="project_description"
                   rows={4}
                   className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Input project description"
+                  placeholder="Input remarks"
                   value={formData.remark}
                   onChange={(e) =>
                     setFormData({

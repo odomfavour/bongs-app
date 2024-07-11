@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 interface Deck {
+  id: number;
   name: string;
   deck_number: string;
   deck_type: string;
@@ -22,7 +23,7 @@ interface Location {
   name: string;
   location_number: string;
   address: string;
-  deck_id: string;
+  deck: Deck;
   status: string;
   created_at: string;
 }

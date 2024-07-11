@@ -242,7 +242,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
           }
         ),
       ]);
-      console.log('project', projectsResponse, vendorResponse);
+      console.log('project', storeOnBoardResponse?.data?.data?.data);
       setProjects(projectsResponse?.data?.data?.data);
       setDecks(decksResponse?.data?.data?.data);
       setUom(uomResponse?.data?.data?.data);
@@ -433,6 +433,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                 >
                   Store - on - Board
                 </label>
+
                 <select
                   id="subscriber"
                   name="subscriber_id"
@@ -445,10 +446,10 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                     })
                   }
                 >
-                  <option value="">Select store on board</option>
+                  <option value="">Select Store on Board</option>
                   {storeItems?.map((storeItem: any) => (
                     <option value={storeItem.id} key={storeItem.id}>
-                      {storeItem.project.project_name}
+                      {storeItem.description}
                     </option>
                   ))}
                 </select>
@@ -548,7 +549,16 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                     });
                   }}
                 >
-                  <option value="">Select Project</option>
+                  <option value="">
+                    Select{' '}
+                    {inventoryType === 'Engine'
+                      ? 'Engine'
+                      : inventoryType === 'Deck'
+                      ? 'Deck'
+                      : inventoryType === 'Safety'
+                      ? 'Safety'
+                      : 'Hospital'}
+                  </option>
                   {engineTypes?.map((engineType: any) => (
                     <option value={engineType.id} key={engineType.id}>
                       {engineType.name}
@@ -596,7 +606,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                   type="text"
                   id="part_number"
                   name="part_number"
-                  placeholder="Input project name"
+                  placeholder="Input Part Number"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   value={formData.part_number}
                   onChange={(e) =>
@@ -606,16 +616,16 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
               </div>
               <div className="mb-4">
                 <label
-                  htmlFor="project_name"
+                  htmlFor="model_number"
                   className="block mb-2 text-sm font-medium"
                 >
                   Model Number
                 </label>
                 <input
                   type="text"
-                  id="part_number"
-                  name="part_number"
-                  placeholder="Input project name"
+                  id="model_number"
+                  name="model_number"
+                  placeholder="Input model number"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   value={formData.model_number}
                   onChange={(e) =>
@@ -716,9 +726,9 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
 
                       <input
                         type="number"
-                        id="part_number"
-                        name="part_number"
-                        placeholder="Input project name"
+                        id="stock_number"
+                        name="stock_number"
+                        placeholder="Input Stock quantity"
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                         value={formData.stock_quantity}
                         min="0"
@@ -840,7 +850,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                     })
                   }
                 >
-                  <option value="">Select Project</option>
+                  <option value="">Select Level</option>
                   <option value="low">Low</option>
                   <option value="mid">Mid</option>
                   <option value="high">High</option>
@@ -883,7 +893,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                   name="project_description"
                   rows={4}
                   className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Input project description"
+                  placeholder="Input remarks"
                   value={formData.remark}
                   onChange={(e) =>
                     setFormData({

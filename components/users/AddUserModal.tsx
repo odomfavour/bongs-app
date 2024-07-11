@@ -348,6 +348,27 @@ const AddUserModal = () => {
                   </div>
                 </div>
               </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="password"
+                  className="block mb-2 text-sm font-medium"
+                >
+                  Password
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  placeholder="Input deck name"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      password: e.target.value,
+                    }))
+                  }
+                />
+              </div>
             </div>
           </div>
 

@@ -242,24 +242,26 @@ const AddStoreOnBoardModal: React.FC<AddStoreOnBoardModalProps> = ({
                   ))}
                 </select>
               </div>
+
               <div className="mb-4">
                 <label
-                  htmlFor="remark"
+                  htmlFor="description"
                   className="block mb-2 text-sm font-medium text-gray-900 "
                 >
-                  Remarks (optional)
+                  Description
                 </label>
                 <textarea
-                  id="remark"
+                  id="description"
                   rows={4}
                   className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-5000"
-                  placeholder="Input key store description"
-                  value={formData.remark}
+                  placeholder="Write your thoughts here..."
+                  value={formData.description}
                   onChange={(e) =>
-                    setFormData({ ...formData, remark: e.target.value })
+                    setFormData({ ...formData, description: e.target.value })
                   }
                 ></textarea>
               </div>
+
               <div className="mb-4">
                 <label
                   htmlFor="deck_id"
@@ -350,19 +352,19 @@ const AddStoreOnBoardModal: React.FC<AddStoreOnBoardModalProps> = ({
               </div>
               <div className="mb-4">
                 <label
-                  htmlFor="description"
+                  htmlFor="remark"
                   className="block mb-2 text-sm font-medium text-gray-900 "
                 >
-                  Description
+                  Remarks (optional)
                 </label>
                 <textarea
-                  id="description"
+                  id="remark"
                   rows={4}
                   className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-5000"
-                  placeholder="Write your thoughts here..."
-                  value={formData.description}
+                  placeholder="Input key store description"
+                  value={formData.remark}
                   onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
+                    setFormData({ ...formData, remark: e.target.value })
                   }
                 ></textarea>
               </div>

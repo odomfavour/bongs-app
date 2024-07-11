@@ -13,22 +13,22 @@ const links = [
     label: 'Projects',
     img: 'project.png',
   },
-  {
-    href: '#l',
-    label: 'Inventory Types',
-    img: 'inventory_types.png',
-  },
+  // {
+  //   href: '#l',
+  //   label: 'Inventory Types',
+  //   img: 'inventory_types.png',
+  // },
   { href: '/unit-of-measurement', label: 'UoM', img: 'Preferences_units.png' },
   {
     href: '/safety-category',
     label: 'Safety Category',
     img: 'preference_safety_category.png',
   },
-  {
-    href: '#',
-    label: 'Asset Category',
-    img: 'preference_asset_category.png',
-  },
+  // {
+  //   href: '#',
+  //   label: 'Asset Category',
+  //   img: 'preference_asset_category.png',
+  // },
   {
     href: '#',
     label: 'Department',

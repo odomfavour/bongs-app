@@ -29,11 +29,11 @@ const links = [
   //   label: 'Asset Category',
   //   img: 'preference_asset_category.png',
   // },
-  {
-    href: '#',
-    label: 'Department',
-    img: 'department.png',
-  },
+  // {
+  //   href: '#',
+  //   label: 'Department',
+  //   img: 'department.png',
+  // },
   {
     href: '/location',
     label: 'Location',

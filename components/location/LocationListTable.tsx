@@ -18,6 +18,7 @@ import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 
 interface Deck {
+  id: number;
   name: string;
   deck_number: string;
   deck_type: string;
@@ -28,7 +29,7 @@ interface Location {
   name: string;
   location_number: string;
   address: string;
-  deck_id: string;
+  deck: Deck;
   status: string;
   created_at: string;
 }
@@ -135,7 +136,7 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
               <th className="text-sm text-center py-3">Location No</th>
               <th className="text-sm text-center py-3">Name</th>
-              <th className="text-sm text-center py-3">Address</th>
+              {/* <th className="text-sm text-center py-3">Address</th> */}
               <th className="text-sm text-center py-3">Deck</th>
               <th className="text-sm text-center py-3">Status</th>
               <th className="text-sm text-center py-3">Created On</th>
@@ -150,7 +151,7 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
                   name,
                   location_number,
                   address,
-                  deck_id,
+                  deck,
                   status,
                   created_at,
                 } = item;
@@ -164,8 +165,8 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
                       {id}
                     </td>
                     <td className="py-2 text-center">{name}</td>
-                    <td className="py-2 text-center">{address}</td>
-                    <td className="py-2 text-center">{deck_id}</td>
+                    {/* <td className="py-2 text-center">{address}</td> */}
+                    <td className="py-2 text-center">{deck.name}</td>
                     <td className="py-2 text-center">{status}</td>
                     <td className="py-2 text-center">
                       {formatDate(created_at)}

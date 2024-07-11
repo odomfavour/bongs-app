@@ -64,7 +64,7 @@ const BargeComponentPage = () => {
   return (
     <section>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
-        <p className="text-[32px] font-medium">Barge Equipmnet</p>
+        <p className="text-[32px] font-medium">Barge Equipment</p>
         <div className="flex items-center gap-2 w-2/5">
           <div className="w-4/5">
             <div className="w-full relative">
@@ -90,7 +90,7 @@ const BargeComponentPage = () => {
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => dispatch(toggleBargeComponentModal())}
           >
-            Add Category
+            Add Barge Equipment
           </button>
         </div>
         {loading ? (

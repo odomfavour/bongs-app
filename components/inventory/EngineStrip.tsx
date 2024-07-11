@@ -5,6 +5,7 @@ import {
   displayBargeValue,
   toggleAddEngineModal,
 } from '@/provider/redux/modalSlice';
+import { toast } from 'react-toastify';
 
 const EngineStrip: React.FC = () => {
   const dispatch = useDispatch();
@@ -47,8 +48,14 @@ const EngineStrip: React.FC = () => {
 
         const result = await response.json();
         console.log('Bulk upload successful:', result);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Bulk upload failed:', error);
+        const errorMessage =
+          error?.response?.data?.message ||
+          error?.response?.data?.errors ||
+          error?.message ||
+          'Unknown error';
+        toast.error(`${errorMessage}`);
       }
     }
   };
@@ -80,8 +87,14 @@ const EngineStrip: React.FC = () => {
       document.body.appendChild(a);
       a.click();
       a.remove();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Export failed:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
     }
   };
 

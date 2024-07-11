@@ -7,6 +7,7 @@ import {
 import axios from 'axios';
 import React, { ChangeEvent, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 const SafetyStrip: React.FC = () => {
   const dispatch = useDispatch();
@@ -44,8 +45,14 @@ const SafetyStrip: React.FC = () => {
         );
 
         console.log('Bulk upload successful:', response.data);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Bulk upload failed:', error);
+        const errorMessage =
+          error?.response?.data?.message ||
+          error?.response?.data?.errors ||
+          error?.message ||
+          'Unknown error';
+        toast.error(`${errorMessage}`);
       }
     }
   };
@@ -72,8 +79,14 @@ const SafetyStrip: React.FC = () => {
       document.body.appendChild(a);
       a.click();
       a.remove();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Export failed:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
     }
   };
   return (

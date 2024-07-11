@@ -15,7 +15,7 @@ const links: LinkItem[] = [
     img: 'inventories.png',
   },
   {
-    href: '#',
+    href: '/miv-inventories',
     text: 'MIV Inventories',
     img: 'inventories.png',
   },

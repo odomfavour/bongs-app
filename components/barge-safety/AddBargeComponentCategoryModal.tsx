@@ -99,7 +99,7 @@ const AddBargeComponentCategoryModal: React.FC<
         className="lg:w-3/5 w-11/12 bg-white rounded-[5px] shadow-authModal p-8"
       >
         <div className="flex justify-between items-center mb-3">
-          <p className="font-bold text-2xl">Add New Category</p>
+          <p className="font-bold text-2xl">Add New Barge Equipment</p>
           <BsXLg
             className="cursor-pointer text-primary"
             role="button"

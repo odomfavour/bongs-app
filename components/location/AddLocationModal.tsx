@@ -20,6 +20,11 @@ interface AddLocationModalProps {
   user: User;
 }
 
+interface Deck {
+  id: string;
+  name: string;
+}
+
 const AddLocationModal: React.FC<AddLocationModalProps> = ({
   subscribers,
   user,
@@ -29,11 +34,11 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
   const [formData, setFormData] = useState({
     subscriber_id: '' as string | number,
     name: '',
-    deck_id: '',
+    deck_id: '' as string | number,
     address: '',
     status: false,
   });
-
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     if (Object.keys(bargeValues).length > 0) {
       setFormData({
@@ -45,6 +50,43 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
       });
     }
   }, [bargeValues]);
+
+  const [decks, setDecks] = useState<Deck[]>([]);
+  // const [projects, setProjects] = useState<Project[]>([]);
+  useEffect(() => {
+    const fetchDecks = async () => {
+      setIsLoading(true);
+      try {
+        const [bargesResponse, decksResponse] = await Promise.all([
+          axios.get(`${process.env.BASEURL}/barge`, {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }),
+          axios.get(`${process.env.BASEURL}/deck`, {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }),
+        ]);
+
+        setDecks(decksResponse?.data?.data?.data);
+        // You can similarly setStoreItems if needed
+      } catch (error: any) {
+        console.error('Error:', error);
+
+        const errorMessage =
+          error?.response?.data?.message ||
+          error?.response?.data?.errors ||
+          error?.message ||
+          'Unknown error';
+        toast.error(`${errorMessage}`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchDecks();
+  }, [user?.token]);
 
   const [loading, setLoading] = useState(false);
 
@@ -157,30 +199,32 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
           </div>
           <div className="mb-4">
             <label
-              htmlFor="deck"
+              htmlFor="subscriber"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
               Deck
             </label>
             <select
-              id="deck"
+              id="subscriber"
+              name="subscriber_id"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
               value={formData.deck_id}
               onChange={(e) =>
-                setFormData((prevData) => ({
-                  ...prevData,
-                  deck_id: e.target.value,
-                }))
+                setFormData({
+                  ...formData,
+                  deck_id: parseInt(e.target.value),
+                })
               }
             >
-              <option value="">Select deck</option>
-              <option value="1">Main Deck</option>
-              <option value="CA">Canada</option>
-              <option value="FR">France</option>
-              <option value="DE">Germany</option>
+              <option value="">Select Deck</option>
+              {decks?.map((deck: any) => (
+                <option value={deck.id} key={deck.id}>
+                  {deck.name}
+                </option>
+              ))}
             </select>
           </div>
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <label htmlFor="address" className="block mb-2 text-sm font-medium">
               Address (optional)
             </label>
@@ -197,7 +241,7 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
                 }))
               }
             />
-          </div>
+          </div> */}
 
           <div className="mb-4">
             <label

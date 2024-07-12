@@ -272,7 +272,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
                   {item.project.project_name}
                 </td>
                 <td className="text-center py-3">{item.description}</td>
-                <td className="text-center py-3">{item.quantity}</td>
+                <td className="text-center py-3">{item.stock_quantity}</td>
                 <td className="text-center py-3">{item.part_number}</td>
                 <td className="text-center py-3">{item.model_number}</td>
                 <td className="text-center py-3">{item.threshold}</td>

@@ -486,7 +486,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                   htmlFor="project_description"
                   className="block mb-2 text-sm font-medium text-gray-900"
                 >
-                  Project Description
+                  Description
                 </label>
                 <textarea
                   id="project_description"

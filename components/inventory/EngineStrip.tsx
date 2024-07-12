@@ -6,6 +6,7 @@ import {
   toggleAddEngineModal,
 } from '@/provider/redux/modalSlice';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const EngineStrip: React.FC = () => {
   const dispatch = useDispatch();
@@ -26,28 +27,22 @@ const EngineStrip: React.FC = () => {
   const handleBulkUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      console.log('file', file);
       const formData = new FormData();
       formData.append('file', file);
       try {
-        const response = await fetch(
+        const response = await axios.post(
           'https://bongsapi.dpanalyticsolution.com/api/v1/sparepart/engine/import',
+          formData,
           {
-            method: 'POST',
-            body: formData,
             headers: {
               'Content-Type': 'multipart/form-data',
               Authorization: `Bearer ${user?.token}`,
-              // Add any other required headers here
             },
           }
         );
 
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-
-        const result = await response.json();
-        console.log('Bulk upload successful:', result);
+        console.log('Bulk upload successful:', response.data);
       } catch (error: any) {
         console.error('Bulk upload failed:', error);
         const errorMessage =

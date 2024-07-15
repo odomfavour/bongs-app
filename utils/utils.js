@@ -17,3 +17,17 @@ export const formatDate = (dateString) => {
 
   return `${formattedDate} | ${formattedTime}`;
 };
+
+export const getSubscriberIdFromUrl = () => {
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+
+  if (currentUrl.includes('werl')) {
+    return 1;
+  } else if (currentUrl.includes('subscriber1')) {
+    return 2;
+  } else if (currentUrl.includes('subscriber2')) {
+    return 3;
+  } else {
+    return null;
+  }
+};

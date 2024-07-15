@@ -253,6 +253,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
               <th className="text-sm text-center py-3">Model</th>
               <th className="text-sm text-center py-3">Threshold</th>
               <th className="text-sm text-center py-3">Location</th>
+              <th className="text-sm text-center py-3">Date Acquired</th>
               <th className="text-sm text-center py-3">Warranty Days</th>
               <th className="text-sm text-center py-3">Actions</th>
             </tr>
@@ -266,6 +267,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
                   description,
                   stock_quantity,
                   part_number,
+                  date_acquired,
                   waranty_period,
                   threshold,
                   location,
@@ -292,6 +294,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
                     <td className="py-2 text-center">{model_grade || 'nil'}</td>
                     <td className="py-2 text-center">{threshold}</td>
                     <td className="py-2 text-center">{location?.name}</td>
+                    <td className="py-2 text-center">{date_acquired}</td>
                     <td className="py-2 text-center">{waranty_period}</td>
                     <td className="py-2 text-center relative">
                       <div className="flex items-center justify-center gap-2">

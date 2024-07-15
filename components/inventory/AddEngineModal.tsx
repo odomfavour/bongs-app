@@ -34,7 +34,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
   const inventoryType = useSelector((state: any) => state.modal.inventoryType);
   const pathname = usePathname();
   const [formData, setFormData] = useState({
-    project_id: 0,
+    project_id: null as number | null,
     deck_id: 0,
     keystore_id: 0,
     uom_id: 0,
@@ -132,7 +132,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
       toast.success(`${response?.data?.message}`);
 
       setFormData({
-        project_id: 0,
+        project_id: null as number | null,
         deck_id: 0,
         keystore_id: 0,
         uom_id: 0,
@@ -359,11 +359,17 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                     id="subscriber"
                     name="subscriber_id"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                    value={formData.project_id}
+                    value={
+                      formData.project_id !== null
+                        ? formData.project_id.toString()
+                        : ''
+                    }
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        project_id: parseInt(e.target.value),
+                        project_id: e.target.value
+                          ? parseInt(e.target.value)
+                          : null,
                       })
                     }
                   >

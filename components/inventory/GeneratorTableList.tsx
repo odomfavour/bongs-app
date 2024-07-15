@@ -8,6 +8,7 @@ import {
 import { formatDate } from '@/utils/utils';
 import axios from 'axios';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { FaExternalLinkAlt, FaPenAlt, FaTrashAlt } from 'react-icons/fa';
 import { FaMagnifyingGlass, FaRegFolderClosed } from 'react-icons/fa6';
@@ -103,6 +104,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
   parent,
 }) => {
   const dispatch = useDispatch();
+  const pathname = usePathname();
   const user = useSelector((state: any) => state.user.user);
   const inventoryType = useSelector((state: any) => state.modal.inventoryType);
 
@@ -111,6 +113,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
     [key: number]: boolean;
   }>({});
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  console.log('dataata', data);
 
   const toggleDropdown = (index: number) => {
     if (openDropdownIndex === index) {
@@ -246,13 +249,16 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
                 />
               </th>
               <th className="text-sm text-center py-3">S/N</th>
-              <th className="text-sm text-center py-3">Project</th>
+              {pathname === '/inventories' && (
+                <th className="text-sm text-center py-3">Project</th>
+              )}
               <th className="text-sm text-center py-3">Description</th>
               <th className="text-sm text-center py-3">Qty</th>
               <th className="text-sm text-center py-3">Part No.</th>
               <th className="text-sm text-center py-3">Model</th>
               <th className="text-sm text-center py-3">Threshold</th>
               <th className="text-sm text-center py-3">Location</th>
+              <th className="text-sm text-center py-3">Date Acquired</th>
               <th className="text-sm text-center py-3">Warranty Days</th>
               <th className="text-sm text-center py-3">Actions</th>
             </tr>
@@ -268,15 +274,18 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
                   />
                 </td>
                 <td className="text-center py-3">{index + 1}</td>
-                <td className="text-center py-3">
-                  {item.project.project_name}
-                </td>
+                {pathname === '/inventories' && (
+                  <td className="text-center py-3">
+                    {item?.project?.project_name}
+                  </td>
+                )}
                 <td className="text-center py-3">{item.description}</td>
                 <td className="text-center py-3">{item.stock_quantity}</td>
                 <td className="text-center py-3">{item.part_number}</td>
                 <td className="text-center py-3">{item.model_number}</td>
                 <td className="text-center py-3">{item.threshold}</td>
                 <td className="text-center py-3">{item.location.name}</td>
+                <td className="text-center py-3">{item.date_acquired}</td>
                 <td className="text-center py-3">{item.waranty_period}</td>
                 <td className="text-center py-3">
                   <div className="flex justify-center space-x-2">
@@ -332,6 +341,29 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
                 </td>
               </tr>
             ))}
+            {currentItems.length == 0 && (
+              <tr className="text-center text-primary bg-white">
+                <td className="py-2 text-center" colSpan={10}>
+                  <div className="flex justify-center items-center  min-h-[60vh]">
+                    <div>
+                      <div className="flex justify-center items-center">
+                        <FaRegFolderClosed className="text-4xl" />
+                      </div>
+                      <div className="mt-5">
+                        <p className="font-medium text-[#475467]">
+                          No {parent} found
+                        </p>
+                        <p className="font-normal text-sm mt-3">
+                          Click “add {parent}” button to get started in doing
+                          your
+                          <br /> first transaction on the platform
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
 

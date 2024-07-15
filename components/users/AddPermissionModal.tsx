@@ -15,7 +15,8 @@ const AddPermissionModal = () => {
   const user = useSelector((state: any) => state?.user?.user);
   const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const [formData, setFormData] = useState({
-    permission_name: '',
+    name: '',
+    module_id: '' as string | number,
   });
   const [loading, setLoading] = useState(false);
   const [userTypes, setuserTypes] = useState([]);
@@ -24,7 +25,8 @@ const AddPermissionModal = () => {
   useEffect(() => {
     if (Object.keys(bargeValues).length > 0) {
       setFormData({
-        permission_name: bargeValues.first_name,
+        name: bargeValues.name,
+        module_id: bargeValues.name,
       });
     }
   }, [bargeValues]);
@@ -55,7 +57,8 @@ const AddPermissionModal = () => {
       toast.success(`${response?.data?.message}`);
 
       setFormData({
-        permission_name: '',
+        name: '',
+        module_id: '',
       });
       dispatch(toggleUomModal());
       // Handle success (e.g., close modal, show success message)
@@ -101,11 +104,11 @@ const AddPermissionModal = () => {
               id="name"
               placeholder="Input Permission name"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-              value={formData.permission_name}
+              value={formData.name}
               onChange={(e) =>
                 setFormData((prevData) => ({
                   ...prevData,
-                  first_name: e.target.value,
+                  name: e.target.value,
                 }))
               }
             />

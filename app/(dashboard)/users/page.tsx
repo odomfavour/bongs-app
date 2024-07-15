@@ -8,6 +8,7 @@ import {
   displayBargeValue,
   toggleAddDepartmentModal,
   toggleAddPermissionModal,
+  toggleAddRoleModal,
   toggleAddUserModal,
   toggleAddUserTypeModal,
 } from '@/provider/redux/modalSlice';
@@ -127,7 +128,7 @@ const Page = () => {
           >
             Add User
           </button>
-        ) : activeTab === 'UserType' ? (
+        ) : activeTab === 'UserTypes' ? (
           <button
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
@@ -138,15 +139,26 @@ const Page = () => {
             Add UserType
           </button>
         ) : activeTab == 'Permissions' ? (
-          <button
-            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-            onClick={() => {
-              dispatch(displayBargeValue({}));
-              dispatch(toggleAddPermissionModal());
-            }}
-          >
-            Add Permission
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+              onClick={() => {
+                dispatch(displayBargeValue({}));
+                dispatch(toggleAddRoleModal());
+              }}
+            >
+              Add Role
+            </button>
+            <button
+              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+              onClick={() => {
+                dispatch(displayBargeValue({}));
+                dispatch(toggleAddPermissionModal());
+              }}
+            >
+              Add Permission
+            </button>
+          </div>
         ) : (
           <button
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"

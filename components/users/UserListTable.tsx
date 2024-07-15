@@ -1,6 +1,10 @@
 'use client';
 
-import { displayBargeValue, toggleUomModal } from '@/provider/redux/modalSlice';
+import {
+  displayBargeValue,
+  toggleAddUserModal,
+  toggleUomModal,
+} from '@/provider/redux/modalSlice';
 import { formatDate } from '@/utils/utils';
 import axios from 'axios';
 import { useState } from 'react';
@@ -14,8 +18,8 @@ import Swal from 'sweetalert2';
 
 interface User {
   id: number;
-  first_name: string;
-  last_name: string;
+  name: string;
+  // last_name: string;
   email: string;
   role: string;
   phone_number: string;
@@ -110,8 +114,9 @@ const UserListTable: React.FC<UserListTableProps> = ({ data, fetchData }) => {
   };
 
   const handleEdit = (item: User) => {
+    console.log('item', item);
     dispatch(displayBargeValue(item));
-    dispatch(toggleUomModal());
+    dispatch(toggleAddUserModal());
   };
 
   return (
@@ -121,8 +126,8 @@ const UserListTable: React.FC<UserListTableProps> = ({ data, fetchData }) => {
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
-              <th className="text-sm text-center py-3">First Name</th>
-              <th className="text-sm text-center py-3">Last Name</th>
+              <th className="text-sm text-center py-3">Name</th>
+              {/* <th className="text-sm text-center py-3">Last Name</th> */}
               <th className="text-sm text-center py-3">Email</th>
               <th className="text-sm text-center py-3">Phone Number</th>
               <th className="text-sm text-center py-3">Role</th>
@@ -132,15 +137,14 @@ const UserListTable: React.FC<UserListTableProps> = ({ data, fetchData }) => {
           <tbody>
             {currentItems.length > 0 &&
               currentItems.map((item, index) => {
-                const { id, first_name, last_name, phone_number, email, role } =
-                  item;
+                const { id, name, phone_number, email, role } = item;
                 return (
                   <tr className="border-b" key={id}>
                     <td className="py-2 text-center text-[#344054]">
                       {index + 1}
                     </td>
-                    <td className="py-2 text-center">{first_name}</td>
-                    <td className="py-2 text-center">{last_name}</td>
+                    <td className="py-2 text-center">{name}</td>
+                    {/* <td className="py-2 text-center">{last_name}</td> */}
                     <td className="py-2 text-center">{email}</td>
                     <td className="py-2 text-center">{phone_number}</td>
                     <td className="py-2 text-center">{role}</td>

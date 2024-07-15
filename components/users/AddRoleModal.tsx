@@ -3,12 +3,15 @@ import { BsXLg } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormEvent, useEffect, useState } from 'react';
 import {
-  toggleAddDepartmentModal,
+  toggleAddPermissionModal,
+  toggleAddRoleModal,
   toggleAddUserModal,
   toggleUomModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { getSubscriberIdFromUrl } from '@/utils/utils';
+
 interface Subscriber {
   id: number;
   name: string;
@@ -16,22 +19,20 @@ interface Subscriber {
 
 interface User {
   token: string;
-  subscriber_id: number | string;
 }
 
-interface AddDeptModalProps {
+interface AddRoleModalProps {
   subscribers: Subscriber[];
   user: User;
 }
 
-const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
+const AddRoleModal: React.FC<AddRoleModalProps> = ({ subscribers, user }) => {
   const dispatch = useDispatch();
+  const initialSubscriberId = getSubscriberIdFromUrl();
   const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const [formData, setFormData] = useState({
-    subscriber_id: user?.subscriber_id,
-    role_id: '',
-    department_name: '',
-    department_description: '',
+    name: '',
+    subscriber_id: initialSubscriberId || ('' as string | number),
   });
   const [loading, setLoading] = useState(false);
   const [userTypes, setuserTypes] = useState([]);
@@ -40,10 +41,8 @@ const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
   useEffect(() => {
     if (Object.keys(bargeValues).length > 0) {
       setFormData({
-        subscriber_id: bargeValues.subscriber_id,
-        role_id: bargeValues.role_id,
-        department_name: bargeValues.department_name,
-        department_description: bargeValues.department_description,
+        name: bargeValues.name,
+        subscriber_id: bargeValues.subscriberId,
       });
     }
   }, [bargeValues]);
@@ -56,7 +55,7 @@ const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
       const url =
         Object.keys(bargeValues).length > 0
           ? `${process.env.BASEURL}/uom/${bargeValues.id}`
-          : `${process.env.BASEURL}/uom`;
+          : `${process.env.BASEURL}/roles`;
       const method = Object.keys(bargeValues).length > 0 ? 'PUT' : 'POST';
 
       const response = await axios({
@@ -74,10 +73,8 @@ const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
       toast.success(`${response?.data?.message}`);
 
       setFormData({
-        subscriber_id: user?.subscriber_id || ('' as string | number),
-        role_id: '',
-        department_name: '',
-        department_description: '',
+        name: '',
+        subscriber_id: '',
       });
       dispatch(toggleUomModal());
       // Handle success (e.g., close modal, show success message)
@@ -105,16 +102,16 @@ const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
         className="lg:w-3/5 w-11/12 bg-white rounded-[5px] shadow-authModal p-8"
       >
         <div className="flex justify-between items-center mb-3">
-          <p className="font-bold text-2xl">Add Department</p>
+          <p className="font-bold text-2xl">Add Role</p>
           <BsXLg
             className="cursor-pointer text-primary"
             role="button"
-            onClick={() => dispatch(toggleAddDepartmentModal())}
+            onClick={() => dispatch(toggleAddRoleModal())}
           />
         </div>
 
         <form onSubmit={handleSubmit}>
-          {!formData.subscriber_id && (
+          {!initialSubscriberId && (
             <div className="mb-4">
               <label
                 htmlFor="deck_type"
@@ -134,7 +131,7 @@ const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
                 }
               >
                 <option value="">Select Subscriber</option>
-                {subscribers?.map((subscriber: any) => (
+                {subscribers.map((subscriber: any) => (
                   <option value={subscriber.id} key={subscriber.id}>
                     {subscriber.name}
                   </option>
@@ -143,70 +140,22 @@ const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
             </div>
           )}
           <div className="mb-4">
-            <label
-              htmlFor="user_type"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Role
-            </label>
-            <select
-              id="user_type"
-              name="user_type"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-              value={formData.role_id}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  role_id: e.target.value,
-                })
-              }
-            >
-              <option value="">Select role</option>
-              {userTypes.map((userType: any) => (
-                <option value={userType.id} key={userType.id}>
-                  {userType.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-4">
             <label htmlFor="name" className="block mb-2 text-sm font-medium">
-              Department Name
+              Role Name
             </label>
             <input
               type="text"
               id="name"
-              placeholder="Input department name"
+              placeholder="Input Role name"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-              value={formData.department_name}
+              value={formData.name}
               onChange={(e) =>
                 setFormData((prevData) => ({
                   ...prevData,
-                  dept_name: e.target.value,
+                  name: e.target.value,
                 }))
               }
             />
-          </div>
-          <div className="mb-4">
-            <label
-              htmlFor="address"
-              className="block mb-2 text-sm font-medium text-gray-900 "
-            >
-              Description
-            </label>
-            <textarea
-              id="address"
-              rows={4}
-              className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-5000"
-              placeholder="Input Project description"
-              value={formData.department_description}
-              onChange={(e) =>
-                setFormData((prevData) => ({
-                  ...prevData,
-                  description: e.target.value,
-                }))
-              }
-            ></textarea>
           </div>
 
           <div className="flex justify-end">
@@ -220,8 +169,8 @@ const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
               {loading
                 ? 'Submitting...'
                 : Object.keys(bargeValues).length > 0
-                ? 'Update Department'
-                : 'Add Department'}
+                ? 'Update Role'
+                : 'Add Role'}
             </button>
           </div>
         </form>
@@ -230,4 +179,4 @@ const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
   );
 };
 
-export default AddDeptModal;
+export default AddRoleModal;

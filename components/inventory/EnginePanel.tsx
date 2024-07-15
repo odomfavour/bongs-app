@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import Loader from '../Loader';
 import { useSelector } from 'react-redux';
+import { usePathname } from 'next/navigation';
 
 interface Generator {
   id: number;
@@ -39,6 +40,7 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
   const [spareparts, setSpareparts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const pathname = usePathname();
   const isAddEngineModalOpen = useSelector(
     (state: any) => state.modal.isAddEngineModalOpen
   );
@@ -79,6 +81,9 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
     fetchData();
   }, [activeId, fetchData, isAddEngineModalOpen]);
 
+  const filteredSpareparts = spareparts.filter((sparepart) =>
+    pathname === '/miv-inventories' ? !sparepart.project : sparepart.project
+  );
   return (
     <div>
       <div className="my-4">
@@ -110,7 +115,7 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
         <Loader />
       ) : (
         <GeneratorTableList
-          data={spareparts}
+          data={filteredSpareparts}
           fetchdata={fetchData}
           parent={'Engine'}
         />

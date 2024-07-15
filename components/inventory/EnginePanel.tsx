@@ -46,15 +46,17 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
   );
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
+    let endpoint = `${process.env.BASEURL}/sparepart/engine/${activeId}`;
+    if (pathname === '/inventories') {
+      console.log('inverntor');
+      endpoint += '?filter=project';
+    }
     try {
-      const response = await axios.get(
-        `${process.env.BASEURL}/sparepart/engine/${activeId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
+      const response = await axios.get(endpoint, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
       console.log('resp', response);
       setSpareparts(response?.data?.data?.data);
     } catch (error: any) {
@@ -81,9 +83,9 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
     fetchData();
   }, [activeId, fetchData, isAddEngineModalOpen]);
 
-  const filteredSpareparts = spareparts.filter((sparepart) =>
-    pathname === '/miv-inventories' ? !sparepart.project : sparepart.project
-  );
+  // const filteredSpareparts = spareparts.filter((sparepart) =>
+  //   pathname === '/miv-inventories' ? !sparepart.project : sparepart.project
+  // );
   return (
     <div>
       <div className="my-4">
@@ -115,7 +117,7 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
         <Loader />
       ) : (
         <GeneratorTableList
-          data={filteredSpareparts}
+          data={spareparts}
           fetchdata={fetchData}
           parent={'Engine'}
         />

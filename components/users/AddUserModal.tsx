@@ -8,21 +8,38 @@ import {
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+interface Subscriber {
+  id: number;
+  name: string;
+}
 
-const AddUserModal = () => {
+interface User {
+  token: string;
+  subscriber_id: number | string;
+}
+
+interface AddDeptModalProps {
+  subscribers: Subscriber[];
+  user: User;
+}
+
+const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
   const dispatch = useDispatch();
-  const user = useSelector((state: any) => state?.user?.user);
   const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const [formData, setFormData] = useState({
+    subscriber_id: user?.subscriber_id,
     first_name: '',
     last_name: '',
     email: '',
     password: '',
     phone_number: '',
-    permissions: [],
     address: '',
-    user_type: '',
+    role: '',
     department: '',
+    is_hod: false,
+    is_barge_master: false,
+    is_company_rep: false,
+    is_authorized_for_release: false,
   });
   const [loading, setLoading] = useState(false);
   const [userTypes, setuserTypes] = useState([]);
@@ -31,15 +48,20 @@ const AddUserModal = () => {
   useEffect(() => {
     if (Object.keys(bargeValues).length > 0) {
       setFormData({
+        subscriber_id: bargeValues?.subscriber_id,
         first_name: bargeValues.first_name,
         last_name: bargeValues.last_name,
         email: bargeValues.email,
         password: bargeValues.password,
         phone_number: bargeValues.phone_number,
-        permissions: bargeValues.permissions,
         address: bargeValues.address,
-        user_type: bargeValues.userType,
+        role: bargeValues.role,
         department: bargeValues.department,
+        is_hod: bargeValues.is_hod || false,
+        is_barge_master: bargeValues.is_barge_master || false,
+        is_company_rep: bargeValues.is_company_rep || false,
+        is_authorized_for_release:
+          bargeValues.is_authorized_for_release || false,
       });
     }
   }, [bargeValues]);
@@ -52,7 +74,7 @@ const AddUserModal = () => {
       const url =
         Object.keys(bargeValues).length > 0
           ? `${process.env.BASEURL}/uom/${bargeValues.id}`
-          : `${process.env.BASEURL}/uom`;
+          : `${process.env.BASEURL}/create-user`;
       const method = Object.keys(bargeValues).length > 0 ? 'PUT' : 'POST';
 
       const response = await axios({
@@ -70,17 +92,21 @@ const AddUserModal = () => {
       toast.success(`${response?.data?.message}`);
 
       setFormData({
+        subscriber_id: user?.subscriber_id,
         first_name: '',
         last_name: '',
         email: '',
         password: '',
         phone_number: '',
-        user_type: '',
-        department: '',
-        permissions: [],
         address: '',
+        role: '',
+        department: '',
+        is_hod: false,
+        is_barge_master: false,
+        is_company_rep: false,
+        is_authorized_for_release: false,
       });
-      dispatch(toggleUomModal());
+      dispatch(toggleAddUserModal());
       // Handle success (e.g., close modal, show success message)
     } catch (error: any) {
       console.error('Error:', error);
@@ -117,6 +143,34 @@ const AddUserModal = () => {
         <form onSubmit={handleSubmit}>
           <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3">
             <div>
+              {!user?.subscriber_id && (
+                <div className="mb-4">
+                  <label
+                    htmlFor="deck_type"
+                    className="block mb-2 text-sm font-medium text-gray-900 "
+                  >
+                    Subscriber
+                  </label>
+                  <select
+                    id="subscriber"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                    value={formData.subscriber_id}
+                    onChange={(e) =>
+                      setFormData((prevData) => ({
+                        ...prevData,
+                        subscriber_id: parseInt(e.target.value),
+                      }))
+                    }
+                  >
+                    <option value="">Select Subscriber</option>
+                    {subscribers?.map((subscriber: any) => (
+                      <option value={subscriber.id} key={subscriber.id}>
+                        {subscriber.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div className="mb-4">
                 <label
                   htmlFor="name"
@@ -214,11 +268,11 @@ const AddUserModal = () => {
                   id="user_type"
                   name="user_type"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.user_type}
+                  value={formData.role}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      user_type: e.target.value,
+                      role: e.target.value,
                     })
                   }
                 >
@@ -287,65 +341,92 @@ const AddUserModal = () => {
                 >
                   Permission
                 </label>
-                <div className="flex flex-wrap">
-                  <div className="flex items-center me-4">
-                    <input
-                      id="inline-checkbox"
-                      type="checkbox"
-                      value=""
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <label
-                      htmlFor="inline-checkbox"
-                      className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >
-                      is HOD
-                    </label>
-                  </div>
-                  <div className="flex items-center me-4">
-                    <input
-                      id="inline-2-checkbox"
-                      type="checkbox"
-                      value=""
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <label
-                      htmlFor="inline-2-checkbox"
-                      className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >
-                      Is BargeMaster
-                    </label>
-                  </div>
-                  <div className="flex items-center me-4">
-                    <input
-                      checked
-                      id="inline-checked-checkbox"
-                      type="checkbox"
-                      value=""
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <label
-                      htmlFor="inline-checked-checkbox"
-                      className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >
-                      Is Company Rep
-                    </label>
-                  </div>
-                  <div className="flex items-center">
-                    <input
-                      disabled
-                      id="inline-disabled-checkbox"
-                      type="checkbox"
-                      value=""
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <label
-                      htmlFor="inline-disabled-checkbox"
-                      className="ms-2 text-sm font-medium text-gray-400 dark:text-gray-500"
-                    >
-                      Is Authorized to release
-                    </label>
-                  </div>
+                <div className="mb-4 flex items-center">
+                  <input
+                    id="is_hod"
+                    type="checkbox"
+                    name="is_hod"
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                    checked={formData.is_hod}
+                    onChange={(e) =>
+                      setFormData((prevData) => ({
+                        ...prevData,
+                        is_hod: e.target.checked,
+                      }))
+                    }
+                  />
+                  <label
+                    htmlFor="is_hod"
+                    className="ml-2 text-sm font-medium text-gray-900"
+                  >
+                    Is HOD
+                  </label>
+                </div>
+
+                <div className="mb-4 flex items-center">
+                  <input
+                    id="is_barge_master"
+                    type="checkbox"
+                    name="is_barge_master"
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                    checked={formData.is_barge_master}
+                    onChange={(e) =>
+                      setFormData((prevData) => ({
+                        ...prevData,
+                        is_barge_master: e.target.checked,
+                      }))
+                    }
+                  />
+                  <label
+                    htmlFor="is_barge_master"
+                    className="ml-2 text-sm font-medium text-gray-900"
+                  >
+                    Is Barge Master
+                  </label>
+                </div>
+
+                <div className="mb-4 flex items-center">
+                  <input
+                    id="is_company_rep"
+                    type="checkbox"
+                    name="is_company_rep"
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                    checked={formData.is_company_rep}
+                    onChange={(e) =>
+                      setFormData((prevData) => ({
+                        ...prevData,
+                        is_company_rep: e.target.checked,
+                      }))
+                    }
+                  />
+                  <label
+                    htmlFor="is_company_rep"
+                    className="ml-2 text-sm font-medium text-gray-900"
+                  >
+                    Is Company Rep
+                  </label>
+                </div>
+
+                <div className="mb-4 flex items-center">
+                  <input
+                    id="is_authorized_for_release"
+                    type="checkbox"
+                    name="is_authorized_for_release"
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                    checked={formData.is_authorized_for_release}
+                    onChange={(e) =>
+                      setFormData((prevData) => ({
+                        ...prevData,
+                        is_authorized_for_release: e.target.checked,
+                      }))
+                    }
+                  />
+                  <label
+                    htmlFor="is_authorized_for_release"
+                    className="ml-2 text-sm font-medium text-gray-900"
+                  >
+                    Is Authorized For Release
+                  </label>
                 </div>
               </div>
               <div className="mb-4">

@@ -23,6 +23,7 @@ import AddPermissionModal from '@/components/users/AddPermissionModal';
 import AddUserModal from '@/components/users/AddUserModal';
 import AddUserTypeModal from '@/components/users/AddUserTypeModal';
 import AddDeptModal from '@/components/users/AddDeptModal';
+import AddRoleModal from '@/components/users/AddRoleModal';
 
 interface DashboardWrapperProps {
   children: ReactNode;
@@ -115,6 +116,9 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
   const isAddPermissionModalOpen = useSelector(
     (state: any) => state.modal.isAddPermissionModalOpen
   );
+  const isAddRoleModalOpen = useSelector(
+    (state: any) => state.modal.isAddRoleModalOpen
+  );
 
   return (
     <>
@@ -173,9 +177,16 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
         <AddConsumablesModal subscribers={subscribers} user={user} />
       )}
       {isAddPermissionModalOpen && <AddPermissionModal />}
-      {isAddUserModalOpen && <AddUserModal />}
+      {isAddUserModalOpen && (
+        <AddUserModal subscribers={subscribers} user={user} />
+      )}
       {isAddUserTypeModalOpen && <AddUserTypeModal />}
-      {isAddDepartmentModalOpen && <AddDeptModal />}
+      {isAddDepartmentModalOpen && (
+        <AddDeptModal subscribers={subscribers} user={user} />
+      )}
+      {isAddRoleModalOpen && (
+        <AddRoleModal subscribers={subscribers} user={user} />
+      )}
       <ToastContainer />
     </>
   );

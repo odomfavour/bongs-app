@@ -18,6 +18,7 @@ const initialState = {
   isAddUserTypeModalOpen: false,
   isAddPermissionModalOpen: false,
   isAddDepartmentModalOpen: false,
+  isAddRoleModalOpen: false,
   inventoryType: '',
   bargeValues: {},
 };
@@ -65,6 +66,9 @@ export const modalSlice = createSlice({
     toggleAddUserTypeModal: (state) => {
       state.isAddUserTypeModalOpen = !state.isAddUserTypeModalOpen; // Toggle modal state
     },
+    toggleAddRoleModal: (state) => {
+      state.isAddRoleModalOpen = !state.isAddRoleModalOpen; // Toggle modal state
+    },
     toggleAddPermissionModal: (state) => {
       state.isAddPermissionModalOpen = !state.isAddPermissionModalOpen; // Toggle modal state
     },
@@ -105,6 +109,7 @@ export const {
   toggleAddUserModal,
   toggleAddUserTypeModal,
   toggleAddPermissionModal,
+  toggleAddRoleModal,
 } = modalSlice.actions;
 
 export default modalSlice.reducer;

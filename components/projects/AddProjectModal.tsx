@@ -190,7 +190,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                   }
                 />
               </div>
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <label
                   htmlFor="project_duration"
                   className="block mb-2 text-sm font-medium"
@@ -211,7 +211,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                     })
                   }
                 />
-              </div>
+              </div> */}
             </div>
             <div>
               <div className="grid grid-cols-2 gap-3">

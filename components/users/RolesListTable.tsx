@@ -3,6 +3,7 @@
 import { displayBargeValue, toggleUomModal } from '@/provider/redux/modalSlice';
 import { formatDate } from '@/utils/utils';
 import axios from 'axios';
+import Link from 'next/link';
 import { useState } from 'react';
 import { FaExternalLinkAlt, FaPenAlt, FaTrashAlt } from 'react-icons/fa';
 import { FaMagnifyingGlass, FaRegFolderClosed } from 'react-icons/fa6';
@@ -12,23 +13,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 
-interface UserType {
+interface Roles {
   id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  role: string;
+  name: string;
+  // last_name: string;
+  // email: string;
+  // role: string;
 }
 
-interface UserTypesListTableProps {
-  data: UserType[];
+interface RolesListTableProps {
+  data: Roles[];
   fetchData: () => void;
 }
 
-const UserTypesListTable: React.FC<UserTypesListTableProps> = ({
-  data,
-  fetchData,
-}) => {
+const RolesListTable: React.FC<RolesListTableProps> = ({ data, fetchData }) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
   const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
@@ -111,7 +109,7 @@ const UserTypesListTable: React.FC<UserTypesListTableProps> = ({
     }
   };
 
-  const handleEdit = (item: UserType) => {
+  const handleEdit = (item: Roles) => {
     dispatch(displayBargeValue(item));
     dispatch(toggleUomModal());
   };
@@ -134,19 +132,25 @@ const UserTypesListTable: React.FC<UserTypesListTableProps> = ({
           <tbody>
             {currentItems.length > 0 &&
               currentItems.map((item, index) => {
-                const { id, first_name, last_name, email, role } = item;
+                const { id, name } = item;
                 return (
                   <tr className="border-b" key={id}>
                     <td className="py-2 text-center text-[#344054]">
                       {index + 1}
                     </td>
-                    <td className="py-2 text-center">{first_name}</td>
-                    <td className="py-2 text-center">{last_name}</td>
-                    <td className="py-2 text-center">{email}</td>
-                    <td className="py-2 text-center">{role}</td>
+                    <td className="py-2 text-center">{name}</td>
+                    <td className="py-2 text-center"></td>
+                    <td className="py-2 text-center"></td>
+                    <td className="py-2 text-center"></td>
 
                     <td className="py-2 text-center flex justify-center items-center">
                       <div className="flex gap-3">
+                        <Link
+                          href={`/permissions/${id}`}
+                          className="bg-yellow-700 text-white p-2 rounded-md"
+                        >
+                          Permissions
+                        </Link>
                         <button
                           className="bg-blue-700 text-white p-2 rounded-md"
                           onClick={() => handleEdit(item)}
@@ -198,4 +202,4 @@ const UserTypesListTable: React.FC<UserTypesListTableProps> = ({
   );
 };
 
-export default UserTypesListTable;
+export default RolesListTable;

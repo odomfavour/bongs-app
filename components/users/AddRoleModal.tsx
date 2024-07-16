@@ -76,7 +76,7 @@ const AddRoleModal: React.FC<AddRoleModalProps> = ({ subscribers, user }) => {
         name: '',
         subscriber_id: '',
       });
-      dispatch(toggleUomModal());
+      dispatch(toggleAddRoleModal());
       // Handle success (e.g., close modal, show success message)
     } catch (error: any) {
       console.error('Error:', error);

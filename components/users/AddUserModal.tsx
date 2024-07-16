@@ -1,7 +1,7 @@
 'use client';
 import { BsXLg } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 import {
   toggleAddUserModal,
   toggleUomModal,
@@ -42,7 +42,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
     is_authorized_for_release: false,
   });
   const [loading, setLoading] = useState(false);
-  const [userTypes, setuserTypes] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [departments, setDepartments] = useState([]);
 
   useEffect(() => {
@@ -122,6 +122,51 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
       setLoading(false);
     }
   };
+
+  const fetchData = useCallback(async () => {
+    console.log('first call');
+    setLoading(true);
+    try {
+      const [rolesResponse, deptResponse] = await Promise.all([
+        axios.get(
+          `${process.env.BASEURL}/subscriber-roles/${
+            user?.subscriber_id || formData.subscriber_id
+          }`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        ),
+        axios.get(`${process.env.BASEURL}/roles-and-permissions`, {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }),
+      ]);
+      console.log('barge', rolesResponse);
+      // setUsers(usersResponse?.data?.data?.data);
+      setRoles(rolesResponse?.data?.data);
+      //   setDeckTypes(deckTypesResponse?.data?.data?.data);
+      //   setStoreItems(storeOnBoardResponse?.data?.data?.data);
+      // You can similarly setStoreItems if needed
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [formData.subscriber_id, user?.subscriber_id, user?.token]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData, formData.subscriber_id]);
 
   return (
     <div className="z-50 top-0 min-h-screen bg-[#101010c8] fixed w-full flex justify-center items-center text-veriDark">
@@ -262,7 +307,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
                   htmlFor="user_type"
                   className="block mb-2 text-sm font-medium text-gray-900"
                 >
-                  User Type
+                  Roles
                 </label>
                 <select
                   id="user_type"
@@ -276,10 +321,10 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
                     })
                   }
                 >
-                  <option value="">Select Vendor Category</option>
-                  {userTypes.map((userType: any) => (
-                    <option value={userType.id} key={userType.id}>
-                      {userType.name}
+                  <option value="">Select Role</option>
+                  {roles?.map((role: any) => (
+                    <option value={role.id} key={role.id}>
+                      {role.name}
                     </option>
                   ))}
                 </select>
@@ -304,7 +349,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
                   }
                 >
                   <option value="">Select Vendor Category</option>
-                  {departments.map((dept: any) => (
+                  {departments?.map((dept: any) => (
                     <option value={dept.id} key={dept.id}>
                       {dept.name}
                     </option>

@@ -3,7 +3,7 @@ import Loader from '@/components/Loader';
 import DepartmentListTable from '@/components/users/DepartmentListTable';
 import PermissionListTable from '@/components/users/PermissionListTable';
 import UserListTable from '@/components/users/UserListTable';
-import UserTypesListTable from '@/components/users/UserTypesListTable';
+import UserTypesListTable from '@/components/users/RolesListTable';
 import {
   displayBargeValue,
   toggleAddDepartmentModal,
@@ -17,56 +17,50 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import RolesListTable from '@/components/users/RolesListTable';
 
 const Page = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state?.user?.user);
+  const isAddRoleModalOpen = useSelector(
+    (state: any) => state?.modal?.isAddRoleModalOpen
+  );
   const [activeTab, setActiveTab] = useState('Users');
   const [loading, setLoading] = useState(true);
   const [tabs, setTabs] = useState([
     { id: 1, name: 'Users', count: '' },
-    { id: 2, name: 'UserTypes', count: '' },
-    { id: 3, name: 'Permissions', count: '' },
-    { id: 4, name: 'Departments', count: '' },
+    { id: 2, name: 'Roles', count: '' },
+    { id: 3, name: 'Departments', count: '' },
   ]);
   const [users, setUsers] = useState([]);
-  const [userTypes, setUserTypes] = useState([]);
-  const [permissions, setPermissions] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [departments, setDepartments] = useState([]);
 
   const fetchData = useCallback(async () => {
+    console.log('first call');
     setLoading(true);
     try {
-      const [
-        usersResponse,
-        decksResponse,
-        deckTypesResponse,
-        storeOnBoardResponse,
-      ] = await Promise.all([
+      const [usersResponse, rolesResponse, deptResponse] = await Promise.all([
         axios.get(`${process.env.BASEURL}/users`, {
           headers: {
             Authorization: `Bearer ${user?.token}`,
           },
         }),
-        axios.get(`${process.env.BASEURL}/deck`, {
+        axios.get(`${process.env.BASEURL}/roles-and-permissions`, {
           headers: {
             Authorization: `Bearer ${user?.token}`,
           },
         }),
-        axios.get(`${process.env.BASEURL}/deck-type`, {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }),
-        axios.get(`${process.env.BASEURL}/keystore`, {
+        axios.get(`${process.env.BASEURL}/getDepartments`, {
           headers: {
             Authorization: `Bearer ${user?.token}`,
           },
         }),
       ]);
-      console.log('barge', usersResponse);
+      console.log('barge', deptResponse);
       setUsers(usersResponse?.data?.data?.data);
-      //   setDecks(decksResponse?.data?.data?.data);
+      setRoles(rolesResponse?.data?.data?.roles);
+      setDepartments(deptResponse?.data?.data?.data);
       //   setDeckTypes(deckTypesResponse?.data?.data?.data);
       //   setStoreItems(storeOnBoardResponse?.data?.data?.data);
       // You can similarly setStoreItems if needed
@@ -88,8 +82,7 @@ const Page = () => {
     fetchData();
   }, [
     fetchData,
-    // isBargeModalOpen,
-    // isDeckModalOpen,
+    isAddRoleModalOpen,
     // isStoreOnBoardModalOpen,
     // isDeckTypeModalOpen,
   ]);
@@ -121,45 +114,34 @@ const Page = () => {
           <button
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
-              console.log('here');
               dispatch(displayBargeValue({}));
               dispatch(toggleAddUserModal());
             }}
           >
             Add User
           </button>
-        ) : activeTab === 'UserTypes' ? (
+        ) : activeTab === 'Roles' ? (
           <button
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
               dispatch(displayBargeValue({}));
-              dispatch(toggleAddUserTypeModal());
+              dispatch(toggleAddRoleModal());
             }}
           >
-            Add UserType
+            Add Role
           </button>
-        ) : activeTab == 'Permissions' ? (
-          <div className="flex items-center gap-3">
-            <button
-              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-              onClick={() => {
-                dispatch(displayBargeValue({}));
-                dispatch(toggleAddRoleModal());
-              }}
-            >
-              Add Role
-            </button>
-            <button
-              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-              onClick={() => {
-                dispatch(displayBargeValue({}));
-                dispatch(toggleAddPermissionModal());
-              }}
-            >
-              Add Permission
-            </button>
-          </div>
         ) : (
+          //  : activeTab == 'Permissions' ? (
+          //   <button
+          //     className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+          //     onClick={() => {
+          //       dispatch(displayBargeValue({}));
+          //       dispatch(toggleAddPermissionModal());
+          //     }}
+          //   >
+          //     Add Permission
+          //   </button>
+          // )
           <button
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
@@ -195,12 +177,12 @@ const Page = () => {
             {activeTab === 'Users' && (
               <UserListTable data={users} fetchData={fetchData} />
             )}
-            {activeTab === 'UserTypes' && (
-              <UserTypesListTable data={userTypes} fetchData={fetchData} />
+            {activeTab === 'Roles' && (
+              <RolesListTable data={roles} fetchData={fetchData} />
             )}
-            {activeTab === 'Permissions' && (
+            {/* {activeTab === 'Permissions' && (
               <PermissionListTable data={permissions} fetchData={fetchData} />
-            )}
+            )} */}
             {activeTab === 'Departments' && (
               <DepartmentListTable data={departments} fetchData={fetchData} />
             )}

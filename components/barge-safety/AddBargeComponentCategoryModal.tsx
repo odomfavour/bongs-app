@@ -142,7 +142,7 @@ const AddBargeComponentCategoryModal: React.FC<
               type="text"
               id="name"
               name="name"
-              placeholder="Input deck name"
+              placeholder="Input category name"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
               value={formData.name}
               onChange={(e) =>
@@ -165,7 +165,7 @@ const AddBargeComponentCategoryModal: React.FC<
               name="description"
               rows={4}
               className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Input Category description"
+              placeholder="Input category description"
               value={formData.description}
               onChange={(e) =>
                 setFormData((prevData) => ({
@@ -204,12 +204,16 @@ const AddBargeComponentCategoryModal: React.FC<
           <div className="flex justify-end">
             <button
               type="submit"
-              className={`p-3 rounded-lg ${
-                loading ? 'bg-gray-300 text-gray-500' : 'bg-blue-600 text-white'
+              className={`bg-blue-600 text-white p-3 rounded-lg ${
+                loading ? 'opacity-50 cursor-not-allowed' : ''
               }`}
               disabled={loading}
             >
-              {loading ? 'Submitting...' : 'Submit'}
+              {loading
+                ? 'Submitting...'
+                : Object.keys(bargeValues).length > 0
+                ? `Update Barge Equipment`
+                : `Add Barge Equipment`}
             </button>
           </div>
         </form>

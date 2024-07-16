@@ -156,7 +156,7 @@ const UoMListTable: React.FC<UoMListTableProps> = ({ data, fetchData }) => {
                       {index + 1}
                     </td>
                     <td className="py-2 text-center">{name}</td>
-                    <td className="py-2 text-center">{unit}</td>
+                    <td className="py-2 text-center">uom-{id}</td>
                     <td className="py-2 text-center">{description}</td>
                     <td className="py-2 text-center">
                       {user.first_name} {user.last_name}

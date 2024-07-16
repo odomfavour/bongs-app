@@ -25,6 +25,12 @@ const Page = () => {
   const isAddRoleModalOpen = useSelector(
     (state: any) => state?.modal?.isAddRoleModalOpen
   );
+  const isAddDepartmentModalOpen = useSelector(
+    (state: any) => state?.modal?.isAddDepartmentModalOpen
+  );
+  const isAddUserModalOpen = useSelector(
+    (state: any) => state?.modal?.isAddUserModalOpen
+  );
   const [activeTab, setActiveTab] = useState('Users');
   const [loading, setLoading] = useState(true);
   const [tabs, setTabs] = useState([
@@ -46,18 +52,25 @@ const Page = () => {
             Authorization: `Bearer ${user?.token}`,
           },
         }),
-        axios.get(`${process.env.BASEURL}/roles-and-permissions`, {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }),
+        axios.get(
+          `${process.env.BASEURL}${
+            user.subscriber_id
+              ? `/subscriber-roles/${user.subscriber_id}`
+              : '/roles-and-permissions'
+          }`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        ),
         axios.get(`${process.env.BASEURL}/getDepartments`, {
           headers: {
             Authorization: `Bearer ${user?.token}`,
           },
         }),
       ]);
-      console.log('barge', deptResponse);
+      console.log('barge', usersResponse);
       setUsers(usersResponse?.data?.data?.data);
       setRoles(rolesResponse?.data?.data?.roles);
       setDepartments(deptResponse?.data?.data?.data);
@@ -83,8 +96,8 @@ const Page = () => {
   }, [
     fetchData,
     isAddRoleModalOpen,
-    // isStoreOnBoardModalOpen,
-    // isDeckTypeModalOpen,
+    isAddUserModalOpen,
+    isAddDepartmentModalOpen,
   ]);
   return (
     <section>

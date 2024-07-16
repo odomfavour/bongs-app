@@ -381,8 +381,8 @@ const AddStoreOnBoardModal: React.FC<AddStoreOnBoardModalProps> = ({
               {loading
                 ? 'Submitting...'
                 : Object.keys(bargeValues).length > 0
-                ? 'Update Keystore'
-                : 'Add Keystore'}
+                ? 'Update Store'
+                : 'Add Store'}
             </button>
           </div>
         </form>

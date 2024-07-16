@@ -34,12 +34,11 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
     password: '',
     phone_number: '',
     address: '',
-    role: '',
-    department: '',
     is_hod: false,
     is_barge_master: false,
     is_company_rep: false,
     is_authorized_for_release: false,
+    role_id: '' as string | number,
   });
   const [loading, setLoading] = useState(false);
   const [roles, setRoles] = useState([]);
@@ -55,13 +54,12 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
         password: bargeValues.password,
         phone_number: bargeValues.phone_number,
         address: bargeValues.address,
-        role: bargeValues.role,
-        department: bargeValues.department,
         is_hod: bargeValues.is_hod || false,
         is_barge_master: bargeValues.is_barge_master || false,
         is_company_rep: bargeValues.is_company_rep || false,
         is_authorized_for_release:
           bargeValues.is_authorized_for_release || false,
+        role_id: bargeValues.role_id,
       });
     }
   }, [bargeValues]);
@@ -87,8 +85,8 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
           Authorization: `Bearer ${user?.token}`,
         },
       });
-      console.log('Response:', response);
 
+      console.log('Response:', response);
       toast.success(`${response?.data?.message}`);
 
       setFormData({
@@ -99,13 +97,13 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
         password: '',
         phone_number: '',
         address: '',
-        role: '',
-        department: '',
         is_hod: false,
         is_barge_master: false,
         is_company_rep: false,
         is_authorized_for_release: false,
+        role_id: '' as string | number,
       });
+
       dispatch(toggleAddUserModal());
       // Handle success (e.g., close modal, show success message)
     } catch (error: any) {
@@ -138,16 +136,16 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
             },
           }
         ),
-        axios.get(`${process.env.BASEURL}/roles-and-permissions`, {
+        axios.get(`${process.env.BASEURL}/getDepartments`, {
           headers: {
             Authorization: `Bearer ${user?.token}`,
           },
         }),
       ]);
-      console.log('barge', rolesResponse);
+      console.log('barge', deptResponse);
       // setUsers(usersResponse?.data?.data?.data);
       setRoles(rolesResponse?.data?.data);
-      //   setDeckTypes(deckTypesResponse?.data?.data?.data);
+      setDepartments(deptResponse?.data?.data?.data);
       //   setStoreItems(storeOnBoardResponse?.data?.data?.data);
       // You can similarly setStoreItems if needed
     } catch (error: any) {
@@ -184,7 +182,8 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
             onClick={() => dispatch(toggleAddUserModal())}
           />
         </div>
-
+        {JSON.stringify(bargeValues.is_hod)}
+        {JSON.stringify(formData.is_authorized_for_release)}
         <form onSubmit={handleSubmit}>
           <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3">
             <div>
@@ -291,7 +290,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
                 <input
                   type="text"
                   id="tel"
-                  placeholder="Input deck name"
+                  placeholder="Input phone number"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   value={formData.phone_number}
                   onChange={(e) =>
@@ -304,6 +303,28 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
               </div>
               <div className="mb-4">
                 <label
+                  htmlFor="address"
+                  className="block mb-2 text-sm font-medium text-gray-900 "
+                >
+                  Address
+                </label>
+                <textarea
+                  id="address"
+                  rows={4}
+                  className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-5000"
+                  placeholder="Input address"
+                  value={formData.address}
+                  onChange={(e) =>
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      address: e.target.value,
+                    }))
+                  }
+                ></textarea>
+              </div>
+
+              <div className="mb-4">
+                <label
                   htmlFor="user_type"
                   className="block mb-2 text-sm font-medium text-gray-900"
                 >
@@ -313,11 +334,11 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
                   id="user_type"
                   name="user_type"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.role}
+                  value={formData.role_id}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      role: e.target.value,
+                      role_id: Number(e.target.value),
                     })
                   }
                 >
@@ -329,7 +350,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
                   ))}
                 </select>
               </div>
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <label
                   htmlFor="department"
                   className="block mb-2 text-sm font-medium text-gray-900"
@@ -351,34 +372,13 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
                   <option value="">Select Department</option>
                   {departments?.map((dept: any) => (
                     <option value={dept.id} key={dept.id}>
-                      {dept.name}
+                      {dept.department_name}
                     </option>
                   ))}
                 </select>
-              </div>
+              </div> */}
             </div>
             <div>
-              <div className="mb-4">
-                <label
-                  htmlFor="address"
-                  className="block mb-2 text-sm font-medium text-gray-900 "
-                >
-                  Address
-                </label>
-                <textarea
-                  id="address"
-                  rows={4}
-                  className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-5000"
-                  placeholder="Input Project description"
-                  value={formData.address}
-                  onChange={(e) =>
-                    setFormData((prevData) => ({
-                      ...prevData,
-                      address: e.target.value,
-                    }))
-                  }
-                ></textarea>
-              </div>
               <div className="mb-4">
                 <label
                   htmlFor="permissions"
@@ -484,7 +484,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
                 <input
                   type="password"
                   id="password"
-                  placeholder="Input deck name"
+                  placeholder="Input password"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   value={formData.password}
                   onChange={(e) =>

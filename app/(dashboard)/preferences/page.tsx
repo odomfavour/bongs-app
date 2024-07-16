@@ -12,6 +12,7 @@ import {
   toggleAddBargeModal,
   toggleAddDeckModal,
   toggleAddDeckTypeModal,
+  toggleStoreOnBoardModal,
 } from '@/provider/redux/modalSlice';
 import Loader from '@/components/Loader';
 import { toast } from 'react-toastify';
@@ -225,7 +226,15 @@ const Preferences = () => {
             Add Deck Type
           </button>
         ) : (
-          <StoreOnBoardStrip />
+          <button
+            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+            onClick={() => {
+              dispatch(displayBargeValue({}));
+              dispatch(toggleStoreOnBoardModal());
+            }}
+          >
+            Add Store - on - Board
+          </button>
         )}
       </div>
 

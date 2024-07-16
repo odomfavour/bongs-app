@@ -71,7 +71,7 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [activeId, user?.token]);
+  }, [activeId, pathname, user?.token]);
 
   useEffect(() => {
     if (engineCategories && engineCategories.length > 0) {

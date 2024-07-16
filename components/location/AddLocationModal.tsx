@@ -279,8 +279,8 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
               {loading
                 ? 'Submitting...'
                 : Object.keys(bargeValues).length > 0
-                ? 'Update Safety Category'
-                : 'Add Safety Category'}
+                ? 'Update Location'
+                : 'Add Location'}
             </button>
           </div>
         </form>

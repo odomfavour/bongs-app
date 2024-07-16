@@ -348,7 +348,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
                     })
                   }
                 >
-                  <option value="">Select Vendor Category</option>
+                  <option value="">Select Department</option>
                   {departments?.map((dept: any) => (
                     <option value={dept.id} key={dept.id}>
                       {dept.name}

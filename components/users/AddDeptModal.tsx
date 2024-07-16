@@ -1,7 +1,7 @@
 'use client';
 import { BsXLg } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 import {
   toggleAddDepartmentModal,
   toggleAddUserModal,
@@ -34,7 +34,7 @@ const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
     department_description: '',
   });
   const [loading, setLoading] = useState(false);
-  const [userTypes, setuserTypes] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [departments, setDepartments] = useState([]);
 
   useEffect(() => {
@@ -48,6 +48,44 @@ const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
     }
   }, [bargeValues]);
 
+  const fetchData = useCallback(async () => {
+    console.log('first call');
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${process.env.BASEURL}/subscriber-roles/${
+          user?.subscriber_id || formData.subscriber_id
+        }`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+      console.log('barge', response);
+      // setUsers(usersResponse?.data?.data?.data);
+      setRoles(response?.data?.data);
+      //   setDeckTypes(deckTypesResponse?.data?.data?.data);
+      //   setStoreItems(storeOnBoardResponse?.data?.data?.data);
+      // You can similarly setStoreItems if needed
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [formData.subscriber_id, user?.subscriber_id, user?.token]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData, formData.subscriber_id]);
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -55,8 +93,8 @@ const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
     try {
       const url =
         Object.keys(bargeValues).length > 0
-          ? `${process.env.BASEURL}/uom/${bargeValues.id}`
-          : `${process.env.BASEURL}/uom`;
+          ? `${process.env.BASEURL}/department/update/${bargeValues.id}`
+          : `${process.env.BASEURL}/department/create`;
       const method = Object.keys(bargeValues).length > 0 ? 'PUT' : 'POST';
 
       const response = await axios({
@@ -79,7 +117,7 @@ const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
         department_name: '',
         department_description: '',
       });
-      dispatch(toggleUomModal());
+      dispatch(toggleAddDepartmentModal());
       // Handle success (e.g., close modal, show success message)
     } catch (error: any) {
       console.error('Error:', error);
@@ -114,7 +152,7 @@ const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
         </div>
 
         <form onSubmit={handleSubmit}>
-          {!formData.subscriber_id && (
+          {!user?.subscriber_id && (
             <div className="mb-4">
               <label
                 htmlFor="deck_type"
@@ -162,9 +200,9 @@ const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
               }
             >
               <option value="">Select role</option>
-              {userTypes.map((userType: any) => (
-                <option value={userType.id} key={userType.id}>
-                  {userType.name}
+              {roles.map((role: any) => (
+                <option value={role.id} key={role.id}>
+                  {role.name}
                 </option>
               ))}
             </select>
@@ -182,7 +220,7 @@ const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
               onChange={(e) =>
                 setFormData((prevData) => ({
                   ...prevData,
-                  dept_name: e.target.value,
+                  department_name: e.target.value,
                 }))
               }
             />
@@ -203,7 +241,7 @@ const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
               onChange={(e) =>
                 setFormData((prevData) => ({
                   ...prevData,
-                  description: e.target.value,
+                  department_description: e.target.value,
                 }))
               }
             ></textarea>

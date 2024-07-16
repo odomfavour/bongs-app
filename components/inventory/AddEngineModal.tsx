@@ -375,8 +375,19 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                   >
                     <option value="">Select Project</option>
                     {projects?.map((project: any) => (
-                      <option value={project.id} key={project.id}>
-                        {project.project_name}
+                      <option
+                        value={project.id}
+                        key={project.id}
+                        className="capitalize"
+                      >
+                        {project.project_name
+                          .split(' ')
+                          .map(
+                            (word: any) =>
+                              word.charAt(0).toUpperCase() +
+                              word.slice(1).toLowerCase()
+                          )
+                          .join(' ')}
                       </option>
                     ))}
                   </select>
@@ -404,7 +415,11 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                 >
                   <option value="">Select Deck</option>
                   {decks?.map((deck: any) => (
-                    <option value={deck.id} key={deck.id}>
+                    <option
+                      value={deck.id}
+                      key={deck.id}
+                      className="capitalize"
+                    >
                       {deck.name}
                     </option>
                   ))}
@@ -459,7 +474,11 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                 >
                   <option value="">Select Store on Board</option>
                   {storeItems?.map((storeItem: any) => (
-                    <option value={storeItem.id} key={storeItem.id}>
+                    <option
+                      value={storeItem.id}
+                      key={storeItem.id}
+                      className="capitalize"
+                    >
                       {storeItem.description}
                     </option>
                   ))}
@@ -486,7 +505,11 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                 >
                   <option value="">Select Barge Equipment</option>
                   {bEquipment?.map((equipment: any) => (
-                    <option value={equipment.id} key={equipment.id}>
+                    <option
+                      value={equipment.id}
+                      key={equipment.id}
+                      className="capitalize"
+                    >
                       {equipment.name}
                     </option>
                   ))}
@@ -572,7 +595,14 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                   </option>
                   {engineTypes?.map((engineType: any) => (
                     <option value={engineType.id} key={engineType.id}>
-                      {engineType.name}
+                      {engineType.name
+                        .split(' ')
+                        .map(
+                          (word: any) =>
+                            word.charAt(0).toUpperCase() +
+                            word.slice(1).toLowerCase()
+                        )
+                        .join(' ')}
                     </option>
                   ))}
                 </select>

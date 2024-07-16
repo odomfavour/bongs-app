@@ -1,6 +1,10 @@
 'use client';
 
-import { displayBargeValue, toggleUomModal } from '@/provider/redux/modalSlice';
+import {
+  displayBargeValue,
+  toggleAddRoleModal,
+  toggleUomModal,
+} from '@/provider/redux/modalSlice';
 import { formatDate } from '@/utils/utils';
 import axios from 'axios';
 import Link from 'next/link';
@@ -52,11 +56,11 @@ const RolesListTable: React.FC<RolesListTableProps> = ({ data, fetchData }) => {
     setCurrentPage(pageNumber);
   };
 
-  const deleteUom = async (id: number) => {
+  const handleDelete = async (id: number) => {
     // Display SweetAlert confirmation dialog
     const confirmResult = await Swal.fire({
       title: 'Are you sure?',
-      text: 'You will not be able to recover this unit of measurement!',
+      text: 'You will not be able to recover this role!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -69,7 +73,7 @@ const RolesListTable: React.FC<RolesListTableProps> = ({ data, fetchData }) => {
       setLoadingStates((prevState) => ({ ...prevState, [id]: true }));
       try {
         const response = await axios.delete(
-          `${process.env.BASEURL}/uom/${id}`,
+          `${process.env.BASEURL}/roles/${id}`,
           {
             headers: {
               Authorization: `Bearer ${user?.token}`,
@@ -111,7 +115,7 @@ const RolesListTable: React.FC<RolesListTableProps> = ({ data, fetchData }) => {
 
   const handleEdit = (item: Roles) => {
     dispatch(displayBargeValue(item));
-    dispatch(toggleUomModal());
+    dispatch(toggleAddRoleModal());
   };
 
   return (
@@ -151,15 +155,15 @@ const RolesListTable: React.FC<RolesListTableProps> = ({ data, fetchData }) => {
                         >
                           Permissions
                         </Link>
-                        <button
+                        {/* <button
                           className="bg-blue-700 text-white p-2 rounded-md"
                           onClick={() => handleEdit(item)}
                         >
                           Edit
-                        </button>
+                        </button> */}
                         <button
                           className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                          onClick={() => deleteUom(id)}
+                          onClick={() => handleDelete(id)}
                           disabled={loadingStates[id]}
                         >
                           {loadingStates[id] ? (

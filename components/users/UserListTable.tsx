@@ -16,12 +16,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 
+interface Role {
+  id: number;
+  name: string;
+}
 interface User {
   id: number;
   name: string;
   // last_name: string;
   email: string;
-  role: string;
+  roles: Role[];
   phone_number: string;
 }
 
@@ -137,7 +141,7 @@ const UserListTable: React.FC<UserListTableProps> = ({ data, fetchData }) => {
           <tbody>
             {currentItems.length > 0 &&
               currentItems.map((item, index) => {
-                const { id, name, phone_number, email, role } = item;
+                const { id, name, phone_number, email, roles } = item;
                 return (
                   <tr className="border-b" key={id}>
                     <td className="py-2 text-center text-[#344054]">
@@ -147,7 +151,9 @@ const UserListTable: React.FC<UserListTableProps> = ({ data, fetchData }) => {
                     {/* <td className="py-2 text-center">{last_name}</td> */}
                     <td className="py-2 text-center">{email}</td>
                     <td className="py-2 text-center">{phone_number}</td>
-                    <td className="py-2 text-center">{role}</td>
+                    <td className="py-2 text-center capitalize">
+                      {roles.map((role) => role.name).join(', ')}
+                    </td>
 
                     <td className="py-2 text-center flex justify-center items-center">
                       <div className="flex gap-3">

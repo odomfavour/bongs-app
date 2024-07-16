@@ -54,7 +54,7 @@ const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
     try {
       const response = await axios.get(
         `${process.env.BASEURL}/subscriber-roles/${
-          user?.subscriber_id || formData.subscriber_id
+          !user?.subscriber_id ? formData.subscriber_id : user?.subscriber_id
         }`,
         {
           headers: {

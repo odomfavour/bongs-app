@@ -144,7 +144,7 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
           </thead>
           <tbody>
             {currentItems?.length > 0 &&
-              currentItems.map((item) => {
+              currentItems.map((item, index) => {
                 const {
                   id,
                   project_title,

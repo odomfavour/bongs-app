@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { FaRegBell } from 'react-icons/fa';
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 interface MainHeaderProps {
   toggleSidebar: () => void;
@@ -13,12 +13,14 @@ interface MainHeaderProps {
 
 const MainHeader: React.FC<MainHeaderProps> = ({ toggleSidebar }) => {
   const [showDropdown, setShowDropdown] = useState(false);
-  const user = {
-    firstName: '',
-    image: {
-      assetUrl: '',
-    },
-  };
+  const user = useSelector((state: any) => state.user.user);
+  // const user = {
+  //   first_name: '',
+  //   last_name: '',
+  //   image: {
+  //     assetUrl: '',
+  //   },
+  // };
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -50,6 +52,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ toggleSidebar }) => {
             <div className="rounded-full h-[40px] w-[40px] bg-[#F0F2F5] flex justify-center items-center cursor-pointer border-r">
               <FaRegBell className="text-2xl text-veriDark" />
               {/* <NotificationIcon /> */}
+              {/* {JSON.stringify(user?.first_name)} */}
             </div>
             <div className="flex gap-2 items-center">
               <div className="rounded-full w-[36px] h-[36px] flex justify-center bg-primary items-center cursor-pointer">
@@ -65,8 +68,8 @@ const MainHeader: React.FC<MainHeaderProps> = ({ toggleSidebar }) => {
                 ) : (
                   <div className="border border-veriDark flex justify-center items-center text-veriDark rounded-full h-[36px] w-[36px]">
                     <p className="flex items-center text-lg">
-                      {user?.firstName?.charAt(0)}
-                      {user?.firstName?.charAt(0)}
+                      {user?.first_name?.charAt(0)}
+                      {user?.last_name?.charAt(0)}
                     </p>
                   </div>
                 )}

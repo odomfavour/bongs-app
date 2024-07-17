@@ -187,10 +187,10 @@ const RolesListTable: React.FC<RolesListTableProps> = ({ data, fetchData }) => {
                       </div>
                       <div className="mt-5">
                         <p className="font-medium text-[#475467]">
-                          No Unit of Measurement found
+                          No Role found
                         </p>
                         <p className="font-normal text-sm mt-3">
-                          Click “add UOM” button to get started in doing your
+                          Click “add Role” button to get started in doing your
                           <br /> first transaction on the platform
                         </p>
                       </div>

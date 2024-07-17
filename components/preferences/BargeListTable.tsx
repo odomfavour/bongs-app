@@ -229,7 +229,7 @@ const BargeListTable: React.FC<BargeListTableProps> = ({ data, fetchdata }) => {
         </table>
       </div>
 
-      {/* {data.length > itemsPerPage && (
+      {data.length > itemsPerPage && (
         <div className="pagination px-5">
           <div className="flex items-center gap-6 text-primary">
             <p
@@ -278,7 +278,7 @@ const BargeListTable: React.FC<BargeListTableProps> = ({ data, fetchdata }) => {
             </p>
           </div>
         </div>
-      )} */}
+      )}
     </div>
   );
 };

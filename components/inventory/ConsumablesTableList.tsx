@@ -340,30 +340,53 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
                   </tr>
                 );
               })}
+            {currentItems.length == 0 && (
+              <tr className="text-center text-primary bg-white">
+                <td className="py-2 text-center" colSpan={10}>
+                  <div className="flex justify-center items-center  min-h-[60vh]">
+                    <div>
+                      <div className="flex justify-center items-center">
+                        <FaRegFolderClosed className="text-4xl" />
+                      </div>
+                      <div className="mt-5">
+                        <p className="font-medium text-[#475467]">
+                          No {parent} found
+                        </p>
+                        <p className="font-normal text-sm mt-3">
+                          Click “add {parent}” button to get started in doing
+                          your
+                          <br /> first transaction on the platform
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
-        {/* {data.length > itemsPerPage && (
-        <nav className="flex justify-center">
-          <ul className="flex list-none">
-            {[...Array(Math.ceil(data.length / itemsPerPage))].map(
-              (_, index) => (
-                <li key={index} className="mx-1">
-                  <button
-                    className={`${
-                      currentPage === index + 1
-                        ? 'bg-primary text-white'
-                        : 'bg-white text-primary'
-                    } px-3 py-1 rounded-md border border-primary`}
-                    onClick={() => paginate(index + 1)}
-                  >
-                    {index + 1}
-                  </button>
-                </li>
-              )
-            )}
-          </ul>
-        </nav>
-      )} */}
+        {data.length > itemsPerPage && (
+          <nav className="flex justify-center">
+            <ul className="flex list-none">
+              {[...Array(Math.ceil(data.length / itemsPerPage))].map(
+                (_, index) => (
+                  <li key={index} className="mx-1">
+                    <button
+                      className={`${
+                        currentPage === index + 1
+                          ? 'bg-primary text-white'
+                          : 'bg-white text-primary'
+                      } px-3 py-1 rounded-md border border-primary`}
+                      onClick={() => paginate(index + 1)}
+                    >
+                      {index + 1}
+                    </button>
+                  </li>
+                )
+              )}
+            </ul>
+          </nav>
+        )}
       </div>
     </div>
   );

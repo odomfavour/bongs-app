@@ -124,7 +124,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
+  const itemsPerPage = 10;
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -368,43 +368,43 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
         </table>
 
         {/* Pagination */}
-        {/* <div className="flex justify-end mt-4">
-        <button
-          className={`px-4 py-2 mx-1 rounded ${
-            currentPage === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'
-          }`}
-          onClick={() => paginate(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </button>
-        {Array.from({
-          length: Math.ceil(data.length / itemsPerPage),
-        }).map((_, index) => (
+        <div className="flex justify-end mt-4">
           <button
-            key={index + 1}
             className={`px-4 py-2 mx-1 rounded ${
-              currentPage === index + 1
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-300'
+              currentPage === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'
             }`}
-            onClick={() => paginate(index + 1)}
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
           >
-            {index + 1}
+            Previous
           </button>
-        ))}
-        <button
-          className={`px-4 py-2 mx-1 rounded ${
-            currentPage === Math.ceil(data.length / itemsPerPage)
-              ? 'bg-gray-300'
-              : 'bg-blue-500 text-white'
-          }`}
-          onClick={() => paginate(currentPage + 1)}
-          disabled={currentPage === Math.ceil(data.length / itemsPerPage)}
-        >
-          Next
-        </button>
-      </div> */}
+          {Array.from({
+            length: Math.ceil(data.length / itemsPerPage),
+          }).map((_, index) => (
+            <button
+              key={index + 1}
+              className={`px-4 py-2 mx-1 rounded ${
+                currentPage === index + 1
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-300'
+              }`}
+              onClick={() => paginate(index + 1)}
+            >
+              {index + 1}
+            </button>
+          ))}
+          <button
+            className={`px-4 py-2 mx-1 rounded ${
+              currentPage === Math.ceil(data.length / itemsPerPage)
+                ? 'bg-gray-300'
+                : 'bg-blue-500 text-white'
+            }`}
+            onClick={() => paginate(currentPage + 1)}
+            disabled={currentPage === Math.ceil(data.length / itemsPerPage)}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );

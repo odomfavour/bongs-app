@@ -60,11 +60,11 @@ const UserListTable: React.FC<UserListTableProps> = ({ data, fetchData }) => {
     setCurrentPage(pageNumber);
   };
 
-  const deleteUom = async (id: number) => {
+  const handleDelete = async (id: number) => {
     // Display SweetAlert confirmation dialog
     const confirmResult = await Swal.fire({
       title: 'Are you sure?',
-      text: 'You will not be able to recover this unit of measurement!',
+      text: 'You will not be able to recover this user!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -77,7 +77,7 @@ const UserListTable: React.FC<UserListTableProps> = ({ data, fetchData }) => {
       setLoadingStates((prevState) => ({ ...prevState, [id]: true }));
       try {
         const response = await axios.delete(
-          `${process.env.BASEURL}/uom/${id}`,
+          `${process.env.BASEURL}/user/${id}`,
           {
             headers: {
               Authorization: `Bearer ${user?.token}`,
@@ -89,16 +89,12 @@ const UserListTable: React.FC<UserListTableProps> = ({ data, fetchData }) => {
 
         if (response.status === 200) {
           // Handle success
-          Swal.fire(
-            'Deleted!',
-            'Your unit of measurement has been deleted.',
-            'success'
-          );
+          Swal.fire('Deleted!', 'User has been deleted.', 'success');
         } else {
           // Handle error
           Swal.fire(
             'Failed to delete!',
-            'An error occurred while deleting the unit of measurement.',
+            'An error occurred while deleting user.',
             'error'
           );
         }
@@ -165,7 +161,7 @@ const UserListTable: React.FC<UserListTableProps> = ({ data, fetchData }) => {
                         </button>
                         <button
                           className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                          onClick={() => deleteUom(id)}
+                          onClick={() => handleDelete(id)}
                           disabled={loadingStates[id]}
                         >
                           {loadingStates[id] ? (
@@ -189,10 +185,10 @@ const UserListTable: React.FC<UserListTableProps> = ({ data, fetchData }) => {
                       </div>
                       <div className="mt-5">
                         <p className="font-medium text-[#475467]">
-                          No Unit of Measurement found
+                          No Users found
                         </p>
                         <p className="font-normal text-sm mt-3">
-                          Click “add UOM” button to get started in doing your
+                          Click “add User” button to get started in doing your
                           <br /> first transaction on the platform
                         </p>
                       </div>

@@ -37,7 +37,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
     is_hod: false,
     is_barge_master: false,
     is_company_rep: false,
-    is_authorized_for_release: false,
+    // is_authorized_for_release: false,
     role_id: '' as string | number,
   });
   const [loading, setLoading] = useState(false);
@@ -57,8 +57,8 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
         is_hod: bargeValues.is_hod || false,
         is_barge_master: bargeValues.is_barge_master || false,
         is_company_rep: bargeValues.is_company_rep || false,
-        is_authorized_for_release:
-          bargeValues.is_authorized_for_release || false,
+        // is_authorized_for_release:
+        //   bargeValues.is_authorized_for_release || false,
         role_id: bargeValues.role_id,
       });
     }
@@ -100,7 +100,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
         is_hod: false,
         is_barge_master: false,
         is_company_rep: false,
-        is_authorized_for_release: false,
+        // is_authorized_for_release: false,
         role_id: '' as string | number,
       });
 
@@ -182,8 +182,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
             onClick={() => dispatch(toggleAddUserModal())}
           />
         </div>
-        {JSON.stringify(bargeValues.is_hod)}
-        {JSON.stringify(formData.is_authorized_for_release)}
+
         <form onSubmit={handleSubmit}>
           <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3">
             <div>
@@ -452,7 +451,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
                   </label>
                 </div>
 
-                <div className="mb-4 flex items-center">
+                {/* <div className="mb-4 flex items-center">
                   <input
                     id="is_authorized_for_release"
                     type="checkbox"
@@ -472,7 +471,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
                   >
                     Is Authorized For Release
                   </label>
-                </div>
+                </div> */}
               </div>
               <div className="mb-4">
                 <label

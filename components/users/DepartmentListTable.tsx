@@ -193,10 +193,11 @@ const DepartmentListTable: React.FC<DepartmentListTableProps> = ({
                       </div>
                       <div className="mt-5">
                         <p className="font-medium text-[#475467]">
-                          No Unit of Measurement found
+                          No Department found
                         </p>
                         <p className="font-normal text-sm mt-3">
-                          Click “add UOM” button to get started in doing your
+                          Click “add Department” button to get started in doing
+                          your
                           <br /> first transaction on the platform
                         </p>
                       </div>

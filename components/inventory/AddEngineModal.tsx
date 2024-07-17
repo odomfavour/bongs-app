@@ -550,8 +550,8 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                     ? 'Deck'
                     : inventoryType === 'Safety'
                     ? 'Safety'
-                    : 'Hospital'}
-                  Type
+                    : 'Hospital'}{' '}
+                  Category
                 </label>
                 <select
                   id="sparepart_type"
@@ -591,7 +591,8 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                       ? 'Deck'
                       : inventoryType === 'Safety'
                       ? 'Safety'
-                      : 'Hospital'}
+                      : 'Hospital'}{' '}
+                    Category
                   </option>
                   {engineTypes?.map((engineType: any) => (
                     <option value={engineType.id} key={engineType.id}>

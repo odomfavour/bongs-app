@@ -572,8 +572,8 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                     ? 'Safety'
                     : inventoryType === 'Hospital'
                     ? 'Hospital'
-                    : 'Galleylaundry'}
-                  Type
+                    : 'Galleylaundry'}{' '}
+                  Category
                 </label>
                 <select
                   id="engineType"
@@ -620,7 +620,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                       : inventoryType === 'Hospital'
                       ? 'Hospital'
                       : 'Galleylaundry'}
-                    Type
+                    Category
                   </option>
                   {engineTypes?.map((engineType: any) => (
                     <option value={engineType.id} key={engineType.id}>

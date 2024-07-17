@@ -35,6 +35,7 @@ const AssignRoleListTable: React.FC<RolesListTableProps> = ({
     [key: number]: boolean;
   }>({});
   const [selectedPermissions, setSelectedPermissions] = useState<number[]>([]);
+  const [selectAll, setSelectAll] = useState(false);
 
   // Synchronize selectedPermissions with rolePermissions
   useEffect(() => {
@@ -64,6 +65,15 @@ const AssignRoleListTable: React.FC<RolesListTableProps> = ({
     setSelectedPermissions((prev) =>
       prev.includes(id) ? prev.filter((permId) => permId !== id) : [...prev, id]
     );
+  };
+
+  const handleSelectAllChange = () => {
+    if (selectAll) {
+      setSelectedPermissions([]);
+    } else {
+      setSelectedPermissions(data.map((perm) => perm.id));
+    }
+    setSelectAll(!selectAll);
   };
 
   const updatePermissions = async () => {
@@ -124,15 +134,20 @@ const AssignRoleListTable: React.FC<RolesListTableProps> = ({
 
   return (
     <div className="bg-white">
-      <pre>{JSON.stringify(selectedPermissions, null, 2)}</pre>{' '}
-      {/* Display as JSON */}
       <div className="overflow-x-auto">
         <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
-              <th className="text-sm text-center py-3">Permission Name</th>
-              <th className="text-sm text-center py-3">Action</th>
+              <th className="text-sm text-left py-3">Permission Name</th>
+              <th className="text-sm text-left py-3 flex-col items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={selectAll}
+                  onChange={handleSelectAllChange}
+                />
+                <p>Select all</p>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -144,8 +159,8 @@ const AssignRoleListTable: React.FC<RolesListTableProps> = ({
                     <td className="py-2 text-center text-[#344054]">
                       {index + 1}
                     </td>
-                    <td className="py-2 text-center">{name}</td>
-                    <td className="py-2 text-center">
+                    <td className="py-2 text-left">{name}</td>
+                    <td className="py-2 text-left">
                       <input
                         type="checkbox"
                         checked={selectedPermissions.includes(id)}

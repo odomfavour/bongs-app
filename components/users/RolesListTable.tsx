@@ -142,7 +142,7 @@ const RolesListTable: React.FC<RolesListTableProps> = ({ data, fetchData }) => {
                     <td className="py-2 text-center text-[#344054]">
                       {index + 1}
                     </td>
-                    <td className="py-2 text-center">{name}</td>
+                    <td className="py-2 text-center capitalize">{name}</td>
                     <td className="py-2 text-center"></td>
                     <td className="py-2 text-center"></td>
                     <td className="py-2 text-center"></td>
@@ -187,10 +187,10 @@ const RolesListTable: React.FC<RolesListTableProps> = ({ data, fetchData }) => {
                       </div>
                       <div className="mt-5">
                         <p className="font-medium text-[#475467]">
-                          No Unit of Measurement found
+                          No Role found
                         </p>
                         <p className="font-normal text-sm mt-3">
-                          Click “add UOM” button to get started in doing your
+                          Click “add Role” button to get started in doing your
                           <br /> first transaction on the platform
                         </p>
                       </div>

@@ -144,7 +144,7 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
           </thead>
           <tbody>
             {currentItems?.length > 0 &&
-              currentItems.map((item) => {
+              currentItems.map((item, index) => {
                 const {
                   id,
                   project_title,
@@ -157,7 +157,9 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
                 } = item;
                 return (
                   <tr className="border-b" key={id}>
-                    <td className="py-2 text-center text-[#344054]">{id}</td>
+                    <td className="py-2 text-center text-[#344054]">
+                      {index + 1}
+                    </td>
 
                     <td className="py-2 text-center">{project_name}</td>
                     <td className="py-2 text-center">{project_title}</td>

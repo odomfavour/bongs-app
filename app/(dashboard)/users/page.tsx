@@ -56,7 +56,7 @@ const Page = () => {
           `${process.env.BASEURL}${
             user.subscriber_id
               ? `/subscriber-roles/${user.subscriber_id}`
-              : '/roles-and-permissions'
+              : '/roles'
           }`,
           {
             headers: {
@@ -70,9 +70,9 @@ const Page = () => {
           },
         }),
       ]);
-      console.log('barge', usersResponse);
+      console.log('barge', deptResponse);
       setUsers(usersResponse?.data?.data?.data);
-      setRoles(rolesResponse?.data?.data?.roles);
+      setRoles(rolesResponse?.data?.data?.data);
       setDepartments(deptResponse?.data?.data?.data);
       //   setDeckTypes(deckTypesResponse?.data?.data?.data);
       //   setStoreItems(storeOnBoardResponse?.data?.data?.data);

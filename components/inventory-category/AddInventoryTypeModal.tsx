@@ -2,7 +2,10 @@
 import { BsXLg } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormEvent, useEffect, useState } from 'react';
-import { toggleLocationModal } from '@/provider/redux/modalSlice';
+import {
+  toggleAddInventoryTypeModal,
+  toggleLocationModal,
+} from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -25,28 +28,23 @@ interface Deck {
   name: string;
 }
 
-const AddLocationModal: React.FC<AddLocationModalProps> = ({
+const AddInventoryTypeModal: React.FC<AddLocationModalProps> = ({
   subscribers,
   user,
 }) => {
   const dispatch = useDispatch();
   const bargeValues = useSelector((state: any) => state.modal.bargeValues);
+  const inventoryData = useSelector((state: any) => state.modal.inventoryData);
   const [formData, setFormData] = useState({
-    subscriber_id: '' as string | number,
     name: '',
-    deck_id: '' as string | number,
-    address: '',
     status: false,
   });
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     if (Object.keys(bargeValues).length > 0) {
       setFormData({
-        subscriber_id: bargeValues.subscriber_id,
         name: bargeValues.name,
         status: bargeValues.status === 'active',
-        deck_id: bargeValues.deck_id,
-        address: bargeValues.address,
       });
     }
   }, [bargeValues]);
@@ -95,10 +93,30 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
     setLoading(true);
 
     try {
-      const url =
-        Object.keys(bargeValues).length > 0
-          ? `${process.env.BASEURL}/location/${bargeValues.id}`
-          : `${process.env.BASEURL}/location`;
+      let url;
+      if (inventoryData.activeTab === 'Spare Parts') {
+        if (inventoryData.activeCategory === 'engine') {
+          url = `${process.env.BASEURL}/sparepart-engine-category`;
+        } else if (inventoryData.activeCategory === 'deck') {
+          url = `${process.env.BASEURL}/sparepart-deck-category`;
+        } else if (inventoryData.activeCategory === 'safety') {
+          url = `${process.env.BASEURL}/safety-category`;
+        } else {
+          url = `${process.env.BASEURL}/sparepart-hospital-category`;
+        }
+      } else {
+        if (inventoryData.activeCategory === 'engine') {
+          url = `${process.env.BASEURL}/consumable/engineCategories/create`;
+        } else if (inventoryData.activeCategory === 'deck') {
+          url = `${process.env.BASEURL}/consumable/deckCategories/create`;
+        } else if (inventoryData.activeCategory === 'safety') {
+          url = `${process.env.BASEURL}/consumable/safetyCategories/create`;
+        } else if (inventoryData.activeCategory === 'galleylaundry') {
+          url = `${process.env.BASEURL}/consumable/safetyCategories/create`;
+        } else {
+          url = `${process.env.BASEURL}/consumable/hospitalCategories/create`;
+        }
+      }
       const method = Object.keys(bargeValues).length > 0 ? 'PUT' : 'POST';
 
       const response = await axios({
@@ -116,7 +134,7 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
       // if (response?.status == 200) {
       toast.success(`${response?.data?.message}`);
       // }
-      dispatch(toggleLocationModal());
+      // dispatch(toggleLocationModal());
       // Handle success (e.g., close modal, show success message)
       // dispatch(toggleLocationModal());
     } catch (error: any) {
@@ -148,37 +166,11 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
           <BsXLg
             className="cursor-pointer text-primary"
             role="button"
-            onClick={() => dispatch(toggleLocationModal())}
+            onClick={() => dispatch(toggleAddInventoryTypeModal({}))}
           />
         </div>
-
+        {JSON.stringify(inventoryData)}
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label
-              htmlFor="deck_type"
-              className="block mb-2 text-sm font-medium text-gray-900 "
-            >
-              Subscriber
-            </label>
-            <select
-              id="subscriber"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-              value={formData.subscriber_id}
-              onChange={(e) =>
-                setFormData((prevData) => ({
-                  ...prevData,
-                  subscriber_id: parseInt(e.target.value),
-                }))
-              }
-            >
-              <option value="">Select Subscriber</option>
-              {subscribers?.map((subscriber: any) => (
-                <option value={subscriber.id} key={subscriber.id}>
-                  {subscriber.name}
-                </option>
-              ))}
-            </select>
-          </div>
           <div className="mb-4">
             <label htmlFor="name" className="block mb-2 text-sm font-medium">
               Location Name
@@ -196,70 +188,6 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
                 }))
               }
             />
-          </div>
-          <div className="mb-4">
-            <label
-              htmlFor="subscriber"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Deck
-            </label>
-            <select
-              id="subscriber"
-              name="subscriber_id"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-              value={formData.deck_id}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  deck_id: parseInt(e.target.value),
-                })
-              }
-            >
-              <option value="">Select Deck</option>
-              {decks?.map((deck: any) => (
-                <option value={deck.id} key={deck.id}>
-                  {deck.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          {/* <div className="mb-4">
-            <label htmlFor="address" className="block mb-2 text-sm font-medium">
-              Address (optional)
-            </label>
-            <input
-              type="text"
-              id="address"
-              placeholder="Input address"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-              value={formData.address}
-              onChange={(e) =>
-                setFormData((prevData) => ({
-                  ...prevData,
-                  address: e.target.value,
-                }))
-              }
-            />
-          </div> */}
-
-          <div className="mb-4">
-            <label htmlFor="remark" className="block mb-2 text-sm font-medium">
-              Stored Items
-            </label>
-            <textarea
-              id="stored_items"
-              rows={4}
-              placeholder="Input Stored items"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-              value={formData.address}
-              onChange={(e) =>
-                setFormData((prevData) => ({
-                  ...prevData,
-                  address: e.target.value,
-                }))
-              }
-            ></textarea>
           </div>
 
           <div className="mb-4">
@@ -298,8 +226,8 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
               {loading
                 ? 'Submitting...'
                 : Object.keys(bargeValues).length > 0
-                ? 'Update Location'
-                : 'Add Location'}
+                ? 'Update Category'
+                : 'Add Category'}
             </button>
           </div>
         </form>
@@ -308,4 +236,4 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
   );
 };
 
-export default AddLocationModal;
+export default AddInventoryTypeModal;

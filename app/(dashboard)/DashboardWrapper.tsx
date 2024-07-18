@@ -24,6 +24,7 @@ import AddUserModal from '@/components/users/AddUserModal';
 import AddUserTypeModal from '@/components/users/AddUserTypeModal';
 import AddDeptModal from '@/components/users/AddDeptModal';
 import AddRoleModal from '@/components/users/AddRoleModal';
+import AddInventoryTypeModal from '@/components/inventory-category/AddInventoryTypeModal';
 
 interface DashboardWrapperProps {
   children: ReactNode;
@@ -119,6 +120,9 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
   const isAddRoleModalOpen = useSelector(
     (state: any) => state.modal.isAddRoleModalOpen
   );
+  const isAddInventoryTypeModalOpen = useSelector(
+    (state: any) => state.modal.isAddInventoryTypeModalOpen
+  );
 
   return (
     <>
@@ -186,6 +190,9 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
       )}
       {isAddRoleModalOpen && (
         <AddRoleModal subscribers={subscribers} user={user} />
+      )}
+      {isAddInventoryTypeModalOpen && (
+        <AddInventoryTypeModal subscribers={subscribers} user={user} />
       )}
       <ToastContainer />
     </>

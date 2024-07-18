@@ -16,8 +16,14 @@ interface Permission {
 interface RolesListTableProps {
   data: Permission[];
   rolePermissions: Permission[];
-  fetchData: () => void;
+  fetchData: (per_page?: string, search?: string, page?: number) => void;
   roleId: number;
+  perPage: string;
+  setPerPage: (value: string) => void;
+  search: string;
+  setSearch: (value: string) => void;
+  currentPage: number;
+  setCurrentPage: (value: number) => void;
 }
 
 const AssignRoleListTable: React.FC<RolesListTableProps> = ({
@@ -25,6 +31,12 @@ const AssignRoleListTable: React.FC<RolesListTableProps> = ({
   rolePermissions,
   fetchData,
   roleId,
+  perPage,
+  setPerPage,
+  search,
+  setSearch,
+  currentPage,
+  setCurrentPage,
 }) => {
   console.log('rolePermissions', rolePermissions);
 
@@ -50,17 +62,6 @@ const AssignRoleListTable: React.FC<RolesListTableProps> = ({
     }
   };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 200;
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
-
-  const paginate = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-  };
-
   const handleCheckboxChange = (id: number) => {
     setSelectedPermissions((prev) =>
       prev.includes(id) ? prev.filter((permId) => permId !== id) : [...prev, id]
@@ -77,7 +78,6 @@ const AssignRoleListTable: React.FC<RolesListTableProps> = ({
   };
 
   const updatePermissions = async () => {
-    // Display SweetAlert confirmation dialog
     const confirmResult = await Swal.fire({
       title: 'Are you sure?',
       text: 'You will not be able to recover this action!',
@@ -88,15 +88,11 @@ const AssignRoleListTable: React.FC<RolesListTableProps> = ({
       confirmButtonText: 'Yes, update it!',
     });
 
-    // If user confirms action
     if (confirmResult.isConfirmed) {
-      // Optionally set a loading state if you want to show a loading indicator
-      // setLoading(true);
-
       try {
         const response = await axios.post(
-          `${process.env.BASEURL}/assign-permissions`, // Replace with your actual endpoint
-          { role_id: roleId, permissions: selectedPermissions }, // Include the necessary role_id if required
+          `${process.env.BASEURL}/assign-permissions`,
+          { role_id: roleId, permissions: selectedPermissions },
           {
             headers: {
               Authorization: `Bearer ${user?.token}`,
@@ -105,11 +101,9 @@ const AssignRoleListTable: React.FC<RolesListTableProps> = ({
         );
 
         if (response.status === 200) {
-          // Handle success
           Swal.fire('Updated!', 'Permissions have been updated.', 'success');
-          fetchData();
+          fetchData(perPage, search, currentPage);
         } else {
-          // Handle error
           Swal.fire(
             'Failed to update!',
             'An error occurred while updating permissions.',
@@ -125,16 +119,42 @@ const AssignRoleListTable: React.FC<RolesListTableProps> = ({
           error?.message ||
           'Unknown error';
         toast.error(`${errorMessage}`);
-      } finally {
-        // Optionally unset the loading state
-        // setLoading(false);
       }
     }
+  };
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    fetchData(perPage, search, pageNumber);
   };
 
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
+        <div className="flex justify-between items-center mb-4">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search permissions..."
+            className="border px-2 py-1"
+          />
+          <select
+            value={perPage}
+            onChange={(e) => setPerPage(e.target.value)}
+            className="border px-2 py-1"
+          >
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select>
+          <button
+            onClick={() => fetchData(perPage, search, currentPage)}
+            className="px-4 py-2 bg-blue-500 text-white rounded"
+          >
+            Apply
+          </button>
+        </div>
         <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
@@ -151,8 +171,8 @@ const AssignRoleListTable: React.FC<RolesListTableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {currentItems.length > 0 &&
-              currentItems.map((item, index) => {
+            {data?.length > 0 &&
+              data?.map((item, index) => {
                 const { id, name } = item;
                 return (
                   <tr className="border-b" key={id}>
@@ -170,7 +190,7 @@ const AssignRoleListTable: React.FC<RolesListTableProps> = ({
                   </tr>
                 );
               })}
-            {currentItems.length === 0 && (
+            {data?.length === 0 && (
               <tr className="text-center text-primary bg-white">
                 <td className="py-2 text-center" colSpan={3}>
                   <div className="flex justify-center items-center min-h-[60vh]">
@@ -194,13 +214,32 @@ const AssignRoleListTable: React.FC<RolesListTableProps> = ({
             )}
           </tbody>
         </table>
-        {currentItems.length > 0 && (
-          <button
-            onClick={updatePermissions}
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Update permissions
-          </button>
+        {data?.length > 0 && (
+          <div className="flex justify-between items-center mt-4">
+            <button
+              onClick={updatePermissions}
+              className="px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              Update permissions
+            </button>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-3 py-1 bg-gray-300 rounded"
+              >
+                Previous
+              </button>
+              <span>{currentPage}</span>
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={data.length < parseInt(perPage)}
+                className="px-3 py-1 bg-gray-300 rounded"
+              >
+                Next
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </div>

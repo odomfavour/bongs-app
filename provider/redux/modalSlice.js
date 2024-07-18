@@ -19,7 +19,9 @@ const initialState = {
   isAddPermissionModalOpen: false,
   isAddDepartmentModalOpen: false,
   isAddRoleModalOpen: false,
+  isAddInventoryTypeModalOpen: false,
   inventoryType: '',
+  inventoryData: {},
   bargeValues: {},
 };
 
@@ -86,6 +88,10 @@ export const modalSlice = createSlice({
       state.inventoryType = action.payload;
       state.isAddConsumeablesModalOpen = !state.isAddConsumeablesModalOpen;
     },
+    toggleAddInventoryTypeModal: (state, action) => {
+      state.inventoryData = action.payload;
+      state.isAddInventoryTypeModalOpen = !state.isAddInventoryTypeModalOpen;
+    },
   },
 });
 
@@ -110,6 +116,7 @@ export const {
   toggleAddUserTypeModal,
   toggleAddPermissionModal,
   toggleAddRoleModal,
+  toggleAddInventoryTypeModal,
 } = modalSlice.actions;
 
 export default modalSlice.reducer;

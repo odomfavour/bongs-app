@@ -11,34 +11,44 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [permissions, setPermissions] = useState([]);
   const [rolePermissions, setRolePermission] = useState([]);
+  const [perPage, setPerPage] = useState('10'); // Default per_page
+  const [search, setSearch] = useState(''); // Default search
+  const [currentPage, setCurrentPage] = useState(1); // Default page
   const user = useSelector((state: any) => state?.user?.user);
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `${process.env.BASEURL}/roles-and-permissions`,
-        {
+
+  const fetchData = useCallback(
+    async (per_page = '10', search = '', page = 1) => {
+      console.log(
+        `Fetching data for page: ${page}, per_page: ${per_page}, search: ${search}`
+      );
+      setLoading(true);
+      try {
+        const response = await axios.get(`${process.env.BASEURL}/permissions`, {
           headers: {
             Authorization: `Bearer ${user?.token}`,
           },
-        }
-      );
-      console.log('resp', response);
-      setPermissions(response?.data?.data?.permissions);
-      // You can similarly setStoreItems if needed
-    } catch (error: any) {
-      console.error('Error:', error);
-
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.response?.data?.errors ||
-        error?.message ||
-        'Unknown error';
-      toast.error(`${errorMessage}`);
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.token]);
+          params: {
+            per_page,
+            search,
+            page,
+          },
+        });
+        console.log('resp', response);
+        setPermissions(response?.data?.data?.data);
+      } catch (error: any) {
+        console.error('Error:', error);
+        const errorMessage =
+          error?.response?.data?.message ||
+          error?.response?.data?.errors ||
+          error?.message ||
+          'Unknown error';
+        toast.error(`${errorMessage}`);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user?.token]
+  );
 
   const fetchRolesPermissions = useCallback(async () => {
     setLoading(true);
@@ -53,10 +63,8 @@ const Page = () => {
       );
       console.log('resp', response);
       setRolePermission(response?.data?.data);
-      // You can similarly setStoreItems if needed
     } catch (error: any) {
       console.error('Error:', error);
-
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
@@ -69,9 +77,9 @@ const Page = () => {
   }, [user?.token, id]);
 
   useEffect(() => {
-    fetchData();
+    fetchData(perPage, search, currentPage);
     fetchRolesPermissions();
-  }, [fetchData, fetchRolesPermissions]);
+  }, [fetchData, fetchRolesPermissions, perPage, search, currentPage]);
 
   return (
     <div>
@@ -80,6 +88,12 @@ const Page = () => {
         data={permissions}
         rolePermissions={rolePermissions}
         fetchData={fetchData}
+        perPage={perPage}
+        setPerPage={setPerPage}
+        search={search}
+        setSearch={setSearch}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
       />
     </div>
   );

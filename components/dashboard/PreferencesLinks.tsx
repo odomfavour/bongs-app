@@ -39,16 +39,16 @@ const links = [
     label: 'Location',
     img: 'Preferences_location.png',
   },
-  // {
-  //   href: '/preferences/general',
-  //   label: 'Equipment Type',
-  //   img: 'preference_Equipment_type.png',
-  // },
   {
-    href: '#',
-    label: 'Manufacturer',
-    img: 'preference_manufacturer.png',
+    href: '/inventory-category',
+    label: 'Inventory Category',
+    img: 'preference_Equipment_type.png',
   },
+  // {
+  //   href: '#',
+  //   label: 'Manufacturer',
+  //   img: 'preference_manufacturer.png',
+  // },
   { href: '/vendors', label: 'Vendor', img: 'vendor.png' },
   {
     href: '/vendor-category',

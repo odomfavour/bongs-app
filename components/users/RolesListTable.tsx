@@ -134,8 +134,8 @@ const RolesListTable: React.FC<RolesListTableProps> = ({ data, fetchData }) => {
             </tr>
           </thead>
           <tbody>
-            {currentItems.length > 0 &&
-              currentItems.map((item, index) => {
+            {currentItems?.length > 0 &&
+              currentItems?.map((item, index) => {
                 const { id, name } = item;
                 return (
                   <tr className="border-b" key={id}>
@@ -177,7 +177,7 @@ const RolesListTable: React.FC<RolesListTableProps> = ({ data, fetchData }) => {
                   </tr>
                 );
               })}
-            {currentItems.length == 0 && (
+            {currentItems?.length == 0 && (
               <tr className="text-center text-primary bg-white">
                 <td className="py-2 text-center" colSpan={10}>
                   <div className="flex justify-center items-center min-h-[60vh]">
@@ -187,7 +187,7 @@ const RolesListTable: React.FC<RolesListTableProps> = ({ data, fetchData }) => {
                       </div>
                       <div className="mt-5">
                         <p className="font-medium text-[#475467]">
-                          No Role found
+                          No role found
                         </p>
                         <p className="font-normal text-sm mt-3">
                           Click “add Role” button to get started in doing your

@@ -37,11 +37,13 @@ interface Location {
 interface LocationListTableProps {
   data: Location[];
   fetchData: () => void;
+  parent: string;
 }
 
-const LocationListTable: React.FC<LocationListTableProps> = ({
+const SparePartsListTable: React.FC<LocationListTableProps> = ({
   data,
   fetchData,
+  parent,
 }) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
@@ -133,14 +135,11 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
         <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
-              <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
-              <th className="text-sm text-center py-3">Location No</th>
-              <th className="text-sm text-center py-3">Name</th>
-              <th className="text-sm text-center py-3">Stored Items</th>
-              <th className="text-sm text-center py-3">Deck</th>
-              <th className="text-sm text-center py-3">Status</th>
-              <th className="text-sm text-center py-3">Created On</th>
-              <th className="text-sm text-center py-3">Actions</th>
+              <th className="text-sm text-left pl-3 py-3 rounded">S/N</th>
+              <th className="text-sm text-left py-3">Name</th>
+              <th className="text-sm text-left py-3">Status</th>
+              <th className="text-sm text-left py-3">Created On</th>
+              <th className="text-sm text-left py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -157,21 +156,14 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
                 } = item;
                 return (
                   <tr className="border-b" key={id}>
-                    <td className="py-2 text-center text-[#344054]">
+                    <td className="py-2 text-left text-[#344054]">
                       {index + 1}
                     </td>
-                    <td className="py-2 text-center">
-                      {location_number}
-                      {id}
-                    </td>
-                    <td className="py-2 text-center">{name}</td>
-                    <td className="py-2 text-center">{address}</td>
-                    <td className="py-2 text-center">{deck.name}</td>
-                    <td className="py-2 text-center">{status}</td>
-                    <td className="py-2 text-center">
-                      {formatDate(created_at)}
-                    </td>
-                    <td className="py-2 text-center flex justify-center items-center">
+
+                    <td className="py-2 text-left">{name}</td>
+                    <td className="py-2 text-left">{status}</td>
+                    <td className="py-2 text-left">{formatDate(created_at)}</td>
+                    <td className="py-2 text-left flex justify-left items-center">
                       <div className="flex gap-3">
                         <button
                           className="bg-blue-700 text-white p-2 rounded-md"
@@ -205,10 +197,10 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
                       </div>
                       <div className="mt-5">
                         <p className="font-medium text-[#475467]">
-                          No Locations found
+                          No {parent} found
                         </p>
                         <p className="font-normal text-sm mt-3">
-                          Click “add location” button to get started in doing
+                          Click “add {parent}” button to get started in doing
                           your
                           <br /> first transaction on the platform
                         </p>
@@ -279,4 +271,4 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
   );
 };
 
-export default LocationListTable;
+export default SparePartsListTable;

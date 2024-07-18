@@ -37,9 +37,10 @@ interface Location {
 interface LocationListTableProps {
   data: Location[];
   fetchData: () => void;
+  parent: string;
 }
 
-const LocationListTable: React.FC<LocationListTableProps> = ({
+const ConsumablesListTable: React.FC<LocationListTableProps> = ({
   data,
   fetchData,
 }) => {
@@ -136,8 +137,6 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
               <th className="text-sm text-center py-3">Location No</th>
               <th className="text-sm text-center py-3">Name</th>
-              <th className="text-sm text-center py-3">Stored Items</th>
-              <th className="text-sm text-center py-3">Deck</th>
               <th className="text-sm text-center py-3">Status</th>
               <th className="text-sm text-center py-3">Created On</th>
               <th className="text-sm text-center py-3">Actions</th>
@@ -165,8 +164,6 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
                       {id}
                     </td>
                     <td className="py-2 text-center">{name}</td>
-                    <td className="py-2 text-center">{address}</td>
-                    <td className="py-2 text-center">{deck.name}</td>
                     <td className="py-2 text-center">{status}</td>
                     <td className="py-2 text-center">
                       {formatDate(created_at)}
@@ -279,4 +276,4 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
   );
 };
 
-export default LocationListTable;
+export default ConsumablesListTable;

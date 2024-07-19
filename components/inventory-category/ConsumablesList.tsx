@@ -135,7 +135,7 @@ const ConsumablesListTable: React.FC<LocationListTableProps> = ({
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
-              <th className="text-sm text-center py-3">Location No</th>
+              {/* <th className="text-sm text-center py-3">Location No</th> */}
               <th className="text-sm text-center py-3">Name</th>
               <th className="text-sm text-center py-3">Status</th>
               <th className="text-sm text-center py-3">Created On</th>
@@ -159,10 +159,10 @@ const ConsumablesListTable: React.FC<LocationListTableProps> = ({
                     <td className="py-2 text-center text-[#344054]">
                       {index + 1}
                     </td>
-                    <td className="py-2 text-center">
+                    {/* <td className="py-2 text-center">
                       {location_number}
                       {id}
-                    </td>
+                    </td> */}
                     <td className="py-2 text-center">{name}</td>
                     <td className="py-2 text-center">{status}</td>
                     <td className="py-2 text-center">

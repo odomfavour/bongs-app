@@ -123,7 +123,6 @@ const Page = () => {
 
   return (
     <section>
-      {loading && <Loader />}
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
         <div>
           <p className="mb-8">Inventory Category</p>
@@ -201,20 +200,25 @@ const Page = () => {
           </button>
         ))}
       </div>
-
-      {activeTab === 'Spare Parts' && (
-        <SparePartsListTable
-          data={spareParts}
-          fetchData={fetchSparePartsData}
-          parent={selectedOption}
-        />
-      )}
-      {activeTab === 'Consumables' && (
-        <ConsumablesListTable
-          data={consumables}
-          fetchData={fetchConsumablesData}
-          parent={selectedOption}
-        />
+      {loading ? (
+        <Loader />
+      ) : (
+        <>
+          {activeTab === 'Spare Parts' && (
+            <SparePartsListTable
+              data={spareParts}
+              fetchData={fetchSparePartsData}
+              parent={selectedOption}
+            />
+          )}
+          {activeTab === 'Consumables' && (
+            <ConsumablesListTable
+              data={consumables}
+              fetchData={fetchConsumablesData}
+              parent={selectedOption}
+            />
+          )}
+        </>
       )}
     </section>
   );

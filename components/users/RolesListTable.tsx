@@ -126,9 +126,9 @@ const RolesListTable: React.FC<RolesListTableProps> = ({ data, fetchData }) => {
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
               <th className="text-sm text-center py-3">Role Name</th>
-              <th className="text-sm text-center py-3">HOD</th>
+              {/*<th className="text-sm text-center py-3">HOD</th>
               <th className="text-sm text-center py-3">Guard</th>
-              <th className="text-sm text-center py-3">Created On</th>
+              <th className="text-sm text-center py-3">Created On</th>*/}
 
               <th className="text-sm text-center py-3">Actions</th>
             </tr>
@@ -143,9 +143,9 @@ const RolesListTable: React.FC<RolesListTableProps> = ({ data, fetchData }) => {
                       {index + 1}
                     </td>
                     <td className="py-2 text-center capitalize">{name}</td>
+                    {/* <td className="py-2 text-center"></td>
                     <td className="py-2 text-center"></td>
-                    <td className="py-2 text-center"></td>
-                    <td className="py-2 text-center"></td>
+                    <td className="py-2 text-center"></td> */}
 
                     <td className="py-2 text-center flex justify-center items-center">
                       <div className="flex gap-3">

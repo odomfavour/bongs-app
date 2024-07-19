@@ -54,7 +54,7 @@ const Page = () => {
         }),
         axios.get(
           `${process.env.BASEURL}${
-            user.subscriber_id
+            user?.subscriber_id
               ? `/subscriber-roles/${user.subscriber_id}`
               : '/roles'
           }`,

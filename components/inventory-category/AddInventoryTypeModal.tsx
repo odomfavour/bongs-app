@@ -169,7 +169,7 @@ const AddInventoryTypeModal: React.FC<AddLocationModalProps> = ({
             onClick={() => dispatch(toggleAddInventoryTypeModal({}))}
           />
         </div>
-        {JSON.stringify(inventoryData)}
+        {/* {JSON.stringify(inventoryData)} */}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="name" className="block mb-2 text-sm font-medium">

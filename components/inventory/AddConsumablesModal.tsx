@@ -19,6 +19,7 @@ interface Subscriber {
 interface User {
   token: string;
   name: string;
+  subscriber_id: number;
   id: number;
 }
 
@@ -51,7 +52,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
     description: '',
     date_acquired: '',
     waranty_period: '',
-    subscriber_id: '' as string | number,
+    subscriber_id: user?.subscriber_id as string | number,
     status: false,
     status_condition: '',
     oil_and_lubricant_type_id: null as number | null,
@@ -165,7 +166,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
         date_acquired: '',
         waranty_period: '',
         remark: '',
-        subscriber_id: '' as string | number,
+        subscriber_id: user?.subscriber_id || ('' as string | number),
         status: false,
         status_condition: '',
         oil_and_lubricant_type_id: null as number | null,
@@ -340,37 +341,39 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
             onClick={() => dispatch(toggleAddConsumeablesModal(''))}
           />
         </div>
-
+        {formData.subscriber_id}
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-3 gap-5">
             <div>
-              <div className="mb-4">
-                <label
-                  htmlFor="subscriber"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Subscriber
-                </label>
-                <select
-                  id="subscriber"
-                  name="subscriber_id"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.subscriber_id}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      subscriber_id: parseInt(e.target.value),
-                    })
-                  }
-                >
-                  <option value="">Select Project</option>
-                  {subscribers?.map((subscriber) => (
-                    <option value={subscriber.id} key={subscriber.id}>
-                      {subscriber.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {!user?.subscriber_id && (
+                <div className="mb-4">
+                  <label
+                    htmlFor="subscriber"
+                    className="block mb-2 text-sm font-medium text-gray-900"
+                  >
+                    Subscriber
+                  </label>
+                  <select
+                    id="subscriber"
+                    name="subscriber_id"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                    value={formData.subscriber_id}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        subscriber_id: parseInt(e.target.value),
+                      })
+                    }
+                  >
+                    <option value="">Select Subscriber</option>
+                    {subscribers?.map((subscriber) => (
+                      <option value={subscriber.id} key={subscriber.id}>
+                        {subscriber.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div className="mb-4">
                 <label
                   htmlFor="subscriber"
@@ -649,7 +652,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                     })
                   }
                 >
-                  <option value="">Select Project</option>
+                  <option value="">Select Unit</option>
                   {uom?.map((unit: any) => (
                     <option value={unit.id} key={unit.id}>
                       {unit.name}

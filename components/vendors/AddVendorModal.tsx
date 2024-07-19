@@ -16,6 +16,7 @@ interface Subscriber {
 
 interface User {
   token: string;
+  subscriber_id: number;
 }
 
 interface VendorCategory {
@@ -46,7 +47,7 @@ const AddVendorModal: React.FC<AddVendorModalProps> = ({
     vendor_email: '',
     vendor_description: '',
     vendor_address: '',
-    subscriber_id: '' as string | number,
+    subscriber_id: user?.subscriber_id || ('' as string | number),
     status: false,
   });
   const [vendorCats, setVendorCats] = useState<VendorCategory[]>([]);
@@ -137,7 +138,7 @@ const AddVendorModal: React.FC<AddVendorModalProps> = ({
         vendor_email: '',
         vendor_description: '',
         vendor_address: '',
-        subscriber_id: '' as string | number,
+        subscriber_id: user?.subscriber_id as string | number,
         status: false,
       });
       dispatch(toggleVendorModal());
@@ -177,33 +178,35 @@ const AddVendorModal: React.FC<AddVendorModalProps> = ({
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-3 gap-5">
             <div>
-              <div className="mb-4">
-                <label
-                  htmlFor="subscriber"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Subscriber
-                </label>
-                <select
-                  id="subscriber"
-                  name="subscriber_id"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.subscriber_id}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      subscriber_id: parseInt(e.target.value),
-                    })
-                  }
-                >
-                  <option value="">Select Subscriber</option>
-                  {subscribers.map((subscriber) => (
-                    <option value={subscriber.id} key={subscriber.id}>
-                      {subscriber.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {!user?.subscriber_id && (
+                <div className="mb-4">
+                  <label
+                    htmlFor="subscriber"
+                    className="block mb-2 text-sm font-medium text-gray-900"
+                  >
+                    Subscriber
+                  </label>
+                  <select
+                    id="subscriber"
+                    name="subscriber_id"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                    value={formData.subscriber_id}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        subscriber_id: parseInt(e.target.value),
+                      })
+                    }
+                  >
+                    <option value="">Select Subscriber</option>
+                    {subscribers?.map((subscriber) => (
+                      <option value={subscriber.id} key={subscriber.id}>
+                        {subscriber.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div className="mb-4">
                 <label
                   htmlFor="vendor_category"

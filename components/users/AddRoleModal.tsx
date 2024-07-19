@@ -19,6 +19,7 @@ interface Subscriber {
 
 interface User {
   token: string;
+  subscriber_id: number;
 }
 
 interface AddRoleModalProps {
@@ -28,11 +29,11 @@ interface AddRoleModalProps {
 
 const AddRoleModal: React.FC<AddRoleModalProps> = ({ subscribers, user }) => {
   const dispatch = useDispatch();
-  const initialSubscriberId = getSubscriberIdFromUrl();
+
   const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const [formData, setFormData] = useState({
     name: '',
-    subscriber_id: initialSubscriberId || ('' as string | number),
+    subscriber_id: user?.subscriber_id || ('' as string | number),
   });
   const [loading, setLoading] = useState(false);
   const [userTypes, setuserTypes] = useState([]);
@@ -74,7 +75,7 @@ const AddRoleModal: React.FC<AddRoleModalProps> = ({ subscribers, user }) => {
 
       setFormData({
         name: '',
-        subscriber_id: '',
+        subscriber_id: user?.subscriber_id,
       });
       dispatch(toggleAddRoleModal());
       // Handle success (e.g., close modal, show success message)
@@ -111,10 +112,10 @@ const AddRoleModal: React.FC<AddRoleModalProps> = ({ subscribers, user }) => {
         </div>
 
         <form onSubmit={handleSubmit}>
-          {!initialSubscriberId && (
+          {!user.subscriber_id && (
             <div className="mb-4">
               <label
-                htmlFor="deck_type"
+                htmlFor="subscriber"
                 className="block mb-2 text-sm font-medium text-gray-900 "
               >
                 Subscriber

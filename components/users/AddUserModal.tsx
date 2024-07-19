@@ -27,7 +27,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
   const dispatch = useDispatch();
   const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const [formData, setFormData] = useState({
-    subscriber_id: user?.subscriber_id,
+    subscriber_id: user?.subscriber_id || ('' as string | number),
     first_name: '',
     last_name: '',
     email: '',
@@ -127,8 +127,10 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
     try {
       const [rolesResponse, deptResponse] = await Promise.all([
         axios.get(
-          `${process.env.BASEURL}/subscriber-roles/${
+          `${process.env.BASEURL}${
             user?.subscriber_id || formData.subscriber_id
+              ? `/subscriber-roles/${formData.subscriber_id}`
+              : '/roles'
           }`,
           {
             headers: {
@@ -142,9 +144,13 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
           },
         }),
       ]);
-      console.log('barge', deptResponse);
+      console.log('barge', rolesResponse);
       // setUsers(usersResponse?.data?.data?.data);
-      setRoles(rolesResponse?.data?.data);
+      setRoles(
+        user?.subscriber_id || formData.subscriber_id
+          ? rolesResponse?.data?.data
+          : rolesResponse?.data?.data?.data
+      );
       setDepartments(deptResponse?.data?.data?.data);
       //   setStoreItems(storeOnBoardResponse?.data?.data?.data);
       // You can similarly setStoreItems if needed

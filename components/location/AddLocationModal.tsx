@@ -13,6 +13,7 @@ interface Subscriber {
 
 interface User {
   token: string;
+  subscriber_id: number;
 }
 
 interface AddLocationModalProps {
@@ -32,7 +33,7 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
   const dispatch = useDispatch();
   const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const [formData, setFormData] = useState({
-    subscriber_id: '' as string | number,
+    subscriber_id: user?.subscriber_id as string | number,
     name: '',
     deck_id: '' as string | number,
     address: '',
@@ -153,32 +154,35 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label
-              htmlFor="deck_type"
-              className="block mb-2 text-sm font-medium text-gray-900 "
-            >
-              Subscriber
-            </label>
-            <select
-              id="subscriber"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-              value={formData.subscriber_id}
-              onChange={(e) =>
-                setFormData((prevData) => ({
-                  ...prevData,
-                  subscriber_id: parseInt(e.target.value),
-                }))
-              }
-            >
-              <option value="">Select Subscriber</option>
-              {subscribers?.map((subscriber: any) => (
-                <option value={subscriber.id} key={subscriber.id}>
-                  {subscriber.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          {!user?.subscriber_id && (
+            <div className="mb-4">
+              <label
+                htmlFor="subscriber"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Subscriber
+              </label>
+              <select
+                id="subscriber"
+                name="subscriber_id"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.subscriber_id}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    subscriber_id: parseInt(e.target.value),
+                  })
+                }
+              >
+                <option value="">Select Subscriber</option>
+                {subscribers?.map((subscriber) => (
+                  <option value={subscriber.id} key={subscriber.id}>
+                    {subscriber.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           <div className="mb-4">
             <label htmlFor="name" className="block mb-2 text-sm font-medium">
               Location Name

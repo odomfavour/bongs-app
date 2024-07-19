@@ -28,7 +28,7 @@ const AddDeptModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
   const dispatch = useDispatch();
   const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const [formData, setFormData] = useState({
-    subscriber_id: user?.subscriber_id,
+    subscriber_id: user?.subscriber_id || ('' as string | number),
     role_id: '',
     department_name: '',
     department_description: '',

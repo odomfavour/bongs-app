@@ -7,6 +7,7 @@ import {
   toggleUomModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,6 +23,7 @@ interface BargeComponent {
 }
 
 const BargeComponentPage = () => {
+  const router = useRouter();
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state?.user?.user);
   const [loading, setLoading] = useState(false);
@@ -51,11 +53,15 @@ const BargeComponentPage = () => {
         error?.response?.data?.errors ||
         error?.message ||
         'Unknown error';
-      toast.error(`${errorMessage}`);
+      if (error?.response.status === 401) {
+        router.push('/login');
+      } else {
+        toast.error(`${errorMessage}`);
+      }
     } finally {
       setLoading(false);
     }
-  }, [user?.token]);
+  }, [router, user?.token]);
 
   useEffect(() => {
     fetchData();

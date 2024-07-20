@@ -18,9 +18,11 @@ import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import RolesListTable from '@/components/users/RolesListTable';
+import { useRouter } from 'next/navigation';
 
 const Page = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
   const user = useSelector((state: any) => state?.user?.user);
   const isAddRoleModalOpen = useSelector(
     (state: any) => state?.modal?.isAddRoleModalOpen
@@ -85,11 +87,15 @@ const Page = () => {
         error?.response?.data?.errors ||
         error?.message ||
         'Unknown error';
-      toast.error(`${errorMessage}`);
+      if (error?.response.status === 401) {
+        router.push('/login');
+      } else {
+        toast.error(`${errorMessage}`);
+      }
     } finally {
       setLoading(false);
     }
-  }, [user?.token]);
+  }, [router, user.subscriber_id, user?.token]);
 
   useEffect(() => {
     fetchData();

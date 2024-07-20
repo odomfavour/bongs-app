@@ -179,7 +179,12 @@ const AddStoreOnBoardModal: React.FC<AddStoreOnBoardModalProps> = ({
         className="lg:w-3/5 w-11/12 bg-white rounded-[5px] shadow-authModal p-8"
       >
         <div className="flex justify-between items-center mb-3">
-          <p className="font-bold text-2xl">Add New Store - on - Board</p>
+          <p className="font-bold text-2xl">
+            {' '}
+            {Object.keys(bargeValues).length > 0
+              ? 'Edit Store - on - Board'
+              : 'Add New Store - on - Board'}
+          </p>
           <BsXLg
             className="cursor-pointer text-primary"
             role="button"

@@ -3,6 +3,7 @@ import Loader from '@/components/Loader';
 import UoMListTable from '@/components/uom/UomListTable';
 import { displayBargeValue, toggleUomModal } from '@/provider/redux/modalSlice';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,6 +26,7 @@ interface Uom {
 }
 
 const UomPage = () => {
+  const router = useRouter();
   const dispatch = useDispatch();
   const [uom, setUom] = useState<Uom[]>([]);
   const [loading, setLoading] = useState(false);
@@ -53,11 +55,15 @@ const UomPage = () => {
         error?.response?.data?.errors ||
         error?.message ||
         'Unknown error';
-      toast.error(`${errorMessage}`);
+      if (error?.response.status === 401) {
+        router.push('/login');
+      } else {
+        toast.error(`${errorMessage}`);
+      }
     } finally {
       setLoading(false);
     }
-  }, [user?.token]);
+  }, [router, user?.token]);
 
   useEffect(() => {
     fetchData();

@@ -9,6 +9,7 @@ import {
   toggleVendorModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,6 +23,7 @@ interface VendorCategory {
 }
 
 const VendorCategoryPage = () => {
+  const router = useRouter();
   const dispatch = useDispatch();
   const [vendorCat, setVendorCat] = useState<VendorCategory[]>([]);
 
@@ -54,7 +56,11 @@ const VendorCategoryPage = () => {
         error?.response?.data?.errors ||
         error?.message ||
         'Unknown error';
-      toast.error(`${errorMessage}`);
+      if (error?.response.status === 401) {
+        router.push('/login');
+      } else {
+        toast.error(`${errorMessage}`);
+      }
     } finally {
       setLoading(false);
     }

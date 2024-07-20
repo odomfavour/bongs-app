@@ -9,12 +9,14 @@ import EnginePanel from '@/components/inventory/EnginePanel';
 import HospitalPanel from '@/components/inventory/HospitalPanel';
 import SafetyPanel from '@/components/inventory/SafetyPanel';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 const Page = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('spare-parts');
   const [selectedOption, setSelectedOption] = useState('engine');
   const dispatch = useDispatch();
@@ -84,11 +86,15 @@ const Page = () => {
         error?.response?.data?.errors ||
         error?.message ||
         'Unknown error';
-      toast.error(`${errorMessage}`);
+      if (error?.response.status === 401) {
+        router.push('/login');
+      } else {
+        toast.error(`${errorMessage}`);
+      }
     } finally {
       setLoading(false);
     }
-  }, [activeTab, selectedOption, user?.token]);
+  }, [activeTab, router, selectedOption, user?.token]);
 
   useEffect(() => {
     fetchData();

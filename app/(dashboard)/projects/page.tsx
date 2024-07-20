@@ -65,7 +65,7 @@ const ProjectsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [router, user?.token]);
 
   useEffect(() => {
     fetchData();

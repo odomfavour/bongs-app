@@ -65,7 +65,7 @@ const LocationPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [user?.token]);
+  }, [router, user?.token]);
 
   useEffect(() => {
     fetchData();

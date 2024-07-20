@@ -57,7 +57,7 @@ const Page = () => {
         axios.get(
           `${process.env.BASEURL}${
             user?.subscriber_id
-              ? `/subscriber-roles/${user.subscriber_id}`
+              ? `/subscriber-roles/${user?.subscriber_id}`
               : '/roles'
           }`,
           {
@@ -95,7 +95,7 @@ const Page = () => {
     } finally {
       setLoading(false);
     }
-  }, [router, user.subscriber_id, user?.token]);
+  }, [router, user?.subscriber_id, user?.token]);
 
   useEffect(() => {
     fetchData();

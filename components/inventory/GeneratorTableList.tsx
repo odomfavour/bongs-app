@@ -124,7 +124,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 30;
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;

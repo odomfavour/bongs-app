@@ -7,6 +7,7 @@ import {
   toggleAddProjectModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,6 +32,7 @@ interface Projects {
 
 const ProjectsPage = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
   const user = useSelector((state: any) => state.user.user);
   const isProjectModalOpen = useSelector(
     (state: any) => state.modal.isProjectModalOpen
@@ -55,11 +57,15 @@ const ProjectsPage = () => {
         error?.response?.data?.errors ||
         error?.message ||
         'Unknown error';
-      toast.error(`${errorMessage}`);
+      if (error?.response.status === 401) {
+        router.push('/login');
+      } else {
+        toast.error(`${errorMessage}`);
+      }
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [router, user?.token]);
 
   useEffect(() => {
     fetchData();

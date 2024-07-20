@@ -112,7 +112,7 @@ const AddRoleModal: React.FC<AddRoleModalProps> = ({ subscribers, user }) => {
         </div>
 
         <form onSubmit={handleSubmit}>
-          {!user.subscriber_id && (
+          {!user?.subscriber_id && (
             <div className="mb-4">
               <label
                 htmlFor="subscriber"

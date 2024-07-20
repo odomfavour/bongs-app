@@ -166,7 +166,7 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
                     </td>
                     <td className="py-2 text-center">{name}</td>
                     <td className="py-2 text-center">{address}</td>
-                    <td className="py-2 text-center">{deck.name}</td>
+                    <td className="py-2 text-center">{deck?.name}</td>
                     <td className="py-2 text-center">{status}</td>
                     <td className="py-2 text-center">
                       {formatDate(created_at)}

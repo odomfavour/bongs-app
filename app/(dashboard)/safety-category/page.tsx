@@ -6,6 +6,7 @@ import {
   toggleSafetyCategoryModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
@@ -29,6 +30,7 @@ interface SafetyCategory {
 
 const SafetyCategoryPage = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
   const [safetyCat, setSafetyCat] = useState<SafetyCategory[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -58,11 +60,15 @@ const SafetyCategoryPage = () => {
         error?.response?.data?.errors ||
         error?.message ||
         'Unknown error';
-      toast.error(`${errorMessage}`);
+      if (error?.response.status === 401) {
+        router.push('/login');
+      } else {
+        toast.error(`${errorMessage}`);
+      }
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [router, user?.token]);
 
   useEffect(() => {
     fetchData();

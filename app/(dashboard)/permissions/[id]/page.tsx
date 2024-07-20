@@ -1,13 +1,14 @@
 'use client';
 import AssignRoleListTable from '@/components/users/AssignRoleList';
 import axios from 'axios';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 const Page = () => {
   const { id } = useParams();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [permissions, setPermissions] = useState([]);
   const [rolePermissions, setRolePermission] = useState([]);
@@ -42,12 +43,16 @@ const Page = () => {
           error?.response?.data?.errors ||
           error?.message ||
           'Unknown error';
-        toast.error(`${errorMessage}`);
+        if (error?.response.status === 401) {
+          router.push('/login');
+        } else {
+          toast.error(`${errorMessage}`);
+        }
       } finally {
         setLoading(false);
       }
     },
-    [user?.token]
+    [router, user?.token]
   );
 
   const fetchRolesPermissions = useCallback(async () => {
@@ -70,11 +75,16 @@ const Page = () => {
         error?.response?.data?.errors ||
         error?.message ||
         'Unknown error';
-      toast.error(`${errorMessage}`);
+
+      if (error?.response.status === 401) {
+        router.push('/login');
+      } else {
+        toast.error(`${errorMessage}`);
+      }
     } finally {
       setLoading(false);
     }
-  }, [user?.token, id]);
+  }, [id, user?.token, router]);
 
   useEffect(() => {
     fetchData(perPage, search, currentPage);

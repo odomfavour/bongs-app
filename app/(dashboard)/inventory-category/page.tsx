@@ -7,12 +7,14 @@ import {
   toggleAddInventoryTypeModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 const Page = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('Spare Parts');
   const [selectedOption, setSelectedOption] = useState('engine');
   const dispatch = useDispatch();
@@ -101,11 +103,15 @@ const Page = () => {
         error?.response?.data?.errors ||
         error?.message ||
         'Unknown error';
-      toast.error(`${errorMessage}`);
+      if (error?.response.status === 401) {
+        router.push('/login');
+      } else {
+        toast.error(`${errorMessage}`);
+      }
     } finally {
       setLoading(false);
     }
-  }, [selectedOption, user?.token]);
+  }, [router, selectedOption, user?.token]);
 
   useEffect(() => {
     if (activeTab === 'Spare Parts') {

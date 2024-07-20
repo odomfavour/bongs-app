@@ -17,7 +17,7 @@ import {
 import Loader from '@/components/Loader';
 import { toast } from 'react-toastify';
 import DeckTypeListTable from '@/components/preferences/DeckTypeListTable';
-
+import { useRouter } from 'next/navigation';
 interface User {
   first_name: string;
   last_name: string;
@@ -82,6 +82,7 @@ interface StoreBoard {
 }
 
 const Preferences = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('Barge');
   const [tabs, setTabs] = useState([
     { id: 1, name: 'Barge', count: '' },
@@ -155,11 +156,15 @@ const Preferences = () => {
         error?.response?.data?.errors ||
         error?.message ||
         'Unknown error';
-      toast.error(`${errorMessage}`);
+      if (error?.response.status === 401) {
+        router.push('/login');
+      } else {
+        toast.error(`${errorMessage}`);
+      }
     } finally {
       setLoading(false);
     }
-  }, [user?.token]);
+  }, [router, user?.token]);
 
   useEffect(() => {
     fetchData();

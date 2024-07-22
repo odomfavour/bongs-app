@@ -36,7 +36,7 @@ const ConsGalleyStrip: React.FC = () => {
       try {
         dispatch(toggleLoading(true));
         const response = await axios.post(
-          `${process.env.BASEURL}/v1/consumable/galleylaundry/import`,
+          `${process.env.BASEURL}/consumable/galleylaundry/import`,
           formData,
           {
             headers: {

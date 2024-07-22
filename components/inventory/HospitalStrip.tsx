@@ -6,7 +6,7 @@ import {
   toggleStoreOnBoardModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
@@ -25,6 +25,31 @@ const HospitalStrip: React.FC = () => {
     setIsExportOpen(!isExportOpen);
     setIsActionsOpen(false); // Close the actions dropdown if it is open
   };
+
+  const actionsRef = useRef<HTMLDivElement>(null);
+  const exportRef = useRef<HTMLDivElement>(null);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      actionsRef.current &&
+      !actionsRef.current.contains(event.target as Node)
+    ) {
+      setIsActionsOpen(false);
+    }
+    if (
+      exportRef.current &&
+      !exportRef.current.contains(event.target as Node)
+    ) {
+      setIsExportOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleBulkUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -98,7 +123,7 @@ const HospitalStrip: React.FC = () => {
   return (
     <div className="flex justify-between items-center w-full">
       <div className="flex">
-        <div className="relative inline-block text-left mr-4">
+        <div ref={actionsRef} className="relative inline-block text-left mr-4">
           {/* Actions Dropdown button */}
           <button
             className="text-[#1455D3] px-4 py-2 border border-[#1455D3] rounded-[30px] inline-flex items-center"
@@ -120,7 +145,7 @@ const HospitalStrip: React.FC = () => {
           )}
         </div>
 
-        <div className="relative inline-block text-left">
+        <div ref={exportRef} className="relative inline-block text-left">
           {/* Export Dropdown button */}
           <button
             className="text-[#1455D3] px-4 py-2 border border-[#1455D3] rounded-[30px] inline-flex items-center"

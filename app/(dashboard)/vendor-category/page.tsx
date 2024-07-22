@@ -5,6 +5,7 @@ import VendorCategoryListTable from '@/components/vendors/VendorCategoryListTabl
 import VendorListTable from '@/components/vendors/VendorListTable';
 import {
   displayBargeValue,
+  toggleLoading,
   toggleVendorCategoryModal,
   toggleVendorModal,
 } from '@/provider/redux/modalSlice';
@@ -35,7 +36,7 @@ const VendorCategoryPage = () => {
   );
 
   const fetchData = useCallback(async () => {
-    setLoading(true);
+    dispatch(toggleLoading(true));
     try {
       const response = await axios.get(
         `${process.env.BASEURL}/getVendorCategories`,
@@ -62,9 +63,9 @@ const VendorCategoryPage = () => {
         toast.error(`${errorMessage}`);
       }
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
-  }, [router, user?.token]);
+  }, [dispatch, router, user?.token]);
 
   useEffect(() => {
     fetchData();

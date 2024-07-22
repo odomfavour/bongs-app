@@ -5,6 +5,7 @@ import { FormEvent, useCallback, useEffect, useState } from 'react';
 import {
   toggleAddEngineModal,
   toggleAddProjectModal,
+  toggleLoading,
 } from '@/provider/redux/modalSlice';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -181,7 +182,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
   const [vendors, setVendors] = useState([]);
   const [bEquipment, setBEquipment] = useState([]);
   const fetchData = useCallback(async () => {
-    setLoading(true);
+    dispatch(toggleLoading(true));
     try {
       const [
         projectsResponse,
@@ -265,9 +266,9 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
         'Unknown error';
       toast.error(`${errorMessage}`);
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
-  }, [inventoryType, user?.token]);
+  }, [dispatch, inventoryType, user?.token]);
 
   useEffect(() => {
     fetchData();

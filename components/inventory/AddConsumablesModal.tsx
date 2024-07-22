@@ -6,6 +6,7 @@ import {
   toggleAddConsumeablesModal,
   toggleAddEngineModal,
   toggleAddProjectModal,
+  toggleLoading,
 } from '@/provider/redux/modalSlice';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -203,7 +204,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
   const [vendors, setVendors] = useState([]);
   const [bEquipment, setBEquipment] = useState([]);
   const fetchData = useCallback(async () => {
-    setLoading(true);
+    dispatch(toggleLoading(true));
     try {
       const [
         projectsResponse,
@@ -289,9 +290,9 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
         'Unknown error';
       toast.error(`${errorMessage}`);
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
-  }, [inventoryType, user?.token]);
+  }, [dispatch, inventoryType, user?.token]);
 
   useEffect(() => {
     fetchData();
@@ -341,7 +342,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
             onClick={() => dispatch(toggleAddConsumeablesModal(''))}
           />
         </div>
-        {formData.subscriber_id}
+
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-3 gap-5">
             <div>
@@ -765,30 +766,20 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                       >
                         Stock Quantity
                       </label>
-                      <div className="flex items-center">
-                        <button
-                          type="button"
-                          className="p-2 bg-gray-200 rounded-l-lg"
-                          onClick={decreaseQuantity}
-                        >
-                          <FaMinus />
-                        </button>
-                        <input
-                          type="number"
-                          id="stock_quantity"
-                          name="stock_quantity"
-                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-none focus:ring-blue-500 focus:border-blue-500 block w-full p-3 text-center"
-                          value={formData.stock_quantity}
-                          readOnly
-                        />
-                        <button
-                          type="button"
-                          className="p-2 bg-gray-200 rounded-r-lg"
-                          onClick={increaseQuantity}
-                        >
-                          <FaPlus />
-                        </button>
-                      </div>
+
+                      <input
+                        type="number"
+                        id="stock_quantity"
+                        name="stock_quantity"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-none focus:ring-blue-500 focus:border-blue-500 block w-full p-3 text-center"
+                        value={formData.stock_quantity}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            stock_quantity: parseInt(e.target.value),
+                          })
+                        }
+                      />
                     </div>
 
                     <div className="mb-4">
@@ -798,30 +789,20 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                       >
                         Threshold
                       </label>
-                      <div className="flex items-center">
-                        <button
-                          type="button"
-                          className="p-2 bg-gray-200 rounded-l-lg"
-                          onClick={decreaseThreshold}
-                        >
-                          <FaMinus />
-                        </button>
-                        <input
-                          type="number"
-                          id="threshold"
-                          name="threshold"
-                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-none focus:ring-blue-500 focus:border-blue-500 block w-full p-3 text-center"
-                          value={formData.threshold}
-                          readOnly
-                        />
-                        <button
-                          type="button"
-                          className="p-2 bg-gray-200 rounded-r-lg"
-                          onClick={increaseThreshold}
-                        >
-                          <FaPlus />
-                        </button>
-                      </div>
+
+                      <input
+                        type="number"
+                        id="threshold"
+                        name="threshold"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-none focus:ring-blue-500 focus:border-blue-500 block w-full p-3 text-center"
+                        value={formData.threshold}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            threshold: parseInt(e.target.value),
+                          })
+                        }
+                      />
                     </div>
                   </div>
                 </div>

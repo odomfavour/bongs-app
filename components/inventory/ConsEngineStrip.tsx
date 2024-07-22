@@ -3,10 +3,11 @@ import {
   displayBargeValue,
   toggleAddConsumeablesModal,
   toggleAddEngineModal,
+  toggleLoading,
   toggleStoreOnBoardModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
@@ -26,6 +27,31 @@ const ConsEngineStrip: React.FC = () => {
     setIsActionsOpen(false); // Close the actions dropdown if it is open
   };
 
+  const actionsRef = useRef<HTMLDivElement>(null);
+  const exportRef = useRef<HTMLDivElement>(null);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      actionsRef.current &&
+      !actionsRef.current.contains(event.target as Node)
+    ) {
+      setIsActionsOpen(false);
+    }
+    if (
+      exportRef.current &&
+      !exportRef.current.contains(event.target as Node)
+    ) {
+      setIsExportOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const handleBulkUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     console.log('here');
     const file = event.target.files?.[0];
@@ -34,8 +60,9 @@ const ConsEngineStrip: React.FC = () => {
       formData.append('file', file);
 
       try {
+        dispatch(toggleLoading(false));
         const response = await axios.post(
-          'https://bongsapi.dpanalyticsolution.com/api/v1/consumable/engine/import',
+          `${process.env.BASEURL}/v1/consumable/engine/import`,
           formData,
           {
             headers: {
@@ -44,7 +71,7 @@ const ConsEngineStrip: React.FC = () => {
             },
           }
         );
-
+        toast.success(response?.data?.message);
         console.log('Bulk upload successful:', response.data);
       } catch (error: any) {
         console.error('Bulk upload failed:', error);
@@ -54,6 +81,8 @@ const ConsEngineStrip: React.FC = () => {
           error?.message ||
           'Unknown error';
         toast.error(`${errorMessage}`);
+      } finally {
+        dispatch(toggleLoading(false));
       }
     }
   };
@@ -61,8 +90,9 @@ const ConsEngineStrip: React.FC = () => {
   const handleExport = async (format: string) => {
     setIsExportOpen(false);
     try {
+      dispatch(toggleLoading(true));
       const response = await axios.get(
-        'https://bongsapi.dpanalyticsolution.com/api/v1/consumable/engine/export',
+        `${process.env.BASEURL}/consumable/engine/export`,
         {
           params: { format },
           responseType: 'blob',
@@ -80,6 +110,7 @@ const ConsEngineStrip: React.FC = () => {
       document.body.appendChild(a);
       a.click();
       a.remove();
+      toast.success(response?.data?.message);
     } catch (error: any) {
       console.error('Export failed:', error);
       const errorMessage =
@@ -88,12 +119,14 @@ const ConsEngineStrip: React.FC = () => {
         error?.message ||
         'Unknown error';
       toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
   return (
     <div className="flex justify-between items-center w-full">
       <div className="flex">
-        <div className="relative inline-block text-left mr-4">
+        <div ref={actionsRef} className="relative inline-block text-left mr-4">
           {/* Actions Dropdown button */}
           <button
             className="text-[#1455D3] px-4 py-2 border border-[#1455D3] rounded-[30px] inline-flex items-center"
@@ -115,7 +148,7 @@ const ConsEngineStrip: React.FC = () => {
           )}
         </div>
 
-        <div className="relative inline-block text-left">
+        <div ref={exportRef} className="relative inline-block text-left">
           {/* Export Dropdown button */}
           <button
             className="text-[#1455D3] px-4 py-2 border border-[#1455D3] rounded-[30px] inline-flex items-center"

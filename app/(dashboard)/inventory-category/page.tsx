@@ -5,6 +5,7 @@ import SparePartsListTable from '@/components/inventory-category/SparePartsList'
 import {
   displayBargeValue,
   toggleAddInventoryTypeModal,
+  toggleLoading,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -29,7 +30,7 @@ const Page = () => {
     { id: 2, name: 'Consumables', count: '' },
   ]);
   const fetchSparePartsData = useCallback(async () => {
-    setLoading(true);
+    dispatch(toggleLoading(true));
     let urlPath;
     switch (selectedOption) {
       case 'engine':
@@ -63,12 +64,12 @@ const Page = () => {
         'Unknown error';
       toast.error(`${errorMessage}`);
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
-  }, [selectedOption, user?.token]);
+  }, [dispatch, selectedOption, user?.token]);
 
   const fetchConsumablesData = useCallback(async () => {
-    setLoading(true);
+    dispatch(toggleLoading(true));
     let urlPath;
     switch (selectedOption) {
       case 'engine':
@@ -109,9 +110,9 @@ const Page = () => {
         toast.error(`${errorMessage}`);
       }
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
-  }, [router, selectedOption, user?.token]);
+  }, [dispatch, router, selectedOption, user?.token]);
 
   useEffect(() => {
     if (activeTab === 'Spare Parts') {

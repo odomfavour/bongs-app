@@ -5,8 +5,9 @@ import EngineStrip from './EngineStrip';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import Loader from '../Loader';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { usePathname } from 'next/navigation';
+import { toggleLoading } from '@/provider/redux/modalSlice';
 
 interface Generator {
   id: number;
@@ -44,6 +45,7 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
   const isAddEngineModalOpen = useSelector(
     (state: any) => state.modal.isAddEngineModalOpen
   );
+  const dispatch = useDispatch();
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
     let endpoint = `${process.env.BASEURL}/sparepart/engine/${activeId}`;
@@ -52,6 +54,7 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
       endpoint += '?filter=project';
     }
     try {
+      dispatch(toggleLoading(true));
       const response = await axios.get(endpoint, {
         headers: {
           Authorization: `Bearer ${user?.token}`,
@@ -69,9 +72,9 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
         'Unknown error';
       toast.error(`${errorMessage}`);
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
-  }, [activeId, pathname, user?.token]);
+  }, [activeId, dispatch, pathname, user?.token]);
 
   useEffect(() => {
     if (engineCategories && engineCategories.length > 0) {

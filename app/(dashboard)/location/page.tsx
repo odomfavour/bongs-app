@@ -3,6 +3,7 @@ import Loader from '@/components/Loader';
 import LocationListTable from '@/components/location/LocationListTable';
 import {
   displayBargeValue,
+  toggleLoading,
   toggleLocationModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
@@ -40,7 +41,7 @@ const LocationPage = () => {
   );
 
   const fetchData = useCallback(async () => {
-    setLoading(true);
+    dispatch(toggleLoading(true));
     try {
       const response = await axios.get(`${process.env.BASEURL}/location`, {
         headers: {
@@ -63,7 +64,7 @@ const LocationPage = () => {
         toast.error(`${errorMessage}`);
       }
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
   }, [router, user?.token]);
 

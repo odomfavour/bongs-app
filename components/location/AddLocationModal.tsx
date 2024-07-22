@@ -2,7 +2,10 @@
 import { BsXLg } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormEvent, useEffect, useState } from 'react';
-import { toggleLocationModal } from '@/provider/redux/modalSlice';
+import {
+  toggleLoading,
+  toggleLocationModal,
+} from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -93,9 +96,9 @@ const AddLocationModal: React.FC<AddLocationModalProps> = ({
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
 
     try {
+      setLoading(true);
       const url =
         Object.keys(bargeValues).length > 0
           ? `${process.env.BASEURL}/location/${bargeValues.id}`

@@ -4,6 +4,8 @@ import DeckStrip from './DeckStrip';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import GeneratorTableList from './GeneratorTableList';
+import { useDispatch } from 'react-redux';
+import { toggleLoading } from '@/provider/redux/modalSlice';
 
 interface Generator {
   id: number;
@@ -30,10 +32,11 @@ const DeckPanel: React.FC<DeckPanelProps> = ({ deckCategories, user }) => {
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
   const [spareparts, setSpareparts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-
+  const dispatch = useDispatch();
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
     try {
+      dispatch(toggleLoading(true));
       const response = await axios.get(
         `${process.env.BASEURL}/sparepart/deck/${activeId}`,
         {
@@ -54,7 +57,7 @@ const DeckPanel: React.FC<DeckPanelProps> = ({ deckCategories, user }) => {
         'Unknown error';
       toast.error(`${errorMessage}`);
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
   }, [activeId, user?.token]);
 

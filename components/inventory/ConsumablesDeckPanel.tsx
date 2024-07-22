@@ -2,10 +2,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import EngineStrip from './EngineStrip';
 import GeneratorTableList from './GeneratorTableList';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import ConsDeckStrip from './ConsDeckStrip';
 import ConsumablesableList from './ConsumablesTableList';
+import { toggleLoading } from '@/provider/redux/modalSlice';
 
 interface User {
   token: string;
@@ -28,10 +29,11 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   const isAddConsumeablesModalOpen = useSelector(
     (state: any) => state.modal.isAddConsumeablesModalOpen
   );
+  const dispatch = useDispatch();
 
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return; // Ensure activeId is defined before making the request
-    setLoading(true);
+    dispatch(toggleLoading(true));
     try {
       const response = await axios.get(
         `${process.env.BASEURL}/consumable/deck/${activeId}`,
@@ -53,9 +55,9 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
         'Unknown error';
       toast.error(`${errorMessage}`);
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
-  }, [activeId, user?.token]);
+  }, [activeId, dispatch, user?.token]);
 
   useEffect(() => {
     if (deckCategories && deckCategories.length > 0) {

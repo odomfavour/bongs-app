@@ -12,6 +12,7 @@ import {
   toggleAddBargeModal,
   toggleAddDeckModal,
   toggleAddDeckTypeModal,
+  toggleLoading,
   toggleStoreOnBoardModal,
 } from '@/provider/redux/modalSlice';
 import Loader from '@/components/Loader';
@@ -94,7 +95,7 @@ const Preferences = () => {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [deckTypes, setDeckTypes] = useState<DeckType[]>([]);
   const [storeItems, setStoreItems] = useState<StoreBoard[]>([]);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state?.user?.user);
@@ -112,8 +113,10 @@ const Preferences = () => {
     (state: any) => state.modal.isStoreOnBoardModalOpen
   );
 
+  // const isLoading = useSelector((state: any) => state.modal.isLoading);
+
   const fetchData = useCallback(async () => {
-    setLoading(true);
+    dispatch(toggleLoading(true));
     try {
       const [
         bargesResponse,
@@ -162,9 +165,9 @@ const Preferences = () => {
         toast.error(`${errorMessage}`);
       }
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
-  }, [router, user?.token]);
+  }, [dispatch, router, user?.token]);
 
   useEffect(() => {
     fetchData();
@@ -259,23 +262,17 @@ const Preferences = () => {
         ))}
       </div>
       <div className="mt-5">
-        {loading ? (
-          <Loader />
-        ) : (
-          <>
-            {activeTab === 'Barge' && (
-              <BargeListTable data={barges} fetchdata={fetchData} />
-            )}
-            {activeTab === 'Deck' && (
-              <DeckListTable data={decks} fetchdata={fetchData} />
-            )}
-            {activeTab === 'Deck Type' && (
-              <DeckTypeListTable data={deckTypes} fetchdata={fetchData} />
-            )}
-            {activeTab === 'Store - on - Board' && (
-              <StoreOnBoardListTable data={storeItems} fetchdata={fetchData} />
-            )}
-          </>
+        {activeTab === 'Barge' && (
+          <BargeListTable data={barges} fetchdata={fetchData} />
+        )}
+        {activeTab === 'Deck' && (
+          <DeckListTable data={decks} fetchdata={fetchData} />
+        )}
+        {activeTab === 'Deck Type' && (
+          <DeckTypeListTable data={deckTypes} fetchdata={fetchData} />
+        )}
+        {activeTab === 'Store - on - Board' && (
+          <StoreOnBoardListTable data={storeItems} fetchdata={fetchData} />
         )}
       </div>
     </div>

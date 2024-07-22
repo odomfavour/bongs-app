@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   displayBargeValue,
   toggleAddEngineModal,
+  toggleLoading,
 } from '@/provider/redux/modalSlice';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -52,12 +53,12 @@ const EngineStrip: React.FC = () => {
   const handleBulkUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      console.log('file', file);
       const formData = new FormData();
       formData.append('file', file);
       try {
+        dispatch(toggleLoading(true));
         const response = await axios.post(
-          'https://bongsapi.dpanalyticsolution.com/api/v1/sparepart/engine/import',
+          `${process.env.BASEURL}/sparepart/engine/import`,
           formData,
           {
             headers: {
@@ -76,6 +77,8 @@ const EngineStrip: React.FC = () => {
           error?.message ||
           'Unknown error';
         toast.error(`${errorMessage}`);
+      } finally {
+        dispatch(toggleLoading(false));
       }
     }
   };
@@ -83,8 +86,9 @@ const EngineStrip: React.FC = () => {
   const handleExport = async (format: string) => {
     setIsExportOpen(false);
     try {
+      dispatch(toggleLoading(true));
       const response = await fetch(
-        `https://bongsapi.dpanalyticsolution.com/api/v1/sparepart/engine/export?format=${format}`,
+        `${process.env.BASEURL}/v1/sparepart/engine/export?format=${format}`,
         {
           method: 'GET',
           headers: {

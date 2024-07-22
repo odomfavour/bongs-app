@@ -11,6 +11,7 @@ import {
   toggleAddRoleModal,
   toggleAddUserModal,
   toggleAddUserTypeModal,
+  toggleLoading,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -45,8 +46,7 @@ const Page = () => {
   const [departments, setDepartments] = useState([]);
 
   const fetchData = useCallback(async () => {
-    console.log('first call');
-    setLoading(true);
+    dispatch(toggleLoading(false));
     try {
       const [usersResponse, rolesResponse, deptResponse] = await Promise.all([
         axios.get(`${process.env.BASEURL}/users`, {
@@ -72,13 +72,9 @@ const Page = () => {
           },
         }),
       ]);
-      console.log('barge', deptResponse);
       setUsers(usersResponse?.data?.data?.data);
       setRoles(rolesResponse?.data?.data?.data);
       setDepartments(deptResponse?.data?.data?.data);
-      //   setDeckTypes(deckTypesResponse?.data?.data?.data);
-      //   setStoreItems(storeOnBoardResponse?.data?.data?.data);
-      // You can similarly setStoreItems if needed
     } catch (error: any) {
       console.error('Error:', error);
 
@@ -93,9 +89,9 @@ const Page = () => {
         toast.error(`${errorMessage}`);
       }
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
-  }, [router, user?.subscriber_id, user?.token]);
+  }, [dispatch, router, user?.subscriber_id, user?.token]);
 
   useEffect(() => {
     fetchData();

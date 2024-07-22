@@ -6,11 +6,11 @@ import {
   toggleAddEngineModal,
   toggleBargeComponentModal,
 } from '@/provider/redux/modalSlice';
-import { formatDate } from '@/utils/utils';
+import { calculateCountdown, formatDate } from '@/utils/utils';
 import axios from 'axios';
 // import { EmptyProductIcon } from '@/utils/utils';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaExternalLinkAlt, FaPenAlt, FaTrashAlt } from 'react-icons/fa';
 import { FaMagnifyingGlass, FaRegFolderClosed } from 'react-icons/fa6';
 import { IoFilter } from 'react-icons/io5';
@@ -223,6 +223,20 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
     }
   };
 
+  const [countdowns, setCountdowns] = useState<
+    { days: number; hours: number; minutes: number; seconds: number }[]
+  >(data.map((item) => calculateCountdown(item.waranty_period)));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCountdowns(
+        data.map((item) => calculateCountdown(item.waranty_period))
+      );
+    }, 1000); // Update every second
+
+    return () => clearInterval(interval);
+  }, [data]);
+
   return (
     <div className="bg-white pt-2">
       <div className="overflow-x-auto">
@@ -261,6 +275,13 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
           <tbody>
             {currentItems.length > 0 &&
               currentItems.map((item: SparePart, index) => {
+                const countdown = countdowns[index] || {
+                  days: 0,
+                  hours: 0,
+                  minutes: 0,
+                  seconds: 0,
+                };
+                const { days, hours, minutes, seconds } = countdown;
                 const {
                   id,
                   project,
@@ -295,7 +316,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
                     <td className="py-2 text-center">{threshold}</td>
                     <td className="py-2 text-center">{location?.name}</td>
                     <td className="py-2 text-center">{date_acquired}</td>
-                    <td className="py-2 text-center">{waranty_period}</td>
+                    <td className="py-2 text-center">{`${days}d ${hours}h ${minutes}m ${seconds}s`}</td>
                     <td className="py-2 text-center relative">
                       <div className="flex items-center justify-center gap-2">
                         <button

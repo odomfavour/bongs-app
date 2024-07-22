@@ -4,6 +4,8 @@ import SafetyStrip from './SafetyStrip';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import GeneratorTableList from './GeneratorTableList';
+import { toggleLoading } from '@/provider/redux/modalSlice';
+import { useDispatch } from 'react-redux';
 
 interface User {
   token: string;
@@ -22,10 +24,11 @@ const SafetyPanel: React.FC<SafetyPanelProps> = ({
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
   const [spareparts, setSpareparts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-
+  const dispatch = useDispatch();
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
     try {
+      dispatch(toggleLoading(true));
       const response = await axios.get(
         `${process.env.BASEURL}/sparepart/safety/${activeId}`,
         {
@@ -46,9 +49,9 @@ const SafetyPanel: React.FC<SafetyPanelProps> = ({
         'Unknown error';
       toast.error(`${errorMessage}`);
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
-  }, [activeId, user?.token]);
+  }, [activeId, dispatch, user?.token]);
 
   useEffect(() => {
     if (safetyCategories && safetyCategories.length > 0) {

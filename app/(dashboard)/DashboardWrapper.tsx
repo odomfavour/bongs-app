@@ -25,6 +25,7 @@ import AddUserTypeModal from '@/components/users/AddUserTypeModal';
 import AddDeptModal from '@/components/users/AddDeptModal';
 import AddRoleModal from '@/components/users/AddRoleModal';
 import AddInventoryTypeModal from '@/components/inventory-category/AddInventoryTypeModal';
+import Loader from '@/components/Loader';
 
 interface DashboardWrapperProps {
   children: ReactNode;
@@ -124,6 +125,8 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
     (state: any) => state.modal.isAddInventoryTypeModalOpen
   );
 
+  const isLoading = useSelector((state: any) => state.modal.isLoading);
+
   return (
     <>
       <section>
@@ -194,6 +197,7 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
       {isAddInventoryTypeModalOpen && (
         <AddInventoryTypeModal subscribers={subscribers} user={user} />
       )}
+      {isLoading && <Loader />}
       <ToastContainer />
     </>
   );

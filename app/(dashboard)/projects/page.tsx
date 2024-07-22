@@ -5,6 +5,7 @@ import ProjectsListTable from '@/components/projects/ProjectsTableList';
 import {
   displayBargeValue,
   toggleAddProjectModal,
+  toggleLoading,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -40,7 +41,7 @@ const ProjectsPage = () => {
   const [loading, setLoading] = useState(false);
   const [projects, setProjects] = useState<Projects[]>([]);
   const fetchData = useCallback(async () => {
-    setLoading(true);
+    dispatch(toggleLoading(true));
     try {
       const response = await axios.get(`${process.env.BASEURL}/getProjects`, {
         headers: {
@@ -63,9 +64,9 @@ const ProjectsPage = () => {
         toast.error(`${errorMessage}`);
       }
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
-  }, [router, user?.token]);
+  }, [dispatch, router, user?.token]);
 
   useEffect(() => {
     fetchData();

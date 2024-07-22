@@ -8,6 +8,7 @@ import DeckPanel from '@/components/inventory/DeckPanel';
 import EnginePanel from '@/components/inventory/EnginePanel';
 import HospitalPanel from '@/components/inventory/HospitalPanel';
 import SafetyPanel from '@/components/inventory/SafetyPanel';
+import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -28,7 +29,7 @@ const Page = () => {
   );
 
   const fetchData = useCallback(async () => {
-    setLoading(true);
+    dispatch(toggleLoading(true));
     try {
       let response;
       let urlPath;
@@ -92,9 +93,9 @@ const Page = () => {
         toast.error(`${errorMessage}`);
       }
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
-  }, [activeTab, router, selectedOption, user?.token]);
+  }, [activeTab, dispatch, router, selectedOption, user?.token]);
 
   useEffect(() => {
     fetchData();

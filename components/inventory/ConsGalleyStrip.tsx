@@ -3,6 +3,7 @@ import {
   displayBargeValue,
   toggleAddConsumeablesModal,
   toggleAddEngineModal,
+  toggleLoading,
   toggleStoreOnBoardModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
@@ -27,15 +28,15 @@ const ConsGalleyStrip: React.FC = () => {
   };
 
   const handleBulkUpload = async (event: ChangeEvent<HTMLInputElement>) => {
-    console.log('here');
     const file = event.target.files?.[0];
     if (file) {
       const formData = new FormData();
       formData.append('file', file);
 
       try {
+        dispatch(toggleLoading(true));
         const response = await axios.post(
-          'https://bongsapi.dpanalyticsolution.com/api/v1/consumable/galleylaundry/import',
+          `${process.env.BASEURL}/v1/consumable/galleylaundry/import`,
           formData,
           {
             headers: {
@@ -54,6 +55,8 @@ const ConsGalleyStrip: React.FC = () => {
           error?.message ||
           'Unknown error';
         toast.error(`${errorMessage}`);
+      } finally {
+        dispatch(toggleLoading(false));
       }
     }
   };
@@ -88,6 +91,8 @@ const ConsGalleyStrip: React.FC = () => {
         error?.message ||
         'Unknown error';
       toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
   return (

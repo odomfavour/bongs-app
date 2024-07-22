@@ -1,9 +1,10 @@
 'use client';
 import AssignRoleListTable from '@/components/users/AssignRoleList';
+import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 const Page = () => {
@@ -16,13 +17,13 @@ const Page = () => {
   const [search, setSearch] = useState(''); // Default search
   const [currentPage, setCurrentPage] = useState(1); // Default page
   const user = useSelector((state: any) => state?.user?.user);
-
+  const dispatch = useDispatch();
   const fetchData = useCallback(
     async (per_page = '10', search = '', page = 1) => {
       console.log(
         `Fetching data for page: ${page}, per_page: ${per_page}, search: ${search}`
       );
-      setLoading(true);
+      dispatch(toggleLoading(true));
       try {
         const response = await axios.get(`${process.env.BASEURL}/permissions`, {
           headers: {
@@ -49,10 +50,10 @@ const Page = () => {
           toast.error(`${errorMessage}`);
         }
       } finally {
-        setLoading(false);
+        dispatch(toggleLoading(false));
       }
     },
-    [router, user?.token]
+    [dispatch, router, user?.token]
   );
 
   const fetchRolesPermissions = useCallback(async () => {
@@ -82,9 +83,9 @@ const Page = () => {
         toast.error(`${errorMessage}`);
       }
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
-  }, [id, user?.token, router]);
+  }, [id, user?.token, router, dispatch]);
 
   useEffect(() => {
     fetchData(perPage, search, currentPage);

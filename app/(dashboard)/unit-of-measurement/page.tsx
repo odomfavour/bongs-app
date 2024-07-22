@@ -1,7 +1,11 @@
 'use client';
 import Loader from '@/components/Loader';
 import UoMListTable from '@/components/uom/UomListTable';
-import { displayBargeValue, toggleUomModal } from '@/provider/redux/modalSlice';
+import {
+  displayBargeValue,
+  toggleLoading,
+  toggleUomModal,
+} from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -37,7 +41,7 @@ const UomPage = () => {
   );
 
   const fetchData = useCallback(async () => {
-    setLoading(true);
+    dispatch(toggleLoading(true));
     try {
       const response = await axios.get(`${process.env.BASEURL}/uom`, {
         headers: {
@@ -61,9 +65,9 @@ const UomPage = () => {
         toast.error(`${errorMessage}`);
       }
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
-  }, [router, user?.token]);
+  }, [dispatch, router, user?.token]);
 
   useEffect(() => {
     fetchData();

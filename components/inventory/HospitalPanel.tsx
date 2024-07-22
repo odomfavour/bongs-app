@@ -4,6 +4,8 @@ import HospitalStrip from './HospitalStrip';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import GeneratorTableList from './GeneratorTableList';
+import { toggleLoading } from '@/provider/redux/modalSlice';
+import { useDispatch } from 'react-redux';
 interface User {
   token: string;
 }
@@ -21,10 +23,11 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
   const [spareparts, setSpareparts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-
+  const dispatch = useDispatch();
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
     try {
+      dispatch(toggleLoading(false));
       const response = await axios.get(
         `${process.env.BASEURL}/sparepart/hospital/${activeId}`,
         {
@@ -45,7 +48,7 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
         'Unknown error';
       toast.error(`${errorMessage}`);
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
   }, [activeId, user?.token]);
 

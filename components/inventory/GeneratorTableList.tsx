@@ -5,11 +5,11 @@ import {
   toggleAddEngineModal,
   toggleBargeComponentModal,
 } from '@/provider/redux/modalSlice';
-import { formatDate } from '@/utils/utils';
+import { calculateCountdown, formatDate } from '@/utils/utils';
 import axios from 'axios';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaExternalLinkAlt, FaPenAlt, FaTrashAlt } from 'react-icons/fa';
 import { FaMagnifyingGlass, FaRegFolderClosed } from 'react-icons/fa6';
 import { IoFilter } from 'react-icons/io5';
@@ -217,6 +217,20 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
     dispatch(toggleAddEngineModal(parent));
   };
 
+  const [countdowns, setCountdowns] = useState<
+    { days: number; hours: number; minutes: number; seconds: number }[]
+  >(data.map((item) => calculateCountdown(item.waranty_period)));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCountdowns(
+        data.map((item) => calculateCountdown(item.waranty_period))
+      );
+    }, 1000); // Update every second
+
+    return () => clearInterval(interval);
+  }, [data]);
+
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
@@ -264,38 +278,47 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {currentItems.map((item, index) => (
-              <tr key={item.id} className="border-b">
-                <td className="text-center py-3">
-                  <input
-                    type="checkbox"
-                    checked={selectedItems.includes(item.id)}
-                    onChange={() => handleSelect(item.id)}
-                  />
-                </td>
-                <td className="text-center py-3">{index + 1}</td>
-                {pathname === '/inventories' && (
-                  <td className="text-center py-3">
-                    {item?.project?.project_name}
-                  </td>
-                )}
-                <td className="text-center py-3">{item.description}</td>
-                <td className="text-center py-3">{item.stock_quantity}</td>
-                <td className="text-center py-3">{item.part_number}</td>
-                <td className="text-center py-3">{item.model_number}</td>
-                <td className="text-center py-3">{item.threshold}</td>
-                <td className="text-center py-3">{item.location.name}</td>
-                <td className="text-center py-3">{item.date_acquired}</td>
-                <td className="text-center py-3">{item.waranty_period}</td>
-                <td className="text-center py-3">
-                  <div className="flex justify-center space-x-2">
-                    <button
-                      className="bg-blue-500 text-white p-2 rounded-md"
-                      onClick={() => handleEdit(item)}
-                    >
-                      Edit
-                    </button>
-                    {/* <button
+            {currentItems.length > 0 &&
+              currentItems?.map((item, index) => {
+                const countdown = countdowns[index] || {
+                  days: 0,
+                  hours: 0,
+                  minutes: 0,
+                  seconds: 0,
+                };
+                const { days, hours, minutes, seconds } = countdown;
+                return (
+                  <tr key={item.id} className="border-b">
+                    <td className="text-center py-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.includes(item.id)}
+                        onChange={() => handleSelect(item.id)}
+                      />
+                    </td>
+                    <td className="text-center py-3">{index + 1}</td>
+                    {pathname === '/inventories' && (
+                      <td className="text-center py-3">
+                        {item?.project?.project_name}
+                      </td>
+                    )}
+                    <td className="text-center py-3">{item.description}</td>
+                    <td className="text-center py-3">{item.stock_quantity}</td>
+                    <td className="text-center py-3">{item.part_number}</td>
+                    <td className="text-center py-3">{item.model_number}</td>
+                    <td className="text-center py-3">{item.threshold}</td>
+                    <td className="text-center py-3">{item.location.name}</td>
+                    <td className="text-center py-3">{item.date_acquired}</td>
+                    <td className="text-center py-3">{`${days}d ${hours}h ${minutes}m ${seconds}s`}</td>
+                    <td className="text-center py-3">
+                      <div className="flex justify-center space-x-2">
+                        <button
+                          className="bg-blue-500 text-white p-2 rounded-md"
+                          onClick={() => handleEdit(item)}
+                        >
+                          Edit
+                        </button>
+                        {/* <button
                     className="bg-red-500 text-white p-2 rounded-md"
                     onClick={() => handleDelete([item.id])}
                     disabled={loadingStates[item.id]}
@@ -303,47 +326,48 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
                     {loadingStates[item.id] ? (
                       <span className="loader"></span>
                     ) : ( */}
-                    <button
-                      className="bg-red-700 p-2 rounded-md text-white cursor-pointer flex items-center justify-center
+                        <button
+                          className="bg-red-700 p-2 rounded-md text-white cursor-pointer flex items-center justify-center
                     "
-                      onClick={() => handleDelete([item.id])}
-                      disabled={loadingStates[item.id]} // Optional: Disable button while loading
-                    >
-                      {loadingStates[item.id] ? (
-                        <svg
-                          className="animate-spin h-5 w-5 mr-2 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
+                          onClick={() => handleDelete([item.id])}
+                          disabled={loadingStates[item.id]} // Optional: Disable button while loading
                         >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8v8H4z"
-                          ></path>
-                        </svg>
-                      ) : (
-                        'Delete'
-                      )}
-                    </button>
+                          {loadingStates[item.id] ? (
+                            <svg
+                              className="animate-spin h-5 w-5 mr-2 text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v8H4z"
+                              ></path>
+                            </svg>
+                          ) : (
+                            'Delete'
+                          )}
+                        </button>
 
-                    {/* )}
+                        {/* )}
                   </button> */}
-                  </div>
-                </td>
-              </tr>
-            ))}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             {currentItems.length == 0 && (
               <tr className="text-center text-primary bg-white">
-                <td className="py-2 text-center" colSpan={10}>
+                <td className="py-2 text-center" colSpan={14}>
                   <div className="flex justify-center items-center  min-h-[60vh]">
                     <div>
                       <div className="flex justify-center items-center">
@@ -368,42 +392,44 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
         </table>
 
         {/* Pagination */}
-        <div className="flex justify-end mt-4">
-          <button
-            className={`px-4 py-2 mx-1 rounded ${
-              currentPage === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'
-            }`}
-            onClick={() => paginate(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-          {Array.from({
-            length: Math.ceil(data.length / itemsPerPage),
-          }).map((_, index) => (
+        <div>
+          <div className="flex justify-end mt-4">
             <button
-              key={index + 1}
               className={`px-4 py-2 mx-1 rounded ${
-                currentPage === index + 1
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-300'
+                currentPage === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'
               }`}
-              onClick={() => paginate(index + 1)}
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
             >
-              {index + 1}
+              Previous
             </button>
-          ))}
-          <button
-            className={`px-4 py-2 mx-1 rounded ${
-              currentPage === Math.ceil(data.length / itemsPerPage)
-                ? 'bg-gray-300'
-                : 'bg-blue-500 text-white'
-            }`}
-            onClick={() => paginate(currentPage + 1)}
-            disabled={currentPage === Math.ceil(data.length / itemsPerPage)}
-          >
-            Next
-          </button>
+            {Array.from({
+              length: Math.ceil(data.length / itemsPerPage),
+            }).map((_, index) => (
+              <button
+                key={index + 1}
+                className={`px-4 py-2 mx-1 rounded ${
+                  currentPage === index + 1
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-300'
+                }`}
+                onClick={() => paginate(index + 1)}
+              >
+                {index + 1}
+              </button>
+            ))}
+            <button
+              className={`px-4 py-2 mx-1 rounded ${
+                currentPage === Math.ceil(data.length / itemsPerPage)
+                  ? 'bg-gray-300'
+                  : 'bg-blue-500 text-white'
+              }`}
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage === Math.ceil(data.length / itemsPerPage)}
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>

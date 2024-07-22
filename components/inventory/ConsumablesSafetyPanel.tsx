@@ -2,10 +2,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import EngineStrip from './EngineStrip';
 import GeneratorTableList from './GeneratorTableList';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import ConsSafetyStrip from './ConsSafetyStrip';
 import ConsumablesableList from './ConsumablesTableList';
+import { toggleLoading } from '@/provider/redux/modalSlice';
 
 interface User {
   token: string;
@@ -25,12 +26,14 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
   const [consumables, setConsumables] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const isAddConsumeablesModalOpen = useSelector(
     (state: any) => state.modal.isAddConsumeablesModalOpen
   );
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
     try {
+      dispatch(toggleLoading(true));
       const response = await axios.get(
         `${process.env.BASEURL}/consumable/safety/${activeId}`,
         {
@@ -51,9 +54,9 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
         'Unknown error';
       toast.error(`${errorMessage}`);
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
-  }, [activeId, user?.token]);
+  }, [activeId, dispatch, user?.token]);
 
   useEffect(() => {
     if (safetyCategories && safetyCategories.length > 0) {

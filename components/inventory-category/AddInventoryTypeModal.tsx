@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FormEvent, useEffect, useState } from 'react';
 import {
   toggleAddInventoryTypeModal,
+  toggleLoading,
   toggleLocationModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
@@ -53,7 +54,7 @@ const AddInventoryTypeModal: React.FC<AddLocationModalProps> = ({
   // const [projects, setProjects] = useState<Project[]>([]);
   useEffect(() => {
     const fetchDecks = async () => {
-      setIsLoading(true);
+      dispatch(toggleLoading(true));
       try {
         const [bargesResponse, decksResponse] = await Promise.all([
           axios.get(`${process.env.BASEURL}/barge`, {
@@ -80,11 +81,11 @@ const AddInventoryTypeModal: React.FC<AddLocationModalProps> = ({
           'Unknown error';
         toast.error(`${errorMessage}`);
       } finally {
-        setIsLoading(false);
+        dispatch(toggleLoading(false));
       }
     };
     fetchDecks();
-  }, [user?.token]);
+  }, [dispatch, user?.token]);
 
   const [loading, setLoading] = useState(false);
 
@@ -149,7 +150,7 @@ const AddInventoryTypeModal: React.FC<AddLocationModalProps> = ({
 
       // Handle error (e.g., show error message)
     } finally {
-      setLoading(false);
+      setLoading(true);
     }
   };
 

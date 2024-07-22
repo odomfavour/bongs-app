@@ -3,6 +3,7 @@ import {
   displayBargeValue,
   toggleAddConsumeablesModal,
   toggleAddEngineModal,
+  toggleLoading,
   toggleStoreOnBoardModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
@@ -34,8 +35,9 @@ const ConsEngineStrip: React.FC = () => {
       formData.append('file', file);
 
       try {
+        dispatch(toggleLoading(false));
         const response = await axios.post(
-          'https://bongsapi.dpanalyticsolution.com/api/v1/consumable/engine/import',
+          `${process.env.BASEURL}/v1/consumable/engine/import`,
           formData,
           {
             headers: {
@@ -44,7 +46,7 @@ const ConsEngineStrip: React.FC = () => {
             },
           }
         );
-
+        toast.success(response?.data?.message);
         console.log('Bulk upload successful:', response.data);
       } catch (error: any) {
         console.error('Bulk upload failed:', error);
@@ -54,6 +56,8 @@ const ConsEngineStrip: React.FC = () => {
           error?.message ||
           'Unknown error';
         toast.error(`${errorMessage}`);
+      } finally {
+        dispatch(toggleLoading(false));
       }
     }
   };
@@ -61,8 +65,9 @@ const ConsEngineStrip: React.FC = () => {
   const handleExport = async (format: string) => {
     setIsExportOpen(false);
     try {
+      dispatch(toggleLoading(true));
       const response = await axios.get(
-        'https://bongsapi.dpanalyticsolution.com/api/v1/consumable/engine/export',
+        `${process.env.BASEURL}/consumable/engine/export`,
         {
           params: { format },
           responseType: 'blob',
@@ -80,6 +85,7 @@ const ConsEngineStrip: React.FC = () => {
       document.body.appendChild(a);
       a.click();
       a.remove();
+      toast.success(response?.data?.message);
     } catch (error: any) {
       console.error('Export failed:', error);
       const errorMessage =
@@ -88,6 +94,8 @@ const ConsEngineStrip: React.FC = () => {
         error?.message ||
         'Unknown error';
       toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
   return (

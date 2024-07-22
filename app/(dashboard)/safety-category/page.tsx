@@ -3,6 +3,7 @@ import Loader from '@/components/Loader';
 import SafetyCategoryListTable from '@/components/safety-category/SafetyCategoryListTable';
 import {
   displayBargeValue,
+  toggleLoading,
   toggleSafetyCategoryModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
@@ -40,7 +41,7 @@ const SafetyCategoryPage = () => {
   );
 
   const fetchData = useCallback(async () => {
-    setLoading(true);
+    dispatch(toggleLoading(true));
     try {
       const response = await axios.get(
         `${process.env.BASEURL}/safety-category`,
@@ -66,9 +67,9 @@ const SafetyCategoryPage = () => {
         toast.error(`${errorMessage}`);
       }
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
-  }, [router, user?.token]);
+  }, [dispatch, router, user?.token]);
 
   useEffect(() => {
     fetchData();

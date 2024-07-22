@@ -3,6 +3,7 @@ import {
   displayBargeValue,
   toggleAddConsumeablesModal,
   toggleAddEngineModal,
+  toggleLoading,
   toggleStoreOnBoardModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
@@ -27,15 +28,15 @@ const ConsHospitalStrip: React.FC = () => {
   };
 
   const handleBulkUpload = async (event: ChangeEvent<HTMLInputElement>) => {
-    console.log('here');
     const file = event.target.files?.[0];
     if (file) {
       const formData = new FormData();
       formData.append('file', file);
 
       try {
+        dispatch(toggleLoading(true));
         const response = await axios.post(
-          'https://bongsapi.dpanalyticsolution.com/api/v1/consumable/hospital/import',
+          `${process.env.BASEURL}/consumable/hospital/import`,
           formData,
           {
             headers: {
@@ -54,6 +55,8 @@ const ConsHospitalStrip: React.FC = () => {
           error?.message ||
           'Unknown error';
         toast.error(`${errorMessage}`);
+      } finally {
+        dispatch(toggleLoading(false));
       }
     }
   };
@@ -61,8 +64,9 @@ const ConsHospitalStrip: React.FC = () => {
   const handleExport = async (format: string) => {
     setIsExportOpen(false);
     try {
+      dispatch(toggleLoading(true));
       const response = await axios.get(
-        'https://bongsapi.dpanalyticsolution.com/api/v1/consumable/hospital/export',
+        `${process.env.BASEURL}/v1/consumable/hospital/export`,
         {
           params: { format },
           responseType: 'blob',
@@ -88,6 +92,8 @@ const ConsHospitalStrip: React.FC = () => {
         error?.message ||
         'Unknown error';
       toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
   return (

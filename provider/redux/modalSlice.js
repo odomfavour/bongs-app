@@ -20,6 +20,7 @@ const initialState = {
   isAddDepartmentModalOpen: false,
   isAddRoleModalOpen: false,
   isAddInventoryTypeModalOpen: false,
+  isLoading: false,
   inventoryType: '',
   inventoryData: {},
   bargeValues: {},
@@ -80,6 +81,10 @@ export const modalSlice = createSlice({
     toggleAddDepartmentModal: (state) => {
       state.isAddDepartmentModalOpen = !state.isAddDepartmentModalOpen; // Toggle modal state
     },
+    toggleLoading: (state, action) => {
+      state.isLoading = action.payload; // Toggle modal state
+      console.log('loadi', state.isLoading);
+    },
     toggleAddEngineModal: (state, action) => {
       state.inventoryType = action.payload;
       state.isAddEngineModalOpen = !state.isAddEngineModalOpen;
@@ -117,6 +122,7 @@ export const {
   toggleAddPermissionModal,
   toggleAddRoleModal,
   toggleAddInventoryTypeModal,
+  toggleLoading,
 } = modalSlice.actions;
 
 export default modalSlice.reducer;

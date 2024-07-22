@@ -3,6 +3,7 @@ import {
   displayBargeValue,
   toggleAddConsumeablesModal,
   toggleAddEngineModal,
+  toggleLoading,
   toggleStoreOnBoardModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
@@ -26,15 +27,15 @@ const GalleyStrip: React.FC = () => {
   };
 
   const handleBulkUpload = async (event: ChangeEvent<HTMLInputElement>) => {
-    console.log('here');
     const file = event.target.files?.[0];
     if (file) {
       const formData = new FormData();
       formData.append('file', file);
 
       try {
+        dispatch(toggleLoading(true));
         const response = await axios.post(
-          'https://bongsapi.dpanalyticsolution.com/api/v1/sparepart/engine/import',
+          `${process.env.BASEURL}/sparepart/engine/import`,
           formData,
           {
             headers: {
@@ -47,6 +48,8 @@ const GalleyStrip: React.FC = () => {
         console.log('Bulk upload successful:', response.data);
       } catch (error) {
         console.error('Bulk upload failed:', error);
+      } finally {
+        dispatch(toggleLoading(false));
       }
     }
   };
@@ -54,8 +57,9 @@ const GalleyStrip: React.FC = () => {
   const handleExport = async (format: string) => {
     setIsExportOpen(false);
     try {
+      dispatch(toggleLoading(true));
       const response = await axios.get(
-        'https://bongsapi.dpanalyticsolution.com/api/v1/sparepart/engine/export',
+        `${process.env.BASEURL}/sparepart/engine/export`,
         {
           params: { format },
           responseType: 'blob',
@@ -75,6 +79,8 @@ const GalleyStrip: React.FC = () => {
       a.remove();
     } catch (error) {
       console.error('Export failed:', error);
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
   return (

@@ -2,6 +2,7 @@
 import {
   displayBargeValue,
   toggleAddEngineModal,
+  toggleLoading,
   toggleStoreOnBoardModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
@@ -33,8 +34,9 @@ const SafetyStrip: React.FC = () => {
       formData.append('file', file);
 
       try {
+        dispatch(toggleLoading(true));
         const response = await axios.post(
-          'https://bongsapi.dpanalyticsolution.com/api/v1/sparepart/safety/import',
+          `${process.env.BASEURL}/sparepart/safety/import`,
           formData,
           {
             headers: {
@@ -53,6 +55,8 @@ const SafetyStrip: React.FC = () => {
           error?.message ||
           'Unknown error';
         toast.error(`${errorMessage}`);
+      } finally {
+        dispatch(toggleLoading(false));
       }
     }
   };
@@ -60,8 +64,9 @@ const SafetyStrip: React.FC = () => {
   const handleExport = async (format: string) => {
     setIsExportOpen(false);
     try {
+      dispatch(toggleLoading(true));
       const response = await axios.get(
-        'https://bongsapi.dpanalyticsolution.com/api/v1/sparepart/safety/export',
+        `${process.env.BASEURL}/sparepart/safety/export`,
         {
           params: { format },
           responseType: 'blob',
@@ -87,6 +92,8 @@ const SafetyStrip: React.FC = () => {
         error?.message ||
         'Unknown error';
       toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
   return (

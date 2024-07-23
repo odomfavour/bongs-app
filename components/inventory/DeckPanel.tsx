@@ -6,6 +6,7 @@ import axios from 'axios';
 import GeneratorTableList from './GeneratorTableList';
 import { useDispatch } from 'react-redux';
 import { toggleLoading } from '@/provider/redux/modalSlice';
+import { usePathname } from 'next/navigation';
 
 interface Generator {
   id: number;
@@ -33,18 +34,21 @@ const DeckPanel: React.FC<DeckPanelProps> = ({ deckCategories, user }) => {
   const [spareparts, setSpareparts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const pathname = usePathname();
+
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
+    let endpoint = `${process.env.BASEURL}/sparepart/deck/${activeId}`;
+    if (pathname === '/inventories') {
+      endpoint += '?filter=project';
+    }
     try {
       dispatch(toggleLoading(true));
-      const response = await axios.get(
-        `${process.env.BASEURL}/sparepart/deck/${activeId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
+      const response = await axios.get(endpoint, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
       console.log('resp', response);
       setSpareparts(response?.data?.data?.data);
     } catch (error: any) {
@@ -59,7 +63,7 @@ const DeckPanel: React.FC<DeckPanelProps> = ({ deckCategories, user }) => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [activeId, user?.token]);
+  }, [activeId, dispatch, pathname, user?.token]);
 
   useEffect(() => {
     if (deckCategories && deckCategories.length > 0) {

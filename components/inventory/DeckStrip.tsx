@@ -187,7 +187,7 @@ const DeckStrip: React.FC = () => {
             dispatch(toggleAddEngineModal('Deck'));
           }}
         >
-          Add Safety
+          Add Deck
         </button>
         <label className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3] cursor-pointer">
           Bulk Upload

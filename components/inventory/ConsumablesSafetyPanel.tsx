@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import ConsSafetyStrip from './ConsSafetyStrip';
 import ConsumablesableList from './ConsumablesTableList';
 import { toggleLoading } from '@/provider/redux/modalSlice';
+import { usePathname } from 'next/navigation';
 
 interface User {
   token: string;
@@ -27,21 +28,23 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   const [consumables, setConsumables] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const pathname = usePathname();
   const isAddConsumeablesModalOpen = useSelector(
     (state: any) => state.modal.isAddConsumeablesModalOpen
   );
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
+    let endpoint = `${process.env.BASEURL}/consumable/safety/${activeId}`;
+    if (pathname === '/inventories') {
+      endpoint += '?filter=project';
+    }
     try {
       dispatch(toggleLoading(true));
-      const response = await axios.get(
-        `${process.env.BASEURL}/consumable/safety/${activeId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
+      const response = await axios.get(endpoint, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
       console.log('resp', response);
       setConsumables(response?.data?.data?.data);
     } catch (error: any) {
@@ -56,7 +59,7 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [activeId, dispatch, user?.token]);
+  }, [activeId, dispatch, user?.token, pathname]);
 
   useEffect(() => {
     if (safetyCategories && safetyCategories.length > 0) {

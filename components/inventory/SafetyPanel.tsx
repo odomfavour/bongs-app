@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import GeneratorTableList from './GeneratorTableList';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import { useDispatch } from 'react-redux';
+import { usePathname } from 'next/navigation';
 
 interface User {
   token: string;
@@ -25,18 +26,21 @@ const SafetyPanel: React.FC<SafetyPanelProps> = ({
   const [spareparts, setSpareparts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const pathname = usePathname();
+
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
+    let endpoint = `${process.env.BASEURL}/sparepart/safety/${activeId}`;
+    if (pathname === '/inventories') {
+      endpoint += '?filter=project';
+    }
     try {
       dispatch(toggleLoading(true));
-      const response = await axios.get(
-        `${process.env.BASEURL}/sparepart/safety/${activeId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
+      const response = await axios.get(endpoint, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
       console.log('resp', response);
       setSpareparts(response?.data?.data?.data);
     } catch (error: any) {
@@ -51,7 +55,7 @@ const SafetyPanel: React.FC<SafetyPanelProps> = ({
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [activeId, dispatch, user?.token]);
+  }, [activeId, dispatch, pathname, user?.token]);
 
   useEffect(() => {
     if (safetyCategories && safetyCategories.length > 0) {

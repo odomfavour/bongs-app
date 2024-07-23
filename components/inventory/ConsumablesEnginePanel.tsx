@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import ConsEngineStrip from './ConsEngineStrip';
 import ConsumablesableList from './ConsumablesTableList';
 import { toggleLoading } from '@/provider/redux/modalSlice';
+import { usePathname } from 'next/navigation';
 
 interface User {
   token: string;
@@ -21,7 +22,6 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   engineCategories,
   user,
 }) => {
-  console.log('engine', engineCategories?.[0]?.name);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
   const [consumables, setConsumables] = useState<any[]>([]);
@@ -30,18 +30,20 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
     (state: any) => state.modal.isAddConsumeablesModalOpen
   );
   const dispatch = useDispatch();
+  const pathname = usePathname();
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
+    let endpoint = `${process.env.BASEURL}/consumable/engine/${activeId}`;
+    if (pathname === '/inventories') {
+      endpoint += '?filter=project';
+    }
     try {
       dispatch(toggleLoading(true));
-      const response = await axios.get(
-        `${process.env.BASEURL}/consumable/engine/${activeId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
+      const response = await axios.get(endpoint, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
       console.log('resp', response);
       setConsumables(response?.data?.data?.data);
     } catch (error: any) {
@@ -56,7 +58,7 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [activeId, dispatch, user?.token]);
+  }, [activeId, dispatch, pathname, user?.token]);
 
   useEffect(() => {
     if (engineCategories && engineCategories.length > 0) {

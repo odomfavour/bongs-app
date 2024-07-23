@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import ConsHospitalStrip from './ConsHospitalStrip';
 import ConsumablesableList from './ConsumablesTableList';
 import { toggleLoading } from '@/provider/redux/modalSlice';
+import { usePathname } from 'next/navigation';
 
 interface User {
   token: string;
@@ -30,18 +31,20 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
     (state: any) => state.modal.isAddConsumeablesModalOpen
   );
   const dispatch = useDispatch();
+  const pathname = usePathname();
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
+    let endpoint = `${process.env.BASEURL}/consumable/hospital/${activeId}`;
+    if (pathname === '/inventories') {
+      endpoint += '?filter=project';
+    }
     try {
       dispatch(toggleLoading(true));
-      const response = await axios.get(
-        `${process.env.BASEURL}/consumable/hospital/${activeId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
+      const response = await axios.get(endpoint, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
       console.log('resp', response);
       setConsumables(response?.data?.data?.data);
     } catch (error: any) {
@@ -56,7 +59,7 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [activeId, dispatch, user?.token]);
+  }, [activeId, dispatch, user?.token, pathname]);
 
   useEffect(() => {
     if (hospitalCategories && hospitalCategories.length > 0) {

@@ -99,7 +99,7 @@ const Page = () => {
 
   useEffect(() => {
     fetchData();
-  }, [fetchData, isAddEngineModalOpen]);
+  }, [fetchData, isAddEngineModalOpen, user?.token]);
   return (
     <div>
       <div className=" inline-flex border rounded-[30px] p-2 mb-5">

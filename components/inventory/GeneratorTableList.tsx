@@ -113,7 +113,6 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
     [key: number]: boolean;
   }>({});
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
-  console.log('dataata', data);
 
   const toggleDropdown = (index: number) => {
     if (openDropdownIndex === index) {

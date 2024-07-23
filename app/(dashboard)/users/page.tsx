@@ -46,7 +46,7 @@ const Page = () => {
   const [departments, setDepartments] = useState([]);
 
   const fetchData = useCallback(async () => {
-    dispatch(toggleLoading(false));
+    dispatch(toggleLoading(true));
     try {
       const [usersResponse, rolesResponse, deptResponse] = await Promise.all([
         axios.get(`${process.env.BASEURL}/users`, {
@@ -185,23 +185,17 @@ const Page = () => {
         ))}
       </div>
       <div className="">
-        {loading ? (
-          <Loader />
-        ) : (
-          <>
-            {activeTab === 'Users' && (
-              <UserListTable data={users} fetchData={fetchData} />
-            )}
-            {activeTab === 'Roles' && (
-              <RolesListTable data={roles} fetchData={fetchData} />
-            )}
-            {/* {activeTab === 'Permissions' && (
+        {activeTab === 'Users' && (
+          <UserListTable data={users} fetchData={fetchData} />
+        )}
+        {activeTab === 'Roles' && (
+          <RolesListTable data={roles} fetchData={fetchData} />
+        )}
+        {/* {activeTab === 'Permissions' && (
               <PermissionListTable data={permissions} fetchData={fetchData} />
             )} */}
-            {activeTab === 'Departments' && (
-              <DepartmentListTable data={departments} fetchData={fetchData} />
-            )}
-          </>
+        {activeTab === 'Departments' && (
+          <DepartmentListTable data={departments} fetchData={fetchData} />
         )}
       </div>
     </section>

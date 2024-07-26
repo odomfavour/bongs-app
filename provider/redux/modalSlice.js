@@ -24,6 +24,7 @@ const initialState = {
   inventoryType: '',
   inventoryData: {},
   bargeValues: {},
+  subscribers: {},
 };
 
 export const modalSlice = createSlice({
@@ -97,6 +98,9 @@ export const modalSlice = createSlice({
       state.inventoryData = action.payload;
       state.isAddInventoryTypeModalOpen = !state.isAddInventoryTypeModalOpen;
     },
+    setSubscribers: (state, action) => {
+      state.subscribers = action.payload;
+    },
   },
 });
 
@@ -123,6 +127,7 @@ export const {
   toggleAddRoleModal,
   toggleAddInventoryTypeModal,
   toggleLoading,
+  setSubscribers,
 } = modalSlice.actions;
 
 export default modalSlice.reducer;

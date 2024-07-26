@@ -31,9 +31,14 @@ interface Uom {
 interface UoMListTableProps {
   data: Uom[];
   fetchData: () => void;
+  setOpenModal: (isOpen: boolean) => void;
 }
 
-const UoMListTable: React.FC<UoMListTableProps> = ({ data, fetchData }) => {
+const UoMListTable: React.FC<UoMListTableProps> = ({
+  data,
+  fetchData,
+  setOpenModal,
+}) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
   const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
@@ -118,7 +123,7 @@ const UoMListTable: React.FC<UoMListTableProps> = ({ data, fetchData }) => {
 
   const handleEdit = (item: Uom) => {
     dispatch(displayBargeValue(item));
-    dispatch(toggleUomModal());
+    setOpenModal(true);
   };
 
   return (
@@ -128,13 +133,13 @@ const UoMListTable: React.FC<UoMListTableProps> = ({ data, fetchData }) => {
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
-              <th className="text-sm text-center py-3">UoM Name</th>
-              <th className="text-sm text-center py-3">Unit No</th>
-              <th className="text-sm text-center py-3">Description</th>
-              <th className="text-sm text-center py-3">Added By</th>
-              <th className="text-sm text-center py-3">Status</th>
-              <th className="text-sm text-center py-3">Created On</th>
-              <th className="text-sm text-center py-3">Actions</th>
+              <th className="text-sm text-left py-3">UoM Name</th>
+              <th className="text-sm text-left py-3">Unit No</th>
+              <th className="text-sm text-left py-3">Description</th>
+              <th className="text-sm text-left py-3">Added By</th>
+              <th className="text-sm text-left py-3">Status</th>
+              <th className="text-sm text-left py-3">Created On</th>
+              <th className="text-sm text-left py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -155,26 +160,26 @@ const UoMListTable: React.FC<UoMListTableProps> = ({ data, fetchData }) => {
                     <td className="py-2 text-center text-[#344054]">
                       {index + 1}
                     </td>
-                    <td className="py-2 text-center">{name}</td>
-                    <td className="py-2 text-center">uom-{id}</td>
-                    <td className="py-2 text-center">{description}</td>
-                    <td className="py-2 text-center">
+                    <td className="py-2 text-left text-sm">{name}</td>
+                    <td className="py-2 text-left text-sm">uom-{id}</td>
+                    <td className="py-2 text-left text-sm">{description}</td>
+                    <td className="py-2 text-left text-sm">
                       {user.first_name} {user.last_name}
                     </td>
-                    <td className="py-2 text-center">{status}</td>
-                    <td className="py-2 text-center">
+                    <td className="py-2 text-left text-sm">{status}</td>
+                    <td className="py-2 text-left text-sm">
                       {formatDate(created_at)}
                     </td>
-                    <td className="py-2 text-center flex justify-center items-center">
+                    <td className="py-2 text-center flex justify-left items-center">
                       <div className="flex gap-3">
                         <button
-                          className="bg-blue-700 text-white p-2 rounded-md"
+                          className="bg-blue-700 text-white text-sm p-2 rounded-md"
                           onClick={() => handleEdit(item)}
                         >
                           Edit
                         </button>
                         <button
-                          className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                          className="bg-red-700 text-white text-sm p-2 rounded-md flex items-center justify-center"
                           onClick={() => deleteUom(id)}
                           disabled={loadingStates[id]}
                         >

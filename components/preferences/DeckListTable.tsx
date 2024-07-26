@@ -129,13 +129,13 @@ const DeckListTable: React.FC<DeckListTableProps> = ({ data, fetchdata }) => {
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
-              <th className="text-sm text-center py-3">Deck No.</th>
-              <th className="text-sm text-center py-3">Name</th>
-              <th className="text-sm text-center py-3">Barge</th>
-              <th className="text-sm text-center py-3">Added By</th>
-              <th className="text-sm text-center py-3">Status</th>
-              <th className="text-sm text-center py-3">Created On</th>
-              <th className="text-sm text-center py-3">Actions</th>
+              <th className="text-sm text-left py-3">Deck No.</th>
+              <th className="text-sm text-left py-3">Name</th>
+              <th className="text-sm text-left py-3">Barge</th>
+              <th className="text-sm text-left py-3">Added By</th>
+              <th className="text-sm text-left py-3">Status</th>
+              <th className="text-sm text-left py-3">Created On</th>
+              <th className="text-sm text-left py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -157,30 +157,30 @@ const DeckListTable: React.FC<DeckListTableProps> = ({ data, fetchdata }) => {
                       {index + 1}
                     </td>
 
-                    <td className="py-2 text-center">
+                    <td className="py-2 text-sm text-left">
                       {deck_number}
                       {id}
                     </td>
-                    <td className="py-2 text-center">{name}</td>
-                    <td className="py-2 text-center">{barge?.name}</td>
-                    <td className="py-2 text-center">
+                    <td className="py-2 text-sm text-left">{name}</td>
+                    <td className="py-2 text-sm text-left">{barge?.name}</td>
+                    <td className="py-2 text-sm text-left">
                       {user.first_name} {user.last_name}
                     </td>
-                    <td className="py-2 text-center">{status}</td>
-                    <td className="py-2 text-center">
+                    <td className="py-2 text-sm text-left">{status}</td>
+                    <td className="py-2 text-sm text-left">
                       {formatDate(created_at)}
                     </td>
 
-                    <td className="py-2 text-center flex justify-center items-center">
+                    <td className="py-2 text-center flex justify-left items-center">
                       <div className="flex gap-3">
                         <button
-                          className="bg-blue-700 text-white p-2 rounded-md"
+                          className="bg-blue-700 text-sm text-white p-2 rounded-md"
                           onClick={() => handleEdit(item)}
                         >
                           Edit
                         </button>
                         <button
-                          className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                          className="bg-red-700 text-white text-sm p-2 rounded-md flex items-center justify-center"
                           onClick={() => handleDelete(id)}
                           disabled={loadingStates[id]}
                         >

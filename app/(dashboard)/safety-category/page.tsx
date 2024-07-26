@@ -1,5 +1,7 @@
 'use client';
 import Loader from '@/components/Loader';
+import Modal from '@/components/dashboard/Modal';
+import AddSafetyCategoryModal from '@/components/safety-category/AddSafetyCategoryModal';
 import SafetyCategoryListTable from '@/components/safety-category/SafetyCategoryListTable';
 import {
   displayBargeValue,
@@ -75,6 +77,10 @@ const SafetyCategoryPage = () => {
     fetchData();
   }, [fetchData, isSafetyCategoryModalOpen]);
 
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   return (
     <section>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
@@ -104,18 +110,30 @@ const SafetyCategoryPage = () => {
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
               dispatch(displayBargeValue({}));
-              dispatch(toggleSafetyCategoryModal());
+              setOpenModal(true);
             }}
           >
             Add Safety Category
           </button>
         </div>
-        {loading ? (
-          <Loader />
-        ) : (
-          <SafetyCategoryListTable data={safetyCat} fetchdata={fetchData} />
-        )}
+
+        <SafetyCategoryListTable
+          data={safetyCat}
+          fetchData={fetchData}
+          setOpenModal={setOpenModal}
+        />
       </div>
+      <Modal
+        title="Add New Safety Category"
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="50%"
+      >
+        <AddSafetyCategoryModal
+          fetchData={fetchData}
+          handleClose={handleClose}
+        />
+      </Modal>
     </section>
   );
 };

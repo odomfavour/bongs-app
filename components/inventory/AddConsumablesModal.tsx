@@ -11,6 +11,7 @@ import {
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { FaMinus, FaPlus } from 'react-icons/fa';
+import { usePathname } from 'next/navigation';
 
 interface Subscriber {
   id: number;
@@ -37,7 +38,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
   const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const inventoryType = useSelector((state: any) => state.modal.inventoryType);
   const [formData, setFormData] = useState({
-    project_id: 0,
+    project_id: null as number | null,
     deck_id: 0,
     keystore_id: 0,
     unit_of_measurement_id: 0,
@@ -151,7 +152,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
       toast.success(`${response?.data?.message}`);
 
       setFormData({
-        project_id: 0,
+        project_id: null as number | null,
         deck_id: 0,
         keystore_id: 0,
         location_id: 0,
@@ -203,6 +204,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
   const [locations, setLocations] = useState([]);
   const [vendors, setVendors] = useState([]);
   const [bEquipment, setBEquipment] = useState([]);
+  const pathname = usePathname();
   const fetchData = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
@@ -375,33 +377,52 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                   </select>
                 </div>
               )}
-              <div className="mb-4">
-                <label
-                  htmlFor="subscriber"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Project
-                </label>
-                <select
-                  id="subscriber"
-                  name="subscriber_id"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.project_id}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      project_id: parseInt(e.target.value),
-                    })
-                  }
-                >
-                  <option value="">Select Project</option>
-                  {projects?.map((project: any) => (
-                    <option value={project.id} key={project.id}>
-                      {project.project_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {pathname !== '/miv-inventories' && (
+                <div className="mb-4">
+                  <label
+                    htmlFor="subscriber"
+                    className="block mb-2 text-sm font-medium text-gray-900"
+                  >
+                    Project
+                  </label>
+                  <select
+                    id="subscriber"
+                    name="subscriber_id"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                    value={
+                      formData.project_id !== null
+                        ? formData.project_id.toString()
+                        : ''
+                    }
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        project_id: e.target.value
+                          ? parseInt(e.target.value)
+                          : null,
+                      })
+                    }
+                  >
+                    <option value="">Select Project</option>
+                    {projects?.map((project: any) => (
+                      <option
+                        value={project.id}
+                        key={project.id}
+                        className="capitalize"
+                      >
+                        {project.project_name
+                          .split(' ')
+                          .map(
+                            (word: any) =>
+                              word.charAt(0).toUpperCase() +
+                              word.slice(1).toLowerCase()
+                          )
+                          .join(' ')}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div className="mb-4">
                 <label
                   htmlFor="deck"

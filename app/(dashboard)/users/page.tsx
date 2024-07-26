@@ -37,9 +37,9 @@ const Page = () => {
   const [activeTab, setActiveTab] = useState('Users');
   const [loading, setLoading] = useState(true);
   const [tabs, setTabs] = useState([
-    { id: 1, name: 'Users', count: '' },
-    { id: 2, name: 'Roles', count: '' },
-    { id: 3, name: 'Departments', count: '' },
+    { id: 1, name: 'Roles', count: '' },
+    { id: 2, name: 'Departments', count: '' },
+    { id: 3, name: 'Users', count: '' },
   ]);
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);

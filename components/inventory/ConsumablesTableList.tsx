@@ -259,17 +259,17 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
                   onChange={handleSelectAll}
                 />
               </th>
-              <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
-              <th className="text-sm text-center py-3">Project</th>
-              <th className="text-sm text-center py-3">Description</th>
-              <th className="text-sm text-center py-3">Qty</th>
+              <th className="text-sm text-left pl-3 py-3 rounded">S/N</th>
+              <th className="text-sm text-left py-3">Project</th>
+              <th className="text-sm text-left py-3">Description</th>
+              <th className="text-sm text-left py-3">Qty</th>
               {/* <th className="text-sm text-center py-3">Part No.</th> */}
-              <th className="text-sm text-center py-3">Model</th>
-              <th className="text-sm text-center py-3">Threshold</th>
-              <th className="text-sm text-center py-3">Location</th>
-              <th className="text-sm text-center py-3">Date Acquired</th>
-              <th className="text-sm text-center py-3">Warranty Days</th>
-              <th className="text-sm text-center py-3">Actions</th>
+              <th className="text-sm text-left py-3">Model</th>
+              <th className="text-sm text-left py-3">Threshold</th>
+              <th className="text-sm text-left py-3">Location</th>
+              <th className="text-sm text-left py-3">Date Acquired</th>
+              <th className="text-sm text-left py-3">Warranty Days</th>
+              <th className="text-sm text-left py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -303,24 +303,26 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
                         onChange={() => handleSelectItem(id)}
                       />
                     </td>
-                    <td className="py-2 text-center text-[#344054]">
+                    <td className="py-2 text-center text-sm text-[#344054]">
                       {index + 1}
                     </td>
-                    <td className="py-2 text-center">
+                    <td className="py-2 text-left text-sm">
                       {project?.project_name}
                     </td>
-                    <td className="py-2 text-center">{description}</td>
-                    <td className="py-2 text-center">{stock_quantity}</td>
+                    <td className="py-2 text-left text-sm">{description}</td>
+                    <td className="py-2 text-left text-sm">{stock_quantity}</td>
                     {/* <td className="py-2 text-center">{part_number}</td> */}
-                    <td className="py-2 text-center">{model_grade || 'nil'}</td>
-                    <td className="py-2 text-center">{threshold}</td>
-                    <td className="py-2 text-center">{location?.name}</td>
-                    <td className="py-2 text-center">{date_acquired}</td>
-                    <td className="py-2 text-center">{`${days}d ${hours}h ${minutes}m ${seconds}s`}</td>
-                    <td className="py-2 text-center relative">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className="py-2 text-left text-sm">
+                      {model_grade || 'nil'}
+                    </td>
+                    <td className="py-2 text-left text-sm">{threshold}</td>
+                    <td className="py-2 text-left text-sm">{location?.name}</td>
+                    <td className="py-2 text-left text-sm">{date_acquired}</td>
+                    <td className="py-2 text-left text-sm">{`${days}d ${hours}h ${minutes}m ${seconds}s`}</td>
+                    <td className="py-2 text-left text-sm relative">
+                      <div className="flex items-left text-sm justify-center gap-2">
                         <button
-                          className="bg-blue-700 text-white p-2 rounded-md"
+                          className="bg-blue-700 text-white text-sm p-2 rounded-md"
                           onClick={() => handleEdit(item)}
                         >
                           Edit

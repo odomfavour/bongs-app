@@ -1,5 +1,7 @@
 'use client';
 import Loader from '@/components/Loader';
+import Modal from '@/components/dashboard/Modal';
+import AddUomModal from '@/components/uom/AddUomModal';
 import UoMListTable from '@/components/uom/UomListTable';
 import {
   displayBargeValue,
@@ -72,7 +74,10 @@ const UomPage = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData, isUomModalOpen]);
-
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   return (
     <section>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
@@ -102,18 +107,27 @@ const UomPage = () => {
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
               dispatch(displayBargeValue({}));
-              dispatch(toggleUomModal());
+              setOpenModal(true);
             }}
           >
             Add UoM
           </button>
         </div>
-        {loading ? (
-          <Loader />
-        ) : (
-          <UoMListTable data={uom} fetchData={fetchData} />
-        )}
+
+        <UoMListTable
+          data={uom}
+          fetchData={fetchData}
+          setOpenModal={setOpenModal}
+        />
       </div>
+      <Modal
+        title="Add New UoM"
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="40%"
+      >
+        <AddUomModal fetchData={fetchData} handleClose={handleClose} />
+      </Modal>
     </section>
   );
 };

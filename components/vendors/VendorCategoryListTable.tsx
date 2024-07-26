@@ -27,11 +27,13 @@ interface VendorCategory {
 interface VendorListTableProps {
   data: VendorCategory[];
   fetchData: () => void;
+  setOpenModal: (isOpen: boolean) => void;
 }
 
 const VendorCategoryListTable: React.FC<VendorListTableProps> = ({
   data,
   fetchData,
+  setOpenModal,
 }) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
@@ -118,7 +120,7 @@ const VendorCategoryListTable: React.FC<VendorListTableProps> = ({
 
   const handleEdit = (item: VendorCategory) => {
     dispatch(displayBargeValue(item));
-    dispatch(toggleVendorCategoryModal());
+    setOpenModal(true);
   };
   return (
     <div className="bg-white">

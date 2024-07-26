@@ -126,12 +126,12 @@ const UserListTable: React.FC<UserListTableProps> = ({ data, fetchData }) => {
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
-              <th className="text-sm text-center py-3">Name</th>
+              <th className="text-sm text-left py-3">Name</th>
               {/* <th className="text-sm text-center py-3">Last Name</th> */}
-              <th className="text-sm text-center py-3">Email</th>
-              <th className="text-sm text-center py-3">Phone Number</th>
-              <th className="text-sm text-center py-3">Role</th>
-              <th className="text-sm text-center py-3">Actions</th>
+              <th className="text-sm text-left py-3">Email</th>
+              <th className="text-sm text-left py-3">Phone Number</th>
+              <th className="text-sm text-left py-3">Role</th>
+              <th className="text-sm text-left py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -140,27 +140,27 @@ const UserListTable: React.FC<UserListTableProps> = ({ data, fetchData }) => {
                 const { id, name, phone_number, email, roles } = item;
                 return (
                   <tr className="border-b" key={id}>
-                    <td className="py-2 text-center text-[#344054]">
+                    <td className="py-2 text-center text-sm text-[#344054]">
                       {index + 1}
                     </td>
-                    <td className="py-2 text-center">{name}</td>
+                    <td className="py-2 text-left text-sm">{name}</td>
                     {/* <td className="py-2 text-center">{last_name}</td> */}
-                    <td className="py-2 text-center">{email}</td>
-                    <td className="py-2 text-center">{phone_number}</td>
-                    <td className="py-2 text-center capitalize">
+                    <td className="py-2 text-left text-sm">{email}</td>
+                    <td className="py-2 text-left text-sm">{phone_number}</td>
+                    <td className="py-2 text-left text-sm capitalize">
                       {roles.map((role) => role.name).join(', ')}
                     </td>
 
-                    <td className="py-2 text-center flex justify-center items-center">
+                    <td className="py-2 text-left flex justify-left items-center">
                       <div className="flex gap-3">
                         <button
-                          className="bg-blue-700 text-white p-2 rounded-md"
+                          className="bg-blue-700 text-sm text-white p-2 rounded-md"
                           onClick={() => handleEdit(item)}
                         >
                           Edit
                         </button>
                         <button
-                          className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                          className="bg-red-700 text-sm text-white p-2 rounded-md flex items-center justify-center"
                           onClick={() => handleDelete(id)}
                           disabled={loadingStates[id]}
                         >

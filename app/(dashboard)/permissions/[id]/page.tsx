@@ -25,16 +25,17 @@ const Page = () => {
       );
       dispatch(toggleLoading(true));
       try {
-        const response = await axios.get(`${process.env.BASEURL}/permissions`, {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-          params: {
-            per_page,
-            search,
-            page,
-          },
-        });
+        const response = await axios.get(
+          `${process.env.BASEURL}/permissions?per_page=${per_page}&page[number]=${page}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+            params: {
+              search,
+            },
+          }
+        );
         console.log('resp', response);
         setPermissions(response?.data?.data?.data);
       } catch (error: any) {
@@ -57,7 +58,7 @@ const Page = () => {
   );
 
   const fetchRolesPermissions = useCallback(async () => {
-    setLoading(true);
+    dispatch(toggleLoading(true));
     try {
       const response = await axios.get(
         `${process.env.BASEURL}/role-permissions/${id}`,

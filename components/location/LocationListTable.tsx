@@ -37,11 +37,13 @@ interface Location {
 interface LocationListTableProps {
   data: Location[];
   fetchData: () => void;
+  setOpenModal: (isOpen: boolean) => void;
 }
 
 const LocationListTable: React.FC<LocationListTableProps> = ({
   data,
   fetchData,
+  setOpenModal,
 }) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
@@ -72,7 +74,8 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
 
   const handleEdit = (item: Location) => {
     dispatch(displayBargeValue(item));
-    dispatch(toggleLocationModal());
+    setOpenModal(true);
+    // dispatch(toggleLocationModal());
   };
 
   const confirmDelete = (id: number) => {
@@ -134,13 +137,13 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
-              <th className="text-sm text-center py-3">Location No</th>
-              <th className="text-sm text-center py-3">Name</th>
-              <th className="text-sm text-center py-3">Stored Items</th>
-              <th className="text-sm text-center py-3">Deck</th>
-              <th className="text-sm text-center py-3">Status</th>
-              <th className="text-sm text-center py-3">Created On</th>
-              <th className="text-sm text-center py-3">Actions</th>
+              <th className="text-sm text-left py-3">Location No</th>
+              <th className="text-sm text-left py-3">Name</th>
+              <th className="text-sm text-left py-3">Stored Items</th>
+              <th className="text-sm text-left py-3">Deck</th>
+              <th className="text-sm text-left py-3">Status</th>
+              <th className="text-sm text-left py-3">Created On</th>
+              <th className="text-sm text-left py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -160,21 +163,21 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
                     <td className="py-2 text-center text-[#344054]">
                       {index + 1}
                     </td>
-                    <td className="py-2 text-center">
+                    <td className="py-2 text-left text-sm">
                       {location_number}
                       {id}
                     </td>
-                    <td className="py-2 text-center">{name}</td>
-                    <td className="py-2 text-center">{address}</td>
-                    <td className="py-2 text-center">{deck?.name}</td>
-                    <td className="py-2 text-center">{status}</td>
-                    <td className="py-2 text-center">
+                    <td className="py-2 text-left text-sm">{name}</td>
+                    <td className="py-2 text-left text-sm">{address}</td>
+                    <td className="py-2 text-left text-sm">{deck?.name}</td>
+                    <td className="py-2 text-left text-sm">{status}</td>
+                    <td className="py-2 text-left text-sm">
                       {formatDate(created_at)}
                     </td>
-                    <td className="py-2 text-center flex justify-center items-center">
+                    <td className="py-2 text-center flex justify-left text-sm items-center">
                       <div className="flex gap-3">
                         <button
-                          className="bg-blue-700 text-white p-2 rounded-md"
+                          className="bg-blue-700 text-white p-2 text-sm rounded-md"
                           onClick={() => handleEdit(item)}
                         >
                           Edit

@@ -1,5 +1,7 @@
 'use client';
 import Loader from '@/components/Loader';
+import Modal from '@/components/dashboard/Modal';
+import AddInventoryTypeModal from '@/components/inventory-category/AddInventoryTypeModal';
 import ConsumablesListTable from '@/components/inventory-category/ConsumablesList';
 import SparePartsListTable from '@/components/inventory-category/SparePartsList';
 import {
@@ -127,7 +129,10 @@ const Page = () => {
     sparePartsFetched,
     consumablesFetched,
   ]);
-
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   return (
     <section>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
@@ -179,12 +184,13 @@ const Page = () => {
               onClick={() => {
                 console.log('sbhdjhgsdhjg');
                 dispatch(displayBargeValue({}));
-                dispatch(
-                  toggleAddInventoryTypeModal({
-                    activeCategory: selectedOption,
-                    activeTab: activeTab,
-                  })
-                );
+                // dispatch(
+                //   toggleAddInventoryTypeModal({
+                //     activeCategory: selectedOption,
+                //     activeTab: activeTab,
+                //   })
+                // );
+                setOpenModal(true);
               }}
             >
               Add {selectedOption}
@@ -207,26 +213,43 @@ const Page = () => {
           </button>
         ))}
       </div>
-      {loading ? (
-        <Loader />
-      ) : (
-        <>
-          {activeTab === 'Spare Parts' && (
-            <SparePartsListTable
-              data={spareParts}
-              fetchData={fetchSparePartsData}
-              parent={selectedOption}
-            />
-          )}
-          {activeTab === 'Consumables' && (
-            <ConsumablesListTable
-              data={consumables}
-              fetchData={fetchConsumablesData}
-              parent={selectedOption}
-            />
-          )}
-        </>
+
+      {activeTab === 'Spare Parts' && (
+        <SparePartsListTable
+          data={spareParts}
+          fetchData={fetchSparePartsData}
+          parent={selectedOption}
+          activeTab={activeTab}
+          setOpenModal={setOpenModal}
+        />
       )}
+      {activeTab === 'Consumables' && (
+        <ConsumablesListTable
+          data={consumables}
+          fetchData={fetchConsumablesData}
+          parent={selectedOption}
+          activeTab={activeTab}
+          setOpenModal={setOpenModal}
+        />
+      )}
+
+      <Modal
+        title="Add Inventory Type"
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="60%"
+      >
+        <AddInventoryTypeModal
+          fetchData={
+            activeTab == 'Spare Parts'
+              ? fetchSparePartsData
+              : fetchConsumablesData
+          }
+          handleClose={handleClose}
+          activeCategory={selectedOption}
+          activeTab={activeTab}
+        />
+      </Modal>
     </section>
   );
 };

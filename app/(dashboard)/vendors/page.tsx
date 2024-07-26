@@ -1,6 +1,8 @@
 'use client';
 import Loader from '@/components/Loader';
+import Modal from '@/components/dashboard/Modal';
 import UoMListTable from '@/components/uom/UomListTable';
+import AddVendorModal from '@/components/vendors/AddVendorModal';
 import VendorListTable from '@/components/vendors/VendorListTable';
 import {
   displayBargeValue,
@@ -104,6 +106,10 @@ const VendorsPage = () => {
     fetchCategories();
   }, [fetchVendors, fetchCategories, isVendorModalOpen]);
 
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   return (
     <section>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
@@ -133,22 +139,28 @@ const VendorsPage = () => {
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
               dispatch(displayBargeValue({}));
-              dispatch(toggleVendorModal());
+              setOpenModal(true);
             }}
           >
             Add Vendor
           </button>
         </div>
-        {loading ? (
-          <Loader />
-        ) : (
-          <VendorListTable
-            data={vendors}
-            fetchData={fetchVendors}
-            vendorCats={vendorCats}
-          />
-        )}
+
+        <VendorListTable
+          data={vendors}
+          fetchData={fetchVendors}
+          vendorCats={vendorCats}
+          setOpenModal={setOpenModal}
+        />
       </div>
+      <Modal
+        title="Add Vendor"
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="50%"
+      >
+        <AddVendorModal fetchData={fetchVendors} handleClose={handleClose} />
+      </Modal>
     </section>
   );
 };

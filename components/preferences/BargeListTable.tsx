@@ -37,10 +37,15 @@ interface Barge {
 
 interface BargeListTableProps {
   data: Barge[];
-  fetchdata: () => void;
+  fetchData: () => void;
+  setOpenBargeModal: (isOpen: boolean) => void;
 }
 
-const BargeListTable: React.FC<BargeListTableProps> = ({ data, fetchdata }) => {
+const BargeListTable: React.FC<BargeListTableProps> = ({
+  data,
+  fetchData,
+  setOpenBargeModal,
+}) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
   const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
@@ -95,7 +100,7 @@ const BargeListTable: React.FC<BargeListTableProps> = ({ data, fetchdata }) => {
         );
         console.log('Delete Response:', response);
         // toast.success(`${response?.data?.message}`);
-        fetchdata();
+        fetchData();
 
         if (response.status === 200) {
           // Handle success
@@ -115,7 +120,8 @@ const BargeListTable: React.FC<BargeListTableProps> = ({ data, fetchdata }) => {
 
   const handleEdit = (item: Barge) => {
     dispatch(displayBargeValue(item));
-    dispatch(toggleAddBargeModal());
+    setOpenBargeModal(true);
+    // dispatch(toggleAddBargeModal());
   };
 
   return (
@@ -125,15 +131,15 @@ const BargeListTable: React.FC<BargeListTableProps> = ({ data, fetchdata }) => {
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
-              <th className="text-sm text-center py-3">Barge No</th>
-              <th className="text-sm text-center py-3">Name</th>
-              <th className="text-sm text-center py-3">Rooms</th>
-              <th className="text-sm text-center py-3">Stores</th>
-              <th className="text-sm text-center py-3">Deck Level</th>
-              <th className="text-sm text-center py-3">Added By</th>
-              <th className="text-sm text-center py-3">Status</th>
-              <th className="text-sm text-center py-3">Created On</th>
-              <th className="text-sm text-center py-3">Actions</th>
+              <th className="text-sm text-left py-3">Barge No</th>
+              <th className="text-sm text-left py-3">Name</th>
+              <th className="text-sm text-left py-3">Rooms</th>
+              <th className="text-sm text-left py-3">Stores</th>
+              <th className="text-sm text-left py-3">Deck Level</th>
+              <th className="text-sm text-left py-3">Added By</th>
+              <th className="text-sm text-left py-3">Status</th>
+              <th className="text-sm text-left py-3">Created On</th>
+              <th className="text-sm text-left py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -156,19 +162,19 @@ const BargeListTable: React.FC<BargeListTableProps> = ({ data, fetchdata }) => {
                       {index + 1}
                     </td>
 
-                    <td className="py-2 text-center">
+                    <td className="py-2 text-left text-sm">
                       {barge_number}
                       {id}
                     </td>
-                    <td className="py-2 text-center">{name}</td>
-                    <td className="py-2 text-center">{rooms}</td>
-                    <td className="py-2 text-center">{store_location}</td>
-                    <td className="py-2 text-center">{deck_level}</td>
-                    <td className="py-2 text-center">
+                    <td className="py-2 text-left text-sm">{name}</td>
+                    <td className="py-2 text-left text-sm">{rooms}</td>
+                    <td className="py-2 text-left text-sm">{store_location}</td>
+                    <td className="py-2 text-left text-sm">{deck_level}</td>
+                    <td className="py-2 text-left text-sm">
                       {user.first_name} {user.last_name}
                     </td>
-                    <td className="py-2 text-center">{status}</td>
-                    <td className="py-2 text-center">
+                    <td className="py-2 text-left text-sm">{status}</td>
+                    <td className="py-2 text-left text-sm">
                       {formatDate(created_at)}
                     </td>
 
@@ -182,13 +188,13 @@ const BargeListTable: React.FC<BargeListTableProps> = ({ data, fetchdata }) => {
                         className="text-red-600"
                       /> */}
                         <button
-                          className="bg-blue-300 text-white p-2 rounded-md"
+                          className="bg-blue-300 text-sm text-white p-2 rounded-md"
                           onClick={() => handleEdit(item)}
                         >
                           Edit
                         </button>
                         <button
-                          className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                          className="bg-red-700 text-sm text-white p-2 rounded-md flex items-center justify-center"
                           onClick={() => handleDelete(id)}
                           disabled={loadingStates[id]}
                         >

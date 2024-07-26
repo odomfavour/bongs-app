@@ -150,11 +150,13 @@ const DepartmentListTable: React.FC<DepartmentListTableProps> = ({
                 const { id, user, role, department_name, created_at } = item;
                 return (
                   <tr className="border-b" key={id}>
-                    <td className="py-2 text-center text-[#344054]">
+                    <td className="py-2 text-center text-sm text-[#344054]">
                       {index + 1}
                     </td>
-                    <td className="py-2 text-center">{department_name}</td>
-                    <td className="py-2 text-center">{role.name}</td>
+                    <td className="py-2 text-center text-sm">
+                      {department_name}
+                    </td>
+                    <td className="py-2 text-center text-sm">{role.name}</td>
                     <td className="py-2 text-center">
                       {formatDate(created_at)}
                     </td>
@@ -162,13 +164,13 @@ const DepartmentListTable: React.FC<DepartmentListTableProps> = ({
                     <td className="py-2 text-center flex justify-center items-center">
                       <div className="flex gap-3">
                         <button
-                          className="bg-blue-700 text-white p-2 rounded-md"
+                          className="bg-blue-700 text-white text-sm p-2 rounded-md"
                           onClick={() => handleEdit(item)}
                         >
                           Edit
                         </button>
                         <button
-                          className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                          className="bg-red-700 text-white text-sm p-2 rounded-md flex items-center justify-center"
                           onClick={() => handleDelete(id)}
                           disabled={loadingStates[id]}
                         >

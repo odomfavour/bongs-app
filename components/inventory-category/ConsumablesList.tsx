@@ -38,11 +38,16 @@ interface LocationListTableProps {
   data: Location[];
   fetchData: () => void;
   parent: string;
+  activeTab: string;
+  setOpenModal: (isOpen: boolean) => void;
 }
 
 const ConsumablesListTable: React.FC<LocationListTableProps> = ({
   data,
   fetchData,
+  setOpenModal,
+  parent,
+  activeTab,
 }) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
@@ -73,7 +78,7 @@ const ConsumablesListTable: React.FC<LocationListTableProps> = ({
 
   const handleEdit = (item: Location) => {
     dispatch(displayBargeValue(item));
-    dispatch(toggleLocationModal());
+    setOpenModal(true);
   };
 
   const confirmDelete = (id: number) => {
@@ -94,15 +99,24 @@ const ConsumablesListTable: React.FC<LocationListTableProps> = ({
 
   const deleteLocation = async (id: number) => {
     try {
+      let baseUrl;
+      if (parent === 'engine') {
+        baseUrl = `${process.env.BASEURL}/consumable/engineCategory`;
+      } else if (parent === 'deck') {
+        baseUrl = `${process.env.BASEURL}/consumable/deckCategory`;
+      } else if (parent === 'safety') {
+        baseUrl = `${process.env.BASEURL}/consumable/safetyCategory`;
+      } else if (parent === 'galleylaundry') {
+        baseUrl = `${process.env.BASEURL}/consumable/galleylaundryCategory`;
+      } else {
+        baseUrl = `${process.env.BASEURL}/consumable/hospitalCategory`;
+      }
       // Send a DELETE request to your API
-      const response = await axios.delete(
-        `${process.env.BASEURL}/location/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
+      const response = await axios.delete(`${baseUrl}/delete/${id}`, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
       console.log('Delete Response:', response);
       fetchData();
 

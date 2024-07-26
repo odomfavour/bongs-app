@@ -37,11 +37,13 @@ interface Project {
 interface ProjectsListTableProps {
   data: Project[];
   fetchdata: () => void;
+  setOpenModal: (isOpen: boolean) => void;
 }
 
 const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
   data,
   fetchdata,
+  setOpenModal,
 }) => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
@@ -123,7 +125,8 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
 
   const handleEdit = (item: Project) => {
     dispatch(displayBargeValue(item));
-    dispatch(toggleAddProjectModal());
+    setOpenModal(true);
+    // dispatch(toggleAddProjectModal());
   };
   return (
     <div className="bg-white">
@@ -132,14 +135,14 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
-              <th className="text-sm text-center py-3">Name</th>
-              <th className="text-sm text-center py-3">Title.</th>
-              <th className="text-sm text-center py-3">Duration</th>
-              <th className="text-sm text-center py-3">Start Date</th>
-              <th className="text-sm text-center py-3">End Date</th>
-              <th className="text-sm text-center py-3">Project managers</th>
-              <th className="text-sm text-center py-3">Created On</th>
-              <th className="text-sm text-center py-3">Actions</th>
+              <th className="text-sm text-left py-3">Name</th>
+              <th className="text-sm text-left  py-3">Title.</th>
+              <th className="text-sm text-left  py-3">Duration</th>
+              <th className="text-sm text-left  py-3">Start Date</th>
+              <th className="text-sm text-left py-3">End Date</th>
+              <th className="text-sm text-left  py-3">Project managers</th>
+              <th className="text-sm text-left  py-3">Created On</th>
+              <th className="text-sm text-left  py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -161,30 +164,36 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
                       {index + 1}
                     </td>
 
-                    <td className="py-2 text-center">{project_name}</td>
-                    <td className="py-2 text-center">{project_title}</td>
-                    <td className="py-2 text-center">{project_duration}</td>
-                    <td className="py-2 text-center">{project_start_date}</td>
-                    <td className="py-2 text-center">{project_end_date}</td>
-                    <td className="py-2 text-center">
+                    <td className="py-2 text-sm text-left">{project_name}</td>
+                    <td className="py-2 text-sm text-left">{project_title}</td>
+                    <td className="py-2 text-sm text-left">
+                      {project_duration}
+                    </td>
+                    <td className="py-2 text-sm text-left">
+                      {project_start_date}
+                    </td>
+                    <td className="py-2 text-sm text-left">
+                      {project_end_date}
+                    </td>
+                    <td className="py-2 text-sm text-left">
                       {project_manager.first_name}
 
                       {project_manager.last_name}
                     </td>
-                    <td className="py-2 text-center">
+                    <td className="py-2 text-left text-sm">
                       {formatDate(created_at)}
                     </td>
 
-                    <td className="py-2 text-center flex justify-center items-center">
+                    <td className="py-2 text-center flex justify-left items-center">
                       <div className="flex gap-3">
                         <button
-                          className="bg-blue-700 text-white p-2 rounded-md"
+                          className="bg-blue-700 text-white text-sm p-2 rounded-md"
                           onClick={() => handleEdit(item)}
                         >
                           Edit
                         </button>
                         <button
-                          className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                          className="bg-red-700 text-white text-sm p-2 rounded-md flex items-center justify-center"
                           onClick={() => handleDelete(id)}
                           disabled={loadingStates[id]}
                         >

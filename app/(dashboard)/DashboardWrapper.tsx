@@ -11,7 +11,7 @@ import AddSafetyCategoryModal from '@/components/safety-category/AddSafetyCatego
 import AddUomModal from '@/components/uom/AddUomModal';
 import AddVendorModal from '@/components/vendors/AddVendorModal';
 import React, { ReactNode, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
@@ -26,16 +26,19 @@ import AddDeptModal from '@/components/users/AddDeptModal';
 import AddRoleModal from '@/components/users/AddRoleModal';
 import AddInventoryTypeModal from '@/components/inventory-category/AddInventoryTypeModal';
 import Loader from '@/components/Loader';
+import { setSubscribers } from '@/provider/redux/modalSlice';
 
 interface DashboardWrapperProps {
   children: ReactNode;
 }
 
 const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
-  const [subscribers, setSubscribers] = useState<any>([]);
+  // const [subscribers, setSubscribers] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const user = useSelector((state: any) => state?.user?.user);
+  const subscribers = useSelector((state: any) => state?.modal?.subscribers);
+  const dispatch = useDispatch();
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -51,7 +54,7 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
           }
         );
         console.log('resp', response);
-        setSubscribers(response?.data?.data?.data);
+        dispatch(setSubscribers(response?.data?.data?.data));
       } catch (error: any) {
         console.error('Error:', error);
         const errorMessage =
@@ -65,7 +68,7 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
       }
     };
     getSubscribers();
-  }, [user?.token]);
+  }, [dispatch, user?.token]);
 
   const isBargeModalOpen = useSelector(
     (state: any) => state.modal.isBargeModalOpen
@@ -148,9 +151,9 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
           </main>
         </div>
       </section>
-      {isBargeModalOpen && (
+      {/* {isBargeModalOpen && (
         <AddBargeModal subscribers={subscribers} user={user} />
-      )}
+      )} */}
       {isDeckModalOpen && (
         <AddDeckModal subscribers={subscribers} user={user} />
       )}
@@ -160,20 +163,20 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
       {isStoreOnBoardModalOpen && (
         <AddStoreOnBoardModal subscribers={subscribers} user={user} />
       )}
-      {isProjectModalOpen && (
+      {/* {isProjectModalOpen && (
         <AddProjectModal subscribers={subscribers} user={user} />
-      )}
-      {isUomModalOpen && <AddUomModal />}
-      {isSafetyCategoryModalOpen && <AddSafetyCategoryModal />}
-      {isVendorModalOpen && (
+      )} */}
+      {/* {isUomModalOpen && <AddUomModal />} */}
+      {/* {isSafetyCategoryModalOpen && <AddSafetyCategoryModal />} */}
+      {/* {isVendorModalOpen && (
         <AddVendorModal subscribers={subscribers} user={user} />
       )}
       {isVendorCategoryModalOpen && (
         <AddVendorCategoryModal subscribers={subscribers} user={user} />
-      )}
-      {isLocationModalOpen && (
+      )} */}
+      {/* {isLocationModalOpen && (
         <AddLocationModal subscribers={subscribers} user={user} />
-      )}
+      )} */}
       {isBargeComponentModalOpen && (
         <AddBargeComponentCategoryModal subscribers={subscribers} user={user} />
       )}
@@ -194,9 +197,9 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
       {isAddRoleModalOpen && (
         <AddRoleModal subscribers={subscribers} user={user} />
       )}
-      {isAddInventoryTypeModalOpen && (
+      {/* {isAddInventoryTypeModalOpen && (
         <AddInventoryTypeModal subscribers={subscribers} user={user} />
-      )}
+      )} */}
       {isLoading && <Loader />}
       <ToastContainer />
     </>

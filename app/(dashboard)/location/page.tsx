@@ -1,5 +1,7 @@
 'use client';
 import Loader from '@/components/Loader';
+import Modal from '@/components/dashboard/Modal';
+import AddLocationModal from '@/components/location/AddLocationModal';
 import LocationListTable from '@/components/location/LocationListTable';
 import {
   displayBargeValue,
@@ -66,12 +68,15 @@ const LocationPage = () => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [router, user?.token]);
+  }, [dispatch, router, user?.token]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData, isLocationModalOpen]);
-
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   return (
     <section>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
@@ -101,7 +106,7 @@ const LocationPage = () => {
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
               dispatch(displayBargeValue({}));
-              dispatch(toggleLocationModal());
+              setOpenModal(true);
             }}
           >
             Add Location
@@ -110,9 +115,21 @@ const LocationPage = () => {
         {loading ? (
           <Loader />
         ) : (
-          <LocationListTable data={locations} fetchData={fetchData} />
+          <LocationListTable
+            data={locations}
+            fetchData={fetchData}
+            setOpenModal={setOpenModal}
+          />
         )}
       </div>
+      <Modal
+        title="Add New Location"
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="40%"
+      >
+        <AddLocationModal fetchData={fetchData} handleClose={handleClose} />
+      </Modal>
     </section>
   );
 };

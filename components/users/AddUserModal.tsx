@@ -37,7 +37,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
     is_hod: false,
     is_barge_master: false,
     is_company_rep: false,
-    // is_authorized_for_release: false,
+    is_authorized_for_release: false,
     role_id: '' as string | number,
   });
   const [loading, setLoading] = useState(false);
@@ -46,6 +46,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
 
   useEffect(() => {
     if (Object.keys(bargeValues).length > 0) {
+      console.log(bargeValues);
       setFormData({
         subscriber_id: bargeValues?.subscriber_id,
         first_name: bargeValues.first_name,
@@ -57,9 +58,9 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
         is_hod: bargeValues.is_hod || false,
         is_barge_master: bargeValues.is_barge_master || false,
         is_company_rep: bargeValues.is_company_rep || false,
-        // is_authorized_for_release:
-        //   bargeValues.is_authorized_for_release || false,
-        role_id: bargeValues.role_id,
+        is_authorized_for_release:
+          bargeValues.is_authorized_for_release || false,
+        role_id: bargeValues.roles[0].id,
       });
     }
   }, [bargeValues]);
@@ -71,9 +72,9 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
     try {
       const url =
         Object.keys(bargeValues).length > 0
-          ? `${process.env.BASEURL}/uom/${bargeValues.id}`
+          ? `${process.env.BASEURL}/user/${bargeValues.id}`
           : `${process.env.BASEURL}/create-user`;
-      const method = Object.keys(bargeValues).length > 0 ? 'PUT' : 'POST';
+      const method = Object.keys(bargeValues).length > 0 ? 'PATCH' : 'POST';
 
       const response = await axios({
         method,
@@ -100,7 +101,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
         is_hod: false,
         is_barge_master: false,
         is_company_rep: false,
-        // is_authorized_for_release: false,
+        is_authorized_for_release: false,
         role_id: '' as string | number,
       });
 
@@ -108,6 +109,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
       // Handle success (e.g., close modal, show success message)
     } catch (error: any) {
       console.error('Error:', error);
+      console.error('Error data:', error?.response?.data);
 
       const errorMessage =
         error?.response?.data?.message ||
@@ -188,7 +190,6 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
             onClick={() => dispatch(toggleAddUserModal())}
           />
         </div>
-
         <form onSubmit={handleSubmit}>
           <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3">
             <div>
@@ -457,7 +458,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
                   </label>
                 </div>
 
-                {/* <div className="mb-4 flex items-center">
+                <div className="mb-4 flex items-center">
                   <input
                     id="is_authorized_for_release"
                     type="checkbox"
@@ -477,29 +478,31 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
                   >
                     Is Authorized For Release
                   </label>
-                </div> */}
+                </div>
               </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="password"
-                  className="block mb-2 text-sm font-medium"
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  placeholder="Input password"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData((prevData) => ({
-                      ...prevData,
-                      password: e.target.value,
-                    }))
-                  }
-                />
-              </div>
+              {Object.keys(bargeValues).length <= 0 && (
+                <div className="mb-4">
+                  <label
+                    htmlFor="password"
+                    className="block mb-2 text-sm font-medium"
+                  >
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    id="password"
+                    placeholder="Input password"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData((prevData) => ({
+                        ...prevData,
+                        password: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+              )}
             </div>
           </div>
 

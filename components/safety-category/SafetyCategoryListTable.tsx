@@ -34,12 +34,14 @@ interface SafetyCategory {
 
 interface SafetyCategoryListTableProps {
   data: SafetyCategory[];
-  fetchdata: () => void; // Add a function to refresh the data
+  fetchData: () => void; // Add a function to refresh the data
+  setOpenModal: (isOpen: boolean) => void;
 }
 
 const SafetyCategoryListTable: React.FC<SafetyCategoryListTableProps> = ({
   data,
-  fetchdata,
+  fetchData,
+  setOpenModal,
 }) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
@@ -82,7 +84,7 @@ const SafetyCategoryListTable: React.FC<SafetyCategoryListTableProps> = ({
           }
         );
         console.log('Delete Response:', response);
-        fetchdata();
+        fetchData();
 
         if (response.status === 200) {
           // Handle success
@@ -129,7 +131,8 @@ const SafetyCategoryListTable: React.FC<SafetyCategoryListTableProps> = ({
 
   const handleEdit = (item: SafetyCategory) => {
     dispatch(displayBargeValue(item));
-    dispatch(toggleSafetyCategoryModal());
+    setOpenModal(true);
+    // dispatch(toggleSafetyCategoryModal());
   };
   return (
     <div className="bg-white">

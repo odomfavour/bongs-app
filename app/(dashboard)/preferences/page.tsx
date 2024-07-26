@@ -19,6 +19,8 @@ import Loader from '@/components/Loader';
 import { toast } from 'react-toastify';
 import DeckTypeListTable from '@/components/preferences/DeckTypeListTable';
 import { useRouter } from 'next/navigation';
+import AddBargeModal from '@/components/preferences/AddBargeModal';
+import Modal from '@/components/dashboard/Modal';
 interface User {
   first_name: string;
   last_name: string;
@@ -99,6 +101,7 @@ const Preferences = () => {
 
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state?.user?.user);
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const isBargeModalOpen = useSelector(
     (state: any) => state.modal.isBargeModalOpen
   );
@@ -179,6 +182,13 @@ const Preferences = () => {
     isDeckTypeModalOpen,
   ]);
 
+  const [openBargeModal, setOpenBargeModal] = useState(false);
+  const [openDeckModal, setOpenDeckModal] = useState(false);
+  const [openStoreModal, setOpenStoreModal] = useState(false);
+
+  const handleBargeClose = () => {
+    setOpenBargeModal(false);
+  };
   return (
     <div>
       <div className="flex md:flex-row gap-5 flex-col justify-between md:items-center items-start mb-5 pb-10 border-b">
@@ -208,7 +218,8 @@ const Preferences = () => {
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
               dispatch(displayBargeValue({}));
-              dispatch(toggleAddBargeModal());
+              setOpenBargeModal(true);
+              // dispatch(toggleAddBargeModal());
             }}
           >
             Add Barge
@@ -263,7 +274,11 @@ const Preferences = () => {
       </div>
       <div className="mt-5">
         {activeTab === 'Barge' && (
-          <BargeListTable data={barges} fetchdata={fetchData} />
+          <BargeListTable
+            data={barges}
+            fetchData={fetchData}
+            setOpenBargeModal={setOpenBargeModal}
+          />
         )}
         {activeTab === 'Deck' && (
           <DeckListTable data={decks} fetchdata={fetchData} />
@@ -275,6 +290,16 @@ const Preferences = () => {
           <StoreOnBoardListTable data={storeItems} fetchdata={fetchData} />
         )}
       </div>
+      <Modal
+        title={
+          Object.keys(bargeValues).length > 0 ? 'Edit Barge' : 'Add New Barge'
+        }
+        isOpen={openBargeModal}
+        onClose={handleBargeClose}
+        maxWidth="55%"
+      >
+        <AddBargeModal fetchData={fetchData} handleClose={handleBargeClose} />
+      </Modal>
     </div>
   );
 };

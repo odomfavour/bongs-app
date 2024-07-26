@@ -29,14 +29,17 @@ interface EnginePanelProps {
   engineCategories: { id: number; name: string; count: string }[];
   user: User;
   fetchLoading: boolean;
+  requisition: boolean;
+  toggleRequisition: () => void;
 }
 
 const EnginePanel: React.FC<EnginePanelProps> = ({
   engineCategories,
   user,
   fetchLoading,
+  requisition,
+  toggleRequisition,
 }) => {
-  console.log('engine', engineCategories?.[0]?.name);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
   const [spareparts, setSpareparts] = useState<any[]>([]);
@@ -92,7 +95,7 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
   return (
     <div>
       <div className="my-4">
-        <EngineStrip />
+        <EngineStrip toggleRequisition={toggleRequisition} />
       </div>
       <div className="overflow-y-auto">
         <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2 gap-2">

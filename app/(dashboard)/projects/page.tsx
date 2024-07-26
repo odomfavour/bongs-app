@@ -1,6 +1,8 @@
 'use client';
 
 import Loader from '@/components/Loader';
+import Modal from '@/components/dashboard/Modal';
+import AddProjectModal from '@/components/projects/AddProjectModal';
 import ProjectsListTable from '@/components/projects/ProjectsTableList';
 import {
   displayBargeValue,
@@ -72,6 +74,10 @@ const ProjectsPage = () => {
     fetchData();
   }, [fetchData, isProjectModalOpen]);
 
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   return (
     <section>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
@@ -101,18 +107,27 @@ const ProjectsPage = () => {
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
               dispatch(displayBargeValue({}));
-              dispatch(toggleAddProjectModal());
+              setOpenModal(true);
             }}
           >
             Add Projects
           </button>
         </div>
-        {loading ? (
-          <Loader />
-        ) : (
-          <ProjectsListTable data={projects} fetchdata={fetchData} />
-        )}
+
+        <ProjectsListTable
+          data={projects}
+          fetchdata={fetchData}
+          setOpenModal={setOpenModal}
+        />
       </div>
+      <Modal
+        title="Add New Project"
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="60%"
+      >
+        <AddProjectModal fetchData={fetchData} handleClose={handleClose} />
+      </Modal>
     </section>
   );
 };

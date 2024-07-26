@@ -100,6 +100,11 @@ const Page = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData, isAddEngineModalOpen]);
+
+  const [requisition, setRequisition] = useState(false);
+  const toggleRequisition = () => {
+    setRequisition(!requisition);
+  };
   return (
     <div>
       <div className=" inline-flex border rounded-[30px] p-2 mb-5">
@@ -162,6 +167,8 @@ const Page = () => {
           engineCategories={categories}
           user={user}
           fetchLoading={loading}
+          requisition={requisition}
+          toggleRequisition={toggleRequisition}
         />
       )}
       {activeTab === 'spare-parts' && selectedOption === 'deck' && (

@@ -197,9 +197,9 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
       {isAddRoleModalOpen && (
         <AddRoleModal subscribers={subscribers} user={user} />
       )}
-      {isAddInventoryTypeModalOpen && (
+      {/* {isAddInventoryTypeModalOpen && (
         <AddInventoryTypeModal subscribers={subscribers} user={user} />
-      )}
+      )} */}
       {isLoading && <Loader />}
       <ToastContainer />
     </>

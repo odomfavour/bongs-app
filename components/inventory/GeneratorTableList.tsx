@@ -263,17 +263,17 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
               </th>
               <th className="text-sm text-center py-3">S/N</th>
               {pathname === '/inventories' && (
-                <th className="text-sm text-center py-3">Project</th>
+                <th className="text-sm text-left py-3">Project</th>
               )}
-              <th className="text-sm text-center py-3">Description</th>
-              <th className="text-sm text-center py-3">Qty</th>
-              <th className="text-sm text-center py-3">Part No.</th>
-              <th className="text-sm text-center py-3">Model</th>
-              <th className="text-sm text-center py-3">Threshold</th>
-              <th className="text-sm text-center py-3">Location</th>
-              <th className="text-sm text-center py-3">Date Acquired</th>
-              <th className="text-sm text-center py-3">Warranty Days</th>
-              <th className="text-sm text-center py-3">Actions</th>
+              <th className="text-sm text-left py-3">Description</th>
+              <th className="text-sm text-left py-3">Qty</th>
+              <th className="text-sm text-left py-3">Part No.</th>
+              <th className="text-sm text-left py-3">Model</th>
+              <th className="text-sm text-left py-3">Threshold</th>
+              <th className="text-sm text-left py-3">Location</th>
+              <th className="text-sm text-left py-3">Date Acquired</th>
+              <th className="text-sm text-left py-3">Warranty Days</th>
+              <th className="text-sm text-left py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -295,22 +295,34 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
                         onChange={() => handleSelect(item.id)}
                       />
                     </td>
-                    <td className="text-center py-3">{index + 1}</td>
+                    <td className="text-center text-sm py-3">{index + 1}</td>
                     {pathname === '/inventories' && (
-                      <td className="text-center py-3">
+                      <td className="text-left text-sm py-3">
                         {item?.project?.project_name}
                       </td>
                     )}
-                    <td className="text-center py-3">{item.description}</td>
-                    <td className="text-center py-3">{item.stock_quantity}</td>
-                    <td className="text-center py-3">{item.part_number}</td>
-                    <td className="text-center py-3">{item.model_number}</td>
-                    <td className="text-center py-3">{item.threshold}</td>
-                    <td className="text-center py-3">{item.location.name}</td>
-                    <td className="text-center py-3">{item.date_acquired}</td>
-                    <td className="text-center py-3">{`${days}d ${hours}h ${minutes}m ${seconds}s`}</td>
-                    <td className="text-center py-3">
-                      <div className="flex justify-center space-x-2">
+                    <td className="text-left text-sm py-3">
+                      {item.description}
+                    </td>
+                    <td className="text-left text-sm py-3">
+                      {item.stock_quantity}
+                    </td>
+                    <td className="text-left text-sm py-3">
+                      {item.part_number}
+                    </td>
+                    <td className="text-left text-sm py-3">
+                      {item.model_number}
+                    </td>
+                    <td className="text-left text-sm py-3">{item.threshold}</td>
+                    <td className="text-left text-sm py-3">
+                      {item.location.name}
+                    </td>
+                    <td className="text-left text-sm py-3">
+                      {item.date_acquired}
+                    </td>
+                    <td className="text-left text-sm py-3">{`${days}d ${hours}h ${minutes}m ${seconds}s`}</td>
+                    <td className="text-left text-sm py-3">
+                      <div className="flex justify-left text-sm space-x-2">
                         <button
                           className="bg-blue-500 text-white p-2 rounded-md"
                           onClick={() => handleEdit(item)}

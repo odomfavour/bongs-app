@@ -28,6 +28,11 @@ const Page = () => {
     (state: any) => state.modal.isAddEngineModalOpen
   );
 
+  const [requisition, setRequisition] = useState(false);
+  const toggleRequisition = () => {
+    setRequisition(!requisition);
+  };
+
   const fetchData = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
@@ -161,6 +166,8 @@ const Page = () => {
         <EnginePanel
           engineCategories={categories}
           user={user}
+          requisition={requisition}
+          toggleRequisition={toggleRequisition}
           fetchLoading={loading}
         />
       )}

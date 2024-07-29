@@ -42,11 +42,13 @@ interface Department {
 interface DepartmentListTableProps {
   data: Department[];
   fetchData: () => void;
+  setOpenDeptModal: (isOpen: boolean) => void;
 }
 
 const DepartmentListTable: React.FC<DepartmentListTableProps> = ({
   data,
   fetchData,
+  setOpenDeptModal,
 }) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
@@ -128,7 +130,8 @@ const DepartmentListTable: React.FC<DepartmentListTableProps> = ({
 
   const handleEdit = (item: Department) => {
     dispatch(displayBargeValue(item));
-    dispatch(toggleAddDepartmentModal());
+    setOpenDeptModal(true);
+    // dispatch(toggleAddDepartmentModal());
   };
 
   return (

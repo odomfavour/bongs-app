@@ -29,11 +29,12 @@ interface BargeComponent {
 interface BargeComponentCategoryListTableProps {
   data: BargeComponent[];
   fetchdata: () => void;
+  setOpenModal: (isOpen: boolean) => void;
 }
 
 const BargeComponentCategoryListTable: React.FC<
   BargeComponentCategoryListTableProps
-> = ({ data, fetchdata }) => {
+> = ({ data, fetchdata, setOpenModal }) => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
   const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
@@ -112,7 +113,7 @@ const BargeComponentCategoryListTable: React.FC<
   };
   const handleEdit = (item: BargeComponent) => {
     dispatch(displayBargeValue(item));
-    dispatch(toggleBargeComponentModal());
+    setOpenModal(true);
   };
   return (
     <div className="bg-white">

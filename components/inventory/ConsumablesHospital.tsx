@@ -8,6 +8,8 @@ import ConsHospitalStrip from './ConsHospitalStrip';
 import ConsumablesableList from './ConsumablesTableList';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import { usePathname } from 'next/navigation';
+import AddConsumablesModal from './AddConsumablesModal';
+import Modal from '../dashboard/Modal';
 
 interface User {
   token: string;
@@ -16,11 +18,15 @@ interface User {
 interface CEnginePanelProps {
   hospitalCategories: { id: number; name: string; count: string }[];
   user: User;
+  requisition: boolean;
+  toggleRequisition: () => void;
 }
 
 const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   hospitalCategories,
   user,
+  requisition,
+  toggleRequisition,
 }) => {
   console.log('engine', hospitalCategories?.[0]?.name);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
@@ -72,10 +78,17 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
     fetchData();
   }, [activeId, fetchData, isAddConsumeablesModalOpen]);
 
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   return (
     <div>
       <div className="my-4">
-        <ConsHospitalStrip />
+        <ConsHospitalStrip
+          toggleRequisition={toggleRequisition}
+          setOpenModal={setOpenModal}
+        />
       </div>
       <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2  gap-2">
         {hospitalCategories.map((tab: any) => (
@@ -100,7 +113,23 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
         data={consumables}
         fetchdata={fetchData}
         parent={'Hospital'}
+        requisition={requisition}
+        setOpenModal={setOpenModal}
+        toggleRequisition={toggleRequisition}
       />
+
+      <Modal
+        title="Add New Safety"
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="70%"
+      >
+        <AddConsumablesModal
+          fetchData={fetchData}
+          handleClose={handleClose}
+          inventoryType="Hospital"
+        />
+      </Modal>
     </div>
   );
 };

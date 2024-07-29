@@ -7,6 +7,8 @@ import GeneratorTableList from './GeneratorTableList';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import { useDispatch } from 'react-redux';
 import { usePathname } from 'next/navigation';
+import Modal from '../dashboard/Modal';
+import AddEngineModal from './AddEngineModal';
 
 interface User {
   token: string;
@@ -15,11 +17,15 @@ interface User {
 interface SafetyPanelProps {
   safetyCategories: { id: number; name: string; count: string }[];
   user: User;
+  requisition: boolean;
+  toggleRequisition: () => void;
 }
 
 const SafetyPanel: React.FC<SafetyPanelProps> = ({
   safetyCategories,
   user,
+  requisition,
+  toggleRequisition,
 }) => {
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
@@ -66,10 +72,18 @@ const SafetyPanel: React.FC<SafetyPanelProps> = ({
   useEffect(() => {
     fetchData();
   }, [activeId, fetchData]);
+
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   return (
     <div>
       <div className="my-4">
-        <SafetyStrip />
+        <SafetyStrip
+          toggleRequisition={toggleRequisition}
+          setOpenModal={setOpenModal}
+        />
       </div>
       <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2  gap-2">
         {safetyCategories.map((tab) => (
@@ -94,7 +108,23 @@ const SafetyPanel: React.FC<SafetyPanelProps> = ({
         data={spareparts}
         fetchdata={fetchData}
         parent={'Safety'}
+        requisition={requisition}
+        setOpenModal={setOpenModal}
+        toggleRequisition={toggleRequisition}
       />
+
+      <Modal
+        title="Add New Safety"
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="70%"
+      >
+        <AddEngineModal
+          fetchData={fetchData}
+          handleClose={handleClose}
+          inventoryType="Safety"
+        />
+      </Modal>
       {/* )} */}
     </div>
   );

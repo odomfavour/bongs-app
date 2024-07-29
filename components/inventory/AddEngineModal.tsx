@@ -23,17 +23,22 @@ interface User {
 }
 
 interface AddProjectModalProps {
-  subscribers: Subscriber[];
-  user: User;
+  handleClose: () => void;
+  fetchData: () => void;
+  inventoryType: string;
 }
 
 const AddEngineModal: React.FC<AddProjectModalProps> = ({
-  subscribers,
-  user,
+  handleClose,
+  fetchData,
+  inventoryType,
 }) => {
   const dispatch = useDispatch();
+  const subscribers = useSelector((state: any) => state.modal.subscribers);
+  const user = useSelector((state: any) => state.user.user);
+
   const bargeValues = useSelector((state: any) => state.modal.bargeValues);
-  const inventoryType = useSelector((state: any) => state.modal.inventoryType);
+  // const inventoryType = useSelector((state: any) => state.modal.inventoryType);
   const pathname = usePathname();
   const [formData, setFormData] = useState({
     project_id: null as number | null,
@@ -157,7 +162,9 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
         sparepart_deck_category_id: null,
         sparepart_hospital_category_id: null,
       });
-      dispatch(toggleAddEngineModal(''));
+      // dispatch(toggleAddEngineModal(''));
+      fetchData();
+      handleClose();
       // Handle success (e.g., close modal, show success message)
     } catch (error: any) {
       console.error('Error:', error);
@@ -181,7 +188,7 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
   const [locations, setLocations] = useState([]);
   const [vendors, setVendors] = useState([]);
   const [bEquipment, setBEquipment] = useState([]);
-  const fetchData = useCallback(async () => {
+  const fetchSparepartData = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
       const [
@@ -271,8 +278,8 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
   }, [dispatch, inventoryType, user?.token]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchSparepartData();
+  }, [fetchSparepartData]);
 
   // const increaseQuantity = () => {
   //   setFormData((prev) => ({
@@ -303,133 +310,114 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
   // };
 
   return (
-    <div className="z-50 top-0 min-h-screen bg-[#101010c8] fixed w-full flex justify-center items-center text-veriDark">
-      <div
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-        className="lg:w-2/3 w-11/12 bg-white rounded-[5px] shadow-authModal p-8 h-[70vh] overflow-y-scroll"
-      >
-        <div className="flex justify-between items-center mb-3">
-          <p className="font-bold text-2xl">Add New {inventoryType}</p>
-          <BsXLg
-            className="cursor-pointer text-primary"
-            role="button"
-            onClick={() => dispatch(toggleAddEngineModal(''))}
-          />
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-3 gap-5">
-            <div>
-              {!user?.subscriber_id && (
-                <div className="mb-4">
-                  <label
-                    htmlFor="subscriber"
-                    className="block mb-2 text-sm font-medium text-gray-900"
-                  >
-                    Subscriber
-                  </label>
-                  <select
-                    id="subscriber"
-                    name="subscriber_id"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                    value={formData.subscriber_id}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        subscriber_id: parseInt(e.target.value),
-                      })
-                    }
-                  >
-                    <option value="">Select Subscriber</option>
-                    {subscribers?.map((subscriber) => (
-                      <option value={subscriber.id} key={subscriber.id}>
-                        {subscriber.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-              {pathname !== '/miv-inventories' && (
-                <div className="mb-4">
-                  <label
-                    htmlFor="subscriber"
-                    className="block mb-2 text-sm font-medium text-gray-900"
-                  >
-                    Project
-                  </label>
-                  <select
-                    id="subscriber"
-                    name="subscriber_id"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                    value={
-                      formData.project_id !== null
-                        ? formData.project_id.toString()
-                        : ''
-                    }
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        project_id: e.target.value
-                          ? parseInt(e.target.value)
-                          : null,
-                      })
-                    }
-                  >
-                    <option value="">Select Project</option>
-                    {projects?.map((project: any) => (
-                      <option
-                        value={project.id}
-                        key={project.id}
-                        className="capitalize"
-                      >
-                        {project.project_name
-                          .split(' ')
-                          .map(
-                            (word: any) =>
-                              word.charAt(0).toUpperCase() +
-                              word.slice(1).toLowerCase()
-                          )
-                          .join(' ')}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
+    <div>
+      <form onSubmit={handleSubmit}>
+        <div className="grid grid-cols-3 gap-5">
+          <div>
+            {!user?.subscriber_id && (
               <div className="mb-4">
                 <label
                   htmlFor="subscriber"
                   className="block mb-2 text-sm font-medium text-gray-900"
                 >
-                  Deck
+                  Subscriber
                 </label>
                 <select
                   id="subscriber"
                   name="subscriber_id"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.deck_id}
+                  value={formData.subscriber_id}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      deck_id: parseInt(e.target.value),
+                      subscriber_id: parseInt(e.target.value),
                     })
                   }
                 >
-                  <option value="">Select Deck</option>
-                  {decks?.map((deck: any) => (
-                    <option
-                      value={deck.id}
-                      key={deck.id}
-                      className="capitalize"
-                    >
-                      {deck.name}
+                  <option value="">Select Subscriber</option>
+                  {subscribers?.map((subscriber: any) => (
+                    <option value={subscriber.id} key={subscriber.id}>
+                      {subscriber.name}
                     </option>
                   ))}
                 </select>
               </div>
-              {/* <div className="mb-4">
+            )}
+            {pathname !== '/miv-inventories' && (
+              <div className="mb-4">
+                <label
+                  htmlFor="subscriber"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  Project
+                </label>
+                <select
+                  id="subscriber"
+                  name="subscriber_id"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                  value={
+                    formData.project_id !== null
+                      ? formData.project_id.toString()
+                      : ''
+                  }
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      project_id: e.target.value
+                        ? parseInt(e.target.value)
+                        : null,
+                    })
+                  }
+                >
+                  <option value="">Select Project</option>
+                  {projects?.map((project: any) => (
+                    <option
+                      value={project.id}
+                      key={project.id}
+                      className="capitalize"
+                    >
+                      {project.project_name
+                        .split(' ')
+                        .map(
+                          (word: any) =>
+                            word.charAt(0).toUpperCase() +
+                            word.slice(1).toLowerCase()
+                        )
+                        .join(' ')}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            <div className="mb-4">
+              <label
+                htmlFor="subscriber"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Deck
+              </label>
+              <select
+                id="subscriber"
+                name="subscriber_id"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.deck_id}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    deck_id: parseInt(e.target.value),
+                  })
+                }
+              >
+                <option value="">Select Deck</option>
+                {decks?.map((deck: any) => (
+                  <option value={deck.id} key={deck.id} className="capitalize">
+                    {deck.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {/* <div className="mb-4">
                 <label
                   htmlFor="subscriber"
                   className="block mb-2 text-sm font-medium text-gray-900"
@@ -456,98 +444,139 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                   ))}
                 </select>
               </div> */}
-              <div className="mb-4">
-                <label
-                  htmlFor="subscriber"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Store - on - Board
-                </label>
+            <div className="mb-4">
+              <label
+                htmlFor="subscriber"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Store - on - Board
+              </label>
 
-                <select
-                  id="subscriber"
-                  name="subscriber_id"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.keystore_id}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      keystore_id: parseInt(e.target.value),
-                    })
-                  }
-                >
-                  <option value="">Select Store on Board</option>
-                  {storeItems?.map((storeItem: any) => (
-                    <option
-                      value={storeItem.id}
-                      key={storeItem.id}
-                      className="capitalize"
-                    >
-                      {storeItem.description}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="subscriber"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Barge Equipment
-                </label>
-                <select
-                  id="subscriber"
-                  name="subscriber_id"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.barge_equipment_id}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      barge_equipment_id: parseInt(e.target.value),
-                    })
-                  }
-                >
-                  <option value="">Select Barge Equipment</option>
-                  {bEquipment?.map((equipment: any) => (
-                    <option
-                      value={equipment.id}
-                      key={equipment.id}
-                      className="capitalize"
-                    >
-                      {equipment.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="project_description"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Description
-                </label>
-                <textarea
-                  id="project_description"
-                  name="project_description"
-                  rows={4}
-                  className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Input project description"
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      description: e.target.value,
-                    })
-                  }
-                ></textarea>
-              </div>
+              <select
+                id="subscriber"
+                name="subscriber_id"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.keystore_id}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    keystore_id: parseInt(e.target.value),
+                  })
+                }
+              >
+                <option value="">Select Store on Board</option>
+                {storeItems?.map((storeItem: any) => (
+                  <option
+                    value={storeItem.id}
+                    key={storeItem.id}
+                    className="capitalize"
+                  >
+                    {storeItem.description}
+                  </option>
+                ))}
+              </select>
             </div>
-            <div>
-              <div className="mb-4">
-                <label
-                  htmlFor="sparepart_type"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
+            <div className="mb-4">
+              <label
+                htmlFor="subscriber"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Barge Equipment
+              </label>
+              <select
+                id="subscriber"
+                name="subscriber_id"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.barge_equipment_id}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    barge_equipment_id: parseInt(e.target.value),
+                  })
+                }
+              >
+                <option value="">Select Barge Equipment</option>
+                {bEquipment?.map((equipment: any) => (
+                  <option
+                    value={equipment.id}
+                    key={equipment.id}
+                    className="capitalize"
+                  >
+                    {equipment.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="project_description"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Description
+              </label>
+              <textarea
+                id="project_description"
+                name="project_description"
+                rows={4}
+                className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Input project description"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    description: e.target.value,
+                  })
+                }
+              ></textarea>
+            </div>
+          </div>
+          <div>
+            <div className="mb-4">
+              <label
+                htmlFor="sparepart_type"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                {inventoryType === 'Engine'
+                  ? 'Engine'
+                  : inventoryType === 'Deck'
+                  ? 'Deck'
+                  : inventoryType === 'Safety'
+                  ? 'Safety'
+                  : 'Hospital'}{' '}
+                Category
+              </label>
+              <select
+                id="sparepart_type"
+                name="sparepart_type"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={
+                  inventoryType === 'Engine'
+                    ? formData.sparepart_engine_category_id || ''
+                    : inventoryType === 'Deck'
+                    ? formData.sparepart_deck_category_id || ''
+                    : inventoryType === 'Safety'
+                    ? formData.safety_category_id || ''
+                    : formData.sparepart_hospital_category_id || ''
+                }
+                onChange={(e) => {
+                  const value = parseInt(e.target.value, 10) || '';
+                  const key =
+                    inventoryType === 'Engine'
+                      ? 'sparepart_engine_category_id'
+                      : inventoryType === 'Deck'
+                      ? 'sparepart_deck_category_id'
+                      : inventoryType === 'Safety'
+                      ? 'safety_category_id'
+                      : 'sparepart_hospital_category_id';
+
+                  setFormData({
+                    ...formData,
+                    [key]: value,
+                  });
+                }}
+              >
+                <option value="">
+                  Select{' '}
                   {inventoryType === 'Engine'
                     ? 'Engine'
                     : inventoryType === 'Deck'
@@ -556,196 +585,155 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                     ? 'Safety'
                     : 'Hospital'}{' '}
                   Category
-                </label>
-                <select
-                  id="sparepart_type"
-                  name="sparepart_type"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={
-                    inventoryType === 'Engine'
-                      ? formData.sparepart_engine_category_id || ''
-                      : inventoryType === 'Deck'
-                      ? formData.sparepart_deck_category_id || ''
-                      : inventoryType === 'Safety'
-                      ? formData.safety_category_id || ''
-                      : formData.sparepart_hospital_category_id || ''
-                  }
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value, 10) || '';
-                    const key =
-                      inventoryType === 'Engine'
-                        ? 'sparepart_engine_category_id'
-                        : inventoryType === 'Deck'
-                        ? 'sparepart_deck_category_id'
-                        : inventoryType === 'Safety'
-                        ? 'safety_category_id'
-                        : 'sparepart_hospital_category_id';
-
-                    setFormData({
-                      ...formData,
-                      [key]: value,
-                    });
-                  }}
-                >
-                  <option value="">
-                    Select{' '}
-                    {inventoryType === 'Engine'
-                      ? 'Engine'
-                      : inventoryType === 'Deck'
-                      ? 'Deck'
-                      : inventoryType === 'Safety'
-                      ? 'Safety'
-                      : 'Hospital'}{' '}
-                    Category
+                </option>
+                {engineTypes?.map((engineType: any) => (
+                  <option value={engineType.id} key={engineType.id}>
+                    {engineType.name
+                      .split(' ')
+                      .map(
+                        (word: any) =>
+                          word.charAt(0).toUpperCase() +
+                          word.slice(1).toLowerCase()
+                      )
+                      .join(' ')}
                   </option>
-                  {engineTypes?.map((engineType: any) => (
-                    <option value={engineType.id} key={engineType.id}>
-                      {engineType.name
-                        .split(' ')
-                        .map(
-                          (word: any) =>
-                            word.charAt(0).toUpperCase() +
-                            word.slice(1).toLowerCase()
-                        )
-                        .join(' ')}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="mb-4">
-                <label
-                  htmlFor="uom"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Unit of Measurement
-                </label>
-                <select
-                  id="uom"
-                  name="uom"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.uom_id}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      uom_id: parseInt(e.target.value),
-                    })
-                  }
-                >
-                  <option value="">Select UoM</option>
-                  {uom?.map((unit: any) => (
-                    <option value={unit.id} key={unit.id}>
-                      {unit.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="mb-4">
-                <label
-                  htmlFor="part_number"
-                  className="block mb-2 text-sm font-medium"
-                >
-                  Part Number
-                </label>
-                <input
-                  type="text"
-                  id="part_number"
-                  name="part_number"
-                  placeholder="Input Part Number"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.part_number}
-                  onChange={(e) =>
-                    setFormData({ ...formData, part_number: e.target.value })
-                  }
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="model_number"
-                  className="block mb-2 text-sm font-medium"
-                >
-                  Model Number
-                </label>
-                <input
-                  type="text"
-                  id="model_number"
-                  name="model_number"
-                  placeholder="Input model number"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.model_number}
-                  onChange={(e) =>
-                    setFormData({ ...formData, model_number: e.target.value })
-                  }
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="location"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Location
-                </label>
-                <select
-                  id="location"
-                  name="location"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.location_id}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      location_id: parseInt(e.target.value),
-                    })
-                  }
-                >
-                  <option value="">Select Location</option>
-                  {locations?.map((location: any) => (
-                    <option value={location.id} key={location.id}>
-                      {location.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="vendor"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Vendor
-                </label>
-                <select
-                  id="vendor"
-                  name="vendor"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.vendor_id}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      vendor_id: parseInt(e.target.value),
-                    })
-                  }
-                >
-                  <option value="">Select Vendor</option>
-                  {vendors?.map((vendor: any) => (
-                    <option value={vendor.id} key={vendor.id}>
-                      {vendor.vendor_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                ))}
+              </select>
             </div>
-            <div>
-              <div className="mb-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <div className="mb-4">
-                      <label
-                        htmlFor="stock_quantity"
-                        className="block mb-2 text-sm font-medium text-gray-900"
-                      >
-                        Stock Quantity
-                      </label>
-                      {/* <div className="flex items-center">
+
+            <div className="mb-4">
+              <label
+                htmlFor="uom"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Unit of Measurement
+              </label>
+              <select
+                id="uom"
+                name="uom"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.uom_id}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    uom_id: parseInt(e.target.value),
+                  })
+                }
+              >
+                <option value="">Select UoM</option>
+                {uom?.map((unit: any) => (
+                  <option value={unit.id} key={unit.id}>
+                    {unit.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <label
+                htmlFor="part_number"
+                className="block mb-2 text-sm font-medium"
+              >
+                Part Number
+              </label>
+              <input
+                type="text"
+                id="part_number"
+                name="part_number"
+                placeholder="Input Part Number"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.part_number}
+                onChange={(e) =>
+                  setFormData({ ...formData, part_number: e.target.value })
+                }
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="model_number"
+                className="block mb-2 text-sm font-medium"
+              >
+                Model Number
+              </label>
+              <input
+                type="text"
+                id="model_number"
+                name="model_number"
+                placeholder="Input model number"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.model_number}
+                onChange={(e) =>
+                  setFormData({ ...formData, model_number: e.target.value })
+                }
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="location"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Location
+              </label>
+              <select
+                id="location"
+                name="location"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.location_id}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    location_id: parseInt(e.target.value),
+                  })
+                }
+              >
+                <option value="">Select Location</option>
+                {locations?.map((location: any) => (
+                  <option value={location.id} key={location.id}>
+                    {location.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="vendor"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Vendor
+              </label>
+              <select
+                id="vendor"
+                name="vendor"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.vendor_id}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    vendor_id: parseInt(e.target.value),
+                  })
+                }
+              >
+                <option value="">Select Vendor</option>
+                {vendors?.map((vendor: any) => (
+                  <option value={vendor.id} key={vendor.id}>
+                    {vendor.vendor_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div>
+            <div className="mb-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <div className="mb-4">
+                    <label
+                      htmlFor="stock_quantity"
+                      className="block mb-2 text-sm font-medium text-gray-900"
+                    >
+                      Stock Quantity
+                    </label>
+                    {/* <div className="flex items-center">
                         <button
                           type="button"
                           className="p-2 bg-gray-200 rounded-l-lg"
@@ -770,48 +758,48 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                         </button>
                       </div> */}
 
-                      <input
-                        type="number"
-                        id="stock_number"
-                        name="stock_number"
-                        placeholder="Input Stock quantity"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                        value={formData.stock_quantity}
-                        min="0"
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            stock_quantity: parseInt(e.target.value),
-                          })
-                        }
-                      />
-                    </div>
+                    <input
+                      type="number"
+                      id="stock_number"
+                      name="stock_number"
+                      placeholder="Input Stock quantity"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                      value={formData.stock_quantity}
+                      min="0"
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          stock_quantity: parseInt(e.target.value),
+                        })
+                      }
+                    />
                   </div>
-                  <div>
-                    <div className="mb-4">
-                      <label
-                        htmlFor="threshold"
-                        className="block mb-2 text-sm font-medium text-gray-900"
-                      >
-                        Threshold
-                      </label>
+                </div>
+                <div>
+                  <div className="mb-4">
+                    <label
+                      htmlFor="threshold"
+                      className="block mb-2 text-sm font-medium text-gray-900"
+                    >
+                      Threshold
+                    </label>
 
-                      <input
-                        type="number"
-                        id="part_number"
-                        name="part_number"
-                        placeholder="Input treshold number"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                        value={formData.threshold}
-                        min="0"
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            threshold: parseInt(e.target.value),
-                          })
-                        }
-                      />
-                      {/* <div className="flex items-center">
+                    <input
+                      type="number"
+                      id="part_number"
+                      name="part_number"
+                      placeholder="Input treshold number"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                      value={formData.threshold}
+                      min="0"
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          threshold: parseInt(e.target.value),
+                        })
+                      }
+                    />
+                    {/* <div className="flex items-center">
                         <button
                           type="button"
                           className="p-2 bg-gray-200 rounded-l-lg"
@@ -835,140 +823,139 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
                           <FaPlus />
                         </button>
                       </div> */}
-                    </div>
                   </div>
                 </div>
               </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="project_name"
-                  className="block mb-2 text-sm font-medium"
-                >
-                  Date Acquired
-                </label>
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="project_name"
+                className="block mb-2 text-sm font-medium"
+              >
+                Date Acquired
+              </label>
+              <input
+                type="date"
+                id="project_name"
+                name="project_name"
+                placeholder="Input project name"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.date_acquired}
+                onChange={(e) =>
+                  setFormData({ ...formData, date_acquired: e.target.value })
+                }
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="project_name"
+                className="block mb-2 text-sm font-medium"
+              >
+                Warranty Period
+              </label>
+              <input
+                type="date"
+                id="project_name"
+                name="project_name"
+                placeholder="Input project name"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.waranty_period}
+                onChange={(e) =>
+                  setFormData({ ...formData, waranty_period: e.target.value })
+                }
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="subscriber"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Critical Level
+              </label>
+              <select
+                id="subscriber"
+                name="subscriber_id"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.critical_level}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    critical_level: e.target.value,
+                  })
+                }
+              >
+                <option value="">Select Level</option>
+                <option value="low">Low</option>
+                <option value="mid">Mid</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="status"
+                className="block mb-2 text-sm font-medium"
+              >
+                Status
+              </label>
+              <label className="inline-flex items-center cursor-pointer">
                 <input
-                  type="date"
-                  id="project_name"
-                  name="project_name"
-                  placeholder="Input project name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.date_acquired}
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={formData.status}
                   onChange={(e) =>
-                    setFormData({ ...formData, date_acquired: e.target.value })
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      status: e.target.checked,
+                    }))
                   }
                 />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="project_name"
-                  className="block mb-2 text-sm font-medium"
-                >
-                  Warranty Period
-                </label>
-                <input
-                  type="date"
-                  id="project_name"
-                  name="project_name"
-                  placeholder="Input project name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.waranty_period}
-                  onChange={(e) =>
-                    setFormData({ ...formData, waranty_period: e.target.value })
-                  }
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="subscriber"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Critical Level
-                </label>
-                <select
-                  id="subscriber"
-                  name="subscriber_id"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.critical_level}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      critical_level: e.target.value,
-                    })
-                  }
-                >
-                  <option value="">Select Level</option>
-                  <option value="low">Low</option>
-                  <option value="mid">Mid</option>
-                  <option value="high">High</option>
-                </select>
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="status"
-                  className="block mb-2 text-sm font-medium"
-                >
-                  Status
-                </label>
-                <label className="inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="sr-only peer"
-                    checked={formData.status}
-                    onChange={(e) =>
-                      setFormData((prevData) => ({
-                        ...prevData,
-                        status: e.target.checked,
-                      }))
-                    }
-                  />
-                  <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                  <span className="ms-3 text-sm font-medium text-gray-900 ">
-                    {formData.status ? 'Active' : 'Inactive'}
-                  </span>
-                </label>
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="project_description"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Remarks
-                </label>
-                <textarea
-                  id="project_description"
-                  name="project_description"
-                  rows={4}
-                  className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Input remarks"
-                  value={formData.remark}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      remark: e.target.value,
-                    })
-                  }
-                ></textarea>
-              </div>
+                <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                <span className="ms-3 text-sm font-medium text-gray-900 ">
+                  {formData.status ? 'Active' : 'Inactive'}
+                </span>
+              </label>
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="project_description"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Remarks
+              </label>
+              <textarea
+                id="project_description"
+                name="project_description"
+                rows={4}
+                className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Input remarks"
+                value={formData.remark}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    remark: e.target.value,
+                  })
+                }
+              ></textarea>
             </div>
           </div>
+        </div>
 
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className={`bg-blue-600 text-white p-3 rounded-lg ${
-                loading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-              disabled={loading}
-            >
-              {loading
-                ? 'Submitting...'
-                : Object.keys(bargeValues).length > 0
-                ? `Update ${inventoryType}`
-                : `Add ${inventoryType}`}
-            </button>
-          </div>
-        </form>
-      </div>
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className={`bg-blue-600 text-white p-3 rounded-lg ${
+              loading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            disabled={loading}
+          >
+            {loading
+              ? 'Submitting...'
+              : Object.keys(bargeValues).length > 0
+              ? `Update ${inventoryType}`
+              : `Add ${inventoryType}`}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

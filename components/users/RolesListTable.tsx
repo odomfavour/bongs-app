@@ -28,9 +28,14 @@ interface Roles {
 interface RolesListTableProps {
   data: Roles[];
   fetchData: () => void;
+  setOpenRoleModal: (isOpen: boolean) => void;
 }
 
-const RolesListTable: React.FC<RolesListTableProps> = ({ data, fetchData }) => {
+const RolesListTable: React.FC<RolesListTableProps> = ({
+  data,
+  fetchData,
+  setOpenRoleModal,
+}) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
   const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
@@ -115,7 +120,8 @@ const RolesListTable: React.FC<RolesListTableProps> = ({ data, fetchData }) => {
 
   const handleEdit = (item: Roles) => {
     dispatch(displayBargeValue(item));
-    dispatch(toggleAddRoleModal());
+    setOpenRoleModal(true);
+    // dispatch(toggleAddRoleModal());
   };
 
   return (

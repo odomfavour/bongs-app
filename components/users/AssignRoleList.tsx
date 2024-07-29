@@ -78,6 +78,7 @@ const AssignRoleListTable: React.FC<RolesListTableProps> = ({
   };
 
   const updatePermissions = async () => {
+    console.log('perms', roleId, selectedPermissions);
     const confirmResult = await Swal.fire({
       title: 'Are you sure?',
       text: 'You will not be able to recover this action!',

@@ -10,7 +10,15 @@ import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
-const SafetyStrip: React.FC = () => {
+interface SafetyStripProps {
+  toggleRequisition: () => void;
+  setOpenModal: (isOpen: boolean) => void;
+}
+
+const SafetyStrip: React.FC<SafetyStripProps> = ({
+  toggleRequisition,
+  setOpenModal,
+}) => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
@@ -136,7 +144,13 @@ const SafetyStrip: React.FC = () => {
           {/* Actions Dropdown content */}
           {isActionsOpen && (
             <div className="origin-top-right rounded-[16px] absolute left-0 -mt-2 w-[150px] py-2 px-2 shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-gray-100 z-30">
-              <button className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start">
+              <button
+                className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start"
+                onClick={() => {
+                  toggleRequisition();
+                  setIsActionsOpen(false);
+                }}
+              >
                 Material Requisition
               </button>
               <button className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start">
@@ -185,7 +199,8 @@ const SafetyStrip: React.FC = () => {
           className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
           onClick={() => {
             dispatch(displayBargeValue({}));
-            dispatch(toggleAddEngineModal('Safety'));
+            setOpenModal(true);
+            // dispatch(toggleAddEngineModal('Safety'));
           }}
         >
           Add Safety

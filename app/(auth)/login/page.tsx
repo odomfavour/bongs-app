@@ -45,7 +45,7 @@ const Login: React.FC = () => {
       }
       toast.success(`${response?.data?.message}`);
       setIsLoading(false);
-      router.push('/preferences');
+      router.push('/dashboard');
       // Handle success (e.g., redirect to another page)
     } catch (error: any) {
       console.error('Error:', error);

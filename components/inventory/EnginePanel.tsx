@@ -8,6 +8,8 @@ import Loader from '../Loader';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePathname } from 'next/navigation';
 import { toggleLoading } from '@/provider/redux/modalSlice';
+import AddEngineModal from './AddEngineModal';
+import Modal from '../dashboard/Modal';
 
 interface Generator {
   id: number;
@@ -48,6 +50,10 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
   const isAddEngineModalOpen = useSelector(
     (state: any) => state.modal.isAddEngineModalOpen
   );
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   const dispatch = useDispatch();
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
@@ -95,7 +101,10 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
   return (
     <div>
       <div className="my-4">
-        <EngineStrip toggleRequisition={toggleRequisition} />
+        <EngineStrip
+          toggleRequisition={toggleRequisition}
+          setOpenModal={setOpenModal}
+        />
       </div>
       <div className="overflow-y-auto">
         <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2 gap-2">
@@ -126,9 +135,23 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
           data={spareparts}
           fetchdata={fetchData}
           parent={'Engine'}
+          requisition={requisition}
+          setOpenModal={setOpenModal}
+          toggleRequisition={toggleRequisition}
         />
       )}
-
+      <Modal
+        title="Add New Engine"
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="70%"
+      >
+        <AddEngineModal
+          fetchData={fetchData}
+          handleClose={handleClose}
+          inventoryType="Engine"
+        />
+      </Modal>
       {/* )} */}
     </div>
   );

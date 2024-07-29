@@ -32,9 +32,14 @@ interface User {
 interface UserListTableProps {
   data: User[];
   fetchData: () => void;
+  setOpenUserModal: (isOpen: boolean) => void;
 }
 
-const UserListTable: React.FC<UserListTableProps> = ({ data, fetchData }) => {
+const UserListTable: React.FC<UserListTableProps> = ({
+  data,
+  fetchData,
+  setOpenUserModal,
+}) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
   const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
@@ -116,7 +121,8 @@ const UserListTable: React.FC<UserListTableProps> = ({ data, fetchData }) => {
   const handleEdit = (item: User) => {
     console.log('item', item);
     dispatch(displayBargeValue(item));
-    dispatch(toggleAddUserModal());
+    setOpenUserModal(true);
+    // dispatch(toggleAddUserModal());
   };
 
   return (

@@ -43,6 +43,11 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   useEffect(() => {
+    const hasPermission = (permissionName: string) =>
+      user?.permissions?.some(
+        (permission: any) => permission.name === permissionName
+      );
+
     const getSubscribers = async () => {
       try {
         const response = await axios.get(
@@ -67,8 +72,12 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
         setLoading(false);
       }
     };
-    getSubscribers();
-  }, [dispatch, user?.token]);
+
+    if (hasPermission('can read subscriber')) {
+      console.log('here');
+      getSubscribers();
+    }
+  }, [dispatch, user?.permissions, user?.token]);
 
   const isBargeModalOpen = useSelector(
     (state: any) => state.modal.isBargeModalOpen
@@ -129,7 +138,11 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
   );
 
   const isLoading = useSelector((state: any) => state.modal.isLoading);
-
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  if (!isClient) return null;
   return (
     <>
       <section>
@@ -140,7 +153,7 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
               isSidebarOpen ? 'block' : 'hidden'
             }`}
           >
-            <Sidebar />
+            <Sidebar user={user} />
           </div>
           <main
             className={`flex-1 w-full px-5 min-h-[100vh] transition-all duration-300 ${
@@ -157,9 +170,9 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
       {isDeckModalOpen && (
         <AddDeckModal subscribers={subscribers} user={user} />
       )}
-      {isDeckTypeModalOpen && (
+      {/* {isDeckTypeModalOpen && (
         <AddDeckTypeModal subscribers={subscribers} user={user} />
-      )}
+      )} */}
       {isStoreOnBoardModalOpen && (
         <AddStoreOnBoardModal subscribers={subscribers} user={user} />
       )}
@@ -177,26 +190,26 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
       {/* {isLocationModalOpen && (
         <AddLocationModal subscribers={subscribers} user={user} />
       )} */}
-      {isBargeComponentModalOpen && (
+      {/* {isBargeComponentModalOpen && (
         <AddBargeComponentCategoryModal subscribers={subscribers} user={user} />
-      )}
-      {isAddEngineModalOpen && (
+      )} */}
+      {/* {isAddEngineModalOpen && (
         <AddEngineModal subscribers={subscribers} user={user} />
       )}
       {isAddConsumeablesModalOpen && (
         <AddConsumablesModal subscribers={subscribers} user={user} />
-      )}
-      {isAddPermissionModalOpen && <AddPermissionModal />}
-      {isAddUserModalOpen && (
+      )} */}
+      {/* {isAddPermissionModalOpen && <AddPermissionModal />} */}
+      {/* {isAddUserModalOpen && (
         <AddUserModal subscribers={subscribers} user={user} />
-      )}
-      {isAddUserTypeModalOpen && <AddUserTypeModal />}
-      {isAddDepartmentModalOpen && (
+      )} */}
+      {/* {isAddUserTypeModalOpen && <AddUserTypeModal />} */}
+      {/* {isAddDepartmentModalOpen && (
         <AddDeptModal subscribers={subscribers} user={user} />
-      )}
-      {isAddRoleModalOpen && (
+      )} */}
+      {/* {isAddRoleModalOpen && (
         <AddRoleModal subscribers={subscribers} user={user} />
-      )}
+      )} */}
       {/* {isAddInventoryTypeModalOpen && (
         <AddInventoryTypeModal subscribers={subscribers} user={user} />
       )} */}

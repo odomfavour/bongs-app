@@ -19,6 +19,11 @@ const links: LinkItem[] = [
     text: 'MIV',
     img: 'inventories.png',
   },
+  {
+    href: '/requisitions',
+    text: 'Requisitions',
+    img: 'inventories.png',
+  },
 ];
 
 interface InventoryLinksProps {

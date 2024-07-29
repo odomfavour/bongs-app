@@ -10,9 +10,13 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 interface EngineStripProps {
   toggleRequisition: () => void;
+  setOpenModal: (isOpen: boolean) => void;
 }
 
-const EngineStrip: React.FC<EngineStripProps> = ({ toggleRequisition }) => {
+const EngineStrip: React.FC<EngineStripProps> = ({
+  toggleRequisition,
+  setOpenModal,
+}) => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
@@ -90,38 +94,29 @@ const EngineStrip: React.FC<EngineStripProps> = ({ toggleRequisition }) => {
     setIsExportOpen(false);
     try {
       dispatch(toggleLoading(true));
-      const response = await fetch(
-        `${process.env.BASEURL}/v1/sparepart/engine/export?format=${format}`,
+      const response = await axios.get(
+        `${process.env.BASEURL}/sparepart/engine/export`,
         {
-          method: 'GET',
+          params: { format },
+          responseType: 'blob',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${user?.token}`,
-            // Add any other required headers here
           },
         }
       );
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
       const a = document.createElement('a');
       a.href = url;
       a.download = `export.${format}`;
       document.body.appendChild(a);
       a.click();
       a.remove();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Export failed:', error);
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.response?.data?.errors ||
-        error?.message ||
-        'Unknown error';
-      toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 
@@ -142,7 +137,10 @@ const EngineStrip: React.FC<EngineStripProps> = ({ toggleRequisition }) => {
             <div className="origin-top-right rounded-[16px] absolute left-0 -mt-2 w-[150px] py-2 px-2 shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-gray-100 z-30">
               <button
                 className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start"
-                onClick={toggleRequisition}
+                onClick={() => {
+                  toggleRequisition();
+                  setIsActionsOpen(false);
+                }}
               >
                 Material Requisition
               </button>
@@ -192,7 +190,8 @@ const EngineStrip: React.FC<EngineStripProps> = ({ toggleRequisition }) => {
           className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
           onClick={() => {
             dispatch(displayBargeValue({}));
-            dispatch(toggleAddEngineModal('Engine'));
+            setOpenModal(true);
+            // dispatch(toggleAddEngineModal('Engine'));
           }}
         >
           Add Engine

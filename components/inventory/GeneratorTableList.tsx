@@ -4,6 +4,7 @@ import {
   displayBargeValue,
   toggleAddEngineModal,
   toggleBargeComponentModal,
+  toggleLoading,
 } from '@/provider/redux/modalSlice';
 import { calculateCountdown, formatDate } from '@/utils/utils';
 import axios from 'axios';
@@ -96,12 +97,18 @@ interface GeneratorListTableProps {
   data: SparePart[];
   fetchdata: () => void;
   parent: string;
+  requisition: boolean;
+  setOpenModal: (isOpen: boolean) => void;
+  toggleRequisition: () => void;
 }
 
 const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
   data,
   fetchdata,
   parent,
+  requisition,
+  setOpenModal,
+  toggleRequisition,
 }) => {
   const dispatch = useDispatch();
   const pathname = usePathname();
@@ -113,7 +120,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
     [key: number]: boolean;
   }>({});
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
-
+  const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
   const toggleDropdown = (index: number) => {
     if (openDropdownIndex === index) {
       setOpenDropdownIndex(null);
@@ -213,7 +220,8 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
 
   const handleEdit = (item: SparePart) => {
     dispatch(displayBargeValue(item));
-    dispatch(toggleAddEngineModal(parent));
+    setOpenModal(true);
+    // dispatch(toggleAddEngineModal(parent));
   };
 
   const [countdowns, setCountdowns] = useState<
@@ -230,12 +238,81 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
     return () => clearInterval(interval);
   }, [data]);
 
+  const handleRequisition = async (selectedItems: number[]) => {
+    const selectedQuantities = selectedItems.map((id) => ({
+      id,
+      quantity: quantities[id] || 0,
+    }));
+    console.log('Selected Quantities:', selectedQuantities);
+    // Handle the requisition logic here
+    try {
+      const response = await axios.post(
+        `${process.env.BASEURL}/sparepart/${
+          parent === 'Engine'
+            ? 'engine'
+            : parent === 'Deck'
+            ? 'deck'
+            : parent === 'Safety'
+            ? 'safety'
+            : 'hospital'
+        }/requisition`,
+        { items: selectedQuantities },
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+
+      console.log('Requisition Response:', response);
+      setSelectedItems([]);
+      toggleRequisition();
+      fetchdata();
+      toast.success(response.data.message);
+      // Swal.fire('Deleted!', 'Your items have been deleted.', 'success');
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  };
+
+  const handleQuantityChange = (id: number, quantity: number) => {
+    setQuantities((prevQuantities) => ({
+      ...prevQuantities,
+      [id]: quantity,
+    }));
+  };
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
-        <div className="flex justify-end mb-4 mt-2">
+        <div className="flex justify-end gap-3 mb-4 mt-2">
+          {requisition && (
+            <button
+              className={`p-2 rounded-md ${
+                selectedItems.length === 0
+                  ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                  : 'bg-blue-700 text-white'
+              }`}
+              onClick={() => handleRequisition(selectedItems)}
+              disabled={selectedItems.length === 0}
+            >
+              Make requisition
+            </button>
+          )}
           <button
-            className="bg-red-700 text-white p-2 rounded-md"
+            className={`p-2 rounded-md ${
+              selectedItems.length === 0
+                ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                : 'bg-red-700 text-white'
+            }`}
             onClick={() => handleDelete(selectedItems)}
             disabled={selectedItems.length === 0}
           >
@@ -264,6 +341,9 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
               <th className="text-sm text-center py-3">S/N</th>
               {pathname === '/inventories' && (
                 <th className="text-sm text-left py-3">Project</th>
+              )}
+              {requisition && selectedItems.length > 0 && (
+                <th className="text-sm text-center py-3">Qty Req</th>
               )}
               <th className="text-sm text-left py-3">Description</th>
               <th className="text-sm text-left py-3">Qty</th>
@@ -295,12 +375,32 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
                         onChange={() => handleSelect(item.id)}
                       />
                     </td>
+
                     <td className="text-center text-sm py-3">{index + 1}</td>
                     {pathname === '/inventories' && (
                       <td className="text-left text-sm py-3">
                         {item?.project?.project_name}
                       </td>
                     )}
+
+                    {selectedItems.includes(item.id) && requisition ? (
+                      <td>
+                        <input
+                          type="number"
+                          className="p-3 border rounded-md w-[100px]"
+                          value={quantities[item.id] || ''}
+                          onChange={(e) =>
+                            handleQuantityChange(
+                              item.id,
+                              parseInt(e.target.value)
+                            )
+                          }
+                        />
+                      </td>
+                    ) : selectedItems.length > 0 && requisition ? (
+                      <td></td>
+                    ) : null}
+                    {/* {selectedItems.length > 0 && requisition && <td></td>} */}
                     <td className="text-left text-sm py-3">
                       {item.description}
                     </td>

@@ -11,7 +11,15 @@ import React, { ChangeEvent, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
-const ConsGalleyStrip: React.FC = () => {
+interface ConsGalleyStripProps {
+  toggleRequisition: () => void;
+  setOpenModal: (isOpen: boolean) => void;
+}
+
+const ConsGalleyStrip: React.FC<ConsGalleyStripProps> = ({
+  toggleRequisition,
+  setOpenModal,
+}) => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
@@ -110,7 +118,13 @@ const ConsGalleyStrip: React.FC = () => {
           {/* Actions Dropdown content */}
           {isActionsOpen && (
             <div className="origin-top-right rounded-[16px] absolute left-0 -mt-2 w-[150px] py-2 px-2 shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-gray-100 z-30">
-              <button className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start">
+              <button
+                className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start"
+                onClick={() => {
+                  toggleRequisition();
+                  setIsActionsOpen(false);
+                }}
+              >
                 Material Requisition
               </button>
               <button className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start">
@@ -159,7 +173,8 @@ const ConsGalleyStrip: React.FC = () => {
           className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
           onClick={() => {
             dispatch(displayBargeValue({}));
-            dispatch(toggleAddConsumeablesModal('Galley'));
+            setOpenModal(true);
+            // dispatch(toggleAddConsumeablesModal('Galley'));
           }}
         >
           Add Galley Laundry

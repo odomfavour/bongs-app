@@ -119,6 +119,7 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
         parent={'Deck'}
         requisition={requisition}
         setOpenModal={setOpenModal}
+        toggleRequisition={toggleRequisition}
       />
 
       <Modal

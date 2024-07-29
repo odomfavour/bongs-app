@@ -105,6 +105,10 @@ const Page = () => {
   const toggleRequisition = () => {
     setRequisition(!requisition);
   };
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   return (
     <div>
       <div className=" inline-flex border rounded-[30px] p-2 mb-5">
@@ -166,35 +170,75 @@ const Page = () => {
         <EnginePanel
           engineCategories={categories}
           user={user}
+          requisition={requisition}
+          toggleRequisition={toggleRequisition}
           fetchLoading={loading}
+        />
+      )}
+      {activeTab === 'spare-parts' && selectedOption === 'deck' && (
+        <DeckPanel
+          deckCategories={categories}
+          user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
         />
       )}
-      {activeTab === 'spare-parts' && selectedOption === 'deck' && (
-        <DeckPanel deckCategories={categories} user={user} />
-      )}
 
       {activeTab === 'spare-parts' && selectedOption === 'safety' && (
-        <SafetyPanel safetyCategories={categories} user={user} />
+        <SafetyPanel
+          safetyCategories={categories}
+          user={user}
+          requisition={requisition}
+          toggleRequisition={toggleRequisition}
+        />
       )}
       {activeTab === 'spare-parts' && selectedOption === 'hospital' && (
-        <HospitalPanel hospitalCategories={categories} user={user} />
+        <HospitalPanel
+          hospitalCategories={categories}
+          user={user}
+          requisition={requisition}
+          toggleRequisition={toggleRequisition}
+        />
       )}
       {activeTab === 'consumables' && selectedOption === 'engine' && (
-        <ConsumablesEnginePanel engineCategories={categories} user={user} />
+        <ConsumablesEnginePanel
+          engineCategories={categories}
+          user={user}
+          requisition={requisition}
+          toggleRequisition={toggleRequisition}
+        />
       )}
       {activeTab === 'consumables' && selectedOption === 'deck' && (
-        <ConsumablesDeckPanel deckCategories={categories} user={user} />
+        <ConsumablesDeckPanel
+          deckCategories={categories}
+          user={user}
+          requisition={requisition}
+          toggleRequisition={toggleRequisition}
+        />
       )}
       {activeTab === 'consumables' && selectedOption === 'galley' && (
-        <ConsumablesGalleyPanel galleyCategories={categories} user={user} />
+        <ConsumablesGalleyPanel
+          galleyCategories={categories}
+          user={user}
+          requisition={requisition}
+          toggleRequisition={toggleRequisition}
+        />
       )}
       {activeTab === 'consumables' && selectedOption === 'hospital' && (
-        <ConsumablesHospitalPanel hospitalCategories={categories} user={user} />
+        <ConsumablesHospitalPanel
+          hospitalCategories={categories}
+          user={user}
+          requisition={requisition}
+          toggleRequisition={toggleRequisition}
+        />
       )}
       {activeTab === 'consumables' && selectedOption === 'safety' && (
-        <ConsumablesSafetyPanel safetyCategories={categories} user={user} />
+        <ConsumablesSafetyPanel
+          safetyCategories={categories}
+          user={user}
+          requisition={requisition}
+          toggleRequisition={toggleRequisition}
+        />
       )}
     </div>
   );

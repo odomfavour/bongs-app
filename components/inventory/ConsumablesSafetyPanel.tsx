@@ -114,6 +114,7 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
         parent={'Safety'}
         setOpenModal={setOpenModal}
         requisition={requisition}
+        toggleRequisition={toggleRequisition}
       />
 
       <Modal

@@ -107,6 +107,12 @@ const Page = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData, isAddEngineModalOpen, user?.token]);
+
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  if (!isClient) return null;
   return (
     <div>
       <div className=" inline-flex border rounded-[30px] p-2 mb-5">

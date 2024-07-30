@@ -7,7 +7,7 @@ import InventoryLinks from './InventoryLinks';
 import { FaX } from 'react-icons/fa6';
 import { usePathname } from 'next/navigation';
 
-interface Permission {
+interface Module {
   id: number;
   name: string;
 }
@@ -28,7 +28,8 @@ interface User {
   is_company_rep: number;
   is_authorized_for_release: number;
   roles: { id: number; name: string }[];
-  permissions: Permission[];
+  // permissions: Permission[];
+  modules: Module[];
 }
 
 interface SidebarProps {
@@ -70,8 +71,8 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
     };
   }, []);
 
-  const hasPermission = (permissionName: string) =>
-    user?.permissions.some((permission) => permission.name === permissionName);
+  const hasPermission = (moduleName: string) =>
+    user?.modules.some((module) => module.name === moduleName);
   const pathname = usePathname();
   const preferencePaths = [
     '/preferences',
@@ -113,7 +114,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
               </div>
             </Link>
           </li>
-          {hasPermission('can read preferences') && (
+          {hasPermission('Preference Module') && (
             <li
               className={`border-b text-center ${
                 activeTab === 'Preferences' ||
@@ -143,7 +144,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
               </div>
             </li>
           )}
-          {hasPermission('can read inventory') && (
+          {hasPermission('Inventory Module') && (
             <li
               className={`border-b text-center ${
                 activeTab === 'Inventory' ? 'bg-gray-200' : ''
@@ -170,7 +171,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
               </div>
             </li>
           )}
-          {hasPermission('can read reports') && (
+          {hasPermission('Reports Module') && (
             <li
               className={`border-b text-center ${
                 activeTab === 'Reports' ? 'bg-gray-200' : ''
@@ -196,7 +197,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
               </Link>
             </li>
           )}
-          {hasPermission('can read procurement') && (
+          {hasPermission('Procurement Module') && (
             <li
               className={`border-b text-center ${
                 activeTab === 'Procurement' ? 'bg-gray-200' : ''
@@ -223,7 +224,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
               </div>
             </li>
           )}
-          {hasPermission('can read user') && (
+          {hasPermission('User Management Module') && (
             <li
               className={`border-b text-center ${
                 activeTab === 'Users' ? 'bg-gray-200' : ''
@@ -249,7 +250,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
               </Link>
             </li>
           )}
-          {hasPermission('can read human resource') && (
+          {hasPermission('Human Resource Management Module') && (
             <li
               className={`border-b text-center ${
                 activeTab === 'HR' ? 'bg-gray-200' : ''
@@ -276,7 +277,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
               </div>
             </li>
           )}
-          {hasPermission('can read finance') && (
+          {hasPermission('Finance Module') && (
             <li
               className={`border-b text-center ${
                 activeTab === 'Finance' ? 'bg-gray-200' : ''

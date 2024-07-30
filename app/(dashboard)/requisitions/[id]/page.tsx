@@ -2,6 +2,7 @@
 import Modal from '@/components/dashboard/Modal';
 import ApproveRequisition from '@/components/requisitions/ApproveRequisition';
 import RequisitionListTable from '@/components/requisitions/RequisitionListTable';
+import RequisitionViewListTable from '@/components/requisitions/RequisitionViewTable';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -90,15 +91,12 @@ const Page = () => {
         </div>
       </div>
       <div>
-        <RequisitionListTable
+        <RequisitionViewListTable
           data={requisitions}
           fetchData={fetchData}
           setOpenModal={setOpenModal}
         />
       </div>
-      <Modal title="" isOpen={openModal} onClose={handleClose} maxWidth="40%">
-        <ApproveRequisition />
-      </Modal>
     </div>
   );
 };

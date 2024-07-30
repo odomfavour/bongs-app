@@ -278,7 +278,15 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
         error?.response?.data?.errors ||
         error?.message ||
         'Unknown error';
-      toast.error(`${errorMessage}`);
+      if (typeof errorMessage === 'string') {
+        toast.error(errorMessage);
+      } else if (typeof errorMessage === 'object' && errorMessage !== null) {
+        const messages = errorMessage as Record<string, string[]>;
+        Object.entries(messages).forEach(([field, messages]) =>
+          messages.forEach((message) => toast.error(`${field}: ${message}`))
+        );
+      }
+      // toast.error(`${errorMessage}`);
     } finally {
       dispatch(toggleLoading(false));
     }

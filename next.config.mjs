@@ -7,6 +7,8 @@ const nextConfig = {
   images: {
     domains: ['res.cloudinary.com'],
   },
+  basePath: '/stagingv2',
+  assetPrefix: 'https://stagingv2.dpanalyticsolution.com',
 };
 
 export default nextConfig;

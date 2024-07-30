@@ -1,11 +1,13 @@
 'use client';
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 const Page = () => {
   const user = useSelector((state: any) => state.user.user);
   console.log('user', user);
   const cards = [{ id: 1 }, { id: 2 }, { id: 3 }];
+
   return (
     <div>
       <h3>Dashboard</h3>

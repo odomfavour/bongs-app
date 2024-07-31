@@ -17,6 +17,7 @@ import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import DeckTable from '../AppComp/DeckTable';
 
 interface User {
   first_name: string;
@@ -53,6 +54,8 @@ interface DeckListTableProps {
 }
 
 const DeckListTable: React.FC<DeckListTableProps> = ({ data, fetchdata }) => {
+  
+  console.log("ran inner here")
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
   const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
@@ -67,6 +70,8 @@ const DeckListTable: React.FC<DeckListTableProps> = ({ data, fetchdata }) => {
     }
   };
 
+
+  console.log("this is the data",data)
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
@@ -122,10 +127,63 @@ const DeckListTable: React.FC<DeckListTableProps> = ({ data, fetchdata }) => {
     }
   };
 
+  const itemList = currentItems.map((item, index) => {
+    return {
+      ...item,
+      deck_type: `${item.deck_number}${item.id}`,
+      "S/N": `${index + 1}`,
+      name: item.name,
+      barge: item.barge.name,
+      user: `${item.user.first_name} ${item.user.last_name}`,
+      created_at: `${formatDate(item.created_at)}`,
+     status: item.status
+     
+    }
+  })
+
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
-        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+         <DeckTable
+           fetchedData={ currentItems}
+           loadingStates={ loadingStates }
+           handleDelete={handleDelete}
+           handleEdit={ handleEdit }
+           COLUMNS={[
+             {
+               Header: "S/N",
+               accessor: "S/N"
+           },
+           {
+               Header: "Deck No.",
+                  accessor: "deck_type"
+           },
+           {
+               Header: "Name",
+               accessor: "name"
+           },
+           {
+               Header: "Barge",
+               accessor: "barge"
+           },
+           {
+               Header: "Added By",
+               accessor: "user"
+           },
+           {
+               Header: "Staus",
+               accessor: "status"
+             },
+             {
+               Header: "Created On",
+                  accessor: "created_at"
+             }
+            
+             
+           ]}
+            MOCK_DATA={itemList}
+        /> 
+     {/*    <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
@@ -218,7 +276,7 @@ const DeckListTable: React.FC<DeckListTableProps> = ({ data, fetchdata }) => {
               </tr>
             )}
           </tbody>
-        </table>
+        </table> */}
       </div>
 
       {/* {data.length > itemsPerPage && (

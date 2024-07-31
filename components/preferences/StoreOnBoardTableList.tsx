@@ -16,6 +16,7 @@ import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import StoreOnBoardTable from '../AppComp/StoreOnBoardTable';
 interface Deck {
   id: number;
   deck_number: string;
@@ -40,7 +41,7 @@ interface Project {
   created_at: string;
 }
 
-interface StoreBoard {
+interface StoreBoardType {
   id: number;
   project: Project;
   description: string;
@@ -54,7 +55,7 @@ interface StoreBoard {
 }
 
 interface StoreOnBoardListTableProps {
-  data: StoreBoard[];
+  data: StoreBoardType[];
   fetchdata: () => void;
 }
 
@@ -90,7 +91,10 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
     setCurrentPage(pageNumber);
   };
 
-  const handleEdit = (item: StoreBoard) => {
+
+
+
+  const handleEdit = (item: StoreBoardType) => {
     dispatch(displayBargeValue(item));
     dispatch(toggleStoreOnBoardModal());
   };
@@ -134,9 +138,75 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
     }
   };
 
+
+  const itemList = currentItems.map((item, index) => {
+    return {
+      ...item,
+      project:  item.project?.project_name,
+      "S/N": `${index + 1}`,
+      deck: item.deck.name,
+      description: item.description,
+      key: item.key,
+      room_number: item.room_number,
+      addedBy: `${item.user.first_name} ${item.user.last_name}`,
+      created_at: `${formatDate(item.created_at)}`,
+     status: item.status
+     
+    }
+  }) 
+
+  console.log("this is the item list", itemList)
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
+     <StoreOnBoardTable
+           fetchedData={ currentItems}
+           loadingStates={ loadingStates }
+           handleDelete={handleDelete}
+           handleEdit={ handleEdit }
+           COLUMNS={[
+             {
+               Header: "S/N",
+               accessor: "S/N"
+             },
+             {
+              Header: "Project",
+                 accessor: "project"
+             },
+             {
+              Header: "Description",
+                 accessor: "description"
+          },
+           {
+               Header: "Deck",
+                  accessor: "deck"
+           },
+           {
+               Header: "Key",
+               accessor: "key"
+           },
+           {
+               Header: "Room Number",
+               accessor: "room_number"
+           },
+           {
+               Header: "Added By",
+               accessor: "addedBy"
+           },
+           {
+               Header: "Staus",
+               accessor: "status"
+             },
+             {
+               Header: "Created On",
+                  accessor: "created_at"
+             }
+            
+             
+           ]}
+            MOCK_DATA={itemList}
+        />  
+        
         <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">

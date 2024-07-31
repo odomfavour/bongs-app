@@ -19,70 +19,12 @@ import Loader from '@/components/Loader';
 import { toast } from 'react-toastify';
 import DeckTypeListTable from '@/components/preferences/DeckTypeListTable';
 import { useRouter } from 'next/navigation';
-interface User {
-  first_name: string;
-  last_name: string;
-}
-
-interface Barge {
-  id: number;
-  barge_number: string;
-  name: string;
-  rooms: number;
-  store_location: number;
-  deck_level: number;
-  addedBy: string;
-  created_at: string;
-  status: string;
-  user: User;
-}
-
-interface Project {
-  id: number;
-  project_name: string;
-  project_title: string;
-  project_duration: string;
-  project_start_date: string;
-  project_end_date: string;
-  created_at: string;
-}
-
-interface Deck {
-  id: number;
-  deck_number: string;
-  name: string;
-  deck_type: string;
-  barge: Barge;
-  user: User;
-  created_at: string;
-  status: string;
-}
-interface DeckType {
-  id: number;
-  deck_number: string;
-  name: string;
-  deck: Deck;
-  barge: Barge;
-  type: string;
-  user: User;
-  created_at: string;
-  status: string;
-}
-
-interface StoreBoard {
-  id: number;
-  project: Project;
-  description: string;
-  deck: Deck;
-  key: string;
-  room_number: string;
-  addedBy: string;
-  created_at: string;
-  status: string;
-  user: User;
-}
 
 const Preferences = () => {
+/* tracking the state of the search field */
+  const [search, setSearch] = useState("")
+
+
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('Barge');
   const [tabs, setTabs] = useState([
@@ -97,8 +39,14 @@ const Preferences = () => {
   const [storeItems, setStoreItems] = useState<StoreBoard[]>([]);
   // const [loading, setLoading] = useState(true);
 
+
+
+  
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state?.user?.user);
+
+
+  
   const isBargeModalOpen = useSelector(
     (state: any) => state.modal.isBargeModalOpen
   );
@@ -188,10 +136,14 @@ const Preferences = () => {
             <div className="w-full relative">
               <input
                 type="search"
-                placeholder="Search here..."
+                onChange={e => { 
+                  setSearch(e.target.value)
+                }}
+                placeholder="Search here... now"
                 className="bg-gray-50 pl-8 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
               />
               <div className="absolute flex bottom-0 top-0 justify-center items-center left-3 text-primary cursor-pointer">
+              
                 <FaSearch className="text-veriDark" />
               </div>
             </div>

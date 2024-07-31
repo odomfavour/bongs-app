@@ -126,6 +126,11 @@ const UoMListTable: React.FC<UoMListTableProps> = ({
     setOpenModal(true);
   };
 
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
+
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
@@ -170,27 +175,34 @@ const UoMListTable: React.FC<UoMListTableProps> = ({
                     <td className="py-2 text-left text-sm">
                       {formatDate(created_at)}
                     </td>
-                    <td className="py-2 text-center flex justify-left items-center">
-                      <div className="flex gap-3">
-                        <button
-                          className="bg-blue-700 text-white text-sm p-2 rounded-md"
-                          onClick={() => handleEdit(item)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="bg-red-700 text-white text-sm p-2 rounded-md flex items-center justify-center"
-                          onClick={() => deleteUom(id)}
-                          disabled={loadingStates[id]}
-                        >
-                          {loadingStates[id] ? (
-                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                          ) : (
-                            'Delete'
+                    {(hasPermission('can update unit of measurement') ||
+                      hasPermission('can delete unit of measurement')) && (
+                      <td className="py-2 text-center flex justify-left items-center">
+                        <div className="flex gap-3">
+                          {hasPermission('can update unit of measurement') && (
+                            <button
+                              className="bg-blue-700 text-white text-sm p-2 rounded-md"
+                              onClick={() => handleEdit(item)}
+                            >
+                              Edit
+                            </button>
                           )}
-                        </button>
-                      </div>
-                    </td>
+                          {hasPermission('can delete unit of measurement') && (
+                            <button
+                              className="bg-red-700 text-white text-sm p-2 rounded-md flex items-center justify-center"
+                              onClick={() => deleteUom(id)}
+                              disabled={loadingStates[id]}
+                            >
+                              {loadingStates[id] ? (
+                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                              ) : (
+                                'Delete'
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 );
               })}

@@ -42,6 +42,11 @@ const SafetyCategoryPage = () => {
     (state: any) => state.modal.isSafetyCategoryModalOpen
   );
 
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
+
   const fetchData = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
@@ -106,15 +111,17 @@ const SafetyCategoryPage = () => {
       </div>
       <div>
         <div className="flex justify-end mb-6">
-          <button
-            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-            onClick={() => {
-              dispatch(displayBargeValue({}));
-              setOpenModal(true);
-            }}
-          >
-            Add Safety Category
-          </button>
+          {hasPermission('can create safety category') && (
+            <button
+              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+              onClick={() => {
+                dispatch(displayBargeValue({}));
+                setOpenModal(true);
+              }}
+            >
+              Add Safety Category
+            </button>
+          )}
         </div>
 
         <SafetyCategoryListTable

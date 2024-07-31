@@ -72,7 +72,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   }, []);
 
   const hasPermission = (moduleName: string) =>
-    user?.modules.some((module) => module.name === moduleName);
+    user?.modules?.some((module) => module.name === moduleName);
   const pathname = usePathname();
   const preferencePaths = [
     '/preferences',

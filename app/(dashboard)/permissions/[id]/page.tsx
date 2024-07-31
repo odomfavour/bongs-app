@@ -7,90 +7,49 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
+// Define TypeScript interfaces for your data
+interface Permission {
+  id: number;
+  name: string;
+}
+
+interface SubCategory {
+  id: number;
+  name: string;
+  permissions: Permission[];
+}
+
+interface Module {
+  id: number;
+  name: string;
+  sub_categories: SubCategory[];
+}
+
+interface RolePermission {
+  // Define this based on your API response
+}
+
+interface User {
+  token: string;
+}
+
 const Page = () => {
-  const { id } = useParams();
+  const { id } = useParams() as { id: string };
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [permissions, setPermissions] = useState([]);
-  const [rolePermissions, setRolePermission] = useState([]);
-  const [perPage, setPerPage] = useState('10'); // Default per_page
-  const [search, setSearch] = useState(''); // Default search
-  const [currentPage, setCurrentPage] = useState(1); // Default page
-  const user = useSelector((state: any) => state?.user?.user);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [permissions, setPermissions] = useState<Permission[]>([]);
+  const [rolePermissions, setRolePermission] = useState<RolePermission[]>([]);
+  const [perPage, setPerPage] = useState<string>('10'); // Default per_page
+  const [search, setSearch] = useState<string>(''); // Default search
+  const [currentPage, setCurrentPage] = useState<number>(1); // Default page
+  const user = useSelector(
+    (state: { user: { user: User } }) => state.user.user
+  );
   const dispatch = useDispatch();
-  // const fetchData = useCallback(
-  //   async (per_page = '10', search = '', page = 1) => {
-  //     console.log(
-  //       `Fetching data for page: ${page}, per_page: ${per_page}, search: ${search}`
-  //     );
-  //     dispatch(toggleLoading(true));
-  //     try {
-  //       const response = await axios.get(
-  //         `${process.env.BASEURL}/permissions?per_page=${per_page}&page[number]=${page}`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${user?.token}`,
-  //           },
-  //           params: {
-  //             search,
-  //           },
-  //         }
-  //       );
-  //       console.log('resp', response);
-  //       setPermissions(response?.data?.data?.data);
-  //     } catch (error: any) {
-  //       console.error('Error:', error);
-  //       const errorMessage =
-  //         error?.response?.data?.message ||
-  //         error?.response?.data?.errors ||
-  //         error?.message ||
-  //         'Unknown error';
-  //       if (error?.response.status === 401) {
-  //         router.push('/login');
-  //       } else {
-  //         toast.error(`${errorMessage}`);
-  //       }
-  //     } finally {
-  //       dispatch(toggleLoading(false));
-  //     }
-  //   },
-  //   [dispatch, router, user?.token]
-  // );
 
-  // const fetchRolesPermissions = useCallback(async () => {
-  //   dispatch(toggleLoading(true));
-  //   try {
-  //     const response = await axios.get(
-  //       `${process.env.BASEURL}/role-permissions/${id}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${user?.token}`,
-  //         },
-  //       }
-  //     );
-  //     console.log('resp', response);
-  //     setRolePermission(response?.data?.data);
-  //   } catch (error: any) {
-  //     console.error('Error:', error);
-  //     const errorMessage =
-  //       error?.response?.data?.message ||
-  //       error?.response?.data?.errors ||
-  //       error?.message ||
-  //       'Unknown error';
-
-  //     if (error?.response.status === 401) {
-  //       router.push('/login');
-  //     } else {
-  //       toast.error(`${errorMessage}`);
-  //     }
-  //   } finally {
-  //     dispatch(toggleLoading(false));
-  //   }
-  // }, [id, user?.token, router, dispatch]);
-
-  const [modules, setModules] = useState([]);
-  const [selectedModule, setSelectedModule] = useState('');
-  const [selectedSubModule, setSelectedSubModule] = useState('');
+  const [modules, setModules] = useState<Module[]>([]);
+  const [selectedModule, setSelectedModule] = useState<string>('');
+  const [selectedSubModule, setSelectedSubModule] = useState<string>('');
   const [updatedPermissions, setUpdatedPermissions] = useState<Set<number>>(
     new Set()
   ); // Store updated permission IDs
@@ -110,7 +69,7 @@ const Page = () => {
         error?.response?.data?.errors ||
         error?.message ||
         'Unknown error';
-      if (error?.response.status === 401) {
+      if (error?.response?.status === 401) {
         router.push('/login');
       } else {
         toast.error(`${errorMessage}`);
@@ -131,7 +90,7 @@ const Page = () => {
   );
   const subCategoriesToShow = selectedSubModule
     ? selectedModuleData?.sub_categories.filter(
-        (sub: any) => sub.id === Number(selectedSubModule)
+        (sub) => sub.id === Number(selectedSubModule)
       )
     : selectedModuleData?.sub_categories;
 
@@ -159,7 +118,7 @@ const Page = () => {
         error?.message ||
         'Unknown error';
 
-      if (error?.response.status === 401) {
+      if (error?.response?.status === 401) {
         router.push('/login');
       } else {
         toast.error(`${errorMessage}`);
@@ -202,7 +161,7 @@ const Page = () => {
             }}
           >
             <option value="">Select a module</option>
-            {modules.map((module: any) => (
+            {modules.map((module) => (
               <option key={module.id} value={module.id}>
                 {module.name}
               </option>
@@ -225,7 +184,7 @@ const Page = () => {
           >
             <option value="">Select a sub module</option>
             {selectedModule &&
-              selectedModuleData?.sub_categories.map((sub: any) => (
+              selectedModuleData?.sub_categories.map((sub) => (
                 <option key={sub.id} value={sub.id}>
                   {sub.name}
                 </option>
@@ -236,10 +195,10 @@ const Page = () => {
 
       <div className="my-6">
         <div className="grid grid-cols-4 gap-6 mb-6">
-          {subCategoriesToShow?.map((sub: any) => (
+          {subCategoriesToShow?.map((sub) => (
             <div key={sub.id} className="rounded-md bg-[#F4F7FE] p-3">
               <p className="mb-4">{sub.name}</p>
-              {sub.permissions.map((permission: any) => (
+              {sub.permissions.map((permission) => (
                 <div key={permission.id}>
                   <label className="inline-flex justify-between w-full items-center cursor-pointer mb-3">
                     <span className="text-sm font-medium text-gray-900">
@@ -278,4 +237,5 @@ const Page = () => {
     </div>
   );
 };
+
 export default Page;

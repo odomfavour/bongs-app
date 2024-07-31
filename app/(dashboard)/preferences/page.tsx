@@ -189,6 +189,11 @@ const Preferences = () => {
   const handleBargeClose = () => {
     setOpenBargeModal(false);
   };
+
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
   return (
     <div>
       <div className="flex md:flex-row gap-5 flex-col justify-between md:items-center items-start mb-5 pb-10 border-b">
@@ -213,7 +218,7 @@ const Preferences = () => {
         </div>
       </div>
       <div className="flex justify-end mb-6">
-        {activeTab === 'Barge' ? (
+        {activeTab === 'Barge' && hasPermission('can create barge') ? (
           <button
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
@@ -224,7 +229,7 @@ const Preferences = () => {
           >
             Add Barge
           </button>
-        ) : activeTab === 'Deck' ? (
+        ) : activeTab === 'Deck' && hasPermission('can create deck') ? (
           <button
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
@@ -245,15 +250,19 @@ const Preferences = () => {
             Add Deck Type
           </button>
         ) : (
-          <button
-            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-            onClick={() => {
-              dispatch(displayBargeValue({}));
-              dispatch(toggleStoreOnBoardModal());
-            }}
-          >
-            Add Store - on - Board
-          </button>
+          <>
+            {hasPermission('can create keystore') && (
+              <button
+                className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+                onClick={() => {
+                  dispatch(displayBargeValue({}));
+                  dispatch(toggleStoreOnBoardModal());
+                }}
+              >
+                Add Store - on - Board
+              </button>
+            )}
+          </>
         )}
       </div>
 

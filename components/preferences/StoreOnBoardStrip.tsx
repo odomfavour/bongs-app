@@ -4,7 +4,7 @@ import {
   toggleStoreOnBoardModal,
 } from '@/provider/redux/modalSlice';
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const StoreOnBoardStrip: React.FC = () => {
   const dispatch = useDispatch();
@@ -20,6 +20,12 @@ const StoreOnBoardStrip: React.FC = () => {
     setIsExportOpen(!isExportOpen);
     setIsActionsOpen(false); // Close the actions dropdown if it is open
   };
+
+  const user = useSelector((state: any) => state?.user?.user);
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
 
   return (
     <div className="flex justify-between items-center w-full">
@@ -72,18 +78,20 @@ const StoreOnBoardStrip: React.FC = () => {
         </div>
       </div>
       <div className="flex items-center gap-3">
-        <button
-          className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-          onClick={() => {
-            dispatch(displayBargeValue({}));
-            dispatch(toggleStoreOnBoardModal());
-          }}
-        >
-          Add Store - on - Board
-        </button>
-        <button className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]">
+        {hasPermission('can create keystore') && (
+          <button
+            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+            onClick={() => {
+              dispatch(displayBargeValue({}));
+              dispatch(toggleStoreOnBoardModal());
+            }}
+          >
+            Add Store - on - Board
+          </button>
+        )}
+        {/* <button className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]">
           Bulk Upload
-        </button>
+        </button> */}
       </div>
     </div>
   );

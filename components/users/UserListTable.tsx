@@ -125,6 +125,11 @@ const UserListTable: React.FC<UserListTableProps> = ({
     // dispatch(toggleAddUserModal());
   };
 
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
+
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
@@ -156,28 +161,34 @@ const UserListTable: React.FC<UserListTableProps> = ({
                     <td className="py-2 text-left text-sm capitalize">
                       {roles.map((role) => role.name).join(', ')}
                     </td>
-
-                    <td className="py-2 text-left flex justify-left items-center">
-                      <div className="flex gap-3">
-                        <button
-                          className="bg-blue-700 text-sm text-white p-2 rounded-md"
-                          onClick={() => handleEdit(item)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="bg-red-700 text-sm text-white p-2 rounded-md flex items-center justify-center"
-                          onClick={() => handleDelete(id)}
-                          disabled={loadingStates[id]}
-                        >
-                          {loadingStates[id] ? (
-                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                          ) : (
-                            'Delete'
+                    {(hasPermission('can update user') ||
+                      hasPermission('can delete user')) && (
+                      <td className="py-2 text-left flex justify-left items-center">
+                        <div className="flex gap-3">
+                          {hasPermission('can update user') && (
+                            <button
+                              className="bg-blue-700 text-sm text-white p-2 rounded-md"
+                              onClick={() => handleEdit(item)}
+                            >
+                              Edit
+                            </button>
                           )}
-                        </button>
-                      </div>
-                    </td>
+                          {hasPermission('can delete user') && (
+                            <button
+                              className="bg-red-700 text-sm text-white p-2 rounded-md flex items-center justify-center"
+                              onClick={() => handleDelete(id)}
+                              disabled={loadingStates[id]}
+                            >
+                              {loadingStates[id] ? (
+                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                              ) : (
+                                'Delete'
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 );
               })}

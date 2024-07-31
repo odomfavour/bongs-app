@@ -301,8 +301,14 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
     }));
   };
 
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
+
   return (
     <div className="bg-white pt-2">
+      {parent}
       <div className="overflow-x-auto">
         <div className="flex justify-end gap-3 mb-4 mt-2">
           {requisition && (
@@ -420,47 +426,64 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
                     <td className="py-2 text-left text-sm">{location?.name}</td>
                     <td className="py-2 text-left text-sm">{date_acquired}</td>
                     <td className="py-2 text-left text-sm">{`${days}d ${hours}h ${minutes}m ${seconds}s`}</td>
-                    <td className="py-2 text-left text-sm relative">
-                      <div className="flex items-left text-sm justify-center gap-2">
-                        <button
-                          className="bg-blue-700 text-white text-sm p-2 rounded-md"
-                          onClick={() => handleEdit(item)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="bg-red-700 p-2 rounded-md text-white cursor-pointer flex items-center justify-center
-                    "
-                          onClick={() => handleDelete([id])}
-                          disabled={loadingStates[item.id]} // Optional: Disable button while loading
-                        >
-                          {loadingStates[id] ? (
-                            <svg
-                              className="animate-spin h-5 w-5 mr-2 text-white"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                              ></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8v8H4z"
-                              ></path>
-                            </svg>
-                          ) : (
-                            'Delete'
-                          )}
-                        </button>
-                      </div>
-                    </td>
+                    {(parent === 'Engine' &&
+                      (hasPermission('can update engine consumable') ||
+                        hasPermission('can delete engine consumable'))) ||
+                    (parent === 'Deck' &&
+                      (hasPermission('can update deck consumable') ||
+                        hasPermission('can delete deck consumable'))) ||
+                    (parent === 'Safety' &&
+                      (hasPermission('can update safety consumable') ||
+                        hasPermission('can delete safety consumable'))) ||
+                    (parent === 'Hospital' &&
+                      (hasPermission('can update hospital consumable') ||
+                        hasPermission('can delete hospital consumable'))) ||
+                    (parent === 'Galley' &&
+                      (hasPermission('can update galley laundry consumable') ||
+                        hasPermission(
+                          'can delete galley laundry consumable'
+                        ))) ? (
+                      <td className="py-2 text-left text-sm relative">
+                        <div className="flex items-left text-sm justify-center gap-2">
+                          <button
+                            className="bg-blue-700 text-white text-sm p-2 rounded-md"
+                            onClick={() => handleEdit(item)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="bg-red-700 p-2 rounded-md text-white cursor-pointer flex items-center justify-center"
+                            onClick={() => handleDelete([id])}
+                            disabled={loadingStates[item.id]} // Optional: Disable button while loading
+                          >
+                            {loadingStates[id] ? (
+                              <svg
+                                className="animate-spin h-5 w-5 mr-2 text-white"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                ></circle>
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8v8H4z"
+                                ></path>
+                              </svg>
+                            ) : (
+                              'Delete'
+                            )}
+                          </button>
+                        </div>
+                      </td>
+                    ) : null}
                   </tr>
                 );
               })}

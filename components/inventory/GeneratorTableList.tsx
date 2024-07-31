@@ -298,6 +298,11 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
       [id]: quantity,
     }));
   };
+
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
@@ -429,6 +434,23 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
                       {item.date_acquired}
                     </td>
                     <td className="text-left text-sm py-3">{`${days}d ${hours}h ${minutes}m ${seconds}s`}</td>
+                    {/* {(parent === 'Engine' &&
+                      (hasPermission('can update engine consumable') ||
+                        hasPermission('can delete engine consumable'))) ||
+                    (parent === 'Deck' &&
+                      (hasPermission('can update deck consumable') ||
+                        hasPermission('can delete deck consumable'))) ||
+                    (parent === 'Safety' &&
+                      (hasPermission('can update safety consumable') ||
+                        hasPermission('can delete safety consumable'))) ||
+                    (parent === 'Hospital' &&
+                      (hasPermission('can update hospital consumable') ||
+                        hasPermission('can delete hospital consumable'))) ||
+                    (parent === 'Galley' &&
+                      (hasPermission('can update galley laundry consumable') ||
+                        hasPermission(
+                          'can delete galley laundry consumable'
+                        ))) ? ( */}
                     <td className="text-left text-sm py-3">
                       <div className="flex justify-left text-sm space-x-2">
                         <button
@@ -481,6 +503,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
                   </button> */}
                       </div>
                     </td>
+                    {/* ) : null} */}
                   </tr>
                 );
               })}

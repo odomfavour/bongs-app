@@ -122,6 +122,11 @@ const VendorCategoryListTable: React.FC<VendorListTableProps> = ({
     dispatch(displayBargeValue(item));
     setOpenModal(true);
   };
+
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
@@ -151,27 +156,34 @@ const VendorCategoryListTable: React.FC<VendorListTableProps> = ({
                     <td className="py-2 text-center">
                       {formatDate(created_at)}
                     </td>
-                    <td className="py-2 text-center flex justify-center items-center">
-                      <div className="flex gap-3">
-                        <button
-                          className="bg-blue-700 text-white p-2 rounded-md"
-                          onClick={() => handleEdit(item)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                          onClick={() => handleDelete(id)}
-                          disabled={loadingStates[id]}
-                        >
-                          {loadingStates[id] ? (
-                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                          ) : (
-                            'Delete'
+                    {(hasPermission('can update vendor category') ||
+                      hasPermission('can delete vendor category')) && (
+                      <td className="py-2 text-center flex justify-center items-center">
+                        <div className="flex gap-3">
+                          {hasPermission('can update vendor category') && (
+                            <button
+                              className="bg-blue-700 text-white p-2 rounded-md"
+                              onClick={() => handleEdit(item)}
+                            >
+                              Edit
+                            </button>
                           )}
-                        </button>
-                      </div>
-                    </td>
+                          {hasPermission('can delete vendor category') && (
+                            <button
+                              className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                              onClick={() => handleDelete(id)}
+                              disabled={loadingStates[id]}
+                            >
+                              {loadingStates[id] ? (
+                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                              ) : (
+                                'Delete'
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 );
               })}

@@ -32,6 +32,11 @@ const VendorCategoryPage = () => {
 
   const [loading, setLoading] = useState(false);
 
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
+
   const user = useSelector((state: any) => state.user.user);
   const isVendorCategoryModalOpen = useSelector(
     (state: any) => state.modal.isVendorCategoryModalOpen
@@ -101,15 +106,17 @@ const VendorCategoryPage = () => {
       </div>
       <div>
         <div className="flex justify-end mb-6">
-          <button
-            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-            onClick={() => {
-              dispatch(displayBargeValue({}));
-              setOpenModal(true);
-            }}
-          >
-            Add Vendor Category
-          </button>
+          {hasPermission('can create vendor category') && (
+            <button
+              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+              onClick={() => {
+                dispatch(displayBargeValue({}));
+                setOpenModal(true);
+              }}
+            >
+              Add Vendor Category
+            </button>
+          )}
         </div>
 
         <VendorCategoryListTable

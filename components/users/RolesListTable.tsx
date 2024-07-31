@@ -124,6 +124,10 @@ const RolesListTable: React.FC<RolesListTableProps> = ({
     // dispatch(toggleAddRoleModal());
   };
 
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
@@ -167,17 +171,19 @@ const RolesListTable: React.FC<RolesListTableProps> = ({
                         >
                           Edit
                         </button> */}
-                        <button
-                          className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                          onClick={() => handleDelete(id)}
-                          disabled={loadingStates[id]}
-                        >
-                          {loadingStates[id] ? (
-                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                          ) : (
-                            'Delete'
-                          )}
-                        </button>
+                        {hasPermission('can delete roles') && (
+                          <button
+                            className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                            onClick={() => handleDelete(id)}
+                            disabled={loadingStates[id]}
+                          >
+                            {loadingStates[id] ? (
+                              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                            ) : (
+                              'Delete'
+                            )}
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

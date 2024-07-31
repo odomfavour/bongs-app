@@ -38,7 +38,7 @@ const Page = () => {
   const isAddUserModalOpen = useSelector(
     (state: any) => state?.modal?.isAddUserModalOpen
   );
-  const [activeTab, setActiveTab] = useState('Users');
+  const [activeTab, setActiveTab] = useState('Roles');
   const [loading, setLoading] = useState(true);
   const [tabs, setTabs] = useState([
     { id: 1, name: 'Roles', count: '' },
@@ -119,6 +119,11 @@ const Page = () => {
     isAddUserModalOpen,
     isAddDepartmentModalOpen,
   ]);
+
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
   return (
     <section>
       <div className="flex md:flex-row gap-5 flex-col justify-between md:items-center items-start mb-5 pb-10 border-b">
@@ -143,7 +148,7 @@ const Page = () => {
         </div>
       </div>
       <div className="flex justify-end mb-6">
-        {activeTab === 'Users' ? (
+        {activeTab === 'Users' && hasPermission('can create user') ? (
           <button
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
@@ -153,7 +158,7 @@ const Page = () => {
           >
             Add User
           </button>
-        ) : activeTab === 'Roles' ? (
+        ) : activeTab === 'Roles' && hasPermission('can create role') ? (
           <button
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
@@ -175,15 +180,19 @@ const Page = () => {
           //     Add Permission
           //   </button>
           // )
-          <button
-            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-            onClick={() => {
-              dispatch(displayBargeValue({}));
-              setOpenDeptModal(true);
-            }}
-          >
-            Add Department
-          </button>
+          <>
+            {hasPermission('can create department') && (
+              <button
+                className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+                onClick={() => {
+                  dispatch(displayBargeValue({}));
+                  setOpenDeptModal(true);
+                }}
+              >
+                Add Department
+              </button>
+            )}
+          </>
         )}
       </div>
 

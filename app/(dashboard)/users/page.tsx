@@ -20,6 +20,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import RolesListTable from '@/components/users/RolesListTable';
 import { useRouter } from 'next/navigation';
+import Modal from '@/components/dashboard/Modal';
+import AddUserModal from '@/components/users/AddUserModal';
+import AddDeptModal from '@/components/users/AddDeptModal';
+import AddRoleModal from '@/components/users/AddRoleModal';
 
 const Page = () => {
   const dispatch = useDispatch();
@@ -34,16 +38,30 @@ const Page = () => {
   const isAddUserModalOpen = useSelector(
     (state: any) => state?.modal?.isAddUserModalOpen
   );
-  const [activeTab, setActiveTab] = useState('Users');
+  const [activeTab, setActiveTab] = useState('Roles');
   const [loading, setLoading] = useState(true);
   const [tabs, setTabs] = useState([
-    { id: 1, name: 'Users', count: '' },
-    { id: 2, name: 'Roles', count: '' },
-    { id: 3, name: 'Departments', count: '' },
+    { id: 1, name: 'Roles', count: '' },
+    { id: 2, name: 'Departments', count: '' },
+    { id: 3, name: 'Users', count: '' },
   ]);
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [departments, setDepartments] = useState([]);
+  const [openUserModal, setOpenUserModal] = useState(false);
+  const handleUserClose = () => {
+    setOpenUserModal(false);
+  };
+
+  const [openRoleModal, setOpenRoleModal] = useState(false);
+  const handleRoleClose = () => {
+    setOpenRoleModal(false);
+  };
+
+  const [openDeptModal, setOpenDeptModal] = useState(false);
+  const handleDeptClose = () => {
+    setOpenDeptModal(false);
+  };
 
   const fetchData = useCallback(async () => {
     dispatch(toggleLoading(true));
@@ -101,6 +119,11 @@ const Page = () => {
     isAddUserModalOpen,
     isAddDepartmentModalOpen,
   ]);
+
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
   return (
     <section>
       <div className="flex md:flex-row gap-5 flex-col justify-between md:items-center items-start mb-5 pb-10 border-b">
@@ -125,22 +148,22 @@ const Page = () => {
         </div>
       </div>
       <div className="flex justify-end mb-6">
-        {activeTab === 'Users' ? (
+        {activeTab === 'Users' && hasPermission('can create user') ? (
           <button
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
               dispatch(displayBargeValue({}));
-              dispatch(toggleAddUserModal());
+              setOpenUserModal(true);
             }}
           >
             Add User
           </button>
-        ) : activeTab === 'Roles' ? (
+        ) : activeTab === 'Roles' && hasPermission('can create role') ? (
           <button
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
               dispatch(displayBargeValue({}));
-              dispatch(toggleAddRoleModal());
+              setOpenRoleModal(true);
             }}
           >
             Add Role
@@ -157,15 +180,19 @@ const Page = () => {
           //     Add Permission
           //   </button>
           // )
-          <button
-            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-            onClick={() => {
-              dispatch(displayBargeValue({}));
-              dispatch(toggleAddDepartmentModal());
-            }}
-          >
-            Add Department
-          </button>
+          <>
+            {hasPermission('can create department') && (
+              <button
+                className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+                onClick={() => {
+                  dispatch(displayBargeValue({}));
+                  setOpenDeptModal(true);
+                }}
+              >
+                Add Department
+              </button>
+            )}
+          </>
         )}
       </div>
 
@@ -186,18 +213,54 @@ const Page = () => {
       </div>
       <div className="">
         {activeTab === 'Users' && (
-          <UserListTable data={users} fetchData={fetchData} />
+          <UserListTable
+            data={users}
+            fetchData={fetchData}
+            setOpenUserModal={setOpenUserModal}
+          />
         )}
         {activeTab === 'Roles' && (
-          <RolesListTable data={roles} fetchData={fetchData} />
+          <RolesListTable
+            data={roles}
+            fetchData={fetchData}
+            setOpenRoleModal={setOpenRoleModal}
+          />
         )}
         {/* {activeTab === 'Permissions' && (
               <PermissionListTable data={permissions} fetchData={fetchData} />
             )} */}
         {activeTab === 'Departments' && (
-          <DepartmentListTable data={departments} fetchData={fetchData} />
+          <DepartmentListTable
+            data={departments}
+            fetchData={fetchData}
+            setOpenDeptModal={setOpenDeptModal}
+          />
         )}
       </div>
+      <Modal
+        title="Add User"
+        isOpen={openUserModal}
+        onClose={handleUserClose}
+        maxWidth="60%"
+      >
+        <AddUserModal fetchData={fetchData} handleUserClose={handleUserClose} />
+      </Modal>
+      <Modal
+        title="Add Role"
+        isOpen={openRoleModal}
+        onClose={handleRoleClose}
+        maxWidth="60%"
+      >
+        <AddRoleModal fetchData={fetchData} handleRoleClose={handleRoleClose} />
+      </Modal>
+      <Modal
+        title="Add Department"
+        isOpen={openDeptModal}
+        onClose={handleDeptClose}
+        maxWidth="60%"
+      >
+        <AddDeptModal fetchData={fetchData} handleDeptClose={handleDeptClose} />
+      </Modal>
     </section>
   );
 };

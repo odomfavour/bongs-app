@@ -42,11 +42,13 @@ interface Department {
 interface DepartmentListTableProps {
   data: Department[];
   fetchData: () => void;
+  setOpenDeptModal: (isOpen: boolean) => void;
 }
 
 const DepartmentListTable: React.FC<DepartmentListTableProps> = ({
   data,
   fetchData,
+  setOpenDeptModal,
 }) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
@@ -128,8 +130,14 @@ const DepartmentListTable: React.FC<DepartmentListTableProps> = ({
 
   const handleEdit = (item: Department) => {
     dispatch(displayBargeValue(item));
-    dispatch(toggleAddDepartmentModal());
+    setOpenDeptModal(true);
+    // dispatch(toggleAddDepartmentModal());
   };
+
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
 
   return (
     <div className="bg-white">
@@ -160,28 +168,34 @@ const DepartmentListTable: React.FC<DepartmentListTableProps> = ({
                     <td className="py-2 text-center">
                       {formatDate(created_at)}
                     </td>
-
-                    <td className="py-2 text-center flex justify-center items-center">
-                      <div className="flex gap-3">
-                        <button
-                          className="bg-blue-700 text-white text-sm p-2 rounded-md"
-                          onClick={() => handleEdit(item)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="bg-red-700 text-white text-sm p-2 rounded-md flex items-center justify-center"
-                          onClick={() => handleDelete(id)}
-                          disabled={loadingStates[id]}
-                        >
-                          {loadingStates[id] ? (
-                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                          ) : (
-                            'Delete'
+                    {(hasPermission('can update department') ||
+                      hasPermission('can delete department')) && (
+                      <td className="py-2 text-center flex justify-center items-center">
+                        <div className="flex gap-3">
+                          {hasPermission('can update department') && (
+                            <button
+                              className="bg-blue-700 text-white text-sm p-2 rounded-md"
+                              onClick={() => handleEdit(item)}
+                            >
+                              Edit
+                            </button>
                           )}
-                        </button>
-                      </div>
-                    </td>
+                          {hasPermission('can delete department') && (
+                            <button
+                              className="bg-red-700 text-white text-sm p-2 rounded-md flex items-center justify-center"
+                              onClick={() => handleDelete(id)}
+                              disabled={loadingStates[id]}
+                            >
+                              {loadingStates[id] ? (
+                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                              ) : (
+                                'Delete'
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 );
               })}

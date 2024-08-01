@@ -1,9 +1,12 @@
 'use client';
 import Loader from '@/components/Loader';
+import AddBargeComponentCategoryModal from '@/components/barge-safety/AddBargeComponentCategoryModal';
 import BargeComponentCategoryListTable from '@/components/barge-safety/BargeComponentCategoryListTable';
+import Modal from '@/components/dashboard/Modal';
 import UoMListTable from '@/components/uom/UomListTable';
 import {
   toggleBargeComponentModal,
+  toggleLoading,
   toggleUomModal,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
@@ -31,10 +34,15 @@ const BargeComponentPage = () => {
     (state: any) => state.modal.isBargeComponentModalOpen
   );
   const [bargeComponents, setBargeComponent] = useState<BargeComponent[]>([]);
-  console.log('user', user);
+
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
+
   const fetchData = useCallback(async () => {
-    setLoading(true);
     try {
+      dispatch(toggleLoading(true));
       const response = await axios.get(
         `${process.env.BASEURL}/getBargeComponentCategories`,
         {
@@ -59,14 +67,17 @@ const BargeComponentPage = () => {
         toast.error(`${errorMessage}`);
       }
     } finally {
-      setLoading(false);
+      dispatch(toggleLoading(false));
     }
-  }, [router, user?.token]);
+  }, [dispatch, router, user?.token]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData, isBargeComponentModalOpen]);
-
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   return (
     <section>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
@@ -92,22 +103,34 @@ const BargeComponentPage = () => {
       </div>
       <div>
         <div className="flex justify-end mb-6">
-          <button
-            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-            onClick={() => dispatch(toggleBargeComponentModal())}
-          >
-            Add Barge Equipment
-          </button>
+          {hasPermission('can create barge category') && (
+            <button
+              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+              onClick={() => setOpenModal(true)}
+            >
+              Add Barge Equipment
+            </button>
+          )}
         </div>
-        {loading ? (
-          <Loader />
-        ) : (
-          <BargeComponentCategoryListTable
-            data={bargeComponents}
-            fetchdata={fetchData}
-          />
-        )}
+
+        <BargeComponentCategoryListTable
+          data={bargeComponents}
+          fetchdata={fetchData}
+          setOpenModal={setOpenModal}
+        />
       </div>
+
+      <Modal
+        title="Add New Barge Equipment"
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="40%"
+      >
+        <AddBargeComponentCategoryModal
+          fetchData={fetchData}
+          handleClose={handleClose}
+        />
+      </Modal>
     </section>
   );
 };

@@ -8,6 +8,8 @@ import ConsSafetyStrip from './ConsSafetyStrip';
 import ConsumablesableList from './ConsumablesTableList';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import { usePathname } from 'next/navigation';
+import Modal from '../dashboard/Modal';
+import AddConsumablesModal from './AddConsumablesModal';
 
 interface User {
   token: string;
@@ -16,11 +18,15 @@ interface User {
 interface CEnginePanelProps {
   safetyCategories: { id: number; name: string; count: string }[];
   user: User;
+  toggleRequisition: () => void;
+  requisition: boolean;
 }
 
 const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   safetyCategories,
   user,
+  requisition,
+  toggleRequisition,
 }) => {
   console.log('engine', safetyCategories?.[0]?.name);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
@@ -71,11 +77,17 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   useEffect(() => {
     fetchData();
   }, [activeId, fetchData, isAddConsumeablesModalOpen]);
-
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   return (
     <div>
       <div className="my-4">
-        <ConsSafetyStrip />
+        <ConsSafetyStrip
+          toggleRequisition={toggleRequisition}
+          setOpenModal={setOpenModal}
+        />
       </div>
       <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2  gap-2">
         {safetyCategories.map((tab: any) => (
@@ -100,7 +112,23 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
         data={consumables}
         fetchdata={fetchData}
         parent={'Safety'}
+        setOpenModal={setOpenModal}
+        requisition={requisition}
+        toggleRequisition={toggleRequisition}
       />
+
+      <Modal
+        title="Add New Safety"
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="70%"
+      >
+        <AddConsumablesModal
+          fetchData={fetchData}
+          handleClose={handleClose}
+          inventoryType="Safety"
+        />
+      </Modal>
     </div>
   );
 };

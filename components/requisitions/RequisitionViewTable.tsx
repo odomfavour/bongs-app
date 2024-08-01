@@ -2,7 +2,7 @@
 
 import {
   displayBargeValue,
-  toggleVendorCategoryModal,
+  toggleLocationModal,
 } from '@/provider/redux/modalSlice';
 import { formatDate } from '@/utils/utils';
 import axios from 'axios';
@@ -17,30 +17,31 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 
-interface VendorCategory {
+interface Requisition {
   id: number;
-  name: string;
-  status: string;
+  indent_number: string;
+  inventory_type: string;
+  requested_by: string;
   created_at: string;
 }
 
-interface VendorListTableProps {
-  data: VendorCategory[];
+interface RequisitionListTableProps {
+  data: Requisition[];
   fetchData: () => void;
   setOpenModal: (isOpen: boolean) => void;
 }
 
-const VendorCategoryListTable: React.FC<VendorListTableProps> = ({
+const RequisitionViewListTable: React.FC<RequisitionListTableProps> = ({
   data,
   fetchData,
   setOpenModal,
 }) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
+  const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
   const [loadingStates, setLoadingStates] = useState<{
     [key: number]: boolean;
   }>({});
-  const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
   const toggleDropdown = (index: number) => {
     if (openDropdownIndex === index) {
       setOpenDropdownIndex(null);
@@ -55,78 +56,75 @@ const VendorCategoryListTable: React.FC<VendorListTableProps> = ({
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
 
   // Function to change page
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
-  const handleDelete = async (id: number) => {
-    // Display SweetAlert confirmation dialog
-    const confirmResult = await Swal.fire({
+
+  const handleEdit = (item: Location) => {
+    dispatch(displayBargeValue(item));
+    setOpenModal(true);
+    // dispatch(toggleLocationModal());
+  };
+
+  const confirmDelete = (id: number) => {
+    Swal.fire({
       title: 'Are you sure?',
-      text: 'You will not be able to recover this vendor category!',
+      text: 'Do you really want to delete this location?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
       confirmButtonText: 'Yes, delete it!',
-    });
-
-    // If user confirms deletion
-    if (confirmResult.isConfirmed) {
-      setLoadingStates((prevState) => ({ ...prevState, [id]: true }));
-      try {
-        const response = await axios.delete(
-          `${process.env.BASEURL}/vendorCategory/delete/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${user?.token}`,
-            },
-          }
-        );
-        console.log('Delete Response:', response);
-        fetchData();
-
-        if (response.status === 200) {
-          // Handle success
-          Swal.fire(
-            'Deleted!',
-            'Your vendor category has been deleted.',
-            'success'
-          );
-        } else {
-          // Handle error
-          Swal.fire(
-            'Failed to delete!',
-            'An error occurred while deleting the unit of measurement.',
-            'error'
-          );
-        }
-      } catch (error: any) {
-        console.error('Error:', error);
-
-        const errorMessage =
-          error?.response?.data?.message ||
-          error?.response?.data?.errors ||
-          error?.message ||
-          'Unknown error';
-        toast.error(`${errorMessage}`);
-      } finally {
-        setLoadingStates((prevState) => ({ ...prevState, [id]: false }));
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteLocation(id);
       }
+    });
+  };
+
+  const deleteLocation = async (id: number) => {
+    try {
+      // Send a DELETE request to your API
+      const response = await axios.delete(
+        `${process.env.BASEURL}/location/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+      console.log('Delete Response:', response);
+      fetchData();
+
+      // Assuming your API returns success or error
+      if (response.status === 200) {
+        toast.success(`${response?.data?.message}`);
+        // Update your local data state or refetch data from the server
+        // For example, if data is stored in Redux, dispatch an action to remove the location from the store
+        // Or refetch data from the server to update the table
+      } else {
+        // Handle error, show error message or alert
+      }
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+      // Handle error, show error message or alert
     }
   };
 
-  const handleEdit = (item: VendorCategory) => {
-    dispatch(displayBargeValue(item));
+  const approveReq = async () => {
     setOpenModal(true);
   };
 
-  const hasPermission = (permissionName: string) =>
-    user?.permissions?.some(
-      (permission: any) => permission.name === permissionName
-    );
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
@@ -134,56 +132,52 @@ const VendorCategoryListTable: React.FC<VendorListTableProps> = ({
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
-              <th className="text-sm text-center py-3">Category No.</th>
-              <th className="text-sm text-center py-3">name</th>
-              <th className="text-sm text-center py-3">Status</th>
-              <th className="text-sm text-center py-3">Created On</th>
-              <th className="text-sm text-center py-3">Actions</th>
+              <th className="text-sm text-left py-3">Indent No</th>
+              <th className="text-sm text-left py-3">inventory Type</th>
+              <th className="text-sm text-left py-3">Requested By</th>
+
+              <th className="text-sm text-left py-3">Requisition Data/Time</th>
+              <th className="text-sm text-left py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
             {currentItems.length > 0 &&
               currentItems.map((item, index) => {
-                const { id, name, created_at, status } = item;
+                const {
+                  id,
+                  indent_number,
+                  inventory_type,
+                  requested_by,
+                  created_at,
+                } = item;
                 return (
                   <tr className="border-b" key={id}>
                     <td className="py-2 text-center text-[#344054]">
                       {index + 1}
                     </td>
-                    <td className="py-2 text-center">vendorCat-{id}</td>
-                    <td className="py-2 text-center">{name}</td>
-                    <td className="py-2 text-center">{status}</td>
-                    <td className="py-2 text-center">
+                    <td className="py-2 text-left text-sm">{indent_number}</td>
+                    <td className="py-2 text-left text-sm">{inventory_type}</td>
+                    <td className="py-2 text-left text-sm">{requested_by}</td>
+
+                    <td className="py-2 text-left text-sm">
                       {formatDate(created_at)}
                     </td>
-                    {(hasPermission('can update vendor category') ||
-                      hasPermission('can delete vendor category')) && (
-                      <td className="py-2 text-center flex justify-center items-center">
-                        <div className="flex gap-3">
-                          {hasPermission('can update vendor category') && (
-                            <button
-                              className="bg-blue-700 text-white p-2 rounded-md"
-                              onClick={() => handleEdit(item)}
-                            >
-                              Edit
-                            </button>
-                          )}
-                          {hasPermission('can delete vendor category') && (
-                            <button
-                              className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                              onClick={() => handleDelete(id)}
-                              disabled={loadingStates[id]}
-                            >
-                              {loadingStates[id] ? (
-                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                              ) : (
-                                'Delete'
-                              )}
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    )}
+                    <td className="py-2 text-center flex justify-left text-sm items-center">
+                      <div className="flex gap-3">
+                        <button className="bg-blue-700 text-white p-2 text-sm rounded-md">
+                          View
+                        </button>
+                        <button
+                          className="bg-blue-700 text-white p-2 text-sm rounded-md"
+                          onClick={approveReq}
+                        >
+                          Approve
+                        </button>
+                        <button className="bg-blue-700 text-white p-2 text-sm rounded-md">
+                          Reject
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 );
               })}
@@ -197,11 +191,11 @@ const VendorCategoryListTable: React.FC<VendorListTableProps> = ({
                       </div>
                       <div className="mt-5">
                         <p className="font-medium text-[#475467]">
-                          No vendor category found
+                          No Locations found
                         </p>
                         <p className="font-normal text-sm mt-3">
-                          Click “add vendor category” button to get started in
-                          doing your
+                          Click “add location” button to get started in doing
+                          your
                           <br /> first transaction on the platform
                         </p>
                       </div>
@@ -247,14 +241,17 @@ const VendorCategoryListTable: React.FC<VendorListTableProps> = ({
                 <p>{pageNumber}</p>
               </div>
             ))}
+
             <p
-              className={`text-[#4C4C4C] text-base cursor-pointer ${
+              className={`text-[#9F9F9F] text-base cursor-pointer ${
                 currentPage === Math.ceil(data.length / itemsPerPage)
                   ? 'text-gray-400 cursor-not-allowed'
                   : 'text-primary'
               }`}
               onClick={() => {
-                if (currentPage !== Math.ceil(data.length / itemsPerPage)) {
+                if (
+                  currentPage !== Math.ceil(data.length / itemsPerPage)
+                ) {
                   paginate(currentPage + 1);
                 }
               }}
@@ -268,4 +265,4 @@ const VendorCategoryListTable: React.FC<VendorListTableProps> = ({
   );
 };
 
-export default VendorCategoryListTable;
+export default RequisitionViewListTable;

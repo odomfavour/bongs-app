@@ -1,63 +1,45 @@
 'use client';
-
-import Loader from '@/components/Loader';
 import Modal from '@/components/dashboard/Modal';
-import AddProjectModal from '@/components/projects/AddProjectModal';
-import ProjectsListTable from '@/components/projects/ProjectsTableList';
-import {
-  displayBargeValue,
-  toggleAddProjectModal,
-  toggleLoading,
-} from '@/provider/redux/modalSlice';
+import ApproveRequisition from '@/components/requisitions/ApproveRequisition';
+import RequisitionListTable from '@/components/requisitions/RequisitionListTable';
+import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-
-interface ProjectManager {
+interface Requisition {
   id: number;
-  first_name: string;
-  last_name: string;
-}
-
-interface Projects {
-  id: number;
-  project_name: string;
-  project_title: string;
-  project_duration: string;
-  project_start_date: string;
-  project_end_date: string;
-  project_manager: ProjectManager;
+  indent_number: string;
+  inventory_type: string;
+  requested_by: string;
   created_at: string;
 }
-
-const ProjectsPage = () => {
-  const dispatch = useDispatch();
+const Page = () => {
+  const [requisitions, setRequisitions] = useState<Requisition[]>([
+    {
+      id: 1,
+      indent_number: 'fjfdj',
+      inventory_type: 'Mainstore',
+      requested_by: 'Amina',
+      created_at: '',
+    },
+  ]);
   const router = useRouter();
+  const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
-  const isProjectModalOpen = useSelector(
-    (state: any) => state.modal.isProjectModalOpen
-  );
-  const [loading, setLoading] = useState(false);
-  const [projects, setProjects] = useState<Projects[]>([]);
-
-  const hasPermission = (permissionName: string) =>
-    user?.permissions?.some(
-      (permission: any) => permission.name === permissionName
-    );
 
   const fetchData = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
-      const response = await axios.get(`${process.env.BASEURL}/getProjects`, {
+      const response = await axios.get(`${process.env.BASEURL}/requisitions`, {
         headers: {
           Authorization: `Bearer ${user?.token}`,
         },
       });
       console.log('resp', response);
-      setProjects(response?.data?.data?.data);
+      // setLocations(response?.data?.data?.data);
     } catch (error: any) {
       console.error('Error:', error);
 
@@ -78,16 +60,16 @@ const ProjectsPage = () => {
 
   useEffect(() => {
     fetchData();
-  }, [fetchData, isProjectModalOpen]);
+  }, [fetchData]);
 
   const [openModal, setOpenModal] = useState(false);
   const handleClose = () => {
     setOpenModal(false);
   };
   return (
-    <section>
+    <div>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
-        <p className="text-[32px] font-medium">Projects</p>
+        <p className="text-[32px] font-medium">Requisitions</p>
         <div className="flex items-center gap-2 w-2/5">
           <div className="w-4/5">
             <div className="w-full relative">
@@ -108,36 +90,17 @@ const ProjectsPage = () => {
         </div>
       </div>
       <div>
-        <div className="flex justify-end mb-6">
-          {hasPermission('can create projects') && (
-            <button
-              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-              onClick={() => {
-                dispatch(displayBargeValue({}));
-                setOpenModal(true);
-              }}
-            >
-              Add Projects
-            </button>
-          )}
-        </div>
-
-        <ProjectsListTable
-          data={projects}
-          fetchdata={fetchData}
+        <RequisitionListTable
+          data={requisitions}
+          fetchData={fetchData}
           setOpenModal={setOpenModal}
         />
       </div>
-      <Modal
-        title="Add New Project"
-        isOpen={openModal}
-        onClose={handleClose}
-        maxWidth="60%"
-      >
-        <AddProjectModal fetchData={fetchData} handleClose={handleClose} />
+      <Modal title="" isOpen={openModal} onClose={handleClose} maxWidth="40%">
+        <ApproveRequisition />
       </Modal>
-    </section>
+    </div>
   );
 };
 
-export default ProjectsPage;
+export default Page;

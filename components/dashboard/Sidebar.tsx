@@ -8,6 +8,7 @@ import { FaX } from 'react-icons/fa6';
 import { usePathname } from 'next/navigation';
 
 interface Module {
+  sub_categories: any;
   id: number;
   name: string;
 }
@@ -73,6 +74,22 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
 
   const hasPermission = (moduleName: string) =>
     user?.modules?.some((module) => module.name === moduleName);
+  // const hasSubCategory = (moduleName: string, subCategoryName: string) =>
+  //   user?.modules?.some(
+  //     (module) =>
+  //       module.name === moduleName &&
+  //       module?.sub_categories.some(
+  //         (subCategory: any) => subCategory.name === subCategoryName
+  //       )
+  //   );
+
+  const getSubCategories = (moduleName: string) => {
+    const userModule = user?.modules?.find(
+      (module) => module.name === moduleName
+    );
+    return userModule?.sub_categories || [];
+  };
+
   const pathname = usePathname();
   const preferencePaths = [
     '/preferences',
@@ -317,10 +334,16 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
             </button>
           </div>
           {activeTab === 'Preferences' && (
-            <PreferencesLinks closeInnerSidebar={closeInnerSidebar} />
+            <PreferencesLinks
+              closeInnerSidebar={closeInnerSidebar}
+              subCategories={getSubCategories('Preference Module')}
+            />
           )}
           {activeTab === 'Inventory' && (
-            <InventoryLinks closeInnerSidebar={closeInnerSidebar} />
+            <InventoryLinks
+              closeInnerSidebar={closeInnerSidebar}
+              subCategories={getSubCategories('Inventory Module')}
+            />
           )}
           {/* Add other conditions for other tabs here */}
         </div>

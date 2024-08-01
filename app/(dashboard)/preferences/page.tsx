@@ -87,12 +87,24 @@ interface StoreBoard {
 const Preferences = () => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('Barge');
-  const [tabs, setTabs] = useState([
-    { id: 1, name: 'Barge', count: '' },
-    { id: 2, name: 'Deck', count: '' },
-    // { id: 3, name: 'Deck Type', count: '' },
-    { id: 3, name: 'Store - on - Board', count: '' },
-  ]);
+  const user = useSelector((state: any) => state?.user?.user);
+  const hasPermission = useCallback(
+    (permissionName: string) =>
+      user?.permissions?.some(
+        (permission: any) => permission.name === permissionName
+      ),
+    [user?.permissions]
+  );
+  const tabs = [
+    { id: 1, name: 'Barge', count: '', permission: 'can view barge' },
+    { id: 2, name: 'Deck', count: '', permission: 'can view deck' },
+    {
+      id: 3,
+      name: 'Store - on - Board',
+      count: '',
+      permission: 'can view keystore',
+    },
+  ].filter((tab) => hasPermission(tab.permission));
   const [barges, setBarges] = useState<Barge[]>([]);
   const [decks, setDecks] = useState<Deck[]>([]);
   const [deckTypes, setDeckTypes] = useState<DeckType[]>([]);
@@ -100,7 +112,7 @@ const Preferences = () => {
   // const [loading, setLoading] = useState(true);
 
   const dispatch = useDispatch();
-  const user = useSelector((state: any) => state?.user?.user);
+
   const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const isBargeModalOpen = useSelector(
     (state: any) => state.modal.isBargeModalOpen
@@ -118,51 +130,23 @@ const Preferences = () => {
 
   // const isLoading = useSelector((state: any) => state.modal.isLoading);
 
-  const fetchData = useCallback(async () => {
+  const fetchBarges = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
-      const [
-        bargesResponse,
-        decksResponse,
-        deckTypesResponse,
-        storeOnBoardResponse,
-      ] = await Promise.all([
-        axios.get(`${process.env.BASEURL}/barge`, {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }),
-        axios.get(`${process.env.BASEURL}/deck`, {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }),
-        axios.get(`${process.env.BASEURL}/deck-type`, {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }),
-        axios.get(`${process.env.BASEURL}/keystore`, {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }),
-      ]);
-      console.log('barge', bargesResponse);
-      setBarges(bargesResponse?.data?.data?.data);
-      setDecks(decksResponse?.data?.data?.data);
-      setDeckTypes(deckTypesResponse?.data?.data?.data);
-      setStoreItems(storeOnBoardResponse?.data?.data?.data);
-      // You can similarly setStoreItems if needed
+      if (hasPermission('can view barge')) {
+        const response = await axios.get(`${process.env.BASEURL}/barge`, {
+          headers: { Authorization: `Bearer ${user?.token}` },
+        });
+        setBarges(response?.data?.data?.data);
+      }
     } catch (error: any) {
       console.error('Error:', error);
-
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
         error?.message ||
         'Unknown error';
-      if (error?.response.status === 401) {
+      if (error?.response?.status === 401) {
         router.push('/login');
       } else {
         toast.error(`${errorMessage}`);
@@ -170,16 +154,106 @@ const Preferences = () => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [dispatch, router, user?.token]);
+  }, [dispatch, hasPermission, router, user?.token]);
+
+  const fetchDecks = useCallback(async () => {
+    dispatch(toggleLoading(true));
+    try {
+      if (hasPermission('can view deck')) {
+        const response = await axios.get(`${process.env.BASEURL}/deck`, {
+          headers: { Authorization: `Bearer ${user?.token}` },
+        });
+        setDecks(response?.data?.data?.data);
+      }
+    } catch (error: any) {
+      console.error('Error:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      if (error?.response?.status === 401) {
+        router.push('/login');
+      } else {
+        toast.error(`${errorMessage}`);
+      }
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  }, [dispatch, hasPermission, router, user?.token]);
+
+  const fetchDeckTypes = useCallback(async () => {
+    dispatch(toggleLoading(true));
+    try {
+      if (hasPermission('can view deck type')) {
+        const response = await axios.get(`${process.env.BASEURL}/deck-type`, {
+          headers: { Authorization: `Bearer ${user?.token}` },
+        });
+        setDeckTypes(response?.data?.data?.data);
+      }
+    } catch (error: any) {
+      console.error('Error:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      if (error?.response?.status === 401) {
+        router.push('/login');
+      } else {
+        toast.error(`${errorMessage}`);
+      }
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  }, [dispatch, hasPermission, router, user?.token]);
+
+  const fetchStoreOnBoard = useCallback(async () => {
+    dispatch(toggleLoading(true));
+    try {
+      if (hasPermission('can view keystore')) {
+        const response = await axios.get(`${process.env.BASEURL}/keystore`, {
+          headers: { Authorization: `Bearer ${user?.token}` },
+        });
+        setStoreItems(response?.data?.data?.data);
+      }
+    } catch (error: any) {
+      console.error('Error:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      if (error?.response?.status === 401) {
+        router.push('/login');
+      } else {
+        toast.error(`${errorMessage}`);
+      }
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  }, [dispatch, hasPermission, router, user?.token]);
 
   useEffect(() => {
-    fetchData();
+    if (activeTab === 'Barge') {
+      fetchBarges();
+    } else if (activeTab === 'Deck') {
+      fetchDecks();
+    } else if (activeTab === 'Deck Type') {
+      fetchDeckTypes();
+    } else if (activeTab === 'Store - on - Board') {
+      fetchStoreOnBoard();
+    }
   }, [
-    fetchData,
+    activeTab,
+    fetchBarges,
+    fetchDecks,
+    fetchDeckTypes,
+    fetchStoreOnBoard,
     isBargeModalOpen,
     isDeckModalOpen,
-    isStoreOnBoardModalOpen,
     isDeckTypeModalOpen,
+    isStoreOnBoardModalOpen,
   ]);
 
   const [openBargeModal, setOpenBargeModal] = useState(false);
@@ -190,10 +264,6 @@ const Preferences = () => {
     setOpenBargeModal(false);
   };
 
-  const hasPermission = (permissionName: string) =>
-    user?.permissions?.some(
-      (permission: any) => permission.name === permissionName
-    );
   return (
     <div>
       <div className="flex md:flex-row gap-5 flex-col justify-between md:items-center items-start mb-5 pb-10 border-b">
@@ -285,18 +355,21 @@ const Preferences = () => {
         {activeTab === 'Barge' && (
           <BargeListTable
             data={barges}
-            fetchData={fetchData}
+            fetchData={fetchBarges}
             setOpenBargeModal={setOpenBargeModal}
           />
         )}
         {activeTab === 'Deck' && (
-          <DeckListTable data={decks} fetchdata={fetchData} />
+          <DeckListTable data={decks} fetchdata={fetchDecks} />
         )}
         {activeTab === 'Deck Type' && (
-          <DeckTypeListTable data={deckTypes} fetchdata={fetchData} />
+          <DeckTypeListTable data={deckTypes} fetchdata={fetchDeckTypes} />
         )}
         {activeTab === 'Store - on - Board' && (
-          <StoreOnBoardListTable data={storeItems} fetchdata={fetchData} />
+          <StoreOnBoardListTable
+            data={storeItems}
+            fetchdata={fetchStoreOnBoard}
+          />
         )}
       </div>
       <Modal
@@ -307,7 +380,7 @@ const Preferences = () => {
         onClose={handleBargeClose}
         maxWidth="55%"
       >
-        <AddBargeModal fetchData={fetchData} handleClose={handleBargeClose} />
+        <AddBargeModal fetchData={fetchBarges} handleClose={handleBargeClose} />
       </Modal>
     </div>
   );

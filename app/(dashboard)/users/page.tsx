@@ -14,7 +14,7 @@ import {
   toggleLoading,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -41,9 +41,14 @@ const Page = () => {
   const [activeTab, setActiveTab] = useState('Roles');
   const [loading, setLoading] = useState(true);
   const [tabs, setTabs] = useState([
-    { id: 1, name: 'Roles', count: '' },
-    { id: 2, name: 'Departments', count: '' },
-    { id: 3, name: 'Users', count: '' },
+    { id: 1, name: 'Roles', count: '', permission: 'can view roles' },
+    {
+      id: 2,
+      name: 'Departments',
+      count: '',
+      permission: 'can view department',
+    },
+    { id: 3, name: 'Users', count: '', permission: 'can view user' },
   ]);
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
@@ -63,37 +68,16 @@ const Page = () => {
     setOpenDeptModal(false);
   };
 
-  const fetchData = useCallback(async () => {
-    dispatch(toggleLoading(true));
-    try {
-      const [usersResponse, rolesResponse, deptResponse] = await Promise.all([
-        axios.get(`${process.env.BASEURL}/users`, {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }),
-        axios.get(
-          `${process.env.BASEURL}${
-            user?.subscriber_id
-              ? `/subscriber-roles/${user?.subscriber_id}`
-              : '/roles'
-          }`,
-          {
-            headers: {
-              Authorization: `Bearer ${user?.token}`,
-            },
-          }
-        ),
-        axios.get(`${process.env.BASEURL}/getDepartments`, {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }),
-      ]);
-      setUsers(usersResponse?.data?.data?.data);
-      setRoles(rolesResponse?.data?.data?.data);
-      setDepartments(deptResponse?.data?.data?.data);
-    } catch (error: any) {
+  const hasPermission = useCallback(
+    (permissionName: string) =>
+      user?.permissions?.some(
+        (permission: any) => permission.name === permissionName
+      ),
+    [user?.permissions]
+  );
+
+  const handleApiError = useCallback(
+    (error: any) => {
       console.error('Error:', error);
 
       const errorMessage =
@@ -106,24 +90,96 @@ const Page = () => {
       } else {
         toast.error(`${errorMessage}`);
       }
+    },
+    [router]
+  );
+
+  const fetchUsers = useCallback(async () => {
+    if (!hasPermission('can view user')) return;
+
+    dispatch(toggleLoading(true));
+    try {
+      const usersResponse = await axios.get(`${process.env.BASEURL}/users`, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      setUsers(usersResponse?.data?.data?.data);
+    } catch (error: any) {
+      handleApiError(error);
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [dispatch, router, user?.subscriber_id, user?.token]);
+  }, [dispatch, handleApiError, hasPermission, user?.token]);
 
-  useEffect(() => {
-    fetchData();
+  const fetchRoles = useCallback(async () => {
+    if (!hasPermission('can view roles')) return;
+
+    dispatch(toggleLoading(true));
+    try {
+      const rolesResponse = await axios.get(
+        `${process.env.BASEURL}${
+          user?.subscriber_id
+            ? `/subscriber-roles/${user?.subscriber_id}`
+            : '/roles'
+        }`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+      setRoles(rolesResponse?.data?.data?.data);
+    } catch (error: any) {
+      handleApiError(error);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
   }, [
-    fetchData,
-    isAddRoleModalOpen,
-    isAddUserModalOpen,
-    isAddDepartmentModalOpen,
+    dispatch,
+    handleApiError,
+    hasPermission,
+    user?.subscriber_id,
+    user?.token,
   ]);
 
-  const hasPermission = (permissionName: string) =>
-    user?.permissions?.some(
-      (permission: any) => permission.name === permissionName
-    );
+  const fetchDepartments = useCallback(async () => {
+    if (!hasPermission('can view department')) return;
+
+    dispatch(toggleLoading(true));
+    try {
+      const deptResponse = await axios.get(
+        `${process.env.BASEURL}/getDepartments`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+      setDepartments(deptResponse?.data?.data?.data);
+    } catch (error: any) {
+      handleApiError(error);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  }, [dispatch, handleApiError, hasPermission, user?.token]);
+
+  useEffect(() => {
+    if (activeTab === 'Users') {
+      fetchUsers();
+    } else if (activeTab === 'Roles') {
+      fetchRoles();
+    } else if (activeTab === 'Departments') {
+      fetchDepartments();
+    }
+  }, [fetchUsers, fetchRoles, fetchDepartments, activeTab]);
+
+  // Filter tabs based on user permissions
+  const accessibleTabs = useMemo(
+    () => tabs.filter((tab) => hasPermission(tab.permission)),
+    [tabs, hasPermission]
+  );
+
   return (
     <section>
       <div className="flex md:flex-row gap-5 flex-col justify-between md:items-center items-start mb-5 pb-10 border-b">
@@ -158,7 +214,7 @@ const Page = () => {
           >
             Add User
           </button>
-        ) : activeTab === 'Roles' && hasPermission('can create role') ? (
+        ) : activeTab === 'Roles' && hasPermission('can create roles') ? (
           <button
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
@@ -197,7 +253,7 @@ const Page = () => {
       </div>
 
       <div className="grid md:grid-cols-4 grid-cols-2 flex-wrap items-center gap-2">
-        {tabs.map((tab) => (
+        {accessibleTabs.map((tab) => (
           <button
             key={tab.id}
             className={`p-3 w-full ${
@@ -215,14 +271,14 @@ const Page = () => {
         {activeTab === 'Users' && (
           <UserListTable
             data={users}
-            fetchData={fetchData}
+            fetchData={fetchUsers}
             setOpenUserModal={setOpenUserModal}
           />
         )}
         {activeTab === 'Roles' && (
           <RolesListTable
             data={roles}
-            fetchData={fetchData}
+            fetchData={fetchRoles}
             setOpenRoleModal={setOpenRoleModal}
           />
         )}
@@ -232,7 +288,7 @@ const Page = () => {
         {activeTab === 'Departments' && (
           <DepartmentListTable
             data={departments}
-            fetchData={fetchData}
+            fetchData={fetchDepartments}
             setOpenDeptModal={setOpenDeptModal}
           />
         )}
@@ -243,7 +299,10 @@ const Page = () => {
         onClose={handleUserClose}
         maxWidth="60%"
       >
-        <AddUserModal fetchData={fetchData} handleUserClose={handleUserClose} />
+        <AddUserModal
+          fetchData={fetchUsers}
+          handleUserClose={handleUserClose}
+        />
       </Modal>
       <Modal
         title="Add Role"
@@ -251,7 +310,10 @@ const Page = () => {
         onClose={handleRoleClose}
         maxWidth="60%"
       >
-        <AddRoleModal fetchData={fetchData} handleRoleClose={handleRoleClose} />
+        <AddRoleModal
+          fetchData={fetchRoles}
+          handleRoleClose={handleRoleClose}
+        />
       </Modal>
       <Modal
         title="Add Department"
@@ -259,7 +321,10 @@ const Page = () => {
         onClose={handleDeptClose}
         maxWidth="60%"
       >
-        <AddDeptModal fetchData={fetchData} handleDeptClose={handleDeptClose} />
+        <AddDeptModal
+          fetchData={fetchDepartments}
+          handleDeptClose={handleDeptClose}
+        />
       </Modal>
     </section>
   );

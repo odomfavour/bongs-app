@@ -32,12 +32,15 @@ const VendorCategoryPage = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const hasPermission = (permissionName: string) =>
-    user?.permissions?.some(
-      (permission: any) => permission.name === permissionName
-    );
-
   const user = useSelector((state: any) => state.user.user);
+  const hasPermission = useCallback(
+    (permissionName: string) =>
+      user?.permissions?.some(
+        (permission: any) => permission.name === permissionName
+      ),
+    [user?.permissions]
+  );
+
   const isVendorCategoryModalOpen = useSelector(
     (state: any) => state.modal.isVendorCategoryModalOpen
   );
@@ -45,17 +48,19 @@ const VendorCategoryPage = () => {
   const fetchData = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
-      const response = await axios.get(
-        `${process.env.BASEURL}/getVendorCategories`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
-      console.log('resp', response);
-      setVendorCat(response?.data?.data?.data);
-      // You can similarly setStoreItems if needed
+      if (hasPermission('can view unit of measurement')) {
+        const response = await axios.get(
+          `${process.env.BASEURL}/getVendorCategories`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        console.log('resp', response);
+        setVendorCat(response?.data?.data?.data);
+        // You can similarly setStoreItems if needed
+      }
     } catch (error: any) {
       console.error('Error:', error);
 
@@ -72,7 +77,7 @@ const VendorCategoryPage = () => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [dispatch, router, user?.token]);
+  }, [dispatch, hasPermission, router, user?.token]);
 
   useEffect(() => {
     fetchData();

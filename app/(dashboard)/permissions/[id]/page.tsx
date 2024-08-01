@@ -27,6 +27,8 @@ interface Module {
 
 interface RolePermission {
   // Define this based on your API response
+  id: number;
+  name: string;
 }
 
 interface User {
@@ -53,6 +55,73 @@ const Page = () => {
   const [updatedPermissions, setUpdatedPermissions] = useState<Set<number>>(
     new Set()
   ); // Store updated permission IDs
+  const [roleName, setRoleName] = useState('');
+  const fetchRoles = useCallback(async () => {
+    dispatch(toggleLoading(true));
+    try {
+      const response = await axios.get(`${process.env.BASEURL}/roles`, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      console.log('resp roles', response);
+      let role_name = response?.data?.data?.data.find(
+        (role: any) => role.id == id
+      )?.name;
+      setRoleName(role_name);
+    } catch (error: any) {
+      console.error('Error:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+
+      if (error?.response.status === 401) {
+        router.push('/login');
+      } else {
+        toast.error(`${errorMessage}`);
+      }
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  }, [dispatch, user?.token, id, router]);
+  const fetchRolesPermissions = useCallback(async () => {
+    dispatch(toggleLoading(true));
+    try {
+      const response = await axios.get(
+        `${process.env.BASEURL}/role-permissions/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+      console.log('resp', response);
+      const rolePerms = response?.data?.data || [];
+      setRolePermission(rolePerms);
+
+      const initialPermissions: Set<number> = new Set(
+        rolePerms.map((perm: RolePermission) => perm.id)
+      );
+      setUpdatedPermissions(initialPermissions);
+    } catch (error: any) {
+      console.error('Error:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+
+      if (error?.response.status === 401) {
+        router.push('/login');
+      } else {
+        toast.error(`${errorMessage}`);
+      }
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  }, [id, user?.token, router, dispatch]);
 
   const fetchModules = useCallback(async () => {
     dispatch(toggleLoading(true));
@@ -80,10 +149,11 @@ const Page = () => {
   }, [user?.token, router, dispatch]);
 
   useEffect(() => {
+    fetchRoles();
     // fetchData(perPage, search, currentPage);
-    // fetchRolesPermissions();
+    fetchRolesPermissions();
     fetchModules();
-  }, [fetchModules]);
+  }, [fetchModules, fetchRoles, fetchRolesPermissions]);
 
   const selectedModuleData = modules.find(
     (module) => module.id === Number(selectedModule)
@@ -142,7 +212,21 @@ const Page = () => {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
       /> */}
+      <div className="flex justify-between items-center">
+        <p className="text-2xl font-semibold">Permissions</p>
 
+        {subCategoriesToShow && subCategoriesToShow.length > 0 && (
+          <button
+            onClick={handleSavePermissions}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            Save Permissions
+          </button>
+        )}
+      </div>
+      <p className="my-5 text-lg">
+        Role: <span className="font-semibold text-blue-500">{roleName}</span>
+      </p>
       <div className="grid grid-cols-2 gap-6 mt-5">
         <div>
           <label
@@ -197,11 +281,11 @@ const Page = () => {
         <div className="grid grid-cols-4 gap-6 mb-6">
           {subCategoriesToShow?.map((sub) => (
             <div key={sub.id} className="rounded-md bg-[#F4F7FE] p-3">
-              <p className="mb-4">{sub.name}</p>
+              <p className="mb-4 font-bold text-lg">{sub.name}</p>
               {sub.permissions.map((permission) => (
                 <div key={permission.id}>
                   <label className="inline-flex justify-between w-full items-center cursor-pointer mb-3">
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-sm font-medium text-gray-900 first-letter:uppercase">
                       {permission.name}
                     </span>
                     <input
@@ -227,13 +311,28 @@ const Page = () => {
             </div>
           ))}
         </div>
+
+        {!selectedModule && (
+          <p className="text-center">
+            Select a module to assign permission to this role
+          </p>
+        )}
       </div>
-      <button
-        onClick={handleSavePermissions}
-        className="bg-blue-500 text-white px-4 py-2 rounded"
-      >
-        Save Permissions
-      </button>
+      {subCategoriesToShow && subCategoriesToShow.length > 0 && (
+        <div className="flex justify-end items-center mb-5">
+          <div className="flex gap-6">
+            <button className="bg-red-500 text-white px-4 py-2 rounded">
+              Cancel
+            </button>
+            <button
+              onClick={handleSavePermissions}
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+            >
+              Save Permissions
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -137,16 +137,22 @@ const Page = () => {
     dispatch(toggleLoading(true));
     try {
       if (hasPermission('can read permissions')) {
-        const response = await axios.get(
-          `${process.env.BASEURL}/modules/subscriber?subscriber_id=${user?.subscriber_id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${user?.token}`,
-            },
-          }
+        const url = `${process.env.BASEURL}/modules${
+          user?.subscriber_id
+            ? `/subscriber?subscriber_id=${user.subscriber_id}`
+            : ''
+        }`;
+
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        });
+        setModules(
+          user?.subscriber_id
+            ? response?.data?.data
+            : response?.data?.data.modules
         );
-        console.log('perms', response);
-        setModules(response?.data?.data);
       }
     } catch (error: any) {
       const errorMessage =
@@ -162,7 +168,7 @@ const Page = () => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [user?.token, router, dispatch, hasPermission]);
+  }, [dispatch, hasPermission, user, router]);
 
   useEffect(() => {
     fetchRoles();

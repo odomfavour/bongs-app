@@ -415,23 +415,23 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
                     ) : null}
                     {/* {selectedItems.length > 0 && requisition && <td></td>} */}
                     <td className="text-left text-sm py-3">
-                      {item.description}
+                      {item?.description}
                     </td>
                     <td className="text-left text-sm py-3">
-                      {item.stock_quantity}
+                      {item?.stock_quantity}
                     </td>
                     <td className="text-left text-sm py-3">
-                      {item.part_number}
+                      {item?.part_number}
                     </td>
                     <td className="text-left text-sm py-3">
-                      {item.model_number}
+                      {item?.model_number}
                     </td>
                     <td className="text-left text-sm py-3">{item.threshold}</td>
                     <td className="text-left text-sm py-3">
-                      {item.location.name}
+                      {item?.location.name}
                     </td>
                     <td className="text-left text-sm py-3">
-                      {item.date_acquired}
+                      {item?.date_acquired}
                     </td>
                     <td className="text-left text-sm py-3">{`${days}d ${hours}h ${minutes}m ${seconds}s`}</td>
                     {/* {(parent === 'Engine' &&

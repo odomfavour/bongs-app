@@ -35,24 +35,29 @@ const BargeComponentPage = () => {
   );
   const [bargeComponents, setBargeComponent] = useState<BargeComponent[]>([]);
 
-  const hasPermission = (permissionName: string) =>
-    user?.permissions?.some(
-      (permission: any) => permission.name === permissionName
-    );
+  const hasPermission = useCallback(
+    (permissionName: string) =>
+      user?.permissions?.some(
+        (permission: any) => permission.name === permissionName
+      ),
+    [user?.permissions]
+  );
 
   const fetchData = useCallback(async () => {
     try {
       dispatch(toggleLoading(true));
-      const response = await axios.get(
-        `${process.env.BASEURL}/getBargeComponentCategories`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
-      console.log('ree', response);
-      setBargeComponent(response?.data?.data?.data);
+      if (hasPermission('can view barge category')) {
+        const response = await axios.get(
+          `${process.env.BASEURL}/getBargeComponentCategories`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        console.log('ree', response);
+        setBargeComponent(response?.data?.data?.data);
+      }
     } catch (error: any) {
       console.error('Error:', error);
 

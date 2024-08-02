@@ -28,10 +28,12 @@ const links: LinkItem[] = [
 
 interface InventoryLinksProps {
   closeInnerSidebar: () => void;
+  subCategories: { id: number; name: string }[];
 }
 
 const InventoryLinks: React.FC<InventoryLinksProps> = ({
   closeInnerSidebar,
+  subCategories,
 }) => {
   return (
     <div>

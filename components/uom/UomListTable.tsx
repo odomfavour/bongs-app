@@ -169,7 +169,7 @@ const UoMListTable: React.FC<UoMListTableProps> = ({
                     <td className="py-2 text-left text-sm">uom-{id}</td>
                     <td className="py-2 text-left text-sm">{description}</td>
                     <td className="py-2 text-left text-sm">
-                      {user.first_name} {user.last_name}
+                      {user?.first_name} {user?.last_name}
                     </td>
                     <td className="py-2 text-left text-sm">{status}</td>
                     <td className="py-2 text-left text-sm">

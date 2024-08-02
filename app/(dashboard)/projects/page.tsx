@@ -43,21 +43,26 @@ const ProjectsPage = () => {
   const [loading, setLoading] = useState(false);
   const [projects, setProjects] = useState<Projects[]>([]);
 
-  const hasPermission = (permissionName: string) =>
-    user?.permissions?.some(
-      (permission: any) => permission.name === permissionName
-    );
+  const hasPermission = useCallback(
+    (permissionName: string) =>
+      user?.permissions?.some(
+        (permission: any) => permission.name === permissionName
+      ),
+    [user?.permissions]
+  );
 
   const fetchData = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
-      const response = await axios.get(`${process.env.BASEURL}/getProjects`, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      console.log('resp', response);
-      setProjects(response?.data?.data?.data);
+      if (hasPermission('can view project')) {
+        const response = await axios.get(`${process.env.BASEURL}/getProjects`, {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        });
+        console.log('resp', response);
+        setProjects(response?.data?.data?.data);
+      }
     } catch (error: any) {
       console.error('Error:', error);
 
@@ -74,7 +79,7 @@ const ProjectsPage = () => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [dispatch, router, user?.token]);
+  }, [dispatch, router, user?.token, hasPermission]);
 
   useEffect(() => {
     fetchData();
@@ -109,7 +114,7 @@ const ProjectsPage = () => {
       </div>
       <div>
         <div className="flex justify-end mb-6">
-          {hasPermission('can create projects') && (
+          {hasPermission('can create project') && (
             <button
               className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
               onClick={() => {

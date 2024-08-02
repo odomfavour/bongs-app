@@ -181,9 +181,9 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
                       {project_end_date}
                     </td>
                     <td className="py-2 text-sm text-left">
-                      {project_manager.first_name}
+                      {project_manager?.first_name}
 
-                      {project_manager.last_name}
+                      {project_manager?.last_name}
                     </td>
                     <td className="py-2 text-left text-sm">
                       {formatDate(created_at)}

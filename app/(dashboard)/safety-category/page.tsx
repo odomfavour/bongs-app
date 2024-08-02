@@ -42,24 +42,28 @@ const SafetyCategoryPage = () => {
     (state: any) => state.modal.isSafetyCategoryModalOpen
   );
 
-  const hasPermission = (permissionName: string) =>
-    user?.permissions?.some(
-      (permission: any) => permission.name === permissionName
-    );
-
+  const hasPermission = useCallback(
+    (permissionName: string) =>
+      user?.permissions?.some(
+        (permission: any) => permission.name === permissionName
+      ),
+    [user?.permissions]
+  );
   const fetchData = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
-      const response = await axios.get(
-        `${process.env.BASEURL}/safety-category`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
-      console.log('resp', response);
-      setSafetyCat(response?.data?.data?.data);
+      if (hasPermission('can view safety category')) {
+        const response = await axios.get(
+          `${process.env.BASEURL}/safety-category`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        console.log('resp', response);
+        setSafetyCat(response?.data?.data?.data);
+      }
     } catch (error: any) {
       console.error('Error:', error);
 
@@ -76,7 +80,7 @@ const SafetyCategoryPage = () => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [dispatch, router, user?.token]);
+  }, [dispatch, hasPermission, router, user?.token]);
 
   useEffect(() => {
     fetchData();

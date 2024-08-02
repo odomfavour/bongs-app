@@ -129,7 +129,12 @@ const Page = () => {
           },
         }
       );
-      setRoles(rolesResponse?.data?.data?.data);
+      console.log('role', rolesResponse);
+      setRoles(
+        user?.subscriber_id
+          ? rolesResponse?.data?.data
+          : rolesResponse?.data?.data?.data
+      );
     } catch (error: any) {
       handleApiError(error);
     } finally {

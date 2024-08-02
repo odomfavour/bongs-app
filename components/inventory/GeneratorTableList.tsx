@@ -256,7 +256,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
             ? 'safety'
             : 'hospital'
         }/requisition`,
-        { items: selectedQuantities },
+        { subscriber_id: user?.subscriber_id, items: selectedQuantities },
         {
           headers: {
             Authorization: `Bearer ${user?.token}`,

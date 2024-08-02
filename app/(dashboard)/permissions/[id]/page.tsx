@@ -44,9 +44,7 @@ const Page = () => {
   const [perPage, setPerPage] = useState<string>('10'); // Default per_page
   const [search, setSearch] = useState<string>(''); // Default search
   const [currentPage, setCurrentPage] = useState<number>(1); // Default page
-  const user = useSelector(
-    (state: { user: { user: User } }) => state.user.user
-  );
+  const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
 
   const [modules, setModules] = useState<Module[]>([]);
@@ -56,55 +54,28 @@ const Page = () => {
     new Set()
   ); // Store updated permission IDs
   const [roleName, setRoleName] = useState('');
+  const hasPermission = useCallback(
+    (permissionName: string) =>
+      user?.permissions?.some(
+        (permission: any) => permission.name === permissionName
+      ),
+    [user?.permissions]
+  );
   const fetchRoles = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
-      const response = await axios.get(`${process.env.BASEURL}/roles`, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      console.log('resp roles', response);
-      let role_name = response?.data?.data?.data.find(
-        (role: any) => role.id == id
-      )?.name;
-      setRoleName(role_name);
-    } catch (error: any) {
-      console.error('Error:', error);
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.response?.data?.errors ||
-        error?.message ||
-        'Unknown error';
-
-      if (error?.response.status === 401) {
-        router.push('/login');
-      } else {
-        toast.error(`${errorMessage}`);
-      }
-    } finally {
-      dispatch(toggleLoading(false));
-    }
-  }, [dispatch, user?.token, id, router]);
-  const fetchRolesPermissions = useCallback(async () => {
-    dispatch(toggleLoading(true));
-    try {
-      const response = await axios.get(
-        `${process.env.BASEURL}/role-permissions/${id}`,
-        {
+      if (hasPermission('can read roles')) {
+        const response = await axios.get(`${process.env.BASEURL}/roles`, {
           headers: {
             Authorization: `Bearer ${user?.token}`,
           },
-        }
-      );
-      console.log('resp', response);
-      const rolePerms = response?.data?.data || [];
-      setRolePermission(rolePerms);
-
-      const initialPermissions: Set<number> = new Set(
-        rolePerms.map((perm: RolePermission) => perm.id)
-      );
-      setUpdatedPermissions(initialPermissions);
+        });
+        console.log('resp roles', response);
+        let role_name = response?.data?.data?.data.find(
+          (role: any) => role.id == id
+        )?.name;
+        setRoleName(role_name);
+      }
     } catch (error: any) {
       console.error('Error:', error);
       const errorMessage =
@@ -121,17 +92,62 @@ const Page = () => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [id, user?.token, router, dispatch]);
+  }, [dispatch, user?.token, id, router, hasPermission]);
+
+  const fetchRolesPermissions = useCallback(async () => {
+    dispatch(toggleLoading(true));
+    try {
+      if (hasPermission('can read permissions')) {
+        const response = await axios.get(
+          `${process.env.BASEURL}/role-permissions/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        console.log('resp', response);
+        const rolePerms = response?.data?.data || [];
+        setRolePermission(rolePerms);
+
+        const initialPermissions: Set<number> = new Set(
+          rolePerms.map((perm: RolePermission) => perm.id)
+        );
+        setUpdatedPermissions(initialPermissions);
+      }
+    } catch (error: any) {
+      console.error('Error:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+
+      if (error?.response.status === 401) {
+        router.push('/login');
+      } else {
+        toast.error(`${errorMessage}`);
+      }
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  }, [id, user?.token, router, dispatch, hasPermission]);
 
   const fetchModules = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
-      const response = await axios.get(`${process.env.BASEURL}/modules`, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      setModules(response?.data?.data.modules);
+      if (hasPermission('can read permissions')) {
+        const response = await axios.get(
+          `${process.env.BASEURL}/modules/subscriber?subscriber_id=${user?.subscriber_id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        console.log('perms', response);
+        setModules(response?.data?.data);
+      }
     } catch (error: any) {
       const errorMessage =
         error?.response?.data?.message ||
@@ -146,7 +162,7 @@ const Page = () => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [user?.token, router, dispatch]);
+  }, [user?.token, router, dispatch, hasPermission]);
 
   useEffect(() => {
     fetchRoles();
@@ -215,14 +231,16 @@ const Page = () => {
       <div className="flex justify-between items-center">
         <p className="text-2xl font-semibold">Permissions</p>
 
-        {subCategoriesToShow && subCategoriesToShow.length > 0 && (
-          <button
-            onClick={handleSavePermissions}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
-          >
-            Save Permissions
-          </button>
-        )}
+        {subCategoriesToShow &&
+          subCategoriesToShow.length > 0 &&
+          hasPermission('can assign permissions') && (
+            <button
+              onClick={handleSavePermissions}
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+            >
+              Save Permissions
+            </button>
+          )}
       </div>
       <p className="my-5 text-lg">
         Role: <span className="font-semibold text-blue-500">{roleName}</span>
@@ -318,21 +336,23 @@ const Page = () => {
           </p>
         )}
       </div>
-      {subCategoriesToShow && subCategoriesToShow.length > 0 && (
-        <div className="flex justify-end items-center mb-5">
-          <div className="flex gap-6">
-            <button className="bg-red-500 text-white px-4 py-2 rounded">
-              Cancel
-            </button>
-            <button
-              onClick={handleSavePermissions}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-            >
-              Save Permissions
-            </button>
+      {subCategoriesToShow &&
+        subCategoriesToShow.length > 0 &&
+        hasPermission('can assign permissions') && (
+          <div className="flex justify-end items-center mb-5">
+            <div className="flex gap-6">
+              <button className="bg-red-500 text-white px-4 py-2 rounded">
+                Cancel
+              </button>
+              <button
+                onClick={handleSavePermissions}
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+              >
+                Save Permissions
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 };

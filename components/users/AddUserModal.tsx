@@ -167,7 +167,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [formData.subscriber_id, user?.subscriber_id, user?.token]);
+  }, [formData, hasPermission, user]);
 
   const fetchDepartmentsData = useCallback(async () => {
     console.log('Fetching departments data');

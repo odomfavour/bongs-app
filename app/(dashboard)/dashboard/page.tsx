@@ -1,7 +1,4 @@
 "use client"
-import { AreaData } from '@/utils/data';
-
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 import React, { useEffect, useState } from 'react';
 import Areachart from '@/components/dashboard/charts/Areachart';
@@ -11,6 +8,8 @@ import DashboardCard from '@/components/dashboard/DashboardCard';
 import { fetchDashboardDataApi } from '@/utils/apiServices/dashboard';
 import { toast } from 'react-toastify';
 import { DashboardCardType } from '@/utils/types';
+
+
 
 const page = () => {
 
@@ -181,7 +180,6 @@ total_items_received
           }
         ])
         
-        console.log("ran final")
    
       }
       
@@ -201,7 +199,7 @@ total_items_received
 
 
 
-  console.log("dashboard data nnowoowowowoo", dashboardData)
+
   return <div>
    
     {/* card sectio starts */}
@@ -217,20 +215,57 @@ dashboardData.length > 0 &&  <DashboardCard
     </div>
     {/* card section ends */}
 
-{/* chart section starts */}
-    <div>
-    <Areachart />
-
+    {/* chart section starts */}
     
+    <div className='grid grid-cols-12'>
+   
+      <div className='col-span-8 '>
+        <div className='grid grid-cols-12'>
+          <div className='col-span-6'>
+          <LineAndbarchart />
+          </div>
+          <div className='col-span-6'>
+          <Areachart />
+          </div>
+        </div>
+        <div className='grid grid-cols-12'>
+          <div className='col-span-6'>
+            <div className='flex flex-col items-center justify-center'>
+              <span>Inventory Movement</span>
+              <div className='flex flex-row justify-center items-center space-x-2'>
+                <span className='flex-row flex space-x-1'>
+                  <input type="radio" name='choose' id='sparePart'/>
+                  <label htmlFor='sparePart'>
+                    Spare Parts
+                  </label >
+                </span>
+                <span className='flex flex-row space-x-1'>
+                  <input type="radio" name='choose' />
+                  <label htmlFor=''>
+                   Consumables
+                  </label>
+                </span>
+              </div>
+            </div>
+        <Barchart />
+          </div>
+          <div className='col-span-6'>
+      
+          </div>
+        </div>
+      
+     
+      
+   
+      </div>
+      <div className='col-span-4'>
 
-<div className='mt-4'>
-  <Barchart />
-</div>
-
-<div className='mt-4'>
-<LineAndbarchart />
-</div>
+      </div>
+    
+      
     </div>
+
+   
     
     {/* chart sectio ends */}
   </div>;

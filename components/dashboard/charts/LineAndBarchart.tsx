@@ -9,7 +9,9 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Label,
 } from 'recharts';
+import { RxDotFilled } from "react-icons/rx";
 
 const dieselUsageData = [
     { month: 'January', dieselUsed: 150 },
@@ -27,30 +29,62 @@ const dieselUsageData = [
   ];
 const  LineAndbarchart = () => {
     return (<ResponsiveContainer
-    
+   
         width="100%" height={400}>
           <ComposedChart
             width={500}
             height={400}
-            data={dieselUsageData }
-            margin={{
-              top: 20,
-              right: 20,
-              bottom: 20,
-              left: 20,
-            }}
+        data={dieselUsageData}
+        margin={{ left: 20, bottom: 5 }}
+           
             barGap={10}
           >
             <CartesianGrid stroke="#f5f5f5" />
-            <XAxis dataKey="month" />
-            <YAxis dataKey={"dieselUsed"} />
+        <XAxis dataKey="month" />
+      
+        <YAxis dataKey={"dieselUsed"} label={{ value: 'Count', position: 'insideTopLeft' }}
+        
+        />
             <Tooltip />
-            <Legend />
+        <Legend
+          iconType='circle'
+          align='right'
+          verticalAlign='top'
+          content={() => { 
+            return  <div className='flex flex-row justify-between items-center mb-4'>
+            <span>
+         
+              Inventory Over Time
+              </span>
+              <div className='flex flex-roow items-center space-x-2'>
+                <div className='flex flex-row items-center'>
+                <RxDotFilled
+                  color='green'
+                  size={32}
+                />
+                  <span>
+                    Inventory
+                  </span>
+                </div>
+              <div className='flex-row flex items-center'>
+              <RxDotFilled
+                  color='blue'
+                  size={32}
+                />
+                  <span>
+                    Counts
+                  </span>
+                </div>
+              </div>
+           </div>
+          }}
+        /> 
             <Bar dataKey="dieselUsed" barSize={20} fill="green"
-                radius={[20, 20, 20, 20]}
+          radius={[20, 20, 20, 20]}
+          
                 
             />
-            <Line type="monotone" dataKey="dieselUsed" stroke="green" />
+            <Line type="monotone" dataKey="dieselUsed" stroke="blue" />
           </ComposedChart>
         </ResponsiveContainer>
       )

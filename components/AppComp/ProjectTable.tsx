@@ -1,4 +1,4 @@
-import {  Deck } from "@/utils/types";
+import {  Deck, ProjectType } from "@/utils/types";
 import React, { useMemo } from "react";
 import { FaSearch } from "react-icons/fa";
 import { FaRegFolderClosed } from "react-icons/fa6";
@@ -13,7 +13,7 @@ import {
   UsePaginationInstanceProps,
 } from "react-table";
 
-function DeckTable({
+function ProjectTable({
   MOCK_DATA,
   COLUMNS,
   handleEdit,
@@ -23,12 +23,12 @@ function DeckTable({
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
-  handleEdit: (data: Deck) => void;
+  handleEdit: (data: ProjectType) => void;
   handleDelete: (id: number) => void;
   loadingStates: {
     [key: number]: boolean;
   };
-  fetchedData: Deck[];
+  fetchedData: ProjectType[];
 }) {
   const columns = useMemo(() => COLUMNS, []);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
@@ -199,4 +199,4 @@ function DeckTable({
   );
 }
 
-export default DeckTable;
+export default ProjectTable;

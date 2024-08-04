@@ -122,7 +122,7 @@ const BargeListTable: React.FC<BargeListTableProps> = ({ data, fetchdata }) => {
 
   return (
     <div className="bg-white">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto mb-4">
           <AppTable
             fetchedData={ currentItems}
             loadingStates={ loadingStates }

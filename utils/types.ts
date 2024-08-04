@@ -71,7 +71,49 @@ export interface User {
     user: User;
   }
 
+  interface ProjectManagerType {
+    id: number;
+    first_name: string;
+    last_name: string;
+  }
+
+  export interface ProjectType {
+    id: number;
+    project_name: string;
+    project_title: string;
+    project_duration: string;
+    project_start_date: string;
+    project_end_date: string;
+    project_manager: ProjectManagerType;
+    created_at: string;
+  }
+
+/* dashboard types */
   
+export interface DashboardCardType { 
+
+  stockCountAmount: number,
+  stockCountPercent: number,
+
+
+  inventoryAmount: number,
+  sparePartInventory: number,
+  consumablesInventory: number,
+
+
+  materialRequisitionAmount: number,
+  totalApprovedMaterial: number,
+
+ 
+   materialReceivedAmount: number,
+  materialReceivedPercent: number,
+
+  mivSperePart: number,
+  mivConsumables: number,
+  mivAmount: number,
+
+
+}
 
  
 

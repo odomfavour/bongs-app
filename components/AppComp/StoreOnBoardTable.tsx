@@ -71,12 +71,12 @@ function StoreOnBoardTable({
 
   const { globalFilter, pageIndex } = state;
 
-  console.log("the fetched data", fetchedData);
+
 
   return (
     <>
-      <div className="flex items-center gap-2 md:w-2/5 w-full ml-auto">
-        <div className="md:w-4/5 w-3/5">
+      <div className="flex mb-4 items-center gap-2 md:w-2/5 w-full ml-auto">
+        <div className="md:w-4/5 w-3/5 ">
           <div className="w-full relative">
             <input
               type="search"

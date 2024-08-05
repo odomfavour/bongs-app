@@ -139,6 +139,52 @@ export interface BarchartPropType {
   spare_part_counts: sparePartCountType 
 }
 
+
+/* 
+
+
+DeckConsumable
+: 
+{Paintings: 0, Greases: 0, Ropes: 0, Peripherials: 0}
+EngineConsumable
+: 
+{Electrical: 0, Mechanical: 0, Pnuematic: 0, Hydraulic: 0, Oils & Greases: 0, …}
+GalleyLaundryConsumable
+: 
+{Mess: 0, Kitchen: 0, Laundry: 0}
+HospitalConsumable
+: 
+{Drugs: 0, Injections: 0}
+SafetyConsumable
+: 
+{Main Deck: 0, Auxillary: 0}
+SparePartDeck
+: 
+{radar: 0, radios: 0, monitors, tvs, printers: 0, ropes and wires: 0, brush and painting: 0}
+SparePartEngine
+: 
+{generator: 0, huisman crane: 0, tensioner and A&R wrench: 0, davits: 0, lineup station: 0, …}
+SparePartHospital
+: 
+{mattress/bed: 0, respirators: 0}
+SparePartSafety
+
+*/
+
+export interface categoryCountType {
+  DeckConsumable: any,
+  EngineConsumable: any,
+  GalleyLaundryConsumable: any,
+  HospitalConsumable: any,
+  SafetyConsumable: any,
+  SparePartDeck: any,
+  SparePartEngine: any,
+  SparePartHospital: any,
+  SparePartSafety: any
+
+
+  
+}
  
 
 

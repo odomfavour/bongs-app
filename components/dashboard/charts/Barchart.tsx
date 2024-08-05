@@ -48,13 +48,7 @@ export interface sparePartCountType {
     const count = consumableCountValues[index];
     let color;
 
-    /* 
-      Deck: number,
-  Engine: number,
-  GalleyLaundry: number,
-  Hospital: number, 
-  Safety:number
-    */
+  
     if (consumableCountKeys[index] == "Deck") {
       color = "#62BD71";
     } else if (consumableCountKeys[index] == "Engine") {

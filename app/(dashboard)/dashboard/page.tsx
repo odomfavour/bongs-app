@@ -7,8 +7,11 @@ import LineAndbarchart from '@/components/dashboard/charts/LineAndBarchart';
 import DashboardCard from '@/components/dashboard/DashboardCard';
 import { fetchDashboardDataApi } from '@/utils/apiServices/dashboard';
 import { toast } from 'react-toastify';
-import { consumableCountType, DashboardCardType, sparePartCountType } from '@/utils/types';
+import { categoryCountType, consumableCountType, DashboardCardType, sparePartCountType } from '@/utils/types';
 import TopTenInnventories from '@/components/dashboard/charts/TopTenInnventories';
+import Image from 'next/image';
+import { months } from '@/utils/data';
+import InventoryRequisitionAnalysis from '@/components/dashboard/charts/InventoryRequisitionAnalysis';
 
 
 
@@ -24,126 +27,58 @@ const page = () => {
   const [isUIReady, setIsUIReady] = useState(false)
   const [consumableCounts, setConsumableCounts] = useState<consumableCountType | null>(null)
   const [sparePartCounts, setSparePartCounts] = useState< sparePartCountType  | null>(null)
+  const [categoryCounts, setCategoryCounts] = useState< categoryCountType  | null>(null)
 
-/*   
 
-total_inventory
-: 
-36
-total_miv_consumable_inventory
-: 
-0
-total_miv_inventory
-: 
-0
-total_miv_sparepart_inventory
-: 
-0
-total_project_consumable_inventory
-: 
-6
-total_project_inventory
-: 
-23
-total_project_sparepart_inventory
-: 
-17
-year
-: 
-2024
-
-stockCountAmount = 5000,
-  stockCountPercent = 15,
-
-  inventoryAmount = 5000,
-  sparePartInventory = 200,
-  consumablesInventory = 150,
-
-  materialReceivedAmount = 800,
-  materialReceivedPercent = 15,
-
-  materialRequisitionAmount = 4000,
-  totalApprovedMaterial = 100,
-
-  mivAmount = 800,
-  mivConsumables = 250,
-  mivSperePart = 130, */
 /* 
 
-consumable_counts
-: 
-{Engine: 3, Deck: 1, Hospital: 1, Safety: 1, GalleyLaundry: 1}
-month
-: 
-null
-percentage_change_consumable
-: 
--100
-percentage_change_sparepart
-: 
--100
-percentage_change_total_inventory
-: 
--100
-spare_part_counts
-: 
-{Engine: 22, Deck: 1, Hospital: 6, Safety: 0}
-total_inventory
-: 
-36
-total_miv_consumable_inventory
-: 
-0
-total_miv_inventory
-: 
-0
-total_miv_sparepart_inventory
-: 
-0
-total_project_consumable_inventory
-: 
-6
-total_project_inventory
-: 
-23
-total_project_sparepart_inventory
-: 
-17
-year
-: 
-2024
-[[Prototype]]
-: 
-Object
-most_used_inventory_data
-: 
-{most_used_inventory: Array(0)}
-requisition_data
-: 
-approved_requisitions_by_month
-: 
-{January: 0, February: 0, March: 0, April: 0, May: 0, …}
-total_approved_requisitions
-: 
-0
-total_requisitions
-: 
-4
-[[Prototype]]
-: 
-Object
-total_items_received_data
-: 
-percentage_change
-: 
-0
-total_items_received
-: 
-0
 
+inventory_data
+: 
+category_counts
+: 
+DeckConsumable
+: 
+Greases
+: 
+0
+Paintings
+: 
+0
+Peripherials
+: 
+0
+Ropes
+: 
+0
+[[Prototype]]
+: 
+Object
+EngineConsumable
+: 
+{Electrical: 0, Mechanical: 0, Pnuematic: 0, Hydraulic: 0, Oils & Greases: 0, …}
+GalleyLaundryConsumable
+: 
+{Mess: 0, Kitchen: 0, Laundry: 0}
+HospitalConsumable
+: 
+{Drugs: 0, Injections: 0}
+SafetyConsumable
+: 
+{Main Deck: 0, Auxillary: 0}
+SparePartDeck
+: 
+{radar: 0, radios: 0, monitors, tvs, printers: 0, ropes and wires: 0, brush and painting: 0}
+SparePartEngine
+: 
+{generator: 0, huisman crane: 0, tensioner and A&R wrench: 0, davits: 0, lineup station: 0, …}
+SparePartHospital
+: 
+{mattress/bed: 0, respirators: 0}
+SparePartSafety
+: 
+{gas de
 */
-
-
 
 
   useEffect(() => {
@@ -169,11 +104,12 @@ total_items_received
           total_miv_consumable_inventory,
           percentage_change_total_inventory,
           consumable_counts,
-          spare_part_counts
+          spare_part_counts,
+          category_counts
 
         } = data.inventory_data
 
-
+  setCategoryCounts(category_counts)
         setConsumableCounts(consumable_counts)
         setSparePartCounts(spare_part_counts)
         
@@ -232,7 +168,31 @@ total_items_received
   return <div style={{
     backgroundColor: "rgb(244,245,246)"
   }}>
-   
+    {/* gilter section start */}
+    
+    <div className='flex flex-row justify-end items-center space-x-2 mb-4'>
+      <Image
+        src={"/icons/filterPic.png"}
+        alt='filter'
+        className='w-[27px] h-[30px]'
+        width={27}
+        height={30}
+        objectFit='contain'
+      
+      />
+      <select name="" id=""  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3">
+        <option>month</option>
+        { 
+          months.map(item => <option key={item} value={item}>{ item}</option>)
+        }
+      </select>
+      <select name="" id="" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3">
+        <option value="">Year</option>
+        <option value="">2024</option>
+       </select>
+  </div>
+
+    {/* filter section ends */}
     {/* card sectio starts */}
     <div className='mb-4'>
       { 
@@ -281,7 +241,12 @@ dashboardData.length > 0 &&  <DashboardCard
             }
           </div>
           <div className='col-span-12 lg:col-span-6  rounded-[23px] p-2 border-[1.2px] border-slate-300'>
-      
+            { 
+              categoryCounts &&  <InventoryRequisitionAnalysis
+              categoryCounts={ categoryCounts}
+            />
+
+            }
           </div>
         </div>
       

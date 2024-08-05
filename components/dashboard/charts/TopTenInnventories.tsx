@@ -8,16 +8,21 @@ function TopTenInnventories() {
   return initial + accu
     },0)
     const percentagePerItem = topTenInnventries.map(item => { 
-        console.log(item.value)
+  
         const persent = ((item.value) / totalAmount) * 100
         return persent
     })
     const totalAmount3 =  percentagePerItem.reduce((initial, accu) => { 
         return initial + accu
           },0)
-  console.log("percenntage",percentagePerItem, totalAmount, totalAmount3)
+ /*  console.log("percenntage",percentagePerItem, totalAmount, totalAmount3) */
   return (
-    <div>TopTenInnventories</div>
+    <div>
+      <div>
+      TopTenInnventories
+      </div>
+    
+    </div>
   )
 }
 

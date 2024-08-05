@@ -5,6 +5,7 @@ import DeclineRequisition from '@/components/requisitions/DeclineRequisition';
 import RequisitionListTable from '@/components/requisitions/RequisitionListTable';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
@@ -105,6 +106,14 @@ const Page = () => {
         </div>
       </div>
       <div>
+        <div className="mb-5 flex justify-end">
+          <Link
+            href="/requisition-history"
+            className="bg-blue-500 text-white p-2 rounded-md"
+          >
+            View Requisition History
+          </Link>
+        </div>
         <RequisitionListTable
           data={requisitions}
           fetchData={fetchData}

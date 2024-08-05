@@ -6,7 +6,7 @@ const links = [
   {
     href: '/preferences',
     labels: ['Barge', 'Deck', 'Keystore'],
-    label: 'Preference',
+    label: 'Barge Setup',
     img: 'preference_barge_setup_deck.png',
   },
   {

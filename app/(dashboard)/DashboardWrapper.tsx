@@ -50,16 +50,18 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
 
     const getSubscribers = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.BASEURL}/getSubscribers`,
-          {
-            headers: {
-              Authorization: `Bearer ${user?.token}`,
-            },
-          }
-        );
-        console.log('resp', response);
-        dispatch(setSubscribers(response?.data?.data?.data));
+        if (hasPermission('can read subscriber')) {
+          const response = await axios.get(
+            `${process.env.BASEURL}/getSubscribers`,
+            {
+              headers: {
+                Authorization: `Bearer ${user?.token}`,
+              },
+            }
+          );
+          console.log('resp', response);
+          dispatch(setSubscribers(response?.data?.data?.data));
+        }
       } catch (error: any) {
         console.error('Error:', error);
         const errorMessage =

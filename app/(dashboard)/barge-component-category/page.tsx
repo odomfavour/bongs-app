@@ -34,6 +34,7 @@ const BargeComponentPage = () => {
     (state: any) => state.modal.isBargeComponentModalOpen
   );
   const [bargeComponents, setBargeComponent] = useState<BargeComponent[]>([]);
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
 
   const hasPermission = useCallback(
     (permissionName: string) =>
@@ -126,7 +127,11 @@ const BargeComponentPage = () => {
       </div>
 
       <Modal
-        title="Add New Barge Equipment"
+        title={
+          Object.keys(bargeValues).length > 0
+            ? 'Edit Barge Equipment'
+            : 'Add New Barge Equipment'
+        }
         isOpen={openModal}
         onClose={handleClose}
         maxWidth="40%"

@@ -45,6 +45,8 @@ const VendorsPage = () => {
     (state: any) => state.modal.isVendorModalOpen
   );
 
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
+
   const hasPermission = useCallback(
     (permissionName: string) =>
       user?.permissions?.some(
@@ -169,7 +171,9 @@ const VendorsPage = () => {
         />
       </div>
       <Modal
-        title="Add Vendor"
+        title={
+          Object.keys(bargeValues).length > 0 ? 'Edit Vendor' : 'Add New Vendor'
+        }
         isOpen={openModal}
         onClose={handleClose}
         maxWidth="50%"

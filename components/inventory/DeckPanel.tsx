@@ -4,7 +4,7 @@ import DeckStrip from './DeckStrip';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import GeneratorTableList from './GeneratorTableList';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import { usePathname } from 'next/navigation';
 import Modal from '../dashboard/Modal';
@@ -44,6 +44,7 @@ const DeckPanel: React.FC<DeckPanelProps> = ({
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const pathname = usePathname();
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
 
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
@@ -123,7 +124,9 @@ const DeckPanel: React.FC<DeckPanelProps> = ({
         toggleRequisition={toggleRequisition}
       />
       <Modal
-        title="Add New Deck"
+        title={
+          Object.keys(bargeValues).length > 0 ? 'Edit Deck' : 'Add New Deck'
+        }
         isOpen={openModal}
         onClose={handleClose}
         maxWidth="70%"

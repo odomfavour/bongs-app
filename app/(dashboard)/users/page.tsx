@@ -38,6 +38,8 @@ const Page = () => {
   const isAddUserModalOpen = useSelector(
     (state: any) => state?.modal?.isAddUserModalOpen
   );
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
+
   const [activeTab, setActiveTab] = useState('Roles');
   const [loading, setLoading] = useState(true);
   const [tabs, setTabs] = useState([
@@ -299,7 +301,7 @@ const Page = () => {
         )}
       </div>
       <Modal
-        title="Add User"
+        title={Object.keys(bargeValues).length > 0 ? 'Edit User' : 'Add User'}
         isOpen={openUserModal}
         onClose={handleUserClose}
         maxWidth="60%"
@@ -310,7 +312,7 @@ const Page = () => {
         />
       </Modal>
       <Modal
-        title="Add Role"
+        title={Object.keys(bargeValues).length > 0 ? 'Edit Role' : 'Add Role'}
         isOpen={openRoleModal}
         onClose={handleRoleClose}
         maxWidth="60%"
@@ -321,7 +323,11 @@ const Page = () => {
         />
       </Modal>
       <Modal
-        title="Add Department"
+        title={
+          Object.keys(bargeValues).length > 0
+            ? 'Edit Department'
+            : 'Add Department'
+        }
         isOpen={openDeptModal}
         onClose={handleDeptClose}
         maxWidth="60%"

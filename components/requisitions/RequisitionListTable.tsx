@@ -9,6 +9,7 @@ import axios from 'axios';
 // import { EmptyProductIcon } from '@/utils/utils';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { FaExternalLinkAlt, FaPenAlt, FaTrashAlt } from 'react-icons/fa';
 import { FaMagnifyingGlass, FaRegFolderClosed } from 'react-icons/fa6';
@@ -20,22 +21,38 @@ import Swal from 'sweetalert2';
 
 interface Requisition {
   id: number;
-  indent_number: string;
-  inventory_type: string;
-  requested_by: string;
+  inventoryable_type: string;
+  quantity: number;
   created_at: string;
 }
 
+interface RequestedBy {
+  id: number;
+  first_name: string;
+  last_name: string;
+}
+interface RequisitionList {
+  id: number;
+  indent_number: string;
+  batch_code: string;
+  requisition: Requisition;
+  requested_by: RequestedBy;
+}
+
 interface RequisitionListTableProps {
-  data: Requisition[];
+  data: RequisitionList[];
   fetchData: () => void;
   setOpenModal: (isOpen: boolean) => void;
+  setOpenDeclineModal: (isOpen: boolean) => void;
+  setRequisitionItem: (item: RequisitionList) => void;
 }
 
 const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
   data,
   fetchData,
   setOpenModal,
+  setOpenDeclineModal,
+  setRequisitionItem,
 }) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
@@ -58,6 +75,7 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
+  console.log('current', currentItems);
 
   // Function to change page
   const paginate = (pageNumber: number) => {
@@ -122,9 +140,19 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
     }
   };
 
-  const approveReq = async () => {
+  const approveReq = (item: any) => {
     setOpenModal(true);
+    setRequisitionItem(item);
   };
+  const declineReq = (item: any) => {
+    setOpenDeclineModal(true);
+    setRequisitionItem(item);
+  };
+
+  const removePrefix = (str: string, prefix = 'App\\Models\\') => {
+    return str.replace(prefix, '');
+  };
+  const pathname = usePathname();
 
   return (
     <div className="bg-white">
@@ -138,54 +166,59 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
               <th className="text-sm text-left py-3">Requested By</th>
 
               <th className="text-sm text-left py-3">Requisition Data/Time</th>
-              <th className="text-sm text-left py-3">Actions</th>
+              {pathname === '/requisitions' && (
+                <th className="text-sm text-left py-3">Actions</th>
+              )}
             </tr>
           </thead>
           <tbody>
-            {currentItems.length > 0 &&
-              currentItems.map((item, index) => {
-                const {
-                  id,
-                  indent_number,
-                  inventory_type,
-                  requested_by,
-                  created_at,
-                } = item;
+            {currentItems?.length > 0 &&
+              currentItems?.map((item, index) => {
+                const { id, batch_code, requisition, requested_by } = item;
                 return (
                   <tr className="border-b" key={id}>
                     <td className="py-2 text-center text-[#344054]">
                       {index + 1}
                     </td>
-                    <td className="py-2 text-left text-sm">{indent_number}</td>
-                    <td className="py-2 text-left text-sm">{inventory_type}</td>
-                    <td className="py-2 text-left text-sm">{requested_by}</td>
+                    <td className="py-2 text-left text-sm">{batch_code}</td>
+                    <td className="py-2 text-left text-sm">
+                      {removePrefix(requisition?.inventoryable_type)}
+                    </td>
+                    <td className="py-2 text-left text-sm">
+                      {requested_by?.first_name} {requested_by?.last_name}
+                    </td>
 
                     <td className="py-2 text-left text-sm">
-                      {formatDate(created_at)}
+                      {formatDate(requisition?.created_at)}
                     </td>
-                    <td className="py-2 text-center flex justify-left text-sm items-center">
-                      <div className="flex gap-3">
-                        <Link
-                          href={`/requisitions/${id}`}
-                          className="bg-blue-700 text-white p-2 text-sm rounded-md"
-                        >
-                          View
-                        </Link>
-                        <button
-                          className="bg-blue-700 text-white p-2 text-sm rounded-md"
-                          onClick={approveReq}
-                        >
-                          Approve
-                        </button>
-                        <button className="bg-blue-700 text-white p-2 text-sm rounded-md">
-                          Reject
-                        </button>
-                      </div>
-                    </td>
+                    {pathname === '/requisitions' && (
+                      <td className="py-2 text-center flex justify-left text-sm items-center">
+                        <div className="flex gap-3">
+                          <Link
+                            href={`/requisitions/${id}`}
+                            className="bg-blue-700 text-white p-2 text-sm rounded-md"
+                          >
+                            View
+                          </Link>
+                          <button
+                            className="bg-blue-700 text-white p-2 text-sm rounded-md"
+                            onClick={() => approveReq(item)}
+                          >
+                            Approve
+                          </button>
+                          <button
+                            className="bg-blue-700 text-white p-2 text-sm rounded-md"
+                            onClick={() => declineReq(item)}
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 );
               })}
-            {currentItems.length == 0 && (
+            {currentItems?.length == 0 && (
               <tr className="text-center text-primary bg-white">
                 <td className="py-2 text-center" colSpan={10}>
                   <div className="flex justify-center items-center  min-h-[60vh]">

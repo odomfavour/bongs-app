@@ -5,7 +5,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import GeneratorTableList from './GeneratorTableList';
 import { toggleLoading } from '@/provider/redux/modalSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { usePathname } from 'next/navigation';
 import Modal from '../dashboard/Modal';
 import AddEngineModal from './AddEngineModal';
@@ -33,7 +33,7 @@ const SafetyPanel: React.FC<SafetyPanelProps> = ({
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const pathname = usePathname();
-
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
     let endpoint = `${process.env.BASEURL}/sparepart/safety/${activeId}`;
@@ -114,7 +114,9 @@ const SafetyPanel: React.FC<SafetyPanelProps> = ({
       />
 
       <Modal
-        title="Add New Safety"
+        title={
+          Object.keys(bargeValues).length > 0 ? 'Edit Safety' : 'Add New Safety'
+        }
         isOpen={openModal}
         onClose={handleClose}
         maxWidth="70%"

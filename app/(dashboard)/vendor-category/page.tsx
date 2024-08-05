@@ -33,6 +33,8 @@ const VendorCategoryPage = () => {
   const [loading, setLoading] = useState(false);
 
   const user = useSelector((state: any) => state.user.user);
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
+
   const hasPermission = useCallback(
     (permissionName: string) =>
       user?.permissions?.some(
@@ -131,7 +133,9 @@ const VendorCategoryPage = () => {
         />
       </div>
       <Modal
-        title="Add Vendor Category"
+        title={
+          Object.keys(bargeValues).length > 0 ? 'Edit Vendor' : 'Add New Safety'
+        }
         isOpen={openModal}
         onClose={handleClose}
         maxWidth="50%"

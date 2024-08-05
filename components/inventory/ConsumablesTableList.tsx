@@ -183,7 +183,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
 
         console.log('Delete Response:', response);
         fetchdata();
-        setOpenModal(true);
+        setOpenModal(false);
         Swal.fire('Deleted!', 'Your items have been deleted.', 'success');
       } catch (error: any) {
         console.error('Error:', error);
@@ -308,7 +308,6 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
 
   return (
     <div className="bg-white pt-2">
-      {parent}
       <div className="overflow-x-auto">
         <div className="flex justify-end gap-3 mb-4 mt-2">
           {requisition && (

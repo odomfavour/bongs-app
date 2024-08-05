@@ -40,12 +40,15 @@ const Page = () => {
   const fetchData = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
-      const response = await axios.get(`${process.env.BASEURL}/requisitions`, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      console.log('resp', response.data);
+      const response = await axios.get(
+        `${process.env.BASEURL}/all-requisitions`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+      console.log('resp', response.data.data);
       setRequisitions(response?.data?.data?.data);
     } catch (error: any) {
       console.error('Error:', error);

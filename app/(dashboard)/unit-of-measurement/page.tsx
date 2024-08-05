@@ -38,6 +38,8 @@ const UomPage = () => {
   const [loading, setLoading] = useState(false);
 
   const user = useSelector((state: any) => state.user.user);
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
+
   const isUomModalOpen = useSelector(
     (state: any) => state.modal.isUomModalOpen
   );
@@ -133,7 +135,7 @@ const UomPage = () => {
         />
       </div>
       <Modal
-        title="Add New UoM"
+        title={Object.keys(bargeValues).length > 0 ? 'Edit UoM' : 'Add New UoM'}
         isOpen={openModal}
         onClose={handleClose}
         maxWidth="40%"

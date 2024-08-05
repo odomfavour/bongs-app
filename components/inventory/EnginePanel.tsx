@@ -50,6 +50,7 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
   const isAddEngineModalOpen = useSelector(
     (state: any) => state.modal.isAddEngineModalOpen
   );
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const [openModal, setOpenModal] = useState(false);
   const handleClose = () => {
     setOpenModal(false);
@@ -141,7 +142,9 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
         />
       )}
       <Modal
-        title="Add New Engine"
+        title={
+          Object.keys(bargeValues).length > 0 ? 'Edit Engine' : 'Add New Engine'
+        }
         isOpen={openModal}
         onClose={handleClose}
         maxWidth="70%"

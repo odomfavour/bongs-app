@@ -37,6 +37,7 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   );
   const dispatch = useDispatch();
   const pathname = usePathname();
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
     let endpoint = `${process.env.BASEURL}/consumable/engine/${activeId}`;
@@ -118,7 +119,9 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
         toggleRequisition={toggleRequisition}
       />
       <Modal
-        title="Add New Safety"
+        title={
+          Object.keys(bargeValues).length > 0 ? 'Edit Engine' : 'Add New Engine'
+        }
         isOpen={openModal}
         onClose={handleClose}
         maxWidth="70%"

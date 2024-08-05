@@ -41,6 +41,7 @@ const LocationPage = () => {
   const isLocationModalOpen = useSelector(
     (state: any) => state.modal.isLocationModalOpen
   );
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
 
   const hasPermission = useCallback(
     (permissionName: string) =>
@@ -135,7 +136,11 @@ const LocationPage = () => {
         )}
       </div>
       <Modal
-        title="Add New Location"
+        title={
+          Object.keys(bargeValues).length > 0
+            ? 'Edit Location'
+            : 'Add New Location'
+        }
         isOpen={openModal}
         onClose={handleClose}
         maxWidth="40%"

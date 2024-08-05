@@ -41,6 +41,7 @@ const SafetyCategoryPage = () => {
   const isSafetyCategoryModalOpen = useSelector(
     (state: any) => state.modal.isSafetyCategoryModalOpen
   );
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
 
   const hasPermission = useCallback(
     (permissionName: string) =>
@@ -135,7 +136,11 @@ const SafetyCategoryPage = () => {
         />
       </div>
       <Modal
-        title="Add New Safety Category"
+        title={
+          Object.keys(bargeValues).length > 0
+            ? 'Edit Safety Category'
+            : 'Add New Safety Category'
+        }
         isOpen={openModal}
         onClose={handleClose}
         maxWidth="50%"

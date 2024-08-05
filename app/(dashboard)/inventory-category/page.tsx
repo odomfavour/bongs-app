@@ -27,6 +27,8 @@ const Page = () => {
   const [sparePartsFetched, setSparePartsFetched] = useState(false);
   const [consumablesFetched, setConsumablesFetched] = useState(false);
   const user = useSelector((state: any) => state.user.user);
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
+
   const [tabs, setTabs] = useState([
     { id: 1, name: 'Spare Parts', count: '' },
     { id: 2, name: 'Consumables', count: '' },
@@ -234,7 +236,11 @@ const Page = () => {
       )}
 
       <Modal
-        title="Add Inventory Type"
+        title={
+          Object.keys(bargeValues).length > 0
+            ? 'Edit Inventory Category'
+            : 'Add Inventory Category'
+        }
         isOpen={openModal}
         onClose={handleClose}
         maxWidth="60%"

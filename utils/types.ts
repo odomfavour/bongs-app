@@ -112,7 +112,31 @@ export interface DashboardCardType {
   mivConsumables: number,
   mivAmount: number,
 
+}
 
+
+
+
+
+export interface consumableCountType{
+  Deck: number,
+  Engine: number,
+  GalleyLaundry: number,
+  Hospital: number, 
+  Safety:number
+}
+
+
+export interface sparePartCountType {
+  Deck: string, 
+  Hospital: string,
+  Engine: string,
+  Safety: string
+
+}
+export interface BarchartPropType {
+  consumable_counts: consumableCountType,
+  spare_part_counts: sparePartCountType 
 }
 
  

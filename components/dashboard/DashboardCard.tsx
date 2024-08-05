@@ -221,7 +221,7 @@ function DashboardCard({
             Total MIV
           </span>
           <span
-            className="font-[400px] font-[inter] text-[22px]  "
+            className="font-[400px] font-[inter] text-[22px] text-center block"
             style={{
               color: "rgba(0, 0, 0, 0.7)",
             }}

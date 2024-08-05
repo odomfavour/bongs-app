@@ -7,7 +7,8 @@ import LineAndbarchart from '@/components/dashboard/charts/LineAndBarchart';
 import DashboardCard from '@/components/dashboard/DashboardCard';
 import { fetchDashboardDataApi } from '@/utils/apiServices/dashboard';
 import { toast } from 'react-toastify';
-import { DashboardCardType } from '@/utils/types';
+import { consumableCountType, DashboardCardType, sparePartCountType } from '@/utils/types';
+import TopTenInnventories from '@/components/dashboard/charts/TopTenInnventories';
 
 
 
@@ -15,7 +16,14 @@ const page = () => {
 
 
   const [dashboardData, setDashboardData] = useState<DashboardCardType[] | []>([])
+ const [requisitionApprovedByMonth, setRequisitionApprovedByMonth] = useState<string[] | []>([])
+  const [inventoryOverTime, setInventoryOverTime] = useState<{
+    months: string[]
+  } | null>(null)
 
+  const [isUIReady, setIsUIReady] = useState(false)
+  const [consumableCounts, setConsumableCounts] = useState<consumableCountType | null>(null)
+  const [sparePartCounts, setSparePartCounts] = useState< sparePartCountType  | null>(null)
 
 /*   
 
@@ -139,10 +147,11 @@ total_items_received
 
 
   useEffect(() => {
-    (async() => { 
+  const handleFetchData =   async() => { 
     try {
       const response = await fetchDashboardDataApi() 
-      if (response.status) { 
+      if (response.status)
+      { 
         const { message, data } = response
         toast.success(message)
         console.log("dd", message, data)
@@ -158,10 +167,21 @@ total_items_received
           total_miv_inventory,
           total_miv_sparepart_inventory,
           total_miv_consumable_inventory,
-          percentage_change_total_inventory
+          percentage_change_total_inventory,
+          consumable_counts,
+          spare_part_counts
+
         } = data.inventory_data
 
+
+        setConsumableCounts(consumable_counts)
+        setSparePartCounts(spare_part_counts)
+        
         const {total_items_received, percentage_change } = data.total_items_received_data
+      
+  setRequisitionApprovedByMonth(data.requisition_data.approved_requisitions_by_month)
+      setInventoryOverTime(data.filtered_inventory_data)
+ 
         setDashboardData([
           {
             stockCountAmount: total_inventory,
@@ -180,10 +200,12 @@ total_items_received
           }
         ])
         
-   
+     setIsUIReady(true)
+      
       }
       
     } catch (error: any) {
+      setIsUIReady(false)
       const errorMessage =
       error?.response?.data?.message ||
       error?.response?.data?.errors ||
@@ -191,16 +213,25 @@ total_items_received
       'Unknown error';
     toast.error(`${errorMessage}`);
     }
-    })()
+  }
+  
+    handleFetchData()
 
 
   }, [])
   
+  if (!isUIReady) { 
+ return   <div className='h-screen w-screen flex  justify-center items-center'>
+        <div className="w-16 h-16 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin">
+        </div>
+     </div>
+  }
 
 
 
-
-  return <div>
+  return <div style={{
+    backgroundColor: "rgb(244,245,246)"
+  }}>
    
     {/* card sectio starts */}
     <div className='mb-4'>
@@ -217,39 +248,39 @@ dashboardData.length > 0 &&  <DashboardCard
 
     {/* chart section starts */}
     
-    <div className='grid grid-cols-12'>
+    <div className='grid grid-cols-12 gap-2 mb-4'>
    
-      <div className='col-span-8 '>
-        <div className='grid grid-cols-12'>
-          <div className='col-span-6'>
-          <LineAndbarchart />
+      <div className='col-span-12 lg:col-span-8 gap-2'>
+        <div className='grid grid-cols-12 gap-2 mb-[8px]'>
+          <div className='col-span-12 lg:col-span-6  rounded-[23px] p-2 border-[1.2px] border-slate-300'>
+           
+            {
+            inventoryOverTime &&  <LineAndbarchart
+            inventoryOverTime={inventoryOverTime}
+              />
+            }
           </div>
-          <div className='col-span-6'>
-          <Areachart />
+          <div className='col-span-12 lg:col-span-6  rounded-[23px] p-2 border-[1.2px] border-slate-300'>
+            <Areachart
+               requisitionApprovedByMonth={requisitionApprovedByMonth}
+            
+            />
           </div>
         </div>
-        <div className='grid grid-cols-12'>
-          <div className='col-span-6'>
-            <div className='flex flex-col items-center justify-center'>
-              <span>Inventory Movement</span>
-              <div className='flex flex-row justify-center items-center space-x-2'>
-                <span className='flex-row flex space-x-1'>
-                  <input type="radio" name='choose' id='sparePart'/>
-                  <label htmlFor='sparePart'>
-                    Spare Parts
-                  </label >
-                </span>
-                <span className='flex flex-row space-x-1'>
-                  <input type="radio" name='choose' />
-                  <label htmlFor=''>
-                   Consumables
-                  </label>
-                </span>
-              </div>
-            </div>
-        <Barchart />
+        <div className='grid grid-cols-12 gap-2'>
+          <div className=' col-span-12 lg:col-span-6  rounded-[23px] p-2 border-[1.2px] border-slate-300'>
+         
+
+            { 
+
+        consumableCounts && sparePartCounts &&  <Barchart
+        consumable_counts={consumableCounts}
+        spare_part_counts={sparePartCounts}
+      />
+              
+            }
           </div>
-          <div className='col-span-6'>
+          <div className='col-span-12 lg:col-span-6  rounded-[23px] p-2 border-[1.2px] border-slate-300'>
       
           </div>
         </div>
@@ -258,8 +289,8 @@ dashboardData.length > 0 &&  <DashboardCard
       
    
       </div>
-      <div className='col-span-4'>
-
+      <div className='col-span-12  lg:col-span-4 gap-2  rounded-[23px] p-2 border-[1.2px] border-slate-300'>
+   <TopTenInnventories />
       </div>
     
       

@@ -1,43 +1,45 @@
-export const AreaData = [
-    {
-      "name": "Page A",
-      "uv": 4000,
-      "amt": 2400
-    },
-    {
-      "name": "Page B",
-      "uv": 3000,
-     
-      "amt": 2210
-    },
-    {
-      "name": "Page C",
-      "uv": 2000,
-   
-      "amt": 2290
-    },
-    {
-      "name": "Page D",
-      "uv": 2780,
-   
-      "amt": 2000
-    },
-    {
-      "name": "Page E",
-      "uv": 1890,
-   
-      "amt": 2181
-    },
-    {
-      "name": "Page F",
-      "uv": 2390,
-      "pv": 3800,
-      "amt": 2500
-    },
-    {
-      "name": "Page G",
-      "uv": 3490,
-     
-      "amt": 2100
-    }
-  ]
+import { RxValue } from "react-icons/rx";
+
+export const topTenInnventries = [
+  {
+    name: "Engine oil",
+    value: 6000
+  },
+  {
+    name: "Iron",
+    value: 900
+  },
+  {
+    name: "Glo",
+    value: 9000
+  },
+  {
+    name: "Lopa",
+    value: 1800
+  },
+  {
+    name: "oil",
+    value: 3000
+  },
+  {
+    name: "Malon",
+    value: 8000
+  },
+  {
+    name: "Friece",
+    value: 9000
+  },
+  {
+    name: "Melon",
+    value: 1740
+  },
+  {
+    name: "Lipton",
+    value: 9034
+  },
+  {
+    name: "Engine oil 3",
+    value: 4568
+  },
+  
+]

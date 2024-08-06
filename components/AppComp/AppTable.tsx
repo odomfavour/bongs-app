@@ -1,15 +1,18 @@
-
-
-import { Barge } from "@/utils/types";
-import { formatDate } from "@/utils/utils";
-import React, { useMemo } from "react";
-import { FaSearch } from "react-icons/fa";
-import { FaRegFolderClosed } from "react-icons/fa6";
+import { Barge } from '@/utils/types';
+import { formatDate } from '@/utils/utils';
+import React, { useMemo } from 'react';
+import { FaSearch } from 'react-icons/fa';
+import { FaRegFolderClosed } from 'react-icons/fa6';
 import {
-  useTable, usePagination, useGlobalFilter, TableInstance, TableOptions, UseGlobalFiltersInstanceProps, UsePaginationState,UsePaginationInstanceProps
-  
-  
-} from "react-table";
+  useTable,
+  usePagination,
+  useGlobalFilter,
+  TableInstance,
+  TableOptions,
+  UseGlobalFiltersInstanceProps,
+  UsePaginationState,
+  UsePaginationInstanceProps,
+} from 'react-table';
 
 function AppTable({
   MOCK_DATA,
@@ -17,28 +20,25 @@ function AppTable({
   handleEdit,
   handleDelete,
   loadingStates,
-  fetchedData
-
+  fetchedData,
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
   handleEdit: (data: Barge) => void;
-    handleDelete: (id: number) => void;
-    loadingStates: {
-      [key: number]: boolean;
-    },
-    fetchedData: Barge[]
-
+  handleDelete: (id: number) => void;
+  loadingStates: {
+    [key: number]: boolean;
+  };
+  fetchedData: Barge[];
 }) {
-  const columns = useMemo(() => COLUMNS, []);
+  const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
 
-
   type CustomTableInstance<T extends object> = TableInstance<T> &
-  UseGlobalFiltersInstanceProps<T> &
-  UsePaginationInstanceProps<T> & {
-    state: UsePaginationState<T> & { globalFilter: string };
-  };
+    UseGlobalFiltersInstanceProps<T> &
+    UsePaginationInstanceProps<T> & {
+      state: UsePaginationState<T> & { globalFilter: string };
+    };
 
   /* create am  instance of the table */
   const {
@@ -63,19 +63,16 @@ function AppTable({
       data,
       initialState: {
         pageSize: 10,
-      } 
+      },
     } as TableOptions<any>,
 
     useGlobalFilter,
     usePagination
-  ) as CustomTableInstance<any>
-
-
+  ) as CustomTableInstance<any>;
 
   const { globalFilter, pageIndex } = state;
 
-  console.log("the fetched data", fetchedData)
-
+  console.log('the fetched data', fetchedData);
 
   return (
     <>
@@ -84,7 +81,7 @@ function AppTable({
           <div className="w-full relative">
             <input
               type="search"
-              value={globalFilter || ""}
+              value={globalFilter || ''}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Search here... now"
               className="bg-gray-50 pl-8 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
@@ -99,14 +96,18 @@ function AppTable({
           Add Filter
         </button>
       </div>
-    
+
       <table {...getTableProps()}>
         <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th className="py-2 text-center" {...column.getHeaderProps()}>
-                  {column.render("Header")}
+          {headerGroups.map((headerGroup, index) => (
+            <tr {...headerGroup.getHeaderGroupProps()} key={index}>
+              {headerGroup.headers.map((column, index) => (
+                <th
+                  className="py-2 text-center"
+                  {...column.getHeaderProps()}
+                  key={index}
+                >
+                  {column.render('Header')}
                 </th>
               ))}
               <th className="py-2 text-center">Actions</th>
@@ -136,28 +137,31 @@ function AppTable({
               </td>
             </tr>
           ) : (
-            page.map((row) => {
+            page.map((row, index) => {
               prepareRow(row);
               return (
-                <tr {...row.getRowProps()}>
-                  {row.cells.map((cell) => {
-                    
+                <tr {...row.getRowProps()} key={index}>
+                  {row.cells.map((cell, index) => {
                     return (
-                      <td className="text-center" {...cell.getCellProps()}>
-                        {cell.render("Cell")}
+                      <td
+                        className="text-center"
+                        {...cell.getCellProps()}
+                        key={index}
+                      >
+                        {cell.render('Cell')}
                       </td>
                     );
-                  
-                  }
-                )}
+                  })}
                   <td>
                     <div className="flex-row flex items-center space-x-2">
                       <button
                         className="bg-blue-300 text-white p-2 rounded-md"
-                        onClick={() => { 
-                          const selectedRow = fetchedData.find(item => item.id == row.original.id)
+                        onClick={() => {
+                          const selectedRow = fetchedData.find(
+                            (item) => item.id == row.original.id
+                          );
                           if (selectedRow) {
-                         return   handleEdit(selectedRow)
+                            return handleEdit(selectedRow);
                           }
                         }}
                       >
@@ -172,10 +176,9 @@ function AppTable({
                         {loadingStates[row.original.id] ? (
                           <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
                         ) : (
-                          "Delete"
+                          'Delete'
                         )}
                       </button>
-                    
                     </div>
                   </td>
                 </tr>
@@ -186,23 +189,24 @@ function AppTable({
       </table>
       <div className="flex flex-row justify-end mt-3">
         <span>
-          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{" "}
+          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
         </span>
 
-    
-        <button className="mx-3" disabled={!canPreviousPage} onClick={() => previousPage()}>
-          {" "}
-          Previous{" "}
+        <button
+          className="mx-3"
+          disabled={!canPreviousPage}
+          onClick={() => previousPage()}
+        >
+          {' '}
+          Previous{' '}
         </button>
         <button disabled={!canNextPage} onClick={() => nextPage()}>
           Next
         </button>
-      
-       
       </div>
     </>
   );
 }
 
 export default AppTable;
--3
+-3;

@@ -91,7 +91,7 @@ SparePartSafety
   useEffect(() => {
     const handleFetchData = async () => {
       try {
-        if (!user?.subscriber_id) {
+        if (user?.subscriber_id) {
           const response = await fetchDashboardDataApi();
           if (response.status) {
             const { message, data } = response;

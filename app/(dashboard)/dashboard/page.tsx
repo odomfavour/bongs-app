@@ -38,60 +38,10 @@ const Page = () => {
   const [categoryCounts, setCategoryCounts] =
     useState<categoryCountType | null>(null);
 
-  /* 
-
-
-inventory_data
-: 
-category_counts
-: 
-DeckConsumable
-: 
-Greases
-: 
-0
-Paintings
-: 
-0
-Peripherials
-: 
-0
-Ropes
-: 
-0
-[[Prototype]]
-: 
-Object
-EngineConsumable
-: 
-{Electrical: 0, Mechanical: 0, Pnuematic: 0, Hydraulic: 0, Oils & Greases: 0, …}
-GalleyLaundryConsumable
-: 
-{Mess: 0, Kitchen: 0, Laundry: 0}
-HospitalConsumable
-: 
-{Drugs: 0, Injections: 0}
-SafetyConsumable
-: 
-{Main Deck: 0, Auxillary: 0}
-SparePartDeck
-: 
-{radar: 0, radios: 0, monitors, tvs, printers: 0, ropes and wires: 0, brush and painting: 0}
-SparePartEngine
-: 
-{generator: 0, huisman crane: 0, tensioner and A&R wrench: 0, davits: 0, lineup station: 0, …}
-SparePartHospital
-: 
-{mattress/bed: 0, respirators: 0}
-SparePartSafety
-: 
-{gas de
-*/
-
   useEffect(() => {
     const handleFetchData = async () => {
       try {
-        if (!user?.subscriber_id) {
+        if (user?.subscriber_id) {
           const response = await fetchDashboardDataApi();
           if (response.status) {
             const { message, data } = response;
@@ -174,6 +124,7 @@ SparePartSafety
       style={{
         backgroundColor: 'rgb(244,245,246)',
       }}
+      className="p-2"
     >
       {/* gilter section start */}
 
@@ -217,9 +168,9 @@ SparePartSafety
 
       {/* chart section starts */}
 
-      <div className="grid grid-cols-12 gap-2 mb-4">
-        <div className="col-span-12 lg:col-span-8 gap-2">
-          <div className="grid grid-cols-12 gap-2 mb-[8px]">
+      <div className="grid grid-cols-12 gap-4 mb-4">
+        <div className="col-span-12 lg:col-span-8 gap-4">
+          <div className="grid grid-cols-12 gap-4 mb-[8px]">
             <div className="col-span-12 lg:col-span-6  rounded-[23px] p-2 border-[1.2px] border-slate-300">
               {inventoryOverTime && (
                 <LineAndbarchart inventoryOverTime={inventoryOverTime} />
@@ -231,7 +182,7 @@ SparePartSafety
               />
             </div>
           </div>
-          <div className="grid grid-cols-12 gap-2">
+          <div className="grid grid-cols-12 gap-4">
             <div className=" col-span-12 lg:col-span-6  rounded-[23px] p-2 border-[1.2px] border-slate-300">
               {consumableCounts && sparePartCounts && (
                 <Barchart
@@ -247,7 +198,7 @@ SparePartSafety
             </div>
           </div>
         </div>
-        <div className="col-span-12  lg:col-span-4 gap-2  rounded-[23px] p-2 border-[1.2px] border-slate-300">
+        <div className="col-span-12  lg:col-span-4 gap-4  rounded-[23px] p-2 border-[1.2px] border-slate-300">
           <TopTenInnventories />
         </div>
       </div>

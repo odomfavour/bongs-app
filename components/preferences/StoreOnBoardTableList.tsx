@@ -196,7 +196,7 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
                       hasPermission('can delete keystore')) && (
                       <td className="py-2 text-center flex justify-center items-center">
                         <div className="flex gap-3">
-                          {hasPermission('can update  keystore') && (
+                          {hasPermission('can update keystore') && (
                             <button
                               className="bg-blue-700 text-white p-2 rounded-md"
                               onClick={() => handleEdit(item)}

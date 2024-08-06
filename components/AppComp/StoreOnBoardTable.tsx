@@ -89,7 +89,7 @@ function StoreOnBoardTable({
           </div>
         </div>
 
-        <button className="bg-grey-400 border text-sm p-3 rounded-md">
+        <button className="bg-green-400 border text-sm p-3 rounded-md ">
           Add Filter
         </button>
       </div>
@@ -150,7 +150,7 @@ function StoreOnBoardTable({
                     );
                   })}
                   <td>
-                    <div className="flex-row flex items-center space-x-2">
+                    <div className="flex-row flex items-center space-x-2 bg-red-300">
                       <button
                         className="bg-blue-300 text-white p-2 rounded-md"
                         onClick={() => {

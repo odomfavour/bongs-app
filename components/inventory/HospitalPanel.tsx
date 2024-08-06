@@ -5,7 +5,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import GeneratorTableList from './GeneratorTableList';
 import { toggleLoading } from '@/provider/redux/modalSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { usePathname } from 'next/navigation';
 import AddEngineModal from './AddEngineModal';
 import Modal from '../dashboard/Modal';
@@ -33,6 +33,7 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
   const dispatch = useDispatch();
   const pathname = usePathname();
   const [openModal, setOpenModal] = useState(false);
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const handleClose = () => {
     setOpenModal(false);
   };
@@ -112,7 +113,11 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
         toggleRequisition={toggleRequisition}
       />
       <Modal
-        title="Add New Hospital"
+        title={
+          Object.keys(bargeValues).length > 0
+            ? 'Edit Hospital'
+            : 'Add New Hospital'
+        }
         isOpen={openModal}
         onClose={handleClose}
         maxWidth="70%"

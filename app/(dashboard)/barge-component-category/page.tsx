@@ -34,25 +34,31 @@ const BargeComponentPage = () => {
     (state: any) => state.modal.isBargeComponentModalOpen
   );
   const [bargeComponents, setBargeComponent] = useState<BargeComponent[]>([]);
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
 
-  const hasPermission = (permissionName: string) =>
-    user?.permissions?.some(
-      (permission: any) => permission.name === permissionName
-    );
+  const hasPermission = useCallback(
+    (permissionName: string) =>
+      user?.permissions?.some(
+        (permission: any) => permission.name === permissionName
+      ),
+    [user?.permissions]
+  );
 
   const fetchData = useCallback(async () => {
     try {
       dispatch(toggleLoading(true));
-      const response = await axios.get(
-        `${process.env.BASEURL}/getBargeComponentCategories`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
-      console.log('ree', response);
-      setBargeComponent(response?.data?.data?.data);
+      if (hasPermission('can view barge category')) {
+        const response = await axios.get(
+          `${process.env.BASEURL}/getBargeComponentCategories`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        console.log('ree', response);
+        setBargeComponent(response?.data?.data?.data);
+      }
     } catch (error: any) {
       console.error('Error:', error);
 
@@ -69,7 +75,7 @@ const BargeComponentPage = () => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [dispatch, router, user?.token]);
+  }, [dispatch, hasPermission, router, user?.token]);
 
   useEffect(() => {
     fetchData();
@@ -121,7 +127,11 @@ const BargeComponentPage = () => {
       </div>
 
       <Modal
-        title="Add New Barge Equipment"
+        title={
+          Object.keys(bargeValues).length > 0
+            ? 'Edit Barge Equipment'
+            : 'Add New Barge Equipment'
+        }
         isOpen={openModal}
         onClose={handleClose}
         maxWidth="40%"

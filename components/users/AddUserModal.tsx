@@ -129,43 +129,35 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
       setLoading(false);
     }
   };
-
-  const fetchRolesDeptData = useCallback(async () => {
-    console.log('first call');
+  const hasPermission = useCallback(
+    (permissionName: string) =>
+      user?.permissions?.some(
+        (permission: any) => permission.name === permissionName
+      ),
+    [user?.permissions]
+  );
+  const fetchRolesData = useCallback(async () => {
+    console.log('Fetching roles data');
     setLoading(true);
     try {
-      const [rolesResponse, deptResponse] = await Promise.all([
-        axios.get(
-          `${process.env.BASEURL}${
-            user?.subscriber_id || formData.subscriber_id
-              ? `/subscriber-roles/${formData.subscriber_id}`
-              : '/roles'
-          }`,
-          {
-            headers: {
-              Authorization: `Bearer ${user?.token}`,
-            },
-          }
-        ),
-        axios.get(`${process.env.BASEURL}/getDepartments`, {
+      const url =
+        user?.subscriber_id || formData.subscriber_id
+          ? `${process.env.BASEURL}/subscriber-roles/${formData.subscriber_id}`
+          : `${process.env.BASEURL}/roles`;
+      if (hasPermission('can read user')) {
+        const response = await axios.get(url, {
           headers: {
             Authorization: `Bearer ${user?.token}`,
           },
-        }),
-      ]);
-      console.log('barge', rolesResponse);
-      // setUsers(usersResponse?.data?.data?.data);
-      setRoles(
-        user?.subscriber_id || formData.subscriber_id
-          ? rolesResponse?.data?.data
-          : rolesResponse?.data?.data?.data
-      );
-      setDepartments(deptResponse?.data?.data?.data);
-      //   setStoreItems(storeOnBoardResponse?.data?.data?.data);
-      // You can similarly setStoreItems if needed
+        });
+        setRoles(
+          user?.subscriber_id || formData.subscriber_id
+            ? response?.data?.data
+            : response?.data?.data?.data
+        );
+      }
     } catch (error: any) {
       console.error('Error:', error);
-
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
@@ -175,12 +167,42 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [formData.subscriber_id, user?.subscriber_id, user?.token]);
+  }, [formData, hasPermission, user]);
+
+  const fetchDepartmentsData = useCallback(async () => {
+    console.log('Fetching departments data');
+    setLoading(true);
+    try {
+      if (hasPermission('can read department')) {
+        const response = await axios.get(
+          `${process.env.BASEURL}/getDepartments`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        setDepartments(response?.data?.data?.data);
+      }
+    } catch (error: any) {
+      console.error('Error:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.token, hasPermission]);
 
   useEffect(() => {
-    fetchRolesDeptData();
-  }, [fetchRolesDeptData, formData.subscriber_id]);
-
+    if (user?.token) {
+      fetchRolesData();
+      fetchDepartmentsData();
+    }
+  }, [fetchRolesData, fetchDepartmentsData, user?.token]);
   return (
     <div>
       <form onSubmit={handleSubmit}>

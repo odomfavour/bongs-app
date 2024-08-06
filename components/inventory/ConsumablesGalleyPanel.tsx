@@ -36,6 +36,7 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   const isAddConsumeablesModalOpen = useSelector(
     (state: any) => state.modal.isAddConsumeablesModalOpen
   );
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const dispatch = useDispatch();
   const pathname = usePathname();
   const fetchData = useCallback(async () => {
@@ -120,7 +121,11 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
       />
 
       <Modal
-        title="Add New Safety"
+        title={
+          Object.keys(bargeValues).length > 0
+            ? 'Edit Galley Laundry'
+            : 'Add New Galley Laundry'
+        }
         isOpen={openModal}
         onClose={handleClose}
         maxWidth="70%"

@@ -169,7 +169,7 @@ const DeckListTable: React.FC<DeckListTableProps> = ({ data, fetchdata }) => {
                     <td className="py-2 text-sm text-left">{name}</td>
                     <td className="py-2 text-sm text-left">{barge?.name}</td>
                     <td className="py-2 text-sm text-left">
-                      {user.first_name} {user.last_name}
+                      {user?.first_name} {user?.last_name}
                     </td>
                     <td className="py-2 text-sm text-left">{status}</td>
                     <td className="py-2 text-sm text-left">

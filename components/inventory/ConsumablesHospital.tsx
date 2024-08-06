@@ -33,6 +33,8 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
   const [consumables, setConsumables] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
+
   const isAddConsumeablesModalOpen = useSelector(
     (state: any) => state.modal.isAddConsumeablesModalOpen
   );
@@ -119,7 +121,11 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
       />
 
       <Modal
-        title="Add New Safety"
+        title={
+          Object.keys(bargeValues).length > 0
+            ? 'Edit Hospital'
+            : 'Add New Hospital'
+        }
         isOpen={openModal}
         onClose={handleClose}
         maxWidth="70%"

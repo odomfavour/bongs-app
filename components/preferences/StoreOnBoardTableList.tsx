@@ -16,6 +16,7 @@ import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import StoreOnBoardTable from '../AppComp/StoreOnBoardTable';
 interface Deck {
   id: number;
   deck_number: string;
@@ -40,7 +41,7 @@ interface Project {
   created_at: string;
 }
 
-interface StoreBoard {
+interface StoreBoardType {
   id: number;
   project: Project;
   description: string;
@@ -54,7 +55,7 @@ interface StoreBoard {
 }
 
 interface StoreOnBoardListTableProps {
-  data: StoreBoard[];
+  data: StoreBoardType[];
   fetchdata: () => void;
 }
 
@@ -83,14 +84,13 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
-  console.log('current', currentItems);
 
   // Function to change page
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
 
-  const handleEdit = (item: StoreBoard) => {
+  const handleEdit = (item: StoreBoardType) => {
     dispatch(displayBargeValue(item));
     dispatch(toggleStoreOnBoardModal());
   };
@@ -196,7 +196,7 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
                       hasPermission('can delete keystore')) && (
                       <td className="py-2 text-center flex justify-center items-center">
                         <div className="flex gap-3">
-                          {hasPermission('can update  keystore') && (
+                          {hasPermission('can update keystore') && (
                             <button
                               className="bg-blue-700 text-white p-2 rounded-md"
                               onClick={() => handleEdit(item)}

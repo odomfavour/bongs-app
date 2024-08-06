@@ -39,7 +39,7 @@ const DeclineRequisition: React.FC<ApproveRequisitionProps> = ({
     try {
       const response = await axios.post(
         `${process.env.BASEURL}/requisitions/${requisitionItem?.id}/reject`,
-        {},
+        { reason: formData.reason },
         {
           headers: {
             Authorization: `Bearer ${user?.token}`,
@@ -51,6 +51,7 @@ const DeclineRequisition: React.FC<ApproveRequisitionProps> = ({
         toast.success(`${response?.data?.message}`);
       }
       fetchData();
+      setOpenModal(false);
     } catch (error: any) {
       console.error('Error:', error);
 

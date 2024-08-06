@@ -1,7 +1,7 @@
-import { StoreBoardType } from "@/utils/types";
-import React, { useMemo } from "react";
-import { FaSearch } from "react-icons/fa";
-import { FaRegFolderClosed } from "react-icons/fa6";
+import { StoreBoardType } from '@/utils/types';
+import React, { useMemo } from 'react';
+import { FaSearch } from 'react-icons/fa';
+import { FaRegFolderClosed } from 'react-icons/fa6';
 import {
   useTable,
   usePagination,
@@ -11,7 +11,7 @@ import {
   UseGlobalFiltersInstanceProps,
   UsePaginationState,
   UsePaginationInstanceProps,
-} from "react-table";
+} from 'react-table';
 
 function StoreOnBoardTable({
   MOCK_DATA,
@@ -30,7 +30,7 @@ function StoreOnBoardTable({
   };
   fetchedData: StoreBoardType[];
 }) {
-  const columns = useMemo(() => COLUMNS, []);
+  const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
 
   type CustomTableInstance<T extends object> = TableInstance<T> &
@@ -71,8 +71,6 @@ function StoreOnBoardTable({
 
   const { globalFilter, pageIndex } = state;
 
-
-
   return (
     <>
       <div className="flex mb-4 items-center gap-2 md:w-2/5 w-full ml-auto">
@@ -80,7 +78,7 @@ function StoreOnBoardTable({
           <div className="w-full relative">
             <input
               type="search"
-              value={globalFilter || ""}
+              value={globalFilter || ''}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Search here... now"
               className="bg-gray-50 pl-8 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
@@ -98,11 +96,15 @@ function StoreOnBoardTable({
 
       <table {...getTableProps()}>
         <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th className="py-2 text-center" {...column.getHeaderProps()}>
-                  {column.render("Header")}
+          {headerGroups.map((headerGroup, index) => (
+            <tr {...headerGroup.getHeaderGroupProps()} key={index}>
+              {headerGroup.headers.map((column, index) => (
+                <th
+                  className="py-2 text-center"
+                  {...column.getHeaderProps()}
+                  key={index}
+                >
+                  {column.render('Header')}
                 </th>
               ))}
               <th className="py-2 text-center">Actions</th>
@@ -132,14 +134,18 @@ function StoreOnBoardTable({
               </td>
             </tr>
           ) : (
-            page.map((row) => {
+            page.map((row, _index) => {
               prepareRow(row);
               return (
-                <tr {...row.getRowProps()}>
-                  {row.cells.map((cell) => {
+                <tr {...row.getRowProps()} key={_index}>
+                  {row.cells.map((cell, index) => {
                     return (
-                      <td className="text-center" {...cell.getCellProps()}>
-                        {cell.render("Cell")}
+                      <td
+                        className="text-center"
+                        {...cell.getCellProps()}
+                        key={index}
+                      >
+                        {cell.render('Cell')}
                       </td>
                     );
                   })}
@@ -167,7 +173,7 @@ function StoreOnBoardTable({
                         {loadingStates[row.original.id] ? (
                           <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
                         ) : (
-                          "Delete"
+                          'Delete'
                         )}
                       </button>
                     </div>
@@ -180,7 +186,7 @@ function StoreOnBoardTable({
       </table>
       <div className="flex flex-row justify-end mt-3">
         <span>
-          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{" "}
+          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
         </span>
 
         <button
@@ -188,8 +194,8 @@ function StoreOnBoardTable({
           disabled={!canPreviousPage}
           onClick={() => previousPage()}
         >
-          {" "}
-          Previous{" "}
+          {' '}
+          Previous{' '}
         </button>
         <button disabled={!canNextPage} onClick={() => nextPage()}>
           Next

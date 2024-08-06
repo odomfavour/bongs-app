@@ -17,6 +17,7 @@ import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import DeckTable from '../AppComp/DeckTable';
 
 interface User {
   first_name: string;
@@ -53,6 +54,7 @@ interface DeckListTableProps {
 }
 
 const DeckListTable: React.FC<DeckListTableProps> = ({ data, fetchdata }) => {
+  console.log('ran inner here');
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
   const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
@@ -126,6 +128,19 @@ const DeckListTable: React.FC<DeckListTableProps> = ({ data, fetchdata }) => {
       }
     }
   };
+
+  const itemList = currentItems.map((item, index) => {
+    return {
+      ...item,
+      deck_type: `${item.deck_number}${item.id}`,
+      'S/N': `${index + 1}`,
+      name: item.name,
+      barge: item.barge.name,
+      user: `${item.user.first_name} ${item.user.last_name}`,
+      created_at: `${formatDate(item.created_at)}`,
+      status: item.status,
+    };
+  });
 
   return (
     <div className="bg-white">

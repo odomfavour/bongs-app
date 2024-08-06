@@ -16,24 +16,8 @@ import {
 } from '@/provider/redux/modalSlice';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-
-interface User {
-  first_name: string;
-  last_name: string;
-}
-
-interface Barge {
-  id: number;
-  barge_number: string;
-  name: string;
-  rooms: number;
-  store_location: number;
-  deck_level: number;
-  addedBy: string;
-  created_at: string;
-  status: string;
-  user: User;
-}
+import AppTable from '../AppComp/AppTable';
+import { Barge } from '@/utils/types';
 
 interface BargeListTableProps {
   data: Barge[];
@@ -128,6 +112,17 @@ const BargeListTable: React.FC<BargeListTableProps> = ({
     setOpenBargeModal(true);
     // dispatch(toggleAddBargeModal());
   };
+
+  const itemList = currentItems.map((item, index) => {
+    return {
+      ...item,
+      barge_number: `${item.barge_number}${item.id}`,
+      'S/N': `${index + 1}`,
+
+      created_at: `${formatDate(item.created_at)}`,
+      added_by: `${item.user.first_name} ${item.user.last_name}`,
+    };
+  });
 
   return (
     <div className="bg-white">
@@ -246,7 +241,7 @@ const BargeListTable: React.FC<BargeListTableProps> = ({
         </table>
       </div>
 
-      {data.length > itemsPerPage && (
+      {/*  {data.length > itemsPerPage && (
         <div className="pagination px-5">
           <div className="flex items-center gap-6 text-primary">
             <p
@@ -295,7 +290,7 @@ const BargeListTable: React.FC<BargeListTableProps> = ({
             </p>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

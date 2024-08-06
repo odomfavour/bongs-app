@@ -85,6 +85,9 @@ interface StoreBoard {
 }
 
 const Preferences = () => {
+  /* tracking the state of the search field */
+  const [search, setSearch] = useState('');
+
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('Barge');
   const user = useSelector((state: any) => state?.user?.user);
@@ -273,7 +276,10 @@ const Preferences = () => {
             <div className="w-full relative">
               <input
                 type="search"
-                placeholder="Search here..."
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+                placeholder="Search here... now"
                 className="bg-gray-50 pl-8 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
               />
               <div className="absolute flex bottom-0 top-0 justify-center items-center left-3 text-primary cursor-pointer">

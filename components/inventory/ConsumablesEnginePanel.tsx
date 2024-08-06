@@ -8,6 +8,8 @@ import ConsEngineStrip from './ConsEngineStrip';
 import ConsumablesableList from './ConsumablesTableList';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import { usePathname } from 'next/navigation';
+import Modal from '../dashboard/Modal';
+import AddConsumablesModal from './AddConsumablesModal';
 
 interface User {
   token: string;
@@ -16,11 +18,15 @@ interface User {
 interface CEnginePanelProps {
   engineCategories: { id: number; name: string; count: string }[];
   user: User;
+  requisition: boolean;
+  toggleRequisition: () => void;
 }
 
 const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   engineCategories,
   user,
+  requisition,
+  toggleRequisition,
 }) => {
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
@@ -31,6 +37,7 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   );
   const dispatch = useDispatch();
   const pathname = usePathname();
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
     let endpoint = `${process.env.BASEURL}/consumable/engine/${activeId}`;
@@ -71,10 +78,18 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
     fetchData();
   }, [activeId, fetchData, isAddConsumeablesModalOpen]);
 
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
+
   return (
     <div>
       <div className="my-4">
-        <ConsEngineStrip />
+        <ConsEngineStrip
+          toggleRequisition={toggleRequisition}
+          setOpenModal={setOpenModal}
+        />
       </div>
       <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2  gap-2">
         {engineCategories.map((tab: any) => (
@@ -99,7 +114,24 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
         data={consumables}
         fetchdata={fetchData}
         parent={'Engine'}
+        requisition={requisition}
+        setOpenModal={setOpenModal}
+        toggleRequisition={toggleRequisition}
       />
+      <Modal
+        title={
+          Object.keys(bargeValues).length > 0 ? 'Edit Engine' : 'Add New Engine'
+        }
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="70%"
+      >
+        <AddConsumablesModal
+          fetchData={fetchData}
+          handleClose={handleClose}
+          inventoryType="Engine"
+        />
+      </Modal>
     </div>
   );
 };

@@ -1,13 +1,9 @@
 'use client';
-import Loader from '@/components/Loader';
 import Modal from '@/components/dashboard/Modal';
-import AddUomModal from '@/components/uom/AddUomModal';
-import UoMListTable from '@/components/uom/UomListTable';
-import {
-  displayBargeValue,
-  toggleLoading,
-  toggleUomModal,
-} from '@/provider/redux/modalSlice';
+import ApproveRequisition from '@/components/requisitions/ApproveRequisition';
+import DeclineRequisition from '@/components/requisitions/DeclineRequisition';
+import RequisitionListTable from '@/components/requisitions/RequisitionListTable';
+import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -15,56 +11,45 @@ import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
-interface User {
+interface Requisition {
+  id: number;
+  inventoryable_type: string;
+  quantity: number;
+  created_at: string;
+}
+
+interface RequestedBy {
+  id: number;
   first_name: string;
   last_name: string;
 }
-
-interface Uom {
+interface RequisitionItem {
   id: number;
-  name: string;
-  unit: string;
-  description: string;
-  addedBy: string;
-  status: string;
-  created_at: string;
-  user: User;
+  indent_number: string;
+  batch_code: string;
+  requisition: Requisition;
+  requested_by: RequestedBy;
 }
 
-const UomPage = () => {
+const Page = () => {
+  const [requisitions, setRequisitions] = useState<RequisitionItem[]>([]);
   const router = useRouter();
   const dispatch = useDispatch();
-  const [uom, setUom] = useState<Uom[]>([]);
-  const [loading, setLoading] = useState(false);
-
   const user = useSelector((state: any) => state.user.user);
-  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
-
-  const isUomModalOpen = useSelector(
-    (state: any) => state.modal.isUomModalOpen
-  );
-
-  const hasPermission = useCallback(
-    (permissionName: string) =>
-      user?.permissions?.some(
-        (permission: any) => permission.name === permissionName
-      ),
-    [user?.permissions]
-  );
 
   const fetchData = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
-      if (hasPermission('can view unit of measurement')) {
-        const response = await axios.get(`${process.env.BASEURL}/uom`, {
+      const response = await axios.get(
+        `${process.env.BASEURL}/all-requisitions`,
+        {
           headers: {
             Authorization: `Bearer ${user?.token}`,
           },
-        });
-        console.log('resp', response);
-        setUom(response?.data?.data?.data);
-      }
-      // You can similarly setStoreItems if needed
+        }
+      );
+      console.log('resp', response.data.data);
+      setRequisitions(response?.data?.data?.data);
     } catch (error: any) {
       console.error('Error:', error);
 
@@ -73,7 +58,7 @@ const UomPage = () => {
         error?.response?.data?.errors ||
         error?.message ||
         'Unknown error';
-      if (error?.response.status === 401) {
+      if (error?.response?.status === 401) {
         router.push('/login');
       } else {
         toast.error(`${errorMessage}`);
@@ -81,19 +66,29 @@ const UomPage = () => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [dispatch, hasPermission, router, user?.token]);
+  }, [dispatch, router, user?.token]);
 
   useEffect(() => {
     fetchData();
-  }, [fetchData, isUomModalOpen]);
+  }, [fetchData]);
+
   const [openModal, setOpenModal] = useState(false);
+
   const handleClose = () => {
     setOpenModal(false);
   };
+  const [openDeclineModal, setOpenDeclineModal] = useState(false);
+
+  const handleDeclineClose = () => {
+    setOpenDeclineModal(false);
+  };
+
+  const [requisitionItem, setRequisitionItem] = useState<any>({});
+
   return (
-    <section>
+    <div>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
-        <p className="text-[32px] font-medium">Unit of Measurement</p>
+        <p className="text-[32px] font-medium">Requisition History</p>
         <div className="flex items-center gap-2 w-2/5">
           <div className="w-4/5">
             <div className="w-full relative">
@@ -107,43 +102,42 @@ const UomPage = () => {
               </div>
             </div>
           </div>
-
           <button className="bg-grey-400 border text-sm p-3 rounded-md">
             Add Filter
           </button>
         </div>
       </div>
       <div>
-        <div className="flex justify-end mb-6">
-          {hasPermission('can create unit of measurement') && (
-            <button
-              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-              onClick={() => {
-                dispatch(displayBargeValue({}));
-                setOpenModal(true);
-              }}
-            >
-              Add UoM
-            </button>
-          )}
-        </div>
-
-        <UoMListTable
-          data={uom}
+        <RequisitionListTable
+          data={requisitions}
           fetchData={fetchData}
           setOpenModal={setOpenModal}
+          setOpenDeclineModal={setOpenDeclineModal}
+          setRequisitionItem={setRequisitionItem}
         />
       </div>
+
+      <Modal title="" isOpen={openModal} onClose={handleClose} maxWidth="40%">
+        <ApproveRequisition
+          requisitionItem={requisitionItem}
+          setOpenModal={setOpenModal}
+          fetchData={fetchData}
+        />
+      </Modal>
       <Modal
-        title={Object.keys(bargeValues).length > 0 ? 'Edit UoM' : 'Add New UoM'}
-        isOpen={openModal}
-        onClose={handleClose}
+        title=""
+        isOpen={openDeclineModal}
+        onClose={handleDeclineClose}
         maxWidth="40%"
       >
-        <AddUomModal fetchData={fetchData} handleClose={handleClose} />
+        <DeclineRequisition
+          requisitionItem={requisitionItem}
+          setOpenModal={setOpenDeclineModal}
+          fetchData={fetchData}
+        />
       </Modal>
-    </section>
+    </div>
   );
 };
 
-export default UomPage;
+export default Page;

@@ -19,16 +19,17 @@ import Swal from 'sweetalert2';
 import AppTable from '../AppComp/AppTable';
 import { Barge } from '@/utils/types';
 
-
-
-
 interface BargeListTableProps {
   data: Barge[];
-  fetchdata: () => void;
+  fetchData: () => void;
+  setOpenBargeModal: (isOpen: boolean) => void;
 }
 
-
-const BargeListTable: React.FC<BargeListTableProps> = ({ data, fetchdata }) => {
+const BargeListTable: React.FC<BargeListTableProps> = ({
+  data,
+  fetchData,
+  setOpenBargeModal,
+}) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
   const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
@@ -42,6 +43,11 @@ const BargeListTable: React.FC<BargeListTableProps> = ({ data, fetchdata }) => {
       setOpenDropdownIndex(index);
     }
   };
+
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -83,7 +89,7 @@ const BargeListTable: React.FC<BargeListTableProps> = ({ data, fetchdata }) => {
         );
         console.log('Delete Response:', response);
         // toast.success(`${response?.data?.message}`);
-        fetchdata();
+        fetchData();
 
         if (response.status === 200) {
           // Handle success
@@ -101,80 +107,141 @@ const BargeListTable: React.FC<BargeListTableProps> = ({ data, fetchdata }) => {
     }
   };
 
-
   const handleEdit = (item: Barge) => {
     dispatch(displayBargeValue(item));
-    dispatch(toggleAddBargeModal());
+    setOpenBargeModal(true);
+    // dispatch(toggleAddBargeModal());
   };
 
   const itemList = currentItems.map((item, index) => {
     return {
       ...item,
       barge_number: `${item.barge_number}${item.id}`,
-      "S/N": `${index + 1}`,
-      
+      'S/N': `${index + 1}`,
+
       created_at: `${formatDate(item.created_at)}`,
       added_by: `${item.user.first_name} ${item.user.last_name}`,
-     
-    }
-  })
-
+    };
+  });
 
   return (
     <div className="bg-white">
-      <div className="overflow-x-auto mb-4">
-          <AppTable
-            fetchedData={ currentItems}
-            loadingStates={ loadingStates }
-            handleDelete={handleDelete}
-            handleEdit={ handleEdit }
-            COLUMNS={[
-              {
-                Header: "S/N",
-                accessor: "S/N"
-            },
-            {
-                Header: "Barge No",
-                   accessor: "barge_number"
-            },
-            {
-                Header: "Name",
-                accessor: "name"
-            },
-            {
-                Header: "Rooms",
-                accessor: "rooms"
-            },
-            {
-                Header: "Stores",
-                accessor: "store_location"
-            },
-            {
-                Header: "Deck Level",
-                accessor: "deck_level"
-              },
-              {
-                Header: "Added By",
-                   accessor: "added_by"
-              },
-              {
-                Header: "Status",
-                accessor: "status"
-              },
-              {
-                Header: "Created On",
-                accessor: "created_at"
-              },
-              
-            ]}
-             MOCK_DATA={itemList}
-          /> 
-        
-        
-       
+      <div className="overflow-x-auto">
+        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+          <thead>
+            <tr className="border-b bg-[#E9EDF4]">
+              <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
+              <th className="text-sm text-left py-3">Barge No</th>
+              <th className="text-sm text-left py-3">Name</th>
+              <th className="text-sm text-left py-3">Rooms</th>
+              <th className="text-sm text-left py-3">Stores</th>
+              <th className="text-sm text-left py-3">Deck Level</th>
+              <th className="text-sm text-left py-3">Added By</th>
+              <th className="text-sm text-left py-3">Status</th>
+              <th className="text-sm text-left py-3">Created On</th>
+              <th className="text-sm text-left py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentItems.length > 0 &&
+              currentItems.map((item, index) => {
+                const {
+                  id,
+                  barge_number,
+                  name,
+                  rooms,
+                  store_location,
+                  deck_level,
+                  status,
+                  created_at,
+                  user,
+                } = item;
+                return (
+                  <tr className="border-b" key={id}>
+                    <td className="py-2 text-center text-[#344054]">
+                      {index + 1}
+                    </td>
+
+                    <td className="py-2 text-left text-sm">
+                      {barge_number}
+                      {id}
+                    </td>
+                    <td className="py-2 text-left text-sm">{name}</td>
+                    <td className="py-2 text-left text-sm">{rooms}</td>
+                    <td className="py-2 text-left text-sm">{store_location}</td>
+                    <td className="py-2 text-left text-sm">{deck_level}</td>
+                    <td className="py-2 text-left text-sm">
+                      {user?.first_name} {user?.last_name}
+                    </td>
+                    <td className="py-2 text-left text-sm">{status}</td>
+                    <td className="py-2 text-left text-sm">
+                      {formatDate(created_at)}
+                    </td>
+                    {(hasPermission('can update barge') ||
+                      hasPermission('can delete barge')) && (
+                      <td className="py-2 text-center flex justify-center items-center">
+                        <div className="flex gap-3">
+                          {/* <FaExternalLinkAlt title="view" role="button" />
+                      <FaPenAlt title="edit" role="button" />
+                      <FaTrashAlt
+                        title="delete"
+                        role="button"
+                        className="text-red-600"
+                      /> */}
+                          {hasPermission('can update barge') && (
+                            <button
+                              className="bg-blue-300 text-sm text-white p-2 rounded-md"
+                              onClick={() => handleEdit(item)}
+                            >
+                              Edit
+                            </button>
+                          )}
+                          {hasPermission('can update barge') && (
+                            <button
+                              className="bg-red-700 text-sm text-white p-2 rounded-md flex items-center justify-center"
+                              onClick={() => handleDelete(id)}
+                              disabled={loadingStates[id]}
+                            >
+                              {loadingStates[id] ? (
+                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                              ) : (
+                                'Delete'
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
+            {currentItems.length == 0 && (
+              <tr className="text-center text-primary bg-white">
+                <td className="py-2 text-center" colSpan={10}>
+                  <div className="flex justify-center items-center  min-h-[60vh]">
+                    <div>
+                      <div className="flex justify-center items-center">
+                        <FaRegFolderClosed className="text-4xl" />
+                      </div>
+                      <div className="mt-5">
+                        <p className="font-medium text-[#475467]">
+                          No Barge found
+                        </p>
+                        <p className="font-normal text-sm mt-3">
+                          Click “add barge” button to get started in doing your
+                          <br /> first transaction on the platform
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
-     {/*  {data.length > itemsPerPage && (
+      {/*  {data.length > itemsPerPage && (
         <div className="pagination px-5">
           <div className="flex items-center gap-6 text-primary">
             <p

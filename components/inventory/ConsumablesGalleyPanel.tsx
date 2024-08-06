@@ -8,6 +8,8 @@ import ConsGalleyStrip from './ConsGalleyStrip';
 import ConsumablesableList from './ConsumablesTableList';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import { usePathname } from 'next/navigation';
+import AddConsumablesModal from './AddConsumablesModal';
+import Modal from '../dashboard/Modal';
 
 interface User {
   token: string;
@@ -16,11 +18,15 @@ interface User {
 interface CEnginePanelProps {
   galleyCategories: { id: number; name: string; count: string }[];
   user: User;
+  requisition: boolean;
+  toggleRequisition: () => void;
 }
 
 const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   galleyCategories,
   user,
+  requisition,
+  toggleRequisition,
 }) => {
   console.log('engine', galleyCategories?.[0]?.name);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
@@ -30,6 +36,7 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   const isAddConsumeablesModalOpen = useSelector(
     (state: any) => state.modal.isAddConsumeablesModalOpen
   );
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const dispatch = useDispatch();
   const pathname = usePathname();
   const fetchData = useCallback(async () => {
@@ -72,10 +79,18 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
     fetchData();
   }, [activeId, fetchData, isAddConsumeablesModalOpen]);
 
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
+
   return (
     <div>
       <div className="my-4">
-        <ConsGalleyStrip />
+        <ConsGalleyStrip
+          toggleRequisition={toggleRequisition}
+          setOpenModal={setOpenModal}
+        />
       </div>
       <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2  gap-2">
         {galleyCategories.map((tab: any) => (
@@ -100,7 +115,27 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
         data={consumables}
         fetchdata={fetchData}
         parent={'Galley'}
+        setOpenModal={setOpenModal}
+        requisition={requisition}
+        toggleRequisition={toggleRequisition}
       />
+
+      <Modal
+        title={
+          Object.keys(bargeValues).length > 0
+            ? 'Edit Galley Laundry'
+            : 'Add New Galley Laundry'
+        }
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="70%"
+      >
+        <AddConsumablesModal
+          fetchData={fetchData}
+          handleClose={handleClose}
+          inventoryType="Galleylaundry"
+        />
+      </Modal>
     </div>
   );
 };

@@ -18,14 +18,19 @@ interface User {
   subscriber_id: number | string;
 }
 
-interface AddDeptModalProps {
-  subscribers: Subscriber[];
-  user: User;
+interface AddUserModalProps {
+  handleUserClose: () => void;
+  fetchData: () => void;
 }
 
-const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
+const AddUserModal: React.FC<AddUserModalProps> = ({
+  fetchData,
+  handleUserClose,
+}) => {
   const dispatch = useDispatch();
   const bargeValues = useSelector((state: any) => state.modal.bargeValues);
+  const subscribers = useSelector((state: any) => state.modal.subscribers);
+  const user = useSelector((state: any) => state.user.user);
   const [formData, setFormData] = useState({
     subscriber_id: user?.subscriber_id || ('' as string | number),
     first_name: '',
@@ -37,7 +42,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
     is_hod: false,
     is_barge_master: false,
     is_company_rep: false,
-    // is_authorized_for_release: false,
+    is_authorized_for_release: false,
     role_id: '' as string | number,
   });
   const [loading, setLoading] = useState(false);
@@ -46,6 +51,7 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
 
   useEffect(() => {
     if (Object.keys(bargeValues).length > 0) {
+      console.log(bargeValues);
       setFormData({
         subscriber_id: bargeValues?.subscriber_id,
         first_name: bargeValues.first_name,
@@ -57,9 +63,9 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
         is_hod: bargeValues.is_hod || false,
         is_barge_master: bargeValues.is_barge_master || false,
         is_company_rep: bargeValues.is_company_rep || false,
-        // is_authorized_for_release:
-        //   bargeValues.is_authorized_for_release || false,
-        role_id: bargeValues.role_id,
+        is_authorized_for_release:
+          bargeValues.is_authorized_for_release || false,
+        role_id: bargeValues.roles[0].id,
       });
     }
   }, [bargeValues]);
@@ -71,9 +77,9 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
     try {
       const url =
         Object.keys(bargeValues).length > 0
-          ? `${process.env.BASEURL}/uom/${bargeValues.id}`
+          ? `${process.env.BASEURL}/user/${bargeValues.id}`
           : `${process.env.BASEURL}/create-user`;
-      const method = Object.keys(bargeValues).length > 0 ? 'PUT' : 'POST';
+      const method = Object.keys(bargeValues).length > 0 ? 'PATCH' : 'POST';
 
       const response = await axios({
         method,
@@ -100,14 +106,17 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
         is_hod: false,
         is_barge_master: false,
         is_company_rep: false,
-        // is_authorized_for_release: false,
+        is_authorized_for_release: false,
         role_id: '' as string | number,
       });
 
-      dispatch(toggleAddUserModal());
+      // dispatch(toggleAddUserModal());
+      fetchData();
+      handleUserClose();
       // Handle success (e.g., close modal, show success message)
     } catch (error: any) {
       console.error('Error:', error);
+      console.error('Error data:', error?.response?.data);
 
       const errorMessage =
         error?.response?.data?.message ||
@@ -120,43 +129,35 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
       setLoading(false);
     }
   };
-
-  const fetchData = useCallback(async () => {
-    console.log('first call');
+  const hasPermission = useCallback(
+    (permissionName: string) =>
+      user?.permissions?.some(
+        (permission: any) => permission.name === permissionName
+      ),
+    [user?.permissions]
+  );
+  const fetchRolesData = useCallback(async () => {
+    console.log('Fetching roles data');
     setLoading(true);
     try {
-      const [rolesResponse, deptResponse] = await Promise.all([
-        axios.get(
-          `${process.env.BASEURL}${
-            user?.subscriber_id || formData.subscriber_id
-              ? `/subscriber-roles/${formData.subscriber_id}`
-              : '/roles'
-          }`,
-          {
-            headers: {
-              Authorization: `Bearer ${user?.token}`,
-            },
-          }
-        ),
-        axios.get(`${process.env.BASEURL}/getDepartments`, {
+      const url =
+        user?.subscriber_id || formData.subscriber_id
+          ? `${process.env.BASEURL}/subscriber-roles/${formData.subscriber_id}`
+          : `${process.env.BASEURL}/roles`;
+      if (hasPermission('can read user')) {
+        const response = await axios.get(url, {
           headers: {
             Authorization: `Bearer ${user?.token}`,
           },
-        }),
-      ]);
-      console.log('barge', rolesResponse);
-      // setUsers(usersResponse?.data?.data?.data);
-      setRoles(
-        user?.subscriber_id || formData.subscriber_id
-          ? rolesResponse?.data?.data
-          : rolesResponse?.data?.data?.data
-      );
-      setDepartments(deptResponse?.data?.data?.data);
-      //   setStoreItems(storeOnBoardResponse?.data?.data?.data);
-      // You can similarly setStoreItems if needed
+        });
+        setRoles(
+          user?.subscriber_id || formData.subscriber_id
+            ? response?.data?.data
+            : response?.data?.data?.data
+        );
+      }
     } catch (error: any) {
       console.error('Error:', error);
-
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
@@ -166,196 +167,199 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
     } finally {
       setLoading(false);
     }
-  }, [formData.subscriber_id, user?.subscriber_id, user?.token]);
+  }, [formData, hasPermission, user]);
+
+  const fetchDepartmentsData = useCallback(async () => {
+    console.log('Fetching departments data');
+    setLoading(true);
+    try {
+      if (hasPermission('can read department')) {
+        const response = await axios.get(
+          `${process.env.BASEURL}/getDepartments`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        setDepartments(response?.data?.data?.data);
+      }
+    } catch (error: any) {
+      console.error('Error:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.token, hasPermission]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData, formData.subscriber_id]);
-
+    if (user?.token) {
+      fetchRolesData();
+      fetchDepartmentsData();
+    }
+  }, [fetchRolesData, fetchDepartmentsData, user?.token]);
   return (
-    <div className="z-50 top-0 min-h-screen bg-[#101010c8] fixed w-full flex justify-center items-center text-veriDark">
-      <div
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-        className="lg:w-3/5 w-11/12 bg-white rounded-[5px] shadow-authModal p-8"
-      >
-        <div className="flex justify-between items-center mb-3">
-          <p className="font-bold text-2xl">Add User</p>
-          <BsXLg
-            className="cursor-pointer text-primary"
-            role="button"
-            onClick={() => dispatch(toggleAddUserModal())}
-          />
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3">
-            <div>
-              {!user?.subscriber_id && (
-                <div className="mb-4">
-                  <label
-                    htmlFor="deck_type"
-                    className="block mb-2 text-sm font-medium text-gray-900 "
-                  >
-                    Subscriber
-                  </label>
-                  <select
-                    id="subscriber"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                    value={formData.subscriber_id}
-                    onChange={(e) =>
-                      setFormData((prevData) => ({
-                        ...prevData,
-                        subscriber_id: parseInt(e.target.value),
-                      }))
-                    }
-                  >
-                    <option value="">Select Subscriber</option>
-                    {subscribers?.map((subscriber: any) => (
-                      <option value={subscriber.id} key={subscriber.id}>
-                        {subscriber.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
+    <div>
+      <form onSubmit={handleSubmit}>
+        <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3">
+          <div>
+            {!user?.subscriber_id && (
               <div className="mb-4">
                 <label
-                  htmlFor="name"
-                  className="block mb-2 text-sm font-medium"
-                >
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  placeholder="Input First name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.first_name}
-                  onChange={(e) =>
-                    setFormData((prevData) => ({
-                      ...prevData,
-                      first_name: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="name"
-                  className="block mb-2 text-sm font-medium"
-                >
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  placeholder="Input Last name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.last_name}
-                  onChange={(e) =>
-                    setFormData((prevData) => ({
-                      ...prevData,
-                      last_name: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="name"
-                  className="block mb-2 text-sm font-medium"
-                >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="name"
-                  placeholder="Input Email"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData((prevData) => ({
-                      ...prevData,
-                      email: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-            </div>
-            <div>
-              <div className="mb-4">
-                <label
-                  htmlFor="name"
-                  className="block mb-2 text-sm font-medium"
-                >
-                  Phone Number
-                </label>
-                <input
-                  type="text"
-                  id="tel"
-                  placeholder="Input phone number"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.phone_number}
-                  onChange={(e) =>
-                    setFormData((prevData) => ({
-                      ...prevData,
-                      phone_number: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="address"
+                  htmlFor="deck_type"
                   className="block mb-2 text-sm font-medium text-gray-900 "
                 >
-                  Address
+                  Subscriber
                 </label>
-                <textarea
-                  id="address"
-                  rows={4}
-                  className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-5000"
-                  placeholder="Input address"
-                  value={formData.address}
+                <select
+                  id="subscriber"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                  value={formData.subscriber_id}
                   onChange={(e) =>
                     setFormData((prevData) => ({
                       ...prevData,
-                      address: e.target.value,
+                      subscriber_id: parseInt(e.target.value),
                     }))
                   }
-                ></textarea>
-              </div>
-
-              <div className="mb-4">
-                <label
-                  htmlFor="user_type"
-                  className="block mb-2 text-sm font-medium text-gray-900"
                 >
-                  Roles
-                </label>
-                <select
-                  id="user_type"
-                  name="user_type"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                  value={formData.role_id}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      role_id: Number(e.target.value),
-                    })
-                  }
-                >
-                  <option value="">Select Role</option>
-                  {roles?.map((role: any) => (
-                    <option value={role.id} key={role.id}>
-                      {role.name}
+                  <option value="">Select Subscriber</option>
+                  {subscribers?.map((subscriber: any) => (
+                    <option value={subscriber.id} key={subscriber.id}>
+                      {subscriber.name}
                     </option>
                   ))}
                 </select>
               </div>
-              {/* <div className="mb-4">
+            )}
+            <div className="mb-4">
+              <label htmlFor="name" className="block mb-2 text-sm font-medium">
+                First Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                placeholder="Input First name"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.first_name}
+                onChange={(e) =>
+                  setFormData((prevData) => ({
+                    ...prevData,
+                    first_name: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="name" className="block mb-2 text-sm font-medium">
+                Last Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                placeholder="Input Last name"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.last_name}
+                onChange={(e) =>
+                  setFormData((prevData) => ({
+                    ...prevData,
+                    last_name: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="name" className="block mb-2 text-sm font-medium">
+                Email
+              </label>
+              <input
+                type="email"
+                id="name"
+                placeholder="Input Email"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData((prevData) => ({
+                    ...prevData,
+                    email: e.target.value,
+                  }))
+                }
+              />
+            </div>
+          </div>
+          <div>
+            <div className="mb-4">
+              <label htmlFor="name" className="block mb-2 text-sm font-medium">
+                Phone Number
+              </label>
+              <input
+                type="text"
+                id="tel"
+                placeholder="Input phone number"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.phone_number}
+                onChange={(e) =>
+                  setFormData((prevData) => ({
+                    ...prevData,
+                    phone_number: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="address"
+                className="block mb-2 text-sm font-medium text-gray-900 "
+              >
+                Address
+              </label>
+              <textarea
+                id="address"
+                rows={4}
+                className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-5000"
+                placeholder="Input address"
+                value={formData.address}
+                onChange={(e) =>
+                  setFormData((prevData) => ({
+                    ...prevData,
+                    address: e.target.value,
+                  }))
+                }
+              ></textarea>
+            </div>
+
+            <div className="mb-4">
+              <label
+                htmlFor="user_type"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Roles
+              </label>
+              <select
+                id="user_type"
+                name="user_type"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.role_id}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    role_id: Number(e.target.value),
+                  })
+                }
+              >
+                <option value="">Select Role</option>
+                {roles?.map((role: any) => (
+                  <option value={role.id} key={role.id}>
+                    {role.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {/* <div className="mb-4">
                 <label
                   htmlFor="department"
                   className="block mb-2 text-sm font-medium text-gray-900"
@@ -382,103 +386,104 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
                   ))}
                 </select>
               </div> */}
-            </div>
-            <div>
-              <div className="mb-4">
+          </div>
+          <div>
+            <div className="mb-4">
+              <label
+                htmlFor="permissions"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Permission
+              </label>
+              <div className="mb-4 flex items-center">
+                <input
+                  id="is_hod"
+                  type="checkbox"
+                  name="is_hod"
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                  checked={formData.is_hod}
+                  onChange={(e) =>
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      is_hod: e.target.checked,
+                    }))
+                  }
+                />
                 <label
-                  htmlFor="permissions"
-                  className="block mb-2 text-sm font-medium text-gray-900"
+                  htmlFor="is_hod"
+                  className="ml-2 text-sm font-medium text-gray-900"
                 >
-                  Permission
+                  Is HOD
                 </label>
-                <div className="mb-4 flex items-center">
-                  <input
-                    id="is_hod"
-                    type="checkbox"
-                    name="is_hod"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                    checked={formData.is_hod}
-                    onChange={(e) =>
-                      setFormData((prevData) => ({
-                        ...prevData,
-                        is_hod: e.target.checked,
-                      }))
-                    }
-                  />
-                  <label
-                    htmlFor="is_hod"
-                    className="ml-2 text-sm font-medium text-gray-900"
-                  >
-                    Is HOD
-                  </label>
-                </div>
-
-                <div className="mb-4 flex items-center">
-                  <input
-                    id="is_barge_master"
-                    type="checkbox"
-                    name="is_barge_master"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                    checked={formData.is_barge_master}
-                    onChange={(e) =>
-                      setFormData((prevData) => ({
-                        ...prevData,
-                        is_barge_master: e.target.checked,
-                      }))
-                    }
-                  />
-                  <label
-                    htmlFor="is_barge_master"
-                    className="ml-2 text-sm font-medium text-gray-900"
-                  >
-                    Is Barge Master
-                  </label>
-                </div>
-
-                <div className="mb-4 flex items-center">
-                  <input
-                    id="is_company_rep"
-                    type="checkbox"
-                    name="is_company_rep"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                    checked={formData.is_company_rep}
-                    onChange={(e) =>
-                      setFormData((prevData) => ({
-                        ...prevData,
-                        is_company_rep: e.target.checked,
-                      }))
-                    }
-                  />
-                  <label
-                    htmlFor="is_company_rep"
-                    className="ml-2 text-sm font-medium text-gray-900"
-                  >
-                    Is Company Rep
-                  </label>
-                </div>
-
-                {/* <div className="mb-4 flex items-center">
-                  <input
-                    id="is_authorized_for_release"
-                    type="checkbox"
-                    name="is_authorized_for_release"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                    checked={formData.is_authorized_for_release}
-                    onChange={(e) =>
-                      setFormData((prevData) => ({
-                        ...prevData,
-                        is_authorized_for_release: e.target.checked,
-                      }))
-                    }
-                  />
-                  <label
-                    htmlFor="is_authorized_for_release"
-                    className="ml-2 text-sm font-medium text-gray-900"
-                  >
-                    Is Authorized For Release
-                  </label>
-                </div> */}
               </div>
+
+              <div className="mb-4 flex items-center">
+                <input
+                  id="is_barge_master"
+                  type="checkbox"
+                  name="is_barge_master"
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                  checked={formData.is_barge_master}
+                  onChange={(e) =>
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      is_barge_master: e.target.checked,
+                    }))
+                  }
+                />
+                <label
+                  htmlFor="is_barge_master"
+                  className="ml-2 text-sm font-medium text-gray-900"
+                >
+                  Is Barge Master
+                </label>
+              </div>
+
+              <div className="mb-4 flex items-center">
+                <input
+                  id="is_company_rep"
+                  type="checkbox"
+                  name="is_company_rep"
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                  checked={formData.is_company_rep}
+                  onChange={(e) =>
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      is_company_rep: e.target.checked,
+                    }))
+                  }
+                />
+                <label
+                  htmlFor="is_company_rep"
+                  className="ml-2 text-sm font-medium text-gray-900"
+                >
+                  Is Company Rep
+                </label>
+              </div>
+
+              <div className="mb-4 flex items-center">
+                <input
+                  id="is_authorized_for_release"
+                  type="checkbox"
+                  name="is_authorized_for_release"
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                  checked={formData.is_authorized_for_release}
+                  onChange={(e) =>
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      is_authorized_for_release: e.target.checked,
+                    }))
+                  }
+                />
+                <label
+                  htmlFor="is_authorized_for_release"
+                  className="ml-2 text-sm font-medium text-gray-900"
+                >
+                  Is Authorized For Release
+                </label>
+              </div>
+            </div>
+            {Object.keys(bargeValues).length <= 0 && (
               <div className="mb-4">
                 <label
                   htmlFor="password"
@@ -500,26 +505,26 @@ const AddUserModal: React.FC<AddDeptModalProps> = ({ subscribers, user }) => {
                   }
                 />
               </div>
-            </div>
+            )}
           </div>
+        </div>
 
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className={`bg-blue-600 text-white p-3 rounded-lg ${
-                loading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-              disabled={loading}
-            >
-              {loading
-                ? 'Submitting...'
-                : Object.keys(bargeValues).length > 0
-                ? 'Update User'
-                : 'Add User'}
-            </button>
-          </div>
-        </form>
-      </div>
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className={`bg-blue-600 text-white p-3 rounded-lg ${
+              loading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            disabled={loading}
+          >
+            {loading
+              ? 'Submitting...'
+              : Object.keys(bargeValues).length > 0
+              ? 'Update User'
+              : 'Add User'}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

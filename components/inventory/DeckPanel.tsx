@@ -4,9 +4,11 @@ import DeckStrip from './DeckStrip';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import GeneratorTableList from './GeneratorTableList';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import { usePathname } from 'next/navigation';
+import Modal from '../dashboard/Modal';
+import AddEngineModal from './AddEngineModal';
 
 interface Generator {
   id: number;
@@ -26,15 +28,23 @@ interface User {
 interface DeckPanelProps {
   deckCategories: { id: number; name: string; count: string }[];
   user: User;
+  requisition: boolean;
+  toggleRequisition: () => void;
 }
 
-const DeckPanel: React.FC<DeckPanelProps> = ({ deckCategories, user }) => {
+const DeckPanel: React.FC<DeckPanelProps> = ({
+  deckCategories,
+  user,
+  requisition,
+  toggleRequisition,
+}) => {
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
   const [spareparts, setSpareparts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const pathname = usePathname();
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
 
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
@@ -74,10 +84,17 @@ const DeckPanel: React.FC<DeckPanelProps> = ({ deckCategories, user }) => {
   useEffect(() => {
     fetchData();
   }, [activeId, fetchData]);
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   return (
     <div>
       <div className="my-4">
-        <DeckStrip />
+        <DeckStrip
+          toggleRequisition={toggleRequisition}
+          setOpenModal={setOpenModal}
+        />
       </div>
       <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2  gap-2">
         {deckCategories.map((tab) => (
@@ -102,7 +119,24 @@ const DeckPanel: React.FC<DeckPanelProps> = ({ deckCategories, user }) => {
         data={spareparts}
         fetchdata={fetchData}
         parent={'Deck'}
+        requisition={requisition}
+        setOpenModal={setOpenModal}
+        toggleRequisition={toggleRequisition}
       />
+      <Modal
+        title={
+          Object.keys(bargeValues).length > 0 ? 'Edit Deck' : 'Add New Deck'
+        }
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="70%"
+      >
+        <AddEngineModal
+          fetchData={fetchData}
+          handleClose={handleClose}
+          inventoryType="Deck"
+        />
+      </Modal>
     </div>
   );
 };

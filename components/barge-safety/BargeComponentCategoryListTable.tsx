@@ -29,11 +29,12 @@ interface BargeComponent {
 interface BargeComponentCategoryListTableProps {
   data: BargeComponent[];
   fetchdata: () => void;
+  setOpenModal: (isOpen: boolean) => void;
 }
 
 const BargeComponentCategoryListTable: React.FC<
   BargeComponentCategoryListTableProps
-> = ({ data, fetchdata }) => {
+> = ({ data, fetchdata, setOpenModal }) => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
   const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
@@ -48,6 +49,11 @@ const BargeComponentCategoryListTable: React.FC<
       setOpenDropdownIndex(index);
     }
   };
+
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -112,7 +118,7 @@ const BargeComponentCategoryListTable: React.FC<
   };
   const handleEdit = (item: BargeComponent) => {
     dispatch(displayBargeValue(item));
-    dispatch(toggleBargeComponentModal());
+    setOpenModal(true);
   };
   return (
     <div className="bg-white">
@@ -143,27 +149,38 @@ const BargeComponentCategoryListTable: React.FC<
                   <td className="py-2 text-center">{description}</td>
                   <td className="py-2 text-center">{status}</td>
                   <td className="py-2 text-center">{formatDate(created_at)}</td>
-                  <td className="py-2 text-center flex justify-center items-center">
-                    <div className="flex gap-3">
-                      <button
-                        className="bg-blue-700 text-white p-2 rounded-md"
-                        onClick={() => handleEdit(item)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                        onClick={() => handleDelete(id)}
-                        disabled={loadingStates[id]}
-                      >
-                        {loadingStates[id] ? (
-                          <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                        ) : (
-                          'Delete'
+                  {(hasPermission('can update barge component category') ||
+                    hasPermission('can delete barge component category')) && (
+                    <td className="py-2 text-center flex justify-center items-center">
+                      <div className="flex gap-3">
+                        {hasPermission(
+                          'can update barge component category'
+                        ) && (
+                          <button
+                            className="bg-blue-700 text-white p-2 rounded-md"
+                            onClick={() => handleEdit(item)}
+                          >
+                            Edit
+                          </button>
                         )}
-                      </button>
-                    </div>
-                  </td>
+                        {hasPermission(
+                          'can delete barge component category'
+                        ) && (
+                          <button
+                            className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                            onClick={() => handleDelete(id)}
+                            disabled={loadingStates[id]}
+                          >
+                            {loadingStates[id] ? (
+                              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                            ) : (
+                              'Delete'
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  )}
                 </tr>
               );
             })}

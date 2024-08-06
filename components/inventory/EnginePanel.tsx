@@ -8,6 +8,8 @@ import Loader from '../Loader';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePathname } from 'next/navigation';
 import { toggleLoading } from '@/provider/redux/modalSlice';
+import AddEngineModal from './AddEngineModal';
+import Modal from '../dashboard/Modal';
 
 interface Generator {
   id: number;
@@ -29,14 +31,17 @@ interface EnginePanelProps {
   engineCategories: { id: number; name: string; count: string }[];
   user: User;
   fetchLoading: boolean;
+  requisition: boolean;
+  toggleRequisition: () => void;
 }
 
 const EnginePanel: React.FC<EnginePanelProps> = ({
   engineCategories,
   user,
   fetchLoading,
+  requisition,
+  toggleRequisition,
 }) => {
-  console.log('engine', engineCategories?.[0]?.name);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
   const [spareparts, setSpareparts] = useState<any[]>([]);
@@ -45,6 +50,11 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
   const isAddEngineModalOpen = useSelector(
     (state: any) => state.modal.isAddEngineModalOpen
   );
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   const dispatch = useDispatch();
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
@@ -92,7 +102,10 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
   return (
     <div>
       <div className="my-4">
-        <EngineStrip />
+        <EngineStrip
+          toggleRequisition={toggleRequisition}
+          setOpenModal={setOpenModal}
+        />
       </div>
       <div className="overflow-y-auto">
         <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2 gap-2">
@@ -123,9 +136,25 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
           data={spareparts}
           fetchdata={fetchData}
           parent={'Engine'}
+          requisition={requisition}
+          setOpenModal={setOpenModal}
+          toggleRequisition={toggleRequisition}
         />
       )}
-
+      <Modal
+        title={
+          Object.keys(bargeValues).length > 0 ? 'Edit Engine' : 'Add New Engine'
+        }
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="70%"
+      >
+        <AddEngineModal
+          fetchData={fetchData}
+          handleClose={handleClose}
+          inventoryType="Engine"
+        />
+      </Modal>
       {/* )} */}
     </div>
   );

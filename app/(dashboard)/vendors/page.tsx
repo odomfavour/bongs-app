@@ -1,6 +1,8 @@
 'use client';
 import Loader from '@/components/Loader';
+import Modal from '@/components/dashboard/Modal';
 import UoMListTable from '@/components/uom/UomListTable';
+import AddVendorModal from '@/components/vendors/AddVendorModal';
 import VendorListTable from '@/components/vendors/VendorListTable';
 import {
   displayBargeValue,
@@ -43,16 +45,28 @@ const VendorsPage = () => {
     (state: any) => state.modal.isVendorModalOpen
   );
 
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
+
+  const hasPermission = useCallback(
+    (permissionName: string) =>
+      user?.permissions?.some(
+        (permission: any) => permission.name === permissionName
+      ),
+    [user?.permissions]
+  );
+
   const fetchVendors = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${process.env.BASEURL}/getVendors`, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      console.log('resp', response);
-      setVendors(response?.data?.data?.data);
+      if (hasPermission('can view vendor')) {
+        const response = await axios.get(`${process.env.BASEURL}/getVendors`, {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        });
+        console.log('resp', response);
+        setVendors(response?.data?.data?.data);
+      }
       // You can similarly setStoreItems if needed
     } catch (error: any) {
       console.error('Error:', error);
@@ -66,21 +80,24 @@ const VendorsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [user?.token]);
+  }, [hasPermission, user?.token]);
+
   const fetchCategories = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
-      const response = await axios.get(
-        `${process.env.BASEURL}/getVendorCategories`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
-      console.log('resp', response);
-      setVendorCats(response?.data?.data?.data);
-      // You can similarly setStoreItems if needed
+      if (hasPermission('can view unit of measurement')) {
+        const response = await axios.get(
+          `${process.env.BASEURL}/getVendorCategories`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        console.log('resp', response);
+        setVendorCats(response?.data?.data?.data);
+        // You can similarly setStoreItems if needed
+      }
     } catch (error: any) {
       console.error('Error:', error);
 
@@ -97,13 +114,17 @@ const VendorsPage = () => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [dispatch, router, user?.token]);
+  }, [dispatch, hasPermission, router, user?.token]);
 
   useEffect(() => {
     fetchVendors();
     fetchCategories();
   }, [fetchVendors, fetchCategories, isVendorModalOpen]);
 
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   return (
     <section>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
@@ -129,26 +150,36 @@ const VendorsPage = () => {
       </div>
       <div>
         <div className="flex justify-end mb-6">
-          <button
-            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-            onClick={() => {
-              dispatch(displayBargeValue({}));
-              dispatch(toggleVendorModal());
-            }}
-          >
-            Add Vendor
-          </button>
+          {hasPermission('can create vendor') && (
+            <button
+              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+              onClick={() => {
+                dispatch(displayBargeValue({}));
+                setOpenModal(true);
+              }}
+            >
+              Add Vendor
+            </button>
+          )}
         </div>
-        {loading ? (
-          <Loader />
-        ) : (
-          <VendorListTable
-            data={vendors}
-            fetchData={fetchVendors}
-            vendorCats={vendorCats}
-          />
-        )}
+
+        <VendorListTable
+          data={vendors}
+          fetchData={fetchVendors}
+          vendorCats={vendorCats}
+          setOpenModal={setOpenModal}
+        />
       </div>
+      <Modal
+        title={
+          Object.keys(bargeValues).length > 0 ? 'Edit Vendor' : 'Add New Vendor'
+        }
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="50%"
+      >
+        <AddVendorModal fetchData={fetchVendors} handleClose={handleClose} />
+      </Modal>
     </section>
   );
 };

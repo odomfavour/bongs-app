@@ -5,8 +5,10 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import GeneratorTableList from './GeneratorTableList';
 import { toggleLoading } from '@/provider/redux/modalSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { usePathname } from 'next/navigation';
+import AddEngineModal from './AddEngineModal';
+import Modal from '../dashboard/Modal';
 interface User {
   token: string;
 }
@@ -14,11 +16,15 @@ interface User {
 interface HospitalPanelProps {
   hospitalCategories: { id: number; name: string; count: string }[];
   user: User;
+  requisition: boolean;
+  toggleRequisition: () => void;
 }
 
 const HospitalPanel: React.FC<HospitalPanelProps> = ({
   hospitalCategories,
   user,
+  requisition,
+  toggleRequisition,
 }) => {
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
@@ -26,6 +32,11 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const pathname = usePathname();
+  const [openModal, setOpenModal] = useState(false);
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
 
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
@@ -34,7 +45,7 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
       endpoint += '?filter=project';
     }
     try {
-      dispatch(toggleLoading(false));
+      dispatch(toggleLoading(true));
       const response = await axios.get(endpoint, {
         headers: {
           Authorization: `Bearer ${user?.token}`,
@@ -68,7 +79,10 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
   return (
     <div>
       <div className="my-4">
-        <HospitalStrip />
+        <HospitalStrip
+          toggleRequisition={toggleRequisition}
+          setOpenModal={setOpenModal}
+        />
       </div>
       <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2  gap-2">
         {hospitalCategories.map((tab) => (
@@ -94,7 +108,26 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
         data={spareparts}
         fetchdata={fetchData}
         parent={'Hospital'}
+        requisition={requisition}
+        setOpenModal={setOpenModal}
+        toggleRequisition={toggleRequisition}
       />
+      <Modal
+        title={
+          Object.keys(bargeValues).length > 0
+            ? 'Edit Hospital'
+            : 'Add New Hospital'
+        }
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="70%"
+      >
+        <AddEngineModal
+          fetchData={fetchData}
+          handleClose={handleClose}
+          inventoryType="Hospital"
+        />
+      </Modal>
       {/* )} */}
     </div>
   );

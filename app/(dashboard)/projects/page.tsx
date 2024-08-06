@@ -1,6 +1,8 @@
 'use client';
 
 import Loader from '@/components/Loader';
+import Modal from '@/components/dashboard/Modal';
+import AddProjectModal from '@/components/projects/AddProjectModal';
 import ProjectsListTable from '@/components/projects/ProjectsTableList';
 import {
   displayBargeValue,
@@ -40,16 +42,27 @@ const ProjectsPage = () => {
   );
   const [loading, setLoading] = useState(false);
   const [projects, setProjects] = useState<Projects[]>([]);
+
+  const hasPermission = useCallback(
+    (permissionName: string) =>
+      user?.permissions?.some(
+        (permission: any) => permission.name === permissionName
+      ),
+    [user?.permissions]
+  );
+
   const fetchData = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
-      const response = await axios.get(`${process.env.BASEURL}/getProjects`, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      console.log('resp', response);
-      setProjects(response?.data?.data?.data);
+      if (hasPermission('can view project')) {
+        const response = await axios.get(`${process.env.BASEURL}/getProjects`, {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        });
+        console.log('resp', response);
+        setProjects(response?.data?.data?.data);
+      }
     } catch (error: any) {
       console.error('Error:', error);
 
@@ -66,12 +79,16 @@ const ProjectsPage = () => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [dispatch, router, user?.token]);
+  }, [dispatch, router, user?.token, hasPermission]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData, isProjectModalOpen]);
 
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   return (
     <section>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
@@ -97,22 +114,33 @@ const ProjectsPage = () => {
       </div>
       <div>
         <div className="flex justify-end mb-6">
-          <button
-            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-            onClick={() => {
-              dispatch(displayBargeValue({}));
-              dispatch(toggleAddProjectModal());
-            }}
-          >
-            Add Projects
-          </button>
+          {hasPermission('can create project') && (
+            <button
+              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+              onClick={() => {
+                dispatch(displayBargeValue({}));
+                setOpenModal(true);
+              }}
+            >
+              Add Projects
+            </button>
+          )}
         </div>
-        {loading ? (
-          <Loader />
-        ) : (
-          <ProjectsListTable data={projects} fetchdata={fetchData} />
-        )}
+
+        <ProjectsListTable
+          data={projects}
+          fetchdata={fetchData}
+          setOpenModal={setOpenModal}
+        />
       </div>
+      <Modal
+        title="Add New Project"
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="60%"
+      >
+        <AddProjectModal fetchData={fetchData} handleClose={handleClose} />
+      </Modal>
     </section>
   );
 };

@@ -16,6 +16,7 @@ import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import { parentPort } from 'worker_threads';
 
 interface Deck {
   id: number;
@@ -38,12 +39,15 @@ interface LocationListTableProps {
   data: Location[];
   fetchData: () => void;
   parent: string;
+  activeTab: string;
+  setOpenModal: (isOpen: boolean) => void;
 }
 
 const SparePartsListTable: React.FC<LocationListTableProps> = ({
   data,
   fetchData,
   parent,
+  setOpenModal,
 }) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
@@ -60,7 +64,7 @@ const SparePartsListTable: React.FC<LocationListTableProps> = ({
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 20;
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -74,7 +78,7 @@ const SparePartsListTable: React.FC<LocationListTableProps> = ({
 
   const handleEdit = (item: Location) => {
     dispatch(displayBargeValue(item));
-    dispatch(toggleLocationModal());
+    setOpenModal(true);
   };
 
   const confirmDelete = (id: number) => {
@@ -88,22 +92,29 @@ const SparePartsListTable: React.FC<LocationListTableProps> = ({
       confirmButtonText: 'Yes, delete it!',
     }).then((result) => {
       if (result.isConfirmed) {
-        deleteLocation(id);
+        deleteItem(id);
       }
     });
   };
 
-  const deleteLocation = async (id: number) => {
+  const deleteItem = async (id: number) => {
     try {
       // Send a DELETE request to your API
-      const response = await axios.delete(
-        `${process.env.BASEURL}/location/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
+      let baseUrl;
+      if (parent === 'engine') {
+        baseUrl = `${process.env.BASEURL}/sparepart-engine-category`;
+      } else if (parent === 'deck') {
+        baseUrl = `${process.env.BASEURL}/sparepart-deck-category`;
+      } else if (parent === 'safety') {
+        baseUrl = `${process.env.BASEURL}/safety-category`;
+      } else {
+        baseUrl = `${process.env.BASEURL}/sparepart-hospital-category`;
+      }
+      const response = await axios.delete(`${baseUrl}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
       console.log('Delete Response:', response);
       fetchData();
 
@@ -159,7 +170,6 @@ const SparePartsListTable: React.FC<LocationListTableProps> = ({
                     <td className="py-2 text-left text-[#344054]">
                       {index + 1}
                     </td>
-
                     <td className="py-2 text-left">{name}</td>
                     <td className="py-2 text-left">{status}</td>
                     <td className="py-2 text-left">{formatDate(created_at)}</td>

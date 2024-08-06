@@ -14,12 +14,16 @@ import {
   toggleLoading,
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import RolesListTable from '@/components/users/RolesListTable';
 import { useRouter } from 'next/navigation';
+import Modal from '@/components/dashboard/Modal';
+import AddUserModal from '@/components/users/AddUserModal';
+import AddDeptModal from '@/components/users/AddDeptModal';
+import AddRoleModal from '@/components/users/AddRoleModal';
 
 const Page = () => {
   const dispatch = useDispatch();
@@ -34,48 +38,48 @@ const Page = () => {
   const isAddUserModalOpen = useSelector(
     (state: any) => state?.modal?.isAddUserModalOpen
   );
-  const [activeTab, setActiveTab] = useState('Users');
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
+
+  const [activeTab, setActiveTab] = useState('Roles');
   const [loading, setLoading] = useState(true);
   const [tabs, setTabs] = useState([
-    { id: 1, name: 'Users', count: '' },
-    { id: 2, name: 'Roles', count: '' },
-    { id: 3, name: 'Departments', count: '' },
+    { id: 1, name: 'Roles', count: '', permission: 'can view roles' },
+    {
+      id: 2,
+      name: 'Departments',
+      count: '',
+      permission: 'can view department',
+    },
+    { id: 3, name: 'Users', count: '', permission: 'can view user' },
   ]);
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [departments, setDepartments] = useState([]);
+  const [openUserModal, setOpenUserModal] = useState(false);
+  const handleUserClose = () => {
+    setOpenUserModal(false);
+  };
 
-  const fetchData = useCallback(async () => {
-    dispatch(toggleLoading(true));
-    try {
-      const [usersResponse, rolesResponse, deptResponse] = await Promise.all([
-        axios.get(`${process.env.BASEURL}/users`, {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }),
-        axios.get(
-          `${process.env.BASEURL}${
-            user?.subscriber_id
-              ? `/subscriber-roles/${user?.subscriber_id}`
-              : '/roles'
-          }`,
-          {
-            headers: {
-              Authorization: `Bearer ${user?.token}`,
-            },
-          }
-        ),
-        axios.get(`${process.env.BASEURL}/getDepartments`, {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }),
-      ]);
-      setUsers(usersResponse?.data?.data?.data);
-      setRoles(rolesResponse?.data?.data?.data);
-      setDepartments(deptResponse?.data?.data?.data);
-    } catch (error: any) {
+  const [openRoleModal, setOpenRoleModal] = useState(false);
+  const handleRoleClose = () => {
+    setOpenRoleModal(false);
+  };
+
+  const [openDeptModal, setOpenDeptModal] = useState(false);
+  const handleDeptClose = () => {
+    setOpenDeptModal(false);
+  };
+
+  const hasPermission = useCallback(
+    (permissionName: string) =>
+      user?.permissions?.some(
+        (permission: any) => permission.name === permissionName
+      ),
+    [user?.permissions]
+  );
+
+  const handleApiError = useCallback(
+    (error: any) => {
       console.error('Error:', error);
 
       const errorMessage =
@@ -88,19 +92,101 @@ const Page = () => {
       } else {
         toast.error(`${errorMessage}`);
       }
+    },
+    [router]
+  );
+
+  const fetchUsers = useCallback(async () => {
+    if (!hasPermission('can view user')) return;
+
+    dispatch(toggleLoading(true));
+    try {
+      const usersResponse = await axios.get(`${process.env.BASEURL}/users`, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      setUsers(usersResponse?.data?.data?.data);
+    } catch (error: any) {
+      handleApiError(error);
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [dispatch, router, user?.subscriber_id, user?.token]);
+  }, [dispatch, handleApiError, hasPermission, user?.token]);
+
+  const fetchRoles = useCallback(async () => {
+    if (!hasPermission('can view roles')) return;
+
+    dispatch(toggleLoading(true));
+    try {
+      const rolesResponse = await axios.get(
+        `${process.env.BASEURL}${
+          user?.subscriber_id
+            ? `/subscriber-roles/${user?.subscriber_id}`
+            : '/roles'
+        }`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+      console.log('role', rolesResponse);
+      setRoles(
+        user?.subscriber_id
+          ? rolesResponse?.data?.data
+          : rolesResponse?.data?.data?.data
+      );
+    } catch (error: any) {
+      handleApiError(error);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  }, [
+    dispatch,
+    handleApiError,
+    hasPermission,
+    user?.subscriber_id,
+    user?.token,
+  ]);
+
+  const fetchDepartments = useCallback(async () => {
+    if (!hasPermission('can view department')) return;
+
+    dispatch(toggleLoading(true));
+    try {
+      const deptResponse = await axios.get(
+        `${process.env.BASEURL}/getDepartments`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+      setDepartments(deptResponse?.data?.data?.data);
+    } catch (error: any) {
+      handleApiError(error);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  }, [dispatch, handleApiError, hasPermission, user?.token]);
 
   useEffect(() => {
-    fetchData();
-  }, [
-    fetchData,
-    isAddRoleModalOpen,
-    isAddUserModalOpen,
-    isAddDepartmentModalOpen,
-  ]);
+    if (activeTab === 'Users') {
+      fetchUsers();
+    } else if (activeTab === 'Roles') {
+      fetchRoles();
+    } else if (activeTab === 'Departments') {
+      fetchDepartments();
+    }
+  }, [fetchUsers, fetchRoles, fetchDepartments, activeTab]);
+
+  // Filter tabs based on user permissions
+  const accessibleTabs = useMemo(
+    () => tabs.filter((tab) => hasPermission(tab.permission)),
+    [tabs, hasPermission]
+  );
+
   return (
     <section>
       <div className="flex md:flex-row gap-5 flex-col justify-between md:items-center items-start mb-5 pb-10 border-b">
@@ -125,22 +211,22 @@ const Page = () => {
         </div>
       </div>
       <div className="flex justify-end mb-6">
-        {activeTab === 'Users' ? (
+        {activeTab === 'Users' && hasPermission('can create user') ? (
           <button
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
               dispatch(displayBargeValue({}));
-              dispatch(toggleAddUserModal());
+              setOpenUserModal(true);
             }}
           >
             Add User
           </button>
-        ) : activeTab === 'Roles' ? (
+        ) : activeTab === 'Roles' && hasPermission('can create roles') ? (
           <button
             className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
             onClick={() => {
               dispatch(displayBargeValue({}));
-              dispatch(toggleAddRoleModal());
+              setOpenRoleModal(true);
             }}
           >
             Add Role
@@ -157,20 +243,24 @@ const Page = () => {
           //     Add Permission
           //   </button>
           // )
-          <button
-            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-            onClick={() => {
-              dispatch(displayBargeValue({}));
-              dispatch(toggleAddDepartmentModal());
-            }}
-          >
-            Add Department
-          </button>
+          <>
+            {hasPermission('can create department') && (
+              <button
+                className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+                onClick={() => {
+                  dispatch(displayBargeValue({}));
+                  setOpenDeptModal(true);
+                }}
+              >
+                Add Department
+              </button>
+            )}
+          </>
         )}
       </div>
 
       <div className="grid md:grid-cols-4 grid-cols-2 flex-wrap items-center gap-2">
-        {tabs.map((tab) => (
+        {accessibleTabs.map((tab) => (
           <button
             key={tab.id}
             className={`p-3 w-full ${
@@ -186,18 +276,67 @@ const Page = () => {
       </div>
       <div className="">
         {activeTab === 'Users' && (
-          <UserListTable data={users} fetchData={fetchData} />
+          <UserListTable
+            data={users}
+            fetchData={fetchUsers}
+            setOpenUserModal={setOpenUserModal}
+          />
         )}
         {activeTab === 'Roles' && (
-          <RolesListTable data={roles} fetchData={fetchData} />
+          <RolesListTable
+            data={roles}
+            fetchData={fetchRoles}
+            setOpenRoleModal={setOpenRoleModal}
+          />
         )}
         {/* {activeTab === 'Permissions' && (
               <PermissionListTable data={permissions} fetchData={fetchData} />
             )} */}
         {activeTab === 'Departments' && (
-          <DepartmentListTable data={departments} fetchData={fetchData} />
+          <DepartmentListTable
+            data={departments}
+            fetchData={fetchDepartments}
+            setOpenDeptModal={setOpenDeptModal}
+          />
         )}
       </div>
+      <Modal
+        title={Object.keys(bargeValues).length > 0 ? 'Edit User' : 'Add User'}
+        isOpen={openUserModal}
+        onClose={handleUserClose}
+        maxWidth="60%"
+      >
+        <AddUserModal
+          fetchData={fetchUsers}
+          handleUserClose={handleUserClose}
+        />
+      </Modal>
+      <Modal
+        title={Object.keys(bargeValues).length > 0 ? 'Edit Role' : 'Add Role'}
+        isOpen={openRoleModal}
+        onClose={handleRoleClose}
+        maxWidth="60%"
+      >
+        <AddRoleModal
+          fetchData={fetchRoles}
+          handleRoleClose={handleRoleClose}
+        />
+      </Modal>
+      <Modal
+        title={
+          Object.keys(bargeValues).length > 0
+            ? 'Edit Department'
+            : 'Add Department'
+        }
+        isOpen={openDeptModal}
+        onClose={handleDeptClose}
+        maxWidth="60%"
+      >
+        <AddDeptModal
+          fetchData={fetchDepartments}
+          handleDeptClose={handleDeptClose}
+        />
+      </Modal>
     </section>
   );
 };

@@ -34,12 +34,14 @@ interface SafetyCategory {
 
 interface SafetyCategoryListTableProps {
   data: SafetyCategory[];
-  fetchdata: () => void; // Add a function to refresh the data
+  fetchData: () => void; // Add a function to refresh the data
+  setOpenModal: (isOpen: boolean) => void;
 }
 
 const SafetyCategoryListTable: React.FC<SafetyCategoryListTableProps> = ({
   data,
-  fetchdata,
+  fetchData,
+  setOpenModal,
 }) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
@@ -82,7 +84,7 @@ const SafetyCategoryListTable: React.FC<SafetyCategoryListTableProps> = ({
           }
         );
         console.log('Delete Response:', response);
-        fetchdata();
+        fetchData();
 
         if (response.status === 200) {
           // Handle success
@@ -129,8 +131,15 @@ const SafetyCategoryListTable: React.FC<SafetyCategoryListTableProps> = ({
 
   const handleEdit = (item: SafetyCategory) => {
     dispatch(displayBargeValue(item));
-    dispatch(toggleSafetyCategoryModal());
+    setOpenModal(true);
+    // dispatch(toggleSafetyCategoryModal());
   };
+
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
+
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
@@ -178,27 +187,34 @@ const SafetyCategoryListTable: React.FC<SafetyCategoryListTableProps> = ({
                     <td className="py-2 text-center">
                       {formatDate(created_at)}
                     </td>
-                    <td className="py-2 text-center flex justify-center items-center">
-                      <div className="flex gap-3">
-                        <button
-                          className="bg-blue-700 text-white p-2 rounded-md"
-                          onClick={() => handleEdit(item)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                          onClick={() => handleDelete(id)}
-                          disabled={loadingStates[id]}
-                        >
-                          {loadingStates[id] ? (
-                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                          ) : (
-                            'Delete'
+                    {(hasPermission('can update safety category') ||
+                      hasPermission('can delete safety category')) && (
+                      <td className="py-2 text-center flex justify-center items-center">
+                        <div className="flex gap-3">
+                          {hasPermission('can update safety category') && (
+                            <button
+                              className="bg-blue-700 text-white p-2 rounded-md"
+                              onClick={() => handleEdit(item)}
+                            >
+                              Edit
+                            </button>
                           )}
-                        </button>
-                      </div>
-                    </td>
+                          {hasPermission('can delete safety category') && (
+                            <button
+                              className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                              onClick={() => handleDelete(id)}
+                              disabled={loadingStates[id]}
+                            >
+                              {loadingStates[id] ? (
+                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                              ) : (
+                                'Delete'
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 );
               })}

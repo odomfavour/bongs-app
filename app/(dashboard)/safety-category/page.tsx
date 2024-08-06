@@ -1,5 +1,7 @@
 'use client';
 import Loader from '@/components/Loader';
+import Modal from '@/components/dashboard/Modal';
+import AddSafetyCategoryModal from '@/components/safety-category/AddSafetyCategoryModal';
 import SafetyCategoryListTable from '@/components/safety-category/SafetyCategoryListTable';
 import {
   displayBargeValue,
@@ -39,20 +41,30 @@ const SafetyCategoryPage = () => {
   const isSafetyCategoryModalOpen = useSelector(
     (state: any) => state.modal.isSafetyCategoryModalOpen
   );
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
 
+  const hasPermission = useCallback(
+    (permissionName: string) =>
+      user?.permissions?.some(
+        (permission: any) => permission.name === permissionName
+      ),
+    [user?.permissions]
+  );
   const fetchData = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
-      const response = await axios.get(
-        `${process.env.BASEURL}/safety-category`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
-      console.log('resp', response);
-      setSafetyCat(response?.data?.data?.data);
+      if (hasPermission('can view safety category')) {
+        const response = await axios.get(
+          `${process.env.BASEURL}/safety-category`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        console.log('resp', response);
+        setSafetyCat(response?.data?.data?.data);
+      }
     } catch (error: any) {
       console.error('Error:', error);
 
@@ -69,12 +81,16 @@ const SafetyCategoryPage = () => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [dispatch, router, user?.token]);
+  }, [dispatch, hasPermission, router, user?.token]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData, isSafetyCategoryModalOpen]);
 
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   return (
     <section>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
@@ -100,22 +116,40 @@ const SafetyCategoryPage = () => {
       </div>
       <div>
         <div className="flex justify-end mb-6">
-          <button
-            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-            onClick={() => {
-              dispatch(displayBargeValue({}));
-              dispatch(toggleSafetyCategoryModal());
-            }}
-          >
-            Add Safety Category
-          </button>
+          {hasPermission('can create safety category') && (
+            <button
+              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+              onClick={() => {
+                dispatch(displayBargeValue({}));
+                setOpenModal(true);
+              }}
+            >
+              Add Safety Category
+            </button>
+          )}
         </div>
-        {loading ? (
-          <Loader />
-        ) : (
-          <SafetyCategoryListTable data={safetyCat} fetchdata={fetchData} />
-        )}
+
+        <SafetyCategoryListTable
+          data={safetyCat}
+          fetchData={fetchData}
+          setOpenModal={setOpenModal}
+        />
       </div>
+      <Modal
+        title={
+          Object.keys(bargeValues).length > 0
+            ? 'Edit Safety Category'
+            : 'Add New Safety Category'
+        }
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="50%"
+      >
+        <AddSafetyCategoryModal
+          fetchData={fetchData}
+          handleClose={handleClose}
+        />
+      </Modal>
     </section>
   );
 };

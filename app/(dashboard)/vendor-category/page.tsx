@@ -1,6 +1,8 @@
 'use client';
 import Loader from '@/components/Loader';
+import Modal from '@/components/dashboard/Modal';
 import UoMListTable from '@/components/uom/UomListTable';
+import AddVendorCategoryModal from '@/components/vendors/AddVendorCategoryModal';
 import VendorCategoryListTable from '@/components/vendors/VendorCategoryListTable';
 import VendorListTable from '@/components/vendors/VendorListTable';
 import {
@@ -31,6 +33,16 @@ const VendorCategoryPage = () => {
   const [loading, setLoading] = useState(false);
 
   const user = useSelector((state: any) => state.user.user);
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
+
+  const hasPermission = useCallback(
+    (permissionName: string) =>
+      user?.permissions?.some(
+        (permission: any) => permission.name === permissionName
+      ),
+    [user?.permissions]
+  );
+
   const isVendorCategoryModalOpen = useSelector(
     (state: any) => state.modal.isVendorCategoryModalOpen
   );
@@ -38,17 +50,19 @@ const VendorCategoryPage = () => {
   const fetchData = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
-      const response = await axios.get(
-        `${process.env.BASEURL}/getVendorCategories`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
-      console.log('resp', response);
-      setVendorCat(response?.data?.data?.data);
-      // You can similarly setStoreItems if needed
+      if (hasPermission('can view unit of measurement')) {
+        const response = await axios.get(
+          `${process.env.BASEURL}/getVendorCategories`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        console.log('resp', response);
+        setVendorCat(response?.data?.data?.data);
+        // You can similarly setStoreItems if needed
+      }
     } catch (error: any) {
       console.error('Error:', error);
 
@@ -65,11 +79,15 @@ const VendorCategoryPage = () => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [dispatch, router, user?.token]);
+  }, [dispatch, hasPermission, router, user?.token]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData, isVendorCategoryModalOpen]);
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   return (
     <section>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
@@ -95,22 +113,38 @@ const VendorCategoryPage = () => {
       </div>
       <div>
         <div className="flex justify-end mb-6">
-          <button
-            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-            onClick={() => {
-              dispatch(displayBargeValue({}));
-              dispatch(toggleVendorCategoryModal());
-            }}
-          >
-            Add Vendor Category
-          </button>
+          {hasPermission('can create vendor category') && (
+            <button
+              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+              onClick={() => {
+                dispatch(displayBargeValue({}));
+                setOpenModal(true);
+              }}
+            >
+              Add Vendor Category
+            </button>
+          )}
         </div>
-        {loading ? (
-          <Loader />
-        ) : (
-          <VendorCategoryListTable data={vendorCat} fetchData={fetchData} />
-        )}
+
+        <VendorCategoryListTable
+          data={vendorCat}
+          fetchData={fetchData}
+          setOpenModal={setOpenModal}
+        />
       </div>
+      <Modal
+        title={
+          Object.keys(bargeValues).length > 0 ? 'Edit Vendor' : 'Add New Safety'
+        }
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="50%"
+      >
+        <AddVendorCategoryModal
+          fetchData={fetchData}
+          handleClose={handleClose}
+        />
+      </Modal>
     </section>
   );
 };

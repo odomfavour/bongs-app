@@ -54,8 +54,7 @@ interface DeckListTableProps {
 }
 
 const DeckListTable: React.FC<DeckListTableProps> = ({ data, fetchdata }) => {
-  
-  console.log("ran inner here")
+  console.log('ran inner here');
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
   const [openDropdownIndex, setOpenDropdownIndex] = useState<any>(null);
@@ -70,8 +69,11 @@ const DeckListTable: React.FC<DeckListTableProps> = ({ data, fetchdata }) => {
     }
   };
 
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
 
-  console.log("this is the data",data)
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
@@ -131,59 +133,118 @@ const DeckListTable: React.FC<DeckListTableProps> = ({ data, fetchdata }) => {
     return {
       ...item,
       deck_type: `${item.deck_number}${item.id}`,
-      "S/N": `${index + 1}`,
+      'S/N': `${index + 1}`,
       name: item.name,
       barge: item.barge.name,
       user: `${item.user.first_name} ${item.user.last_name}`,
       created_at: `${formatDate(item.created_at)}`,
-     status: item.status
-     
-    }
-  })
+      status: item.status,
+    };
+  });
 
   return (
     <div className="bg-white">
-      <div className="overflow-x-auto mb-4">
-         <DeckTable
-           fetchedData={ currentItems}
-           loadingStates={ loadingStates }
-           handleDelete={handleDelete}
-           handleEdit={ handleEdit }
-           COLUMNS={[
-             {
-               Header: "S/N",
-               accessor: "S/N"
-           },
-           {
-               Header: "Deck No.",
-                  accessor: "deck_type"
-           },
-           {
-               Header: "Name",
-               accessor: "name"
-           },
-           {
-               Header: "Barge",
-               accessor: "barge"
-           },
-           {
-               Header: "Added By",
-               accessor: "user"
-           },
-           {
-               Header: "Staus",
-               accessor: "status"
-             },
-             {
-               Header: "Created On",
-                  accessor: "created_at"
-             }
-            
-             
-           ]}
-            MOCK_DATA={itemList}
-        /> 
-    
+      <div className="overflow-x-auto">
+        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+          <thead>
+            <tr className="border-b bg-[#E9EDF4]">
+              <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
+              <th className="text-sm text-left py-3">Deck No.</th>
+              <th className="text-sm text-left py-3">Name</th>
+              <th className="text-sm text-left py-3">Barge</th>
+              <th className="text-sm text-left py-3">Added By</th>
+              <th className="text-sm text-left py-3">Status</th>
+              <th className="text-sm text-left py-3">Created On</th>
+              <th className="text-sm text-left py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentItems.length > 0 &&
+              currentItems.map((item, index) => {
+                const {
+                  id,
+                  deck_number,
+                  name,
+                  deck_type,
+                  barge,
+                  user,
+                  status,
+                  created_at,
+                } = item;
+                return (
+                  <tr className="border-b" key={id}>
+                    <td className="py-2 text-center text-[#344054]">
+                      {index + 1}
+                    </td>
+
+                    <td className="py-2 text-sm text-left">
+                      {deck_number}
+                      {id}
+                    </td>
+                    <td className="py-2 text-sm text-left">{name}</td>
+                    <td className="py-2 text-sm text-left">{barge?.name}</td>
+                    <td className="py-2 text-sm text-left">
+                      {user?.first_name} {user?.last_name}
+                    </td>
+                    <td className="py-2 text-sm text-left">{status}</td>
+                    <td className="py-2 text-sm text-left">
+                      {formatDate(created_at)}
+                    </td>
+                    {(hasPermission('can update deck') ||
+                      hasPermission('can delete deck')) && (
+                      <td className="py-2 text-center flex justify-left items-center">
+                        <div className="flex gap-3">
+                          {hasPermission('can update deck') && (
+                            <button
+                              className="bg-blue-700 text-sm text-white p-2 rounded-md"
+                              onClick={() => handleEdit(item)}
+                            >
+                              Edit
+                            </button>
+                          )}
+                          {hasPermission('can delete deck') && (
+                            <button
+                              className="bg-red-700 text-white text-sm p-2 rounded-md flex items-center justify-center"
+                              onClick={() => handleDelete(id)}
+                              disabled={loadingStates[id]}
+                            >
+                              {loadingStates[id] ? (
+                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                              ) : (
+                                'Delete'
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
+            {currentItems.length == 0 && (
+              <tr className="text-center text-primary bg-white">
+                <td className="py-2 text-center" colSpan={10}>
+                  <div className="flex justify-center items-center  min-h-[60vh]">
+                    <div>
+                      <div className="flex justify-center items-center">
+                        <FaRegFolderClosed className="text-4xl" />
+                      </div>
+                      <div className="mt-5">
+                        <p className="font-medium text-[#475467]">
+                          No Decks found
+                        </p>
+                        <p className="font-normal text-sm mt-3">
+                          Click “add deck” button to get started in doing your
+                          <br /> first transaction on the platform
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
       {/* {data.length > itemsPerPage && (

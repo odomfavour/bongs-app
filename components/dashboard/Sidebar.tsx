@@ -5,12 +5,43 @@ import React, { useState, useEffect, useRef } from 'react';
 import PreferencesLinks from './PreferencesLinks';
 import InventoryLinks from './InventoryLinks';
 import { FaX } from 'react-icons/fa6';
+import { usePathname } from 'next/navigation';
 
-const Sidebar: React.FC = () => {
+interface Module {
+  sub_categories: any;
+  id: number;
+  name: string;
+}
+
+interface User {
+  id: number;
+  name: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number: string;
+  address: string;
+  status: string;
+  subscriber_id: number | null;
+  department_id: number | null;
+  is_hod: number;
+  is_barge_master: number;
+  is_company_rep: number;
+  is_authorized_for_release: number;
+  roles: { id: number; name: string }[];
+  // permissions: Permission[];
+  modules: Module[];
+}
+
+interface SidebarProps {
+  user: User;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   const [showInnerSidebar, setShowInnerSidebar] = useState(false);
   const [activeTab, setActiveTab] = useState<string>('');
   const innerSidebarRef = useRef<HTMLDivElement>(null);
-
+  console.log(user);
   const handleTabClick = (tab: string) => {
     if (activeTab === tab) {
       setShowInnerSidebar(!showInnerSidebar);
@@ -41,11 +72,46 @@ const Sidebar: React.FC = () => {
     };
   }, []);
 
+  const hasPermission = (moduleName: string) =>
+    user?.modules?.some((module) => module.name === moduleName);
+  // const hasSubCategory = (moduleName: string, subCategoryName: string) =>
+  //   user?.modules?.some(
+  //     (module) =>
+  //       module.name === moduleName &&
+  //       module?.sub_categories.some(
+  //         (subCategory: any) => subCategory.name === subCategoryName
+  //       )
+  //   );
+
+  const getSubCategories = (moduleName: string) => {
+    const userModule = user?.modules?.find(
+      (module) => module.name === moduleName
+    );
+    return userModule?.sub_categories || [];
+  };
+
+  const pathname = usePathname();
+  const preferencePaths = [
+    '/preferences',
+    '/barge-component-category',
+    '/vendor-category',
+    '/location',
+    '/projects',
+    '/safety-category',
+    '/unit-of-measurement',
+    '/inventory-category',
+  ];
   return (
-    <div className="flex  fixed top-[70px] z-40 ">
+    <div className="flex fixed top-[70px] z-40">
       <div className="w-[120px] h-[90vh] pb-5 overflow-y-auto rounded-t-md shadow bg-white">
         <ul>
-          <li className="border-b text-center">
+          <li
+            className={`border-b text-center ${
+              activeTab === 'Dashboard' || pathname === '/dashboard'
+                ? 'bg-gray-200'
+                : ''
+            }`}
+          >
             <Link href="/dashboard" onClick={closeInnerSidebar}>
               <div className="w-full h-[90px] flex justify-center items-center">
                 <div>
@@ -65,56 +131,24 @@ const Sidebar: React.FC = () => {
               </div>
             </Link>
           </li>
-          <li className="border-b text-center">
-            <div
-              onClick={() => handleTabClick('Preferences')}
-              className="w-full h-[90px] flex justify-center items-center cursor-pointer"
+          {hasPermission('Preference Module') && (
+            <li
+              className={`border-b text-center ${
+                activeTab === 'Preferences' ||
+                preferencePaths.includes(pathname)
+                  ? 'bg-gray-200'
+                  : ''
+              }`}
             >
-              <div>
-                <div className="flex justify-center items-center">
-                  <div className="relative w-[28px] h-[28px]">
-                    <Image
-                      src="/icons/dashboard-2.png"
-                      width={28}
-                      height={38}
-                      priority
-                      alt="avatar"
-                    />
-                  </div>
-                </div>
-                <p className="mt-2 text-[13px]">Preferences</p>
-              </div>
-            </div>
-          </li>
-          <li className="border-b text-center">
-            <div
-              onClick={() => handleTabClick('Inventory')}
-              className="w-full h-[90px] flex justify-center items-center cursor-pointer"
-            >
-              <div>
-                <div className="flex justify-center items-center">
-                  <div className="relative w-[28px] h-[28px]">
-                    <Image
-                      src="/icons/inventories.png"
-                      width={28}
-                      height={38}
-                      priority
-                      alt="avatar"
-                    />
-                  </div>
-                </div>
-                <p className="mt-2 text-[13px]">Inventory</p>
-              </div>
-            </div>
-          </li>
-          <li className="border-b text-center">
-            <Link href="#" onClick={closeInnerSidebar}>
-              <div className="w-full h-[90px] flex justify-center items-center">
+              <div
+                onClick={() => handleTabClick('Preferences')}
+                className="w-full h-[90px] flex justify-center items-center cursor-pointer"
+              >
                 <div>
                   <div className="flex justify-center items-center">
                     <div className="relative w-[28px] h-[28px]">
                       <Image
-                        src="/icons/sidebar_Reports.png"
+                        src="/icons/dashboard-2.png"
                         width={28}
                         height={38}
                         priority
@@ -122,37 +156,26 @@ const Sidebar: React.FC = () => {
                       />
                     </div>
                   </div>
-                  <p className="mt-2 text-[13px]">Reports</p>
+                  <p className="mt-2 text-[13px]">Preferences</p>
                 </div>
               </div>
-            </Link>
-          </li>
-          <li className="border-b text-center">
-            <div className="w-full h-[90px] flex justify-center items-center">
-              <div>
-                <div className="flex justify-center items-center">
-                  <div className="relative w-[28px] h-[28px]">
-                    <Image
-                      src="/icons/procurement.png"
-                      width={28}
-                      height={38}
-                      priority
-                      alt="avatar"
-                    />
-                  </div>
-                </div>
-                <p className="mt-2 text-[13px]">Procurement</p>
-              </div>
-            </div>
-          </li>
-          <li className="border-b text-center">
-            <Link href="/users" onClick={closeInnerSidebar}>
-              <div className="w-full h-[90px] flex justify-center items-center">
+            </li>
+          )}
+          {hasPermission('Inventory Module') && (
+            <li
+              className={`border-b text-center ${
+                activeTab === 'Inventory' ? 'bg-gray-200' : ''
+              }`}
+            >
+              <div
+                onClick={() => handleTabClick('Inventory')}
+                className="w-full h-[90px] flex justify-center items-center cursor-pointer"
+              >
                 <div>
                   <div className="flex justify-center items-center">
                     <div className="relative w-[28px] h-[28px]">
                       <Image
-                        src="/icons/sidebar_users.png"
+                        src="/icons/inventories.png"
                         width={28}
                         height={38}
                         priority
@@ -160,47 +183,144 @@ const Sidebar: React.FC = () => {
                       />
                     </div>
                   </div>
-                  <p className="mt-2 text-[13px]">Users</p>
+                  <p className="mt-2 text-[13px]">Inventory</p>
                 </div>
               </div>
-            </Link>
-          </li>
-          <li className="border-b text-center">
-            <div className="w-full h-[90px] flex justify-center items-center">
-              <div>
-                <div className="flex justify-center items-center">
-                  <div className="relative w-[28px] h-[28px]">
-                    <Image
-                      src="/icons/human-resource.png"
-                      width={28}
-                      height={38}
-                      priority
-                      alt="avatar"
-                    />
+            </li>
+          )}
+          {hasPermission('Reports Module') && (
+            <li
+              className={`border-b text-center ${
+                activeTab === 'Reports' ? 'bg-gray-200' : ''
+              }`}
+            >
+              <Link href="#" onClick={closeInnerSidebar}>
+                <div className="w-full h-[90px] flex justify-center items-center">
+                  <div>
+                    <div className="flex justify-center items-center">
+                      <div className="relative w-[28px] h-[28px]">
+                        <Image
+                          src="/icons/sidebar_Reports.png"
+                          width={28}
+                          height={38}
+                          priority
+                          alt="avatar"
+                        />
+                      </div>
+                    </div>
+                    <p className="mt-2 text-[13px]">Reports</p>
                   </div>
                 </div>
-                <p className="mt-2 text-[13px]">HR</p>
+              </Link>
+            </li>
+          )}
+          {hasPermission('Procurement Module') && (
+            <li
+              className={`border-b text-center ${
+                activeTab === 'Procurement' ? 'bg-gray-200' : ''
+              }`}
+            >
+              <div
+                onClick={() => handleTabClick('Procurement')}
+                className="w-full h-[90px] flex justify-center items-center cursor-pointer"
+              >
+                <div>
+                  <div className="flex justify-center items-center">
+                    <div className="relative w-[28px] h-[28px]">
+                      <Image
+                        src="/icons/procurement.png"
+                        width={28}
+                        height={38}
+                        priority
+                        alt="avatar"
+                      />
+                    </div>
+                  </div>
+                  <p className="mt-2 text-[13px]">Procurement</p>
+                </div>
               </div>
-            </div>
-          </li>
-          <li className="border-b text-center">
-            <div className="w-full h-[80px] flex justify-center items-center">
-              <div>
-                <div className="flex justify-center items-center">
-                  <div className="relative w-[28px] h-[28px]">
-                    <Image
-                      src="/icons/sidebar_finance.png"
-                      width={28}
-                      height={38}
-                      priority
-                      alt="avatar"
-                    />
+            </li>
+          )}
+          {hasPermission('User Management Module') && (
+            <li
+              className={`border-b text-center ${
+                activeTab === 'Users' ? 'bg-gray-200' : ''
+              }`}
+            >
+              <Link href="/users" onClick={closeInnerSidebar}>
+                <div className="w-full h-[90px] flex justify-center items-center">
+                  <div>
+                    <div className="flex justify-center items-center">
+                      <div className="relative w-[28px] h-[28px]">
+                        <Image
+                          src="/icons/sidebar_users.png"
+                          width={28}
+                          height={38}
+                          priority
+                          alt="avatar"
+                        />
+                      </div>
+                    </div>
+                    <p className="mt-2 text-[13px]">Users</p>
                   </div>
                 </div>
-                <p className="mt-2 text-[13px]">Finance</p>
+              </Link>
+            </li>
+          )}
+          {hasPermission('Human Resource Management Module') && (
+            <li
+              className={`border-b text-center ${
+                activeTab === 'HR' ? 'bg-gray-200' : ''
+              }`}
+            >
+              <div
+                onClick={() => handleTabClick('HR')}
+                className="w-full h-[90px] flex justify-center items-center cursor-pointer"
+              >
+                <div>
+                  <div className="flex justify-center items-center">
+                    <div className="relative w-[28px] h-[28px]">
+                      <Image
+                        src="/icons/human-resource.png"
+                        width={28}
+                        height={38}
+                        priority
+                        alt="avatar"
+                      />
+                    </div>
+                  </div>
+                  <p className="mt-2 text-[13px]">HR</p>
+                </div>
               </div>
-            </div>
-          </li>
+            </li>
+          )}
+          {hasPermission('Finance Module') && (
+            <li
+              className={`border-b text-center ${
+                activeTab === 'Finance' ? 'bg-gray-200' : ''
+              }`}
+            >
+              <div
+                onClick={() => handleTabClick('Finance')}
+                className="w-full h-[80px] flex justify-center items-center cursor-pointer"
+              >
+                <div>
+                  <div className="flex justify-center items-center">
+                    <div className="relative w-[28px] h-[28px]">
+                      <Image
+                        src="/icons/sidebar_finance.png"
+                        width={28}
+                        height={38}
+                        priority
+                        alt="avatar"
+                      />
+                    </div>
+                  </div>
+                  <p className="mt-2 text-[13px]">Finance</p>
+                </div>
+              </div>
+            </li>
+          )}
         </ul>
       </div>
       {showInnerSidebar && (
@@ -214,10 +334,16 @@ const Sidebar: React.FC = () => {
             </button>
           </div>
           {activeTab === 'Preferences' && (
-            <PreferencesLinks closeInnerSidebar={closeInnerSidebar} />
+            <PreferencesLinks
+              closeInnerSidebar={closeInnerSidebar}
+              subCategories={getSubCategories('Preference Module')}
+            />
           )}
           {activeTab === 'Inventory' && (
-            <InventoryLinks closeInnerSidebar={closeInnerSidebar} />
+            <InventoryLinks
+              closeInnerSidebar={closeInnerSidebar}
+              subCategories={getSubCategories('Inventory Module')}
+            />
           )}
           {/* Add other conditions for other tabs here */}
         </div>

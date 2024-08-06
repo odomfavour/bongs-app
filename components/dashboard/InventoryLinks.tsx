@@ -19,14 +19,21 @@ const links: LinkItem[] = [
     text: 'MIV',
     img: 'inventories.png',
   },
+  {
+    href: '/requisitions',
+    text: 'Requisitions',
+    img: 'inventories.png',
+  },
 ];
 
 interface InventoryLinksProps {
   closeInnerSidebar: () => void;
+  subCategories: { id: number; name: string }[];
 }
 
 const InventoryLinks: React.FC<InventoryLinksProps> = ({
   closeInnerSidebar,
+  subCategories,
 }) => {
   return (
     <div>

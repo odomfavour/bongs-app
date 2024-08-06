@@ -11,7 +11,7 @@ import AddSafetyCategoryModal from '@/components/safety-category/AddSafetyCatego
 import AddUomModal from '@/components/uom/AddUomModal';
 import AddVendorModal from '@/components/vendors/AddVendorModal';
 import React, { ReactNode, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
@@ -26,32 +26,42 @@ import AddDeptModal from '@/components/users/AddDeptModal';
 import AddRoleModal from '@/components/users/AddRoleModal';
 import AddInventoryTypeModal from '@/components/inventory-category/AddInventoryTypeModal';
 import Loader from '@/components/Loader';
+import { setSubscribers } from '@/provider/redux/modalSlice';
 
 interface DashboardWrapperProps {
   children: ReactNode;
 }
 
 const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
-  const [subscribers, setSubscribers] = useState<any>([]);
+  // const [subscribers, setSubscribers] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const user = useSelector((state: any) => state?.user?.user);
+  const subscribers = useSelector((state: any) => state?.modal?.subscribers);
+  const dispatch = useDispatch();
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   useEffect(() => {
+    const hasPermission = (permissionName: string) =>
+      user?.permissions?.some(
+        (permission: any) => permission.name === permissionName
+      );
+
     const getSubscribers = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.BASEURL}/getSubscribers`,
-          {
-            headers: {
-              Authorization: `Bearer ${user?.token}`,
-            },
-          }
-        );
-        console.log('resp', response);
-        setSubscribers(response?.data?.data?.data);
+        if (hasPermission('can read subscriber')) {
+          const response = await axios.get(
+            `${process.env.BASEURL}/getSubscribers`,
+            {
+              headers: {
+                Authorization: `Bearer ${user?.token}`,
+              },
+            }
+          );
+          console.log('resp', response);
+          dispatch(setSubscribers(response?.data?.data?.data));
+        }
       } catch (error: any) {
         console.error('Error:', error);
         const errorMessage =
@@ -64,8 +74,12 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
         setLoading(false);
       }
     };
-    getSubscribers();
-  }, [user?.token]);
+
+    if (hasPermission('can read subscriber')) {
+      console.log('here');
+      getSubscribers();
+    }
+  }, [dispatch, user?.permissions, user?.token]);
 
   const isBargeModalOpen = useSelector(
     (state: any) => state.modal.isBargeModalOpen
@@ -126,7 +140,11 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
   );
 
   const isLoading = useSelector((state: any) => state.modal.isLoading);
-
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  if (!isClient) return null;
   return (
     <>
       <section>
@@ -137,7 +155,7 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
               isSidebarOpen ? 'block' : 'hidden'
             }`}
           >
-            <Sidebar />
+            <Sidebar user={user} />
           </div>
           <main
             className={`flex-1 w-full px-5 min-h-[100vh] transition-all duration-300 ${
@@ -148,55 +166,55 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
           </main>
         </div>
       </section>
-      {isBargeModalOpen && (
+      {/* {isBargeModalOpen && (
         <AddBargeModal subscribers={subscribers} user={user} />
-      )}
+      )} */}
       {isDeckModalOpen && (
         <AddDeckModal subscribers={subscribers} user={user} />
       )}
-      {isDeckTypeModalOpen && (
+      {/* {isDeckTypeModalOpen && (
         <AddDeckTypeModal subscribers={subscribers} user={user} />
-      )}
+      )} */}
       {isStoreOnBoardModalOpen && (
         <AddStoreOnBoardModal subscribers={subscribers} user={user} />
       )}
-      {isProjectModalOpen && (
+      {/* {isProjectModalOpen && (
         <AddProjectModal subscribers={subscribers} user={user} />
-      )}
-      {isUomModalOpen && <AddUomModal />}
-      {isSafetyCategoryModalOpen && <AddSafetyCategoryModal />}
-      {isVendorModalOpen && (
+      )} */}
+      {/* {isUomModalOpen && <AddUomModal />} */}
+      {/* {isSafetyCategoryModalOpen && <AddSafetyCategoryModal />} */}
+      {/* {isVendorModalOpen && (
         <AddVendorModal subscribers={subscribers} user={user} />
       )}
       {isVendorCategoryModalOpen && (
         <AddVendorCategoryModal subscribers={subscribers} user={user} />
-      )}
-      {isLocationModalOpen && (
+      )} */}
+      {/* {isLocationModalOpen && (
         <AddLocationModal subscribers={subscribers} user={user} />
-      )}
-      {isBargeComponentModalOpen && (
+      )} */}
+      {/* {isBargeComponentModalOpen && (
         <AddBargeComponentCategoryModal subscribers={subscribers} user={user} />
-      )}
-      {isAddEngineModalOpen && (
+      )} */}
+      {/* {isAddEngineModalOpen && (
         <AddEngineModal subscribers={subscribers} user={user} />
       )}
       {isAddConsumeablesModalOpen && (
         <AddConsumablesModal subscribers={subscribers} user={user} />
-      )}
-      {isAddPermissionModalOpen && <AddPermissionModal />}
-      {isAddUserModalOpen && (
+      )} */}
+      {/* {isAddPermissionModalOpen && <AddPermissionModal />} */}
+      {/* {isAddUserModalOpen && (
         <AddUserModal subscribers={subscribers} user={user} />
-      )}
-      {isAddUserTypeModalOpen && <AddUserTypeModal />}
-      {isAddDepartmentModalOpen && (
+      )} */}
+      {/* {isAddUserTypeModalOpen && <AddUserTypeModal />} */}
+      {/* {isAddDepartmentModalOpen && (
         <AddDeptModal subscribers={subscribers} user={user} />
-      )}
-      {isAddRoleModalOpen && (
+      )} */}
+      {/* {isAddRoleModalOpen && (
         <AddRoleModal subscribers={subscribers} user={user} />
-      )}
-      {isAddInventoryTypeModalOpen && (
+      )} */}
+      {/* {isAddInventoryTypeModalOpen && (
         <AddInventoryTypeModal subscribers={subscribers} user={user} />
-      )}
+      )} */}
       {isLoading && <Loader />}
       <ToastContainer />
     </>

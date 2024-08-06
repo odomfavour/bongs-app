@@ -8,6 +8,8 @@ import ConsDeckStrip from './ConsDeckStrip';
 import ConsumablesableList from './ConsumablesTableList';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import { usePathname } from 'next/navigation';
+import AddConsumablesModal from './AddConsumablesModal';
+import Modal from '../dashboard/Modal';
 
 interface User {
   token: string;
@@ -16,17 +18,22 @@ interface User {
 interface CEnginePanelProps {
   deckCategories: { id: number; name: string; count: string }[];
   user: User;
+  requisition: boolean;
+  toggleRequisition: () => void;
 }
 
 const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   deckCategories,
   user,
+  requisition,
+  toggleRequisition,
 }) => {
   console.log('engine', deckCategories?.[0]?.name);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
   const [consumables, setConsumables] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
   const isAddConsumeablesModalOpen = useSelector(
     (state: any) => state.modal.isAddConsumeablesModalOpen
   );
@@ -75,10 +82,18 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
     }
   }, [activeId, fetchData, isAddConsumeablesModalOpen]);
 
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
+
   return (
     <div>
       <div className="my-4">
-        <ConsDeckStrip />
+        <ConsDeckStrip
+          toggleRequisition={toggleRequisition}
+          setOpenModal={setOpenModal}
+        />
       </div>
       <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2  gap-2">
         {deckCategories.map((tab: any) => (
@@ -103,7 +118,25 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
         data={consumables}
         fetchdata={fetchData}
         parent={'Deck'}
+        requisition={requisition}
+        setOpenModal={setOpenModal}
+        toggleRequisition={toggleRequisition}
       />
+
+      <Modal
+        title={
+          Object.keys(bargeValues).length > 0 ? 'Edit Deck' : 'Add New Deck'
+        }
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="70%"
+      >
+        <AddConsumablesModal
+          fetchData={fetchData}
+          handleClose={handleClose}
+          inventoryType="Deck"
+        />
+      </Modal>
     </div>
   );
 };

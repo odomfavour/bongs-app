@@ -8,6 +8,8 @@ import { formatDate } from '@/utils/utils';
 import axios from 'axios';
 // import { EmptyProductIcon } from '@/utils/utils';
 import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { FaExternalLinkAlt, FaPenAlt, FaTrashAlt } from 'react-icons/fa';
 import { FaMagnifyingGlass, FaRegFolderClosed } from 'react-icons/fa6';
@@ -17,33 +19,40 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 
-interface Deck {
+interface Requisition {
   id: number;
-  name: string;
-  deck_number: string;
-  deck_type: string;
-}
-
-interface Location {
-  id: number;
-  name: string;
-  location_number: string;
-  address: string;
-  deck: Deck;
-  status: string;
+  inventoryable_type: string;
+  quantity: number;
   created_at: string;
 }
 
-interface LocationListTableProps {
-  data: Location[];
-  fetchData: () => void;
-  setOpenModal: (isOpen: boolean) => void;
+interface RequestedBy {
+  id: number;
+  first_name: string;
+  last_name: string;
+}
+interface RequisitionList {
+  id: number;
+  indent_number: string;
+  batch_code: string;
+  requisition: Requisition;
+  requested_by: RequestedBy;
 }
 
-const LocationListTable: React.FC<LocationListTableProps> = ({
+interface RequisitionListTableProps {
+  data: RequisitionList[];
+  fetchData: () => void;
+  setOpenModal: (isOpen: boolean) => void;
+  setOpenDeclineModal: (isOpen: boolean) => void;
+  setRequisitionItem: (item: RequisitionList) => void;
+}
+
+const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
   data,
   fetchData,
   setOpenModal,
+  setOpenDeclineModal,
+  setRequisitionItem,
 }) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
@@ -60,12 +69,13 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 20;
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
+  console.log('current', currentItems);
 
   // Function to change page
   const paginate = (pageNumber: number) => {
@@ -130,10 +140,19 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
     }
   };
 
-  const hasPermission = (permissionName: string) =>
-    user?.permissions?.some(
-      (permission: any) => permission.name === permissionName
-    );
+  const approveReq = (item: any) => {
+    setOpenModal(true);
+    setRequisitionItem(item);
+  };
+  const declineReq = (item: any) => {
+    setOpenDeclineModal(true);
+    setRequisitionItem(item);
+  };
+
+  const removePrefix = (str: string, prefix = 'App\\Models\\') => {
+    return str.replace(prefix, '');
+  };
+  const pathname = usePathname();
 
   return (
     <div className="bg-white">
@@ -142,76 +161,64 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
-              <th className="text-sm text-left py-3">Location No</th>
-              <th className="text-sm text-left py-3">Name</th>
-              <th className="text-sm text-left py-3">Stored Items</th>
-              <th className="text-sm text-left py-3">Deck</th>
-              <th className="text-sm text-left py-3">Status</th>
-              <th className="text-sm text-left py-3">Created On</th>
-              <th className="text-sm text-left py-3">Actions</th>
+              <th className="text-sm text-left py-3">Indent No</th>
+              <th className="text-sm text-left py-3">inventory Type</th>
+              <th className="text-sm text-left py-3">Requested By</th>
+
+              <th className="text-sm text-left py-3">Requisition Data/Time</th>
+              {pathname === '/requisitions' && (
+                <th className="text-sm text-left py-3">Actions</th>
+              )}
             </tr>
           </thead>
           <tbody>
-            {currentItems.length > 0 &&
-              currentItems.map((item, index) => {
-                const {
-                  id,
-                  name,
-                  location_number,
-                  address,
-                  deck,
-                  status,
-                  created_at,
-                } = item;
+            {currentItems?.length > 0 &&
+              currentItems?.map((item, index) => {
+                const { id, batch_code, requisition, requested_by } = item;
                 return (
                   <tr className="border-b" key={id}>
                     <td className="py-2 text-center text-[#344054]">
                       {index + 1}
                     </td>
+                    <td className="py-2 text-left text-sm">{batch_code}</td>
                     <td className="py-2 text-left text-sm">
-                      {location_number}
-                      {id}
+                      {removePrefix(requisition?.inventoryable_type)}
                     </td>
-                    <td className="py-2 text-left text-sm">{name}</td>
-                    <td className="py-2 text-left text-sm">{address}</td>
-                    <td className="py-2 text-left text-sm">{deck?.name}</td>
-                    <td className="py-2 text-left text-sm">{status}</td>
                     <td className="py-2 text-left text-sm">
-                      {formatDate(created_at)}
+                      {requested_by?.first_name} {requested_by?.last_name}
                     </td>
 
-                    {(hasPermission('can update location') ||
-                      hasPermission('can delete location')) && (
+                    <td className="py-2 text-left text-sm">
+                      {formatDate(requisition?.created_at)}
+                    </td>
+                    {pathname === '/requisitions' && (
                       <td className="py-2 text-center flex justify-left text-sm items-center">
                         <div className="flex gap-3">
-                          {hasPermission('can update location') && (
-                            <button
-                              className="bg-blue-700 text-white p-2 text-sm rounded-md"
-                              onClick={() => handleEdit(item)}
-                            >
-                              Edit
-                            </button>
-                          )}
-                          {hasPermission('can delete location') && (
-                            <button
-                              className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                              onClick={() => confirmDelete(id)}
-                              disabled={loadingStates[id]}
-                            >
-                              {loadingStates[id] ? (
-                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                              ) : (
-                                'Delete'
-                              )}
-                            </button>
-                          )}
+                          <Link
+                            href={`/requisitions/${id}`}
+                            className="bg-blue-700 text-white p-2 text-sm rounded-md"
+                          >
+                            View
+                          </Link>
+                          <button
+                            className="bg-blue-700 text-white p-2 text-sm rounded-md"
+                            onClick={() => approveReq(item)}
+                          >
+                            Approve
+                          </button>
+                          <button
+                            className="bg-blue-700 text-white p-2 text-sm rounded-md"
+                            onClick={() => declineReq(item)}
+                          >
+                            Reject
+                          </button>
                         </div>
                       </td>
                     )}
                   </tr>
                 );
               })}
-            {currentItems.length == 0 && (
+            {currentItems?.length == 0 && (
               <tr className="text-center text-primary bg-white">
                 <td className="py-2 text-center" colSpan={10}>
                   <div className="flex justify-center items-center  min-h-[60vh]">
@@ -221,13 +228,13 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
                       </div>
                       <div className="mt-5">
                         <p className="font-medium text-[#475467]">
-                          No Locations found
+                          No Requisition found
                         </p>
-                        <p className="font-normal text-sm mt-3">
+                        {/* <p className="font-normal text-sm mt-3">
                           Click “add location” button to get started in doing
                           your
                           <br /> first transaction on the platform
-                        </p>
+                        </p> */}
                       </div>
                     </div>
                   </div>
@@ -295,4 +302,4 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
   );
 };
 
-export default LocationListTable;
+export default RequisitionListTable;

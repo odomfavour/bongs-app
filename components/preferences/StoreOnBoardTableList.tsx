@@ -85,14 +85,10 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
 
-
   // Function to change page
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
-
-
-
 
   const handleEdit = (item: StoreBoardType) => {
     dispatch(displayBargeValue(item));
@@ -138,76 +134,120 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
     }
   };
 
+  const hasPermission = (permissionName: string) =>
+    user?.permissions?.some(
+      (permission: any) => permission.name === permissionName
+    );
 
-  const itemList = currentItems.map((item, index) => {
-    return {
-      ...item,
-      project:  item.project?.project_name,
-      "S/N": `${index + 1}`,
-      deck: item.deck.name,
-      description: item.description,
-      key: item.key,
-      room_number: item.room_number,
-      addedBy: `${item.user.first_name} ${item.user.last_name}`,
-      created_at: `${formatDate(item.created_at)}`,
-     status: item.status
-     
-    }
-  }) 
-
-  console.log("this is the item list", itemList)
   return (
     <div className="bg-white">
-      <div className="overflow-x-auto mb-4">
-     <StoreOnBoardTable
-           fetchedData={ currentItems}
-           loadingStates={ loadingStates }
-           handleDelete={handleDelete}
-           handleEdit={ handleEdit }
-           COLUMNS={[
-             {
-               Header: "S/N",
-               accessor: "S/N"
-             },
-             {
-              Header: "Project",
-                 accessor: "project"
-             },
-             {
-              Header: "Description",
-                 accessor: "description"
-          },
-           {
-               Header: "Deck",
-                  accessor: "deck"
-           },
-           {
-               Header: "Key",
-               accessor: "key"
-           },
-           {
-               Header: "Room Number",
-               accessor: "room_number"
-           },
-           {
-               Header: "Added By",
-               accessor: "addedBy"
-           },
-           {
-               Header: "Staus",
-               accessor: "status"
-             },
-             {
-               Header: "Created On",
-                  accessor: "created_at"
-             }
-            
-             
-           ]}
-            MOCK_DATA={itemList}
-        />  
-        
-       
+      <div className="overflow-x-auto">
+        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+          <thead>
+            <tr className="border-b bg-[#E9EDF4]">
+              <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
+              <th className="text-sm text-center py-3">Project</th>
+              <th className="text-sm text-center py-3">Description</th>
+              <th className="text-sm text-center py-3">Deck</th>
+              <th className="text-sm text-center py-3">Key</th>
+              <th className="text-sm text-center py-3">Room Number</th>
+              <th className="text-sm text-center py-3">Added By</th>
+              <th className="text-sm text-center py-3">Status</th>
+              <th className="text-sm text-center py-3">Created On</th>
+              <th className="text-sm text-center py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentItems.length > 0 &&
+              currentItems.map((item, index) => {
+                const {
+                  id,
+                  deck,
+                  project,
+                  description,
+                  key,
+                  room_number,
+                  addedBy,
+                  user,
+                  status,
+                  created_at,
+                } = item;
+                return (
+                  <tr className="border-b" key={id}>
+                    <td className="py-2 text-center text-[#344054]">
+                      {index + 1}
+                    </td>
+
+                    <td className="py-2 text-center">
+                      {project?.project_name}
+                    </td>
+                    <td className="py-2 text-center">{description}</td>
+                    <td className="py-2 text-center">{deck?.name}</td>
+                    <td className="py-2 text-center">{key}</td>
+                    <td className="py-2 text-center">{room_number}</td>
+                    <td className="py-2 text-center">
+                      {user?.first_name} {user?.last_name}
+                    </td>
+                    <td className="py-2 text-center">{status}</td>
+                    <td className="py-2 text-center">
+                      {formatDate(created_at)}
+                    </td>
+                    {(hasPermission('can update keystore') ||
+                      hasPermission('can delete keystore')) && (
+                      <td className="py-2 text-center flex justify-center items-center">
+                        <div className="flex gap-3">
+                          {hasPermission('can update  keystore') && (
+                            <button
+                              className="bg-blue-700 text-white p-2 rounded-md"
+                              onClick={() => handleEdit(item)}
+                            >
+                              Edit
+                            </button>
+                          )}
+                          {hasPermission('can delete keystore') && (
+                            <button
+                              className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                              onClick={() => handleDelete(id)}
+                              disabled={loadingStates[id]}
+                            >
+                              {loadingStates[id] ? (
+                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                              ) : (
+                                'Delete'
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
+            {currentItems.length == 0 && (
+              <tr className="text-center text-primary bg-white">
+                <td className="py-2 text-center" colSpan={10}>
+                  <div className="flex justify-center items-center  min-h-[60vh]">
+                    <div>
+                      <div className="flex justify-center items-center">
+                        <FaRegFolderClosed className="text-4xl" />
+                      </div>
+                      <div className="mt-5">
+                        <p className="font-medium text-[#475467]">
+                          No Keystore found
+                        </p>
+                        <p className="font-normal text-sm mt-3">
+                          Click “add store on board” button to get started in
+                          doing your
+                          <br /> first transaction on the platform
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
       {/* {data.length > itemsPerPage && (

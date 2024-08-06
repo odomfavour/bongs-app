@@ -1,5 +1,7 @@
 'use client';
 import Loader from '@/components/Loader';
+import Modal from '@/components/dashboard/Modal';
+import AddLocationModal from '@/components/location/AddLocationModal';
 import LocationListTable from '@/components/location/LocationListTable';
 import {
   displayBargeValue,
@@ -39,17 +41,28 @@ const LocationPage = () => {
   const isLocationModalOpen = useSelector(
     (state: any) => state.modal.isLocationModalOpen
   );
+  const bargeValues = useSelector((state: any) => state.modal.bargeValues);
+
+  const hasPermission = useCallback(
+    (permissionName: string) =>
+      user?.permissions?.some(
+        (permission: any) => permission.name === permissionName
+      ),
+    [user?.permissions]
+  );
 
   const fetchData = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
-      const response = await axios.get(`${process.env.BASEURL}/location`, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      console.log('resp', response);
-      setLocations(response?.data?.data?.data);
+      if (hasPermission('can view location')) {
+        const response = await axios.get(`${process.env.BASEURL}/location`, {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        });
+        console.log('resp', response);
+        setLocations(response?.data?.data?.data);
+      }
     } catch (error: any) {
       console.error('Error:', error);
 
@@ -66,12 +79,15 @@ const LocationPage = () => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [router, user?.token]);
+  }, [dispatch, hasPermission, router, user?.token]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData, isLocationModalOpen]);
-
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
   return (
     <section>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
@@ -97,22 +113,40 @@ const LocationPage = () => {
       </div>
       <div>
         <div className="flex justify-end mb-6">
-          <button
-            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-            onClick={() => {
-              dispatch(displayBargeValue({}));
-              dispatch(toggleLocationModal());
-            }}
-          >
-            Add Location
-          </button>
+          {hasPermission('can create location') && (
+            <button
+              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+              onClick={() => {
+                dispatch(displayBargeValue({}));
+                setOpenModal(true);
+              }}
+            >
+              Add Location
+            </button>
+          )}
         </div>
         {loading ? (
           <Loader />
         ) : (
-          <LocationListTable data={locations} fetchData={fetchData} />
+          <LocationListTable
+            data={locations}
+            fetchData={fetchData}
+            setOpenModal={setOpenModal}
+          />
         )}
       </div>
+      <Modal
+        title={
+          Object.keys(bargeValues).length > 0
+            ? 'Edit Location'
+            : 'Add New Location'
+        }
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="40%"
+      >
+        <AddLocationModal fetchData={fetchData} handleClose={handleClose} />
+      </Modal>
     </section>
   );
 };

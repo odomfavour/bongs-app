@@ -138,11 +138,82 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
     user?.permissions?.some(
       (permission: any) => permission.name === permissionName
     );
+  
+  /* maping throught the list of items to create a modified table data */
+  const itemList = currentItems.map((item, index) => {
+    console.log("this are the items",item)
+    
+  
+    return {
+      ...item,
+      project:  item.project?.project_name,
+      "S/N": `${index + 1}`,
+      deck: item.deck?.name, 
+      description: item.description,
+      key: item.key,
+      room_number: item.room_number,
+      addedBy: `${item.user.first_name} ${item.user.last_name}`,
+      created_at: `${formatDate(item.created_at)}`,
+     status: item.status
+     
+    }
+  }) 
+
+
 
   return (
     <div className="bg-white">
-      <div className="overflow-x-auto">
-        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+      <div className="overflow-x-auto mb-4">
+       <StoreOnBoardTable
+           fetchedData={ currentItems}
+           loadingStates={ loadingStates }
+           handleDelete={handleDelete}
+           handleEdit={ handleEdit }
+           COLUMNS={[
+             {
+               Header: "S/N",
+               accessor: "S/N"
+             },
+             {
+              Header: "Project",
+                 accessor: "project"
+             },
+             {
+              Header: "Description",
+                 accessor: "description"
+          },
+           {
+               Header: "Deck",
+                  accessor: "deck"
+           },
+           {
+               Header: "Key",
+               accessor: "key"
+           },
+           {
+               Header: "Room Number",
+               accessor: "room_number"
+           },
+           {
+               Header: "Added By",
+               accessor: "addedBy"
+           },
+           {
+               Header: "Staus",
+               accessor: "status"
+             },
+             {
+               Header: "Created On",
+                  accessor: "created_at"
+             }
+            
+             
+           ]}
+            MOCK_DATA={itemList}
+        />    
+         
+        
+      {/*   <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
@@ -247,10 +318,10 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
               </tr>
             )}
           </tbody>
-        </table>
+        </table>  */}
       </div>
 
-      {/* {data.length > itemsPerPage && (
+    {/*   {data.length > itemsPerPage && (
         <div className="pagination px-5">
           <div className="flex items-center gap-6 text-primary">
             <p
@@ -299,7 +370,7 @@ const StoreOnBoardListTable: React.FC<StoreOnBoardListTableProps> = ({
             </p>
           </div>
         </div>
-      )} */}
+      )}  */}
     </div>
   );
 };

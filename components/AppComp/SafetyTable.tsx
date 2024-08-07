@@ -1,4 +1,4 @@
-import { Barge } from '@/utils/types';
+import { Barge, SafetyCategoryType } from '@/utils/types';
 import { formatDate } from '@/utils/utils';
 import React, { useMemo } from 'react';
 import { FaSearch } from 'react-icons/fa';
@@ -14,22 +14,24 @@ import {
   UsePaginationInstanceProps,
 } from 'react-table';
 
-function AppTable({
+function SafetyTable({
   MOCK_DATA,
   COLUMNS,
   handleEdit,
   handleDelete,
   loadingStates,
   fetchedData,
+  hasPermission
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
-  handleEdit: (data: Barge) => void;
-  handleDelete: (id: number) => void;
+  handleEdit: (data: SafetyCategoryType) => void;
+    handleDelete: (id: number) => void;
+  hasPermission: (permission : string) => boolean
   loadingStates: {
     [key: number]: boolean;
   };
-  fetchedData: Barge[];
+  fetchedData: SafetyCategoryType[];
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
@@ -72,7 +74,6 @@ function AppTable({
 
   const { globalFilter, pageIndex } = state;
 
-  console.log('the fetched data', fetchedData);
 
   return (
     <>
@@ -152,35 +153,42 @@ function AppTable({
                       </td>
                     );
                   })}
-                  <td>
-                    <div className="flex-row flex items-center space-x-2">
-                      <button
-                        className="bg-blue-300 text-white p-2 rounded-md"
-                        onClick={() => {
-                          const selectedRow = fetchedData.find(
-                            (item) => item.id == row.original.id
-                          );
-                          if (selectedRow) {
-                            return handleEdit(selectedRow);
-                          }
-                        }}
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                        onClick={() => handleDelete(row.original.id)}
-                        disabled={loadingStates[row.original.id]}
-                      >
-                        {loadingStates[row.original.id] ? (
-                          <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                        ) : (
-                          'Delete'
-                        )}
-                      </button>
-                    </div>
-                  </td>
+                   {(hasPermission('can update safety category') ||
+                      hasPermission('can delete safety category')) && (
+                      <td className="py-2 text-center flex justify-center items-center">
+                        <div className="flex gap-3">
+                          {hasPermission('can update safety category') && (
+                            <button
+                              className="bg-blue-700 text-white p-2 rounded-md"
+                            /*  onClick={() => handleEdit(fetchedData)} */
+                            onClick={() => {
+                              const selectedRow = fetchedData.find(
+                                (item) => item.id == row.original.id
+                              );
+                              if (selectedRow) {
+                                return handleEdit(selectedRow);
+                              }
+                            }}
+                            >
+                              Edit
+                            </button>
+                          )}
+                          {hasPermission('can delete safety category') && (
+                            <button
+                              className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                              onClick={() => handleDelete(row.original.id)}
+                              disabled={loadingStates[row.original.id]}
+                            >
+                              {loadingStates[row.original.id] ? (
+                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                              ) : (
+                                'Delete'
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                 </tr>
               );
             })
@@ -208,5 +216,5 @@ function AppTable({
   );
 }
 
-export default AppTable;
+export default SafetyTable;
 -3;

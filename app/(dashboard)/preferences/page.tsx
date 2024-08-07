@@ -271,7 +271,7 @@ const Preferences = () => {
     <div>
       <div className="flex md:flex-row gap-5 flex-col justify-between md:items-center items-start mb-5 pb-10 border-b">
         <p className="text-[32px] font-medium ">Barge Setup</p>
-        <div className="flex items-center gap-2 md:w-2/5 w-full">
+      {/*   <div className="flex items-center gap-2 md:w-2/5 w-full">
           <div className="md:w-4/5 w-3/5">
             <div className="w-full relative">
               <input
@@ -291,7 +291,7 @@ const Preferences = () => {
           <button className="bg-grey-400 border text-sm p-3 rounded-md">
             Add Filter
           </button>
-        </div>
+        </div> */}
       </div>
       <div className="flex justify-end mb-6">
         {activeTab === 'Barge' && hasPermission('can create barge') ? (

@@ -129,7 +129,7 @@ const VendorsPage = () => {
     <section>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
         <p className="text-[32px] font-medium">Vendors</p>
-        <div className="flex items-center gap-2 w-2/5">
+     {/*    <div className="flex items-center gap-2 w-2/5">
           <div className="w-4/5">
             <div className="w-full relative">
               <input
@@ -146,7 +146,7 @@ const VendorsPage = () => {
           <button className="bg-grey-400 border text-sm p-3 rounded-md">
             Add Filter
           </button>
-        </div>
+        </div> */}
       </div>
       <div>
         <div className="flex justify-end mb-6">

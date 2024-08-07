@@ -145,7 +145,47 @@ const DeckListTable: React.FC<DeckListTableProps> = ({ data, fetchdata }) => {
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
-        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+      <DeckTable
+           fetchedData={ currentItems}
+           loadingStates={ loadingStates }
+           handleDelete={handleDelete}
+           handleEdit={ handleEdit }
+           COLUMNS={[
+             {
+               Header: "S/N",
+               accessor: "S/N"
+           },
+           {
+               Header: "Deck No.",
+                  accessor: "deck_type"
+           },
+           {
+               Header: "Name",
+               accessor: "name"
+           },
+           {
+               Header: "Barge",
+               accessor: "barge"
+           },
+           {
+               Header: "Added By",
+               accessor: "user"
+           },
+           {
+               Header: "Staus",
+               accessor: "status"
+             },
+             {
+               Header: "Created On",
+                  accessor: "created_at"
+             }
+            
+             
+           ]}
+            MOCK_DATA={itemList}
+        /> 
+
+      {/*   <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
@@ -244,7 +284,7 @@ const DeckListTable: React.FC<DeckListTableProps> = ({ data, fetchdata }) => {
               </tr>
             )}
           </tbody>
-        </table>
+        </table> */}
       </div>
 
       {/* {data.length > itemsPerPage && (

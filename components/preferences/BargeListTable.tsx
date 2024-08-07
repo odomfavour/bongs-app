@@ -127,7 +127,55 @@ const BargeListTable: React.FC<BargeListTableProps> = ({
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
-        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+
+          <AppTable
+            fetchedData={ currentItems}
+            loadingStates={ loadingStates }
+            handleDelete={handleDelete}
+            handleEdit={ handleEdit }
+            COLUMNS={[
+              {
+                Header: "S/N",
+                accessor: "S/N"
+            },
+            {
+                Header: "Barge No",
+                   accessor: "barge_number"
+            },
+            {
+                Header: "Name",
+                accessor: "name"
+            },
+            {
+                Header: "Rooms",
+                accessor: "rooms"
+            },
+            {
+                Header: "Stores",
+                accessor: "store_location"
+            },
+            {
+                Header: "Deck Level",
+                accessor: "deck_level"
+              },
+              {
+                Header: "Added By",
+                   accessor: "added_by"
+              },
+              {
+                Header: "Status",
+                accessor: "status"
+              },
+              {
+                Header: "Created On",
+                accessor: "created_at"
+              },
+              
+            ]}
+             MOCK_DATA={itemList}
+          /> 
+
+      {/*   <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
@@ -181,13 +229,7 @@ const BargeListTable: React.FC<BargeListTableProps> = ({
                       hasPermission('can delete barge')) && (
                       <td className="py-2 text-center flex justify-center items-center">
                         <div className="flex gap-3">
-                          {/* <FaExternalLinkAlt title="view" role="button" />
-                      <FaPenAlt title="edit" role="button" />
-                      <FaTrashAlt
-                        title="delete"
-                        role="button"
-                        className="text-red-600"
-                      /> */}
+                        
                           {hasPermission('can update barge') && (
                             <button
                               className="bg-blue-300 text-sm text-white p-2 rounded-md"
@@ -238,7 +280,7 @@ const BargeListTable: React.FC<BargeListTableProps> = ({
               </tr>
             )}
           </tbody>
-        </table>
+        </table> */}
       </div>
 
       {/*  {data.length > itemsPerPage && (

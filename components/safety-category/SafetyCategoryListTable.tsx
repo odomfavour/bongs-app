@@ -15,6 +15,7 @@ import {
 } from '@/provider/redux/modalSlice';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import SafetyTable from '../AppComp/SafetyTable';
 
 interface User {
   first_name: string;
@@ -140,10 +141,64 @@ const SafetyCategoryListTable: React.FC<SafetyCategoryListTableProps> = ({
       (permission: any) => permission.name === permissionName
     );
 
+  
+    const itemList = currentItems.map((item, index) => {
+      return {
+        ...item,
+       name: `${item.name}`,
+        'S/N': `${index + 1}`,
+        safety: `${item.safety_number}${item.id}`,
+        category: `${item.name}`,
+        addedBy: `${item.user?.first_name} ${item.user?.last_name}`,
+        description: `${item?.description || ""} `,
+        status: `${item.status}`,
+        created_at: `${formatDate(item.created_at)}`
+      };
+    });
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
-        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+       <SafetyTable
+       fetchedData={ currentItems}
+       loadingStates={ loadingStates }
+       handleDelete={handleDelete}
+          handleEdit={handleEdit}
+          hasPermission={ hasPermission }
+       COLUMNS={[
+         {
+           Header: "S/N",
+           accessor: "S/N"
+       },
+     
+       {
+           Header: "Safety No.",
+           accessor: "safety"
+       },
+       {
+           Header: "Category Name",
+           accessor: "category"
+       },
+       {
+           Header: "Description",
+           accessor: "description"
+       },
+       {
+           Header: "Added By",
+           accessor: "addedBy"
+         },
+         {
+           Header: "Status",
+              accessor: "status"
+         },
+         {
+           Header: "Created On",
+           accessor: "created_at"
+         },
+         
+       ]}
+        MOCK_DATA={itemList}
+        />  
+       {/*  <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
@@ -292,7 +347,7 @@ const SafetyCategoryListTable: React.FC<SafetyCategoryListTableProps> = ({
               </p>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

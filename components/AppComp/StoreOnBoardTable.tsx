@@ -89,7 +89,7 @@ function StoreOnBoardTable({
           </div>
         </div>
 
-        <button className="bg-green-400 border text-sm p-3 rounded-md ">
+        <button className=" border text-sm p-3 rounded-md ">
           Add Filter
         </button>
       </div>
@@ -97,7 +97,7 @@ function StoreOnBoardTable({
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup, index) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={index}>
+            <tr {...headerGroup.getHeaderGroupProps()} key={index} className='border-b bg-[#E9EDF4]'>
               {headerGroup.headers.map((column, index) => (
                 <th
                   className="py-2 text-center"
@@ -122,10 +122,10 @@ function StoreOnBoardTable({
                     </div>
                     <div className="mt-5">
                       <p className="font-medium text-[#475467]">
-                        No Deck found
+                        No Store-On-Board found
                       </p>
                       <p className="font-normal text-sm mt-3">
-                        Click “add barge” button to get started in doing your
+                        Click “add store-on-board” button to get started in doing your
                         <br /> first transaction on the platform
                       </p>
                     </div>
@@ -150,7 +150,7 @@ function StoreOnBoardTable({
                     );
                   })}
                   <td>
-                    <div className="flex-row flex items-center space-x-2 bg-red-300">
+                    <div className="flex-row flex items-center space-x-2 ">
                       <button
                         className="bg-blue-300 text-white p-2 rounded-md"
                         onClick={() => {

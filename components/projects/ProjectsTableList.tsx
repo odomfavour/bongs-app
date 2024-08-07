@@ -17,6 +17,7 @@ import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import ProjectTable from '../AppComp/ProjectTable';
 interface ProjectManager {
   id: number;
   first_name: string;
@@ -133,10 +134,72 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
     setOpenModal(true);
     // dispatch(toggleAddProjectModal());
   };
+
+
+  const itemList = currentItems.map((item, index) => {
+    return {
+      ...item,
+     name: `${item.project_name}`,
+      'S/N': `${index + 1}`,
+      title: `${item.project_title}`,
+      duration: `${item.project_duration}`,
+      start_date: `${item.project_start_date}`,
+      end_date: `${item.project_end_date}`,
+      project_manager: `${item.project_manager?.first_name} ${item.project_manager?.last_name}`,
+      created_at: `${formatDate(item.created_at)}`
+    };
+  });
+
+
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
-        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+        <ProjectTable
+       fetchedData={ currentItems}
+       loadingStates={ loadingStates }
+       handleDelete={handleDelete}
+          handleEdit={handleEdit}
+          hasPermission={ hasPermission }
+       COLUMNS={[
+         {
+           Header: "S/N",
+           accessor: "S/N"
+       },
+     
+       {
+           Header: "Name",
+           accessor: "name"
+       },
+       {
+           Header: "Title",
+           accessor: "title"
+       },
+       {
+           Header: "Duration",
+           accessor: "duration"
+       },
+       {
+           Header: "Start Date",
+           accessor: "start_date"
+         },
+         {
+           Header: "End Date",
+              accessor: "end_date"
+         },
+         {
+           Header: "Project managers",
+           accessor: "project_managers"
+         },
+         {
+           Header: "Created On",
+           accessor: "created_at"
+         },
+         
+       ]}
+        MOCK_DATA={itemList}
+        />
+
+       {/*  <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
@@ -243,7 +306,7 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
               </tr>
             )}
           </tbody>
-        </table>
+        </table> */}
       </div>
 
       {/* {data.length > itemsPerPage && (

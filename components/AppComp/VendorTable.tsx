@@ -1,8 +1,8 @@
-import { Barge } from '@/utils/types';
-import { formatDate } from '@/utils/utils';
-import React, { useMemo } from 'react';
-import { FaSearch } from 'react-icons/fa';
-import { FaRegFolderClosed } from 'react-icons/fa6';
+import { LocationType } from "@/utils/types";
+import { formatDate } from "@/utils/utils";
+import React, { useMemo } from "react";
+import { FaSearch } from "react-icons/fa";
+import { FaRegFolderClosed } from "react-icons/fa6";
 import {
   useTable,
   usePagination,
@@ -12,24 +12,44 @@ import {
   UseGlobalFiltersInstanceProps,
   UsePaginationState,
   UsePaginationInstanceProps,
-} from 'react-table';
+} from "react-table";
 
-function AppTable({
+interface Vendor {
+  id: number;
+  vendor_number: string;
+  vendor_name: string;
+  vendor_category_id: number;
+  vendor_description: string;
+  vendor_email: string;
+  status: string;
+  created_at: string;
+}
+
+interface VendorCategory {
+  id: number;
+  name: string;
+  status: string;
+  created_at: string;
+}
+
+function VendorTable({
   MOCK_DATA,
   COLUMNS,
   handleEdit,
-  handleDelete,
+  confirmDelete,
   loadingStates,
   fetchedData,
+  hasPermission,
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
-  handleEdit: (data: Barge) => void;
-  handleDelete: (id: number) => void;
+  handleEdit: (data: Vendor) => void;
+  hasPermission: (permision: string) => boolean;
+  confirmDelete: (id: number) => void;
   loadingStates: {
     [key: number]: boolean;
   };
-  fetchedData: Barge[];
+  fetchedData: Vendor[];
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
@@ -72,7 +92,7 @@ function AppTable({
 
   const { globalFilter, pageIndex } = state;
 
-  console.log('the fetched data', fetchedData);
+  console.log("the fetched data", fetchedData);
 
   return (
     <>
@@ -81,7 +101,7 @@ function AppTable({
           <div className="w-full relative">
             <input
               type="search"
-              value={globalFilter || ''}
+              value={globalFilter || ""}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Search here... now"
               className="bg-gray-50 pl-8 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
@@ -100,14 +120,18 @@ function AppTable({
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup, index) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={index} className='border-b bg-[#E9EDF4]'>
+            <tr
+              {...headerGroup.getHeaderGroupProps()}
+              key={index}
+              className="border-b bg-[#E9EDF4]"
+            >
               {headerGroup.headers.map((column, index) => (
                 <th
                   className="py-2 text-center"
                   {...column.getHeaderProps()}
                   key={index}
                 >
-                  {column.render('Header')}
+                  {column.render("Header")}
                 </th>
               ))}
               <th className="py-2 text-center">Actions</th>
@@ -125,10 +149,10 @@ function AppTable({
                     </div>
                     <div className="mt-5">
                       <p className="font-medium text-[#475467]">
-                        No Barge found
+                        No Vendor found
                       </p>
                       <p className="font-normal text-sm mt-3">
-                        Click “add barge” button to get started in doing your
+                        Click “add vendor” button to get started in doing your
                         <br /> first transaction on the platform
                       </p>
                     </div>
@@ -148,39 +172,46 @@ function AppTable({
                         {...cell.getCellProps()}
                         key={index}
                       >
-                        {cell.render('Cell')}
+                        {cell.render("Cell")}
                       </td>
                     );
                   })}
-                  <td>
-                    <div className="flex-row flex items-center space-x-2">
-                      <button
-                        className="bg-blue-300 text-white p-2 rounded-md"
-                        onClick={() => {
-                          const selectedRow = fetchedData.find(
-                            (item) => item.id == row.original.id
-                          );
-                          if (selectedRow) {
-                            return handleEdit(selectedRow);
-                          }
-                        }}
-                      >
-                        Edit
-                      </button>
 
-                      <button
-                        className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                        onClick={() => handleDelete(row.original.id)}
-                        disabled={loadingStates[row.original.id]}
-                      >
-                        {loadingStates[row.original.id] ? (
-                          <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                        ) : (
-                          'Delete'
+                  {(hasPermission("can update vendor") ||
+                    hasPermission("can delete vendor")) && (
+                    <td className="py-2 text-center flex justify-center items-center">
+                      <div className="flex gap-3">
+                        {hasPermission("can update vendor") && (
+                          <button
+                            className="bg-blue-700 text-white p-2 rounded-md"
+                            onClick={() => {
+                              const selectedRow = fetchedData.find(
+                                (item) => item.id == row.original.id
+                              );
+                              if (selectedRow) {
+                                return handleEdit(selectedRow);
+                              }
+                            }}
+                          >
+                            Edit
+                          </button>
                         )}
-                      </button>
-                    </div>
-                  </td>
+                        {hasPermission("can delete vendor") && (
+                          <button
+                            className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                            onClick={() => confirmDelete(row.original.id)}
+                            disabled={loadingStates[row.original.id]}
+                          >
+                            {loadingStates[row.original.id] ? (
+                              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                            ) : (
+                              "Delete"
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  )}
                 </tr>
               );
             })
@@ -189,7 +220,7 @@ function AppTable({
       </table>
       <div className="flex flex-row justify-end mt-3">
         <span>
-          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
+          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{" "}
         </span>
 
         <button
@@ -197,8 +228,8 @@ function AppTable({
           disabled={!canPreviousPage}
           onClick={() => previousPage()}
         >
-          {' '}
-          Previous{' '}
+          {" "}
+          Previous{" "}
         </button>
         <button disabled={!canNextPage} onClick={() => nextPage()}>
           Next
@@ -208,5 +239,4 @@ function AppTable({
   );
 }
 
-export default AppTable;
--3;
+export default VendorTable;

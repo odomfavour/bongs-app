@@ -187,7 +187,70 @@ export interface categoryCountType {
 }
  
 
+export interface UserType {
+  first_name: string;
+  last_name: string;
+}
+
+export interface UomType {
+  id: number;
+  name: string;
+  unit: string;
+  description: string;
+  addedBy: string;
+  status: string;
+  created_at: string;
+  user: User;
+}
+
+export interface UoMListTablePropsType {
+  data: UomType[];
+  fetchData: () => void;
+  setOpenModal: (isOpen: boolean) => void;
+}
+
+
+
+export interface SafetyCategoryType {
+  id: number;
+  name: string;
+  safety_number: string;
+  description: string;
+  addedBy: string;
+  status: string;
+  user: User;
+  created_at: string;
+}
+
+export interface SafetyCategoryListTableProps {
+  data: SafetyCategoryType[];
+  fetchData: () => void; // Add a function to refresh the data
+  setOpenModal: (isOpen: boolean) => void;
+}
+
 
 
 
   
+export interface DeckType {
+  id: number;
+  name: string;
+  deck_number: string;
+  deck_type: string;
+}
+
+export interface LocationType {
+  id: number;
+  name: string;
+  location_number: string;
+  address: string;
+  deck: DeckType;
+  status: string;
+  created_at: string;
+}
+
+export interface LocationListTablePropsType {
+  data: Location[];
+  fetchData: () => void;
+  setOpenModal: (isOpen: boolean) => void;
+}

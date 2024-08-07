@@ -29,6 +29,7 @@ interface RequisitionItem {
   id: number;
   indent_number: string;
   batch_code: string;
+  status: string;
   requisition: Requisition;
   requested_by: RequestedBy;
 }

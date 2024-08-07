@@ -21,7 +21,7 @@ const links: LinkItem[] = [
   },
   {
     href: '/requisitions',
-    text: 'Requisitions',
+    text: 'Material Release',
     img: 'inventories.png',
   },
 ];

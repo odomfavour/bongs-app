@@ -35,6 +35,7 @@ interface RequisitionList {
   id: number;
   indent_number: string;
   batch_code: string;
+  status: string;
   requisition: Requisition;
   requested_by: RequestedBy;
 }
@@ -44,6 +45,7 @@ interface RequisitionListTableProps {
   fetchData: () => void;
   setOpenModal: (isOpen: boolean) => void;
   setOpenDeclineModal: (isOpen: boolean) => void;
+  setOpenReleaseModal: (isOpen: boolean) => void;
   setRequisitionItem: (item: RequisitionList) => void;
 }
 
@@ -53,6 +55,7 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
   setOpenModal,
   setOpenDeclineModal,
   setRequisitionItem,
+  setOpenReleaseModal,
 }) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
@@ -141,12 +144,44 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
   };
 
   const approveReq = (item: any) => {
-    setOpenModal(true);
     setRequisitionItem(item);
+    setOpenModal(true);
   };
   const declineReq = (item: any) => {
-    setOpenDeclineModal(true);
     setRequisitionItem(item);
+    setOpenDeclineModal(true);
+  };
+  const releaseItem = (item: any) => {
+    setRequisitionItem(item);
+    setOpenReleaseModal(true);
+  };
+
+  const printItem = async (id: number) => {
+    try {
+      const response = await axios.get(
+        `${process.env.BASEURL}/requisitions/print/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+      console.log('Approve Response:', response);
+      if (response.status === 200) {
+        toast.success(`${response?.data?.message}`);
+      }
+      fetchData();
+      // setOpenModal(false);
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    }
   };
 
   const removePrefix = (str: string, prefix = 'App\\Models\\') => {
@@ -174,7 +209,8 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
           <tbody>
             {currentItems?.length > 0 &&
               currentItems?.map((item, index) => {
-                const { id, batch_code, requisition, requested_by } = item;
+                const { id, batch_code, requisition, requested_by, status } =
+                  item;
                 return (
                   <tr className="border-b" key={id}>
                     <td className="py-2 text-center text-[#344054]">
@@ -200,18 +236,36 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
                           >
                             View
                           </Link>
-                          <button
-                            className="bg-blue-700 text-white p-2 text-sm rounded-md"
-                            onClick={() => approveReq(item)}
-                          >
-                            Approve
-                          </button>
-                          <button
-                            className="bg-blue-700 text-white p-2 text-sm rounded-md"
-                            onClick={() => declineReq(item)}
-                          >
-                            Reject
-                          </button>
+                          {!user.is_authorized_for_release ? (
+                            <div className="flex gap-3">
+                              <button
+                                className="bg-blue-700 text-white p-2 text-sm rounded-md"
+                                onClick={() => approveReq(item)}
+                              >
+                                Approve
+                              </button>
+                              <button
+                                className="bg-blue-700 text-white p-2 text-sm rounded-md"
+                                onClick={() => declineReq(item)}
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          ) : status !== 'released' ? (
+                            <button
+                              className="bg-blue-700 text-white p-2 text-sm rounded-md"
+                              onClick={() => releaseItem(item)}
+                            >
+                              Release Item
+                            </button>
+                          ) : (
+                            <button
+                              className="bg-blue-700 text-white p-2 text-sm rounded-md"
+                              onClick={() => printItem(id)}
+                            >
+                              Print Item
+                            </button>
+                          )}
                         </div>
                       </td>
                     )}

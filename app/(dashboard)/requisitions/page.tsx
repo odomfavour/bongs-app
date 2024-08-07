@@ -2,6 +2,7 @@
 import Modal from '@/components/dashboard/Modal';
 import ApproveRequisition from '@/components/requisitions/ApproveRequisition';
 import DeclineRequisition from '@/components/requisitions/DeclineRequisition';
+import ReleaseItem from '@/components/requisitions/ReleaseItem';
 import RequisitionListTable from '@/components/requisitions/RequisitionListTable';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
@@ -46,7 +47,7 @@ const Page = () => {
           Authorization: `Bearer ${user?.token}`,
         },
       });
-      console.log('resp', response.data);
+      console.log('resp', response);
       setRequisitions(response?.data?.data?.data);
     } catch (error: any) {
       console.error('Error:', error);
@@ -79,6 +80,11 @@ const Page = () => {
 
   const handleDeclineClose = () => {
     setOpenDeclineModal(false);
+  };
+  const [openReleaseModal, setOpenReleaseModal] = useState(false);
+
+  const handleReleaseClose = () => {
+    setOpenReleaseModal(false);
   };
 
   const [requisitionItem, setRequisitionItem] = useState<any>({});
@@ -120,6 +126,7 @@ const Page = () => {
           setOpenModal={setOpenModal}
           setOpenDeclineModal={setOpenDeclineModal}
           setRequisitionItem={setRequisitionItem}
+          setOpenReleaseModal={setOpenReleaseModal}
         />
       </div>
 
@@ -139,6 +146,19 @@ const Page = () => {
         <DeclineRequisition
           requisitionItem={requisitionItem}
           setOpenModal={setOpenDeclineModal}
+          fetchData={fetchData}
+        />
+      </Modal>
+
+      <Modal
+        title=""
+        isOpen={openReleaseModal}
+        onClose={handleReleaseClose}
+        maxWidth="40%"
+      >
+        <ReleaseItem
+          requisitionItem={requisitionItem}
+          setOpenModal={setOpenReleaseModal}
           fetchData={fetchData}
         />
       </Modal>

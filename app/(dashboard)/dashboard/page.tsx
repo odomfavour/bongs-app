@@ -147,7 +147,7 @@ const Page = () => {
           id=""
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3"
         >
-          <option>month</option>
+          <option value={""}>month</option>
           {months.map((item) => (
             <option key={item} value={item}>
               {item}

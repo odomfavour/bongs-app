@@ -15,22 +15,7 @@ import {
 } from "recharts";
 
 function Barchart({ consumable_counts, spare_part_counts }: BarchartPropType) {
-  /* 
-
-
-export interface consumableCountType{
-
-}
-
-
-export interface sparePartCountType {
-  Deck: string, 
-  Hospital: string,
-  Engine: string,
-  Safety: string
-
-}
-*/
+ 
 
   const [selectConsumableCount, setSelectConsumableCount] = useState(false);
 
@@ -94,26 +79,30 @@ export interface sparePartCountType {
   return (
     <div className="">
       <div className="flex flex-col items-center justify-center mb-2">
-        <span>Inventory Movement</span>
+        <span className='text-center text-gray-500'>Inventory Movement</span>
         <div className="flex flex-row justify-center items-center space-x-2">
           <span className="flex-row flex space-x-1">
             <input
               onClick={() => setSelectConsumableCount(false)}
-              defaultChecked
               type="radio"
-              name="choose"
-              id="sparePart"
+              id="option1"
+              name="radioGroup"
+              value="option1"
+              checked={selectConsumableCount === false}
+           
             />
-            <label htmlFor="sparePart">Spare Parts</label>
+            <label htmlFor="sparePart" className='text-center text-gray-500'>Spare Parts</label>
           </span>
           <span className="flex flex-row space-x-1">
             <input
-           
-              onClick={() => setSelectConsumableCount(true)}
-              type="radio"
-              name="choose"
+           onClick={() => setSelectConsumableCount(true)}
+           type="radio"
+           id="option1"
+           name="radioGroup"
+           value="option1"
+           checked={selectConsumableCount === true}
             />
-            <label htmlFor="">Consumables</label>
+            <label htmlFor="" className='text-center text-gray-500'>Consumables</label>
           </span>
         </div>
       </div>

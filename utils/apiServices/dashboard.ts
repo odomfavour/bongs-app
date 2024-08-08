@@ -1,5 +1,5 @@
 import axios from "axios"
-const baseUrl = "https://devbongsapi.dpanalyticsolution.com/api/v1"
+const baseUrl = process.env.BASEURL
 
 
 export const fetchDashboardDataApi = async (params: {
@@ -7,10 +7,14 @@ export const fetchDashboardDataApi = async (params: {
   year?: string
 }) => { 
 
+
+
   const { year , month} = params
     const data = localStorage.getItem("bongsUser")
   const { token } = data && JSON.parse(data)
   
+
+  console.log("month", month, "year", year)
     let url
     if (year && month) {
     url = `${baseUrl}/dashboard-analytics?year=${year}&month=${month}`

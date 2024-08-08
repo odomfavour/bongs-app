@@ -1,5 +1,4 @@
-import { Barge } from '@/utils/types';
-import { formatDate } from '@/utils/utils';
+import { Deck, ProjectType, UomType } from '@/utils/types';
 import React, { useMemo } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { FaRegFolderClosed } from 'react-icons/fa6';
@@ -14,22 +13,24 @@ import {
   UsePaginationInstanceProps,
 } from 'react-table';
 
-function AppTable({
+function UOMTable({
   MOCK_DATA,
   COLUMNS,
   handleEdit,
-  handleDelete,
+  deleteUom,
   loadingStates,
-  fetchedData,
+    fetchedData,
+  hasPermission
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
-  handleEdit: (data: Barge) => void;
-  handleDelete: (id: number) => void;
+  handleEdit: (data: UomType) => void;
   loadingStates: {
     [key: number]: boolean;
   };
-  fetchedData: Barge[];
+        fetchedData: UomType[];
+        deleteUom: (id: number) => void
+  hasPermission: (permission: string) => boolean
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
@@ -125,10 +126,10 @@ function AppTable({
                     </div>
                     <div className="mt-5">
                       <p className="font-medium text-[#475467]">
-                        No Barge found
+                        No Project found
                       </p>
                       <p className="font-normal text-sm mt-3">
-                        Click “add barge” button to get started in doing your
+                        Click “add project” button to get started in doing your
                         <br /> first transaction on the platform
                       </p>
                     </div>
@@ -137,50 +138,60 @@ function AppTable({
               </td>
             </tr>
           ) : (
-            page.map((row, index) => {
+            page.map((row, _index) => {
               prepareRow(row);
               return (
-                <tr {...row.getRowProps()} key={index}>
+                <tr {...row.getRowProps()} key={_index}>
                   {row.cells.map((cell, index) => {
                     return (
                       <td
                         className="text-center"
                         {...cell.getCellProps()}
-                        key={index}
+                        key={_index}
                       >
                         {cell.render('Cell')}
                       </td>
                     );
                   })}
-                  <td>
-                    <div className="flex-row flex items-center space-x-2">
-                      <button
-                        className="bg-blue-300 text-white p-2 rounded-md"
-                        onClick={() => {
-                          const selectedRow = fetchedData.find(
-                            (item) => item.id == row.original.id
-                          );
-                          if (selectedRow) {
-                            return handleEdit(selectedRow);
-                          }
-                        }}
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                        onClick={() => handleDelete(row.original.id)}
-                        disabled={loadingStates[row.original.id]}
-                      >
-                        {loadingStates[row.original.id] ? (
-                          <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                        ) : (
-                          'Delete'
-                        )}
-                      </button>
-                    </div>
-                  </td>
+                       <td className="py-2 text-center flex justify-left items-center">
+                          <div className="flex gap-3">
+                            
+                          {hasPermission('can update unit of measurement') && (
+                            <button
+                              className="bg-blue-700 text-white text-sm p-2 rounded-md"
+                              onClick={() => {
+                                const selectedRow = fetchedData.find(
+                                  (item) => item.id == row.original.id
+                                );
+                                if (selectedRow) {
+                                  return handleEdit(selectedRow);
+                                }
+                              }}
+                             
+                                      /*  onClick={() => handleEdit(item)} */
+                            >
+                              Edit
+                            </button>
+                          )}
+                          {hasPermission('can delete unit of measurement') && (
+                            <button
+                              className="bg-red-700 text-white text-sm p-2 rounded-md flex items-center justify-center"
+                              onClick={() => deleteUom(row.original.id)}
+                              disabled={loadingStates[row.original.id]}
+                            >
+                              {loadingStates[row.original.id] ? (
+                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                              ) : (
+                                'Delete'
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                       
+                  
+               
+                  
                 </tr>
               );
             })
@@ -208,5 +219,4 @@ function AppTable({
   );
 }
 
-export default AppTable;
--3;
+export default UOMTable;

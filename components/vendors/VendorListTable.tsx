@@ -16,6 +16,7 @@ import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import VendorTable from '../AppComp/VendorTable';
 
 interface Vendor {
   id: number;
@@ -149,10 +150,71 @@ const VendorListTable: React.FC<VendorListTableProps> = ({
     console.log(category, vendorCats);
     return category ? category.name : 'Unknown Category';
   };
+
+
+
+  const itemList = currentItems.map((item, index) => {
+    return {
+      ...item,
+      'S/N': `${index + 1}`,
+      vendor: `vendor-${item.id}`,
+      company: `${item.vendor_name}`,
+      category: `${getCategoryName(item.vendor_category_id)}`,
+      description: `${item.vendor_description}`,
+      email: `${item.vendor_email}`,
+      status: `${item.status}`,
+      created_at: `${formatDate(item.created_at)}`
+    };
+  });
+ 
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
-        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+      <VendorTable
+            fetchedData={ itemList }
+            loadingStates={ loadingStates }
+            confirmDelete={handleDelete}
+          handleEdit={handleEdit}
+          hasPermission={ hasPermission}
+            COLUMNS={[
+              {
+                Header: "S/N",
+                accessor: "S/N"
+            },
+            {
+                Header: "Vendor No.",
+                   accessor: "vendor"
+            },
+            {
+                Header: "Company Name",
+                accessor: "company"
+              },
+              {
+                Header: "Category",
+                accessor: "category"
+            },
+            {
+                Header: "Descriptionn",
+                accessor: "description"
+            },
+           
+              {
+                Header: "Email",
+                   accessor: "email"
+              },
+              {
+                Header: "Status",
+                accessor: "status"
+              },
+              {
+                Header: "Created On",
+                accessor: "created_at"
+              },
+              
+            ]}
+             MOCK_DATA={itemList}
+          /> 
+     {/*   <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
@@ -248,7 +310,7 @@ const VendorListTable: React.FC<VendorListTableProps> = ({
               </tr>
             )}
           </tbody>
-        </table>
+        </table>  */}
       </div>
 
       {/* {data.length > itemsPerPage && (

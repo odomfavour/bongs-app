@@ -1,4 +1,4 @@
-import { Barge } from '@/utils/types';
+import {  LocationType } from '@/utils/types';
 import { formatDate } from '@/utils/utils';
 import React, { useMemo } from 'react';
 import { FaSearch } from 'react-icons/fa';
@@ -14,22 +14,47 @@ import {
   UsePaginationInstanceProps,
 } from 'react-table';
 
-function AppTable({
+
+
+
+
+
+interface Deck {
+  id: number;
+  name: string;
+  deck_number: string;
+  deck_type: string;
+}
+
+interface Location {
+  id: number;
+  name: string;
+  location_number: string;
+  address: string;
+  deck: Deck;
+  status: string;
+  created_at: string;
+}
+
+
+function LocationTable({
   MOCK_DATA,
   COLUMNS,
   handleEdit,
-  handleDelete,
+  confirmDelete,
   loadingStates,
   fetchedData,
+  hasPermission
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
-  handleEdit: (data: Barge) => void;
-  handleDelete: (id: number) => void;
+    handleEdit: (data: Location) => void;
+  hasPermission: (permision: string) => boolean
+  confirmDelete: (id: number) => void;
   loadingStates: {
     [key: number]: boolean;
   };
-  fetchedData: Barge[];
+  fetchedData: Location[];
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
@@ -125,10 +150,10 @@ function AppTable({
                     </div>
                     <div className="mt-5">
                       <p className="font-medium text-[#475467]">
-                        No Barge found
+                        No Location found
                       </p>
                       <p className="font-normal text-sm mt-3">
-                        Click “add barge” button to get started in doing your
+                        Click “add location” button to get started in doing your
                         <br /> first transaction on the platform
                       </p>
                     </div>
@@ -152,35 +177,41 @@ function AppTable({
                       </td>
                     );
                   })}
-                  <td>
-                    <div className="flex-row flex items-center space-x-2">
-                      <button
-                        className="bg-blue-300 text-white p-2 rounded-md"
-                        onClick={() => {
-                          const selectedRow = fetchedData.find(
-                            (item) => item.id == row.original.id
-                          );
-                          if (selectedRow) {
-                            return handleEdit(selectedRow);
-                          }
-                        }}
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                        onClick={() => handleDelete(row.original.id)}
-                        disabled={loadingStates[row.original.id]}
-                      >
-                        {loadingStates[row.original.id] ? (
-                          <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                        ) : (
-                          'Delete'
-                        )}
-                      </button>
-                    </div>
-                  </td>
+                    {(hasPermission('can update location') ||
+                      hasPermission('can delete location')) && (
+                      <td className="py-2 text-center flex justify-left text-sm items-center">
+                        <div className="flex gap-3">
+                          {hasPermission('can update location') && (
+                            <button
+                              className="bg-blue-700 text-white p-2 text-sm rounded-md"
+                              onClick={() => {
+                                const selectedRow = fetchedData.find(
+                                  (item) => item.id == row.original.id
+                                );
+                                if (selectedRow) {
+                                  return handleEdit(selectedRow);
+                                }
+                              }}
+                            >
+                              Edit
+                            </button>
+                          )}
+                          {hasPermission('can delete location') && (
+                            <button
+                              className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                              onClick={() => confirmDelete(row.original.id)}
+                              disabled={loadingStates[row.original.id]}
+                            >
+                              {loadingStates[row.original.id] ? (
+                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                              ) : (
+                                'Delete'
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                 </tr>
               );
             })
@@ -208,5 +239,5 @@ function AppTable({
   );
 }
 
-export default AppTable;
--3;
+export default LocationTable;
+

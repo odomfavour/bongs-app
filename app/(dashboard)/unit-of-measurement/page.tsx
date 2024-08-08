@@ -1,4 +1,5 @@
 'use client';
+import UOMTable from '@/components/AppComp/UOMTable';
 import Loader from '@/components/Loader';
 import Modal from '@/components/dashboard/Modal';
 import AddUomModal from '@/components/uom/AddUomModal';
@@ -128,6 +129,8 @@ const UomPage = () => {
           )}
         </div>
 
+        
+        
         <UoMListTable
           data={uom}
           fetchData={fetchData}

@@ -27,6 +27,10 @@ interface RequisitionItem {
   id: number;
   indent_number: string;
   batch_code: string;
+  hod_status: string;
+  company_rep_status: string;
+  barge_master_status: string;
+  status: string;
   requisition: Requisition;
   requested_by: RequestedBy;
 }
@@ -110,6 +114,7 @@ const Page = () => {
       <div>
         <RequisitionListTable
           data={requisitions}
+          setOpenReleaseModal={() => {}}
           fetchData={fetchData}
           setOpenModal={setOpenModal}
           setOpenDeclineModal={setOpenDeclineModal}

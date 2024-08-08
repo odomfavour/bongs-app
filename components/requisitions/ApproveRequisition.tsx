@@ -52,6 +52,7 @@ const ApproveRequisition: React.FC<ApproveRequisitionProps> = ({
         toast.success(`${response?.data?.message}`);
       }
       fetchData();
+      setOpenModal(false);
     } catch (error: any) {
       console.error('Error:', error);
 

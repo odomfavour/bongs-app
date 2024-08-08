@@ -11,6 +11,7 @@ import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import UOMTable from '../AppComp/UOMTable';
 
 interface User {
   first_name: string;
@@ -131,10 +132,65 @@ const UoMListTable: React.FC<UoMListTableProps> = ({
       (permission: any) => permission.name === permissionName
     );
 
+  
+    const itemList = currentItems.map((item, index) => {
+      return {
+        ...item,
+       name: `${item.name}`,
+        'S/N': `${index + 1}`,
+        "Unit No.": `${item.id}`,
+        description: `${item.description}`,
+        "addedBy": `${item.user?.first_name} ${item.user?.last_name}`,
+        status: `${item.status}`,
+        created_at: `${formatDate(item.created_at)}`
+      };
+    });
+  
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
-        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+
+      <UOMTable
+            fetchedData={ itemList }
+            loadingStates={ loadingStates }
+            deleteUom={deleteUom}
+          handleEdit={handleEdit}
+          hasPermission={ hasPermission}
+            COLUMNS={[
+              {
+                Header: "S/N",
+                accessor: "S/N"
+            },
+            {
+                Header: "UoM Name",
+                   accessor: "name"
+            },
+            {
+                Header: "Unit No",
+                accessor: "id"
+            },
+            {
+                Header: "Description",
+                accessor: "description"
+            },
+           
+              {
+                Header: "Added By",
+                   accessor: "addedBy"
+              },
+              {
+                Header: "Status",
+                accessor: "status"
+              },
+              {
+                Header: "Created On",
+                accessor: "created_at"
+              },
+              
+            ]}
+             MOCK_DATA={itemList}
+          /> 
+     {/*    <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
@@ -229,7 +285,7 @@ const UoMListTable: React.FC<UoMListTableProps> = ({
               </tr>
             )}
           </tbody>
-        </table>
+        </table> */}
       </div>
     </div>
   );

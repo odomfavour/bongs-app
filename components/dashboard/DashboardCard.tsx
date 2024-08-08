@@ -3,22 +3,21 @@ import { currencyFormatter } from '@/utils/usefulFunc';
 import React from 'react';
 import { GoArrowDownRight, GoArrowUpRight } from 'react-icons/go';
 function DashboardCard({
-  stockCountAmount = 5000,
-  stockCountPercent = 15,
+  stockCountAmount, 
+  stockCountPercent,
+  inventoryAmount,
+  sparePartInventory,
+  consumablesInventory,
 
-  inventoryAmount = 5000,
-  sparePartInventory = 200,
-  consumablesInventory = 150,
+  materialReceivedAmount,
+  materialReceivedPercent,
 
-  materialReceivedAmount = 800,
-  materialReceivedPercent = 15,
-
-  materialRequisitionAmount = 4000,
+  materialRequisitionAmount,
   totalApprovedMaterial = 100,
 
-  mivAmount = 800,
-  mivConsumables = 250,
-  mivSperePart = 130,
+  mivAmount,
+  mivConsumables,
+  mivSperePart,
 }: DashboardCardType) {
   /* 
 
@@ -85,7 +84,7 @@ function DashboardCard({
               color: 'rgba(0, 0, 0, 0.7)',
             }}
           >
-            Inventory Count
+            Inventory Counts
           </span>
         </div>
         <div>
@@ -136,7 +135,7 @@ function DashboardCard({
               color: 'rgba(0, 0, 0, 0.7)',
             }}
           >
-            Requisition
+            Released
           </span>
         </div>
         <div>
@@ -178,7 +177,7 @@ function DashboardCard({
               color: 'rgba(0, 0, 0, 0.7)',
             }}
           >
-            Received
+            Requisition
           </span>
         </div>
         <div>

@@ -16,6 +16,7 @@ import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import LocationTable from '../AppComp/LocationTable';
 
 interface Deck {
   id: number;
@@ -135,10 +136,66 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
       (permission: any) => permission.name === permissionName
     );
 
+  
+    const itemList = currentItems.map((item, index) => {
+      return {
+        ...item,
+       name: `${item.name}`,
+        'S/N': `${index + 1}`,
+        location: `${item.location_number}${item.id}`,
+        store: `${item.address || ""}`,
+        deck: `${item.deck?.name || ""} `,
+        status: `${item.status}`,
+        created_at: `${formatDate(item.created_at)}`
+      };
+    });
+  
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
-        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+
+     <LocationTable
+       fetchedData={ currentItems}
+       loadingStates={ loadingStates }
+       confirmDelete={confirmDelete}
+        handleEdit={handleEdit}
+          hasPermission={ hasPermission }
+       COLUMNS={[
+         {
+           Header: "S/N",
+           accessor: "S/N"
+       },
+     
+       {
+           Header: "Loaction No.",
+           accessor: "location"
+         },
+         {
+          Header: "Name",
+          accessor: "name"
+      },
+       {
+           Header: "Store Item",
+           accessor: "store"
+       },
+       {
+           Header: "Deck",
+           accessor: "deck"
+       },
+     
+         {
+           Header: "Status",
+              accessor: "status"
+         },
+         {
+           Header: "Created On",
+           accessor: "created_at"
+         },
+         
+       ]}
+        MOCK_DATA={itemList}
+        />  
+    {/*     <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
@@ -235,7 +292,7 @@ const LocationListTable: React.FC<LocationListTableProps> = ({
               </tr>
             )}
           </tbody>
-        </table>
+        </table>   */}
       </div>
 
       {/* {data.length > itemsPerPage && (

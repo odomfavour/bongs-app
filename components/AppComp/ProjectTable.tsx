@@ -20,6 +20,7 @@ function ProjectTable({
   handleDelete,
   loadingStates,
   fetchedData,
+  hasPermission
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
@@ -28,6 +29,7 @@ function ProjectTable({
   loadingStates: {
     [key: number]: boolean;
   };
+    hasPermission: (permission: string) => boolean
   fetchedData: ProjectType[];
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
@@ -99,7 +101,7 @@ function ProjectTable({
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup, index) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={index}>
+            <tr {...headerGroup.getHeaderGroupProps()} key={index} className='border-b bg-[#E9EDF4]'>
               {headerGroup.headers.map((column, index) => (
                 <th
                   className="py-2 text-center"
@@ -124,10 +126,10 @@ function ProjectTable({
                     </div>
                     <div className="mt-5">
                       <p className="font-medium text-[#475467]">
-                        No Deck found
+                        No Project found
                       </p>
                       <p className="font-normal text-sm mt-3">
-                        Click “add barge” button to get started in doing your
+                        Click “add project” button to get started in doing your
                         <br /> first transaction on the platform
                       </p>
                     </div>
@@ -152,33 +154,42 @@ function ProjectTable({
                     );
                   })}
                   <td>
-                    <div className="flex-row flex items-center space-x-2">
-                      <button
-                        className="bg-blue-300 text-white p-2 rounded-md"
-                        onClick={() => {
-                          const selectedRow = fetchedData.find(
-                            (item) => item.id == row.original.id
-                          );
-                          if (selectedRow) {
-                            return handleEdit(selectedRow);
-                          }
-                        }}
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                        onClick={() => handleDelete(row.original.id)}
-                        disabled={loadingStates[row.original.id]}
-                      >
-                        {loadingStates[row.original.id] ? (
-                          <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                        ) : (
-                          'Delete'
-                        )}
-                      </button>
-                    </div>
+                  {(hasPermission('can update project') ||
+                      hasPermission('can delete project')) && (
+                      <td className="py-2 text-center flex justify-left items-center">
+                        <div className="flex gap-3">
+                          {hasPermission('can update project') && (
+                            <button
+                              className="bg-blue-700 text-white text-sm p-2 rounded-md"
+                              onClick={() => {
+                                const selectedRow = fetchedData.find(
+                                  (item) => item.id == row.original.id
+                                );
+                                if (selectedRow) {
+                                  return handleEdit(selectedRow);
+                                }
+                              }}
+                            >
+                              Edit
+                            </button>
+                          )}
+                          {hasPermission('can delete project') && (
+                            <button
+                              className="bg-red-700 text-white text-sm p-2 rounded-md flex items-center justify-center"
+                              onClick={() => handleDelete(row.original.id)}
+                              disabled={loadingStates[row.original.id]}
+                            >
+                              {loadingStates[row.original.id] ? (
+                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                              ) : (
+                                'Delete'
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
+             
                   </td>
                 </tr>
               );

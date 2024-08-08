@@ -99,7 +99,7 @@ function DeckTable({
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup, index) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={index}>
+            <tr {...headerGroup.getHeaderGroupProps()} key={index} className='border-b bg-[#E9EDF4]'>
               {headerGroup.headers.map((column, index) => (
                 <th
                   className="py-2 text-center"
@@ -127,7 +127,7 @@ function DeckTable({
                         No Deck found
                       </p>
                       <p className="font-normal text-sm mt-3">
-                        Click “add barge” button to get started in doing your
+                        Click “add deck” button to get started in doing your
                         <br /> first transaction on the platform
                       </p>
                     </div>

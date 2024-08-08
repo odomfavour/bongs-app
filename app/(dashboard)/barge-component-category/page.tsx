@@ -47,7 +47,7 @@ const BargeComponentPage = () => {
   const fetchData = useCallback(async () => {
     try {
       dispatch(toggleLoading(true));
-      if (hasPermission('can view barge category')) {
+      if (hasPermission('can view barge component category')) {
         const response = await axios.get(
           `${process.env.BASEURL}/getBargeComponentCategories`,
           {

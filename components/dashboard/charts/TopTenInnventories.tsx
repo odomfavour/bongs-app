@@ -1,26 +1,82 @@
 import { topTenInnventries } from '@/utils/data'
+import { mostUsedInventoryPropType } from '@/utils/types'
 import React from 'react'
 
-function TopTenInnventories() {
+function TopTenInnventories({ 
+  data
+}: mostUsedInventoryPropType) {
 
-    const onlyAmountArray =topTenInnventries.map(item => item.value)
-    const totalAmount =  onlyAmountArray.reduce((initial, accu) => { 
-  return initial + accu
-    },0)
-    const percentagePerItem = topTenInnventries.map(item => { 
+
+  /* creat an array containing only the counts and also containning only the category_name */
+  const countArray = data.map(item => item.count)
+  const categoryName = data.map(item => item.category_name)
+
+  /* create an array containg only the values of the countArray */
+
+  const countArrayKeys = Object.values(countArray)
   
-        const persent = ((item.value) / totalAmount) * 100
-        return persent
+  /* get the height value from the countArrayKeys */
+
+  const maximumCountValue = Math.max(...countArrayKeys)
+
+  /* calculated the percentage of other counts in the array with respect to the maximum value */
+  
+ const countPercentArray = countArrayKeys.map(count => {
+    const countPercent = (count / maximumCountValue) * 100
+    return countPercent
+  })
+
+
+  
+  /* create an array that gets the category name, countPercent and count actual value */
+  let categoryNameCountPercentCountValueArray = []
+  for (let index = 0; index < countArrayKeys.length; index++) {
+    categoryNameCountPercentCountValueArray.push({
+      categoryName: categoryName[index],
+      countPercent: countPercentArray[index],
+      countValue: countArrayKeys[index],
+      key: index
     })
-    const totalAmount3 =  percentagePerItem.reduce((initial, accu) => { 
-        return initial + accu
-          },0)
- /*  console.log("percenntage",percentagePerItem, totalAmount, totalAmount3) */
+    
+  }
+
+  console.log("this is the count",  categoryNameCountPercentCountValueArray)
   return (
     <div>
-      <div>
-      TopTenInnventories
+     <div className="flex flex-row justify-center items-center mb-4 text-gray-500 py-4">
+                  <span className="text-center">
+                   Top 10 Used Inventories
+                  </span>
       </div>
+      { 
+     categoryNameCountPercentCountValueArray.length > 0 ?  <div>
+     { 
+       categoryNameCountPercentCountValueArray.map(item => <div key={item.key} className='flex flex-row items-center space-x-4 px-4'>
+         <span className='text-center text-gray-500'>
+           { item.categoryName}
+         </span>
+         <div className='flex flex-row items-center space-x-2 flex-1'>
+           <div className={`bg-[#08981FCC] h-[28px]`}
+             style={{
+               width: `${item.countPercent}%`
+             }}
+           />
+         <span className=''>
+           { 
+             item.countValue
+             }
+            
+         </span>
+        </div>
+       </div>)
+     }
+        </div> : <div className='flex items-center justify-center'>
+        <span className='text-center text-gray-500'>
+            No data found
+   </span>
+
+        </div>
+      }
     
     </div>
   )

@@ -181,8 +181,6 @@ export interface categoryCountType {
   SparePartEngine: any,
   SparePartHospital: any,
   SparePartSafety: any
-
-
   
 }
  
@@ -253,4 +251,12 @@ export interface LocationListTablePropsType {
   data: Location[];
   fetchData: () => void;
   setOpenModal: (isOpen: boolean) => void;
+}
+
+export interface signMostUsedItemProp{ 
+  category_name: string,
+  count: number
+}
+export interface mostUsedInventoryPropType {
+  data: signMostUsedItemProp[] | []
 }

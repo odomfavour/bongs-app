@@ -63,3 +63,7 @@ export const calculateCountdown = (endDate) => {
     seconds: seconds || 0,
   };
 };
+
+export const removePrefix = (str, prefix = 'App\\Models\\') => {
+  return str.replace(prefix, '');
+};

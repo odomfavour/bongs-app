@@ -4,7 +4,7 @@ import {
   displayBargeValue,
   toggleLocationModal,
 } from '@/provider/redux/modalSlice';
-import { formatDate } from '@/utils/utils';
+import { formatDate, removePrefix } from '@/utils/utils';
 import axios from 'axios';
 // import { EmptyProductIcon } from '@/utils/utils';
 import Image from 'next/image';
@@ -18,6 +18,8 @@ import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import Modal from '../dashboard/Modal';
+import ReleaseItemView from './ReleaseItemView';
 
 interface Requisition {
   id: number;
@@ -35,6 +37,10 @@ interface RequisitionList {
   id: number;
   indent_number: string;
   batch_code: string;
+  hod_status: string;
+  company_rep_status: string;
+  barge_master_status: string;
+  status: string;
   requisition: Requisition;
   requested_by: RequestedBy;
 }
@@ -44,6 +50,7 @@ interface RequisitionListTableProps {
   fetchData: () => void;
   setOpenModal: (isOpen: boolean) => void;
   setOpenDeclineModal: (isOpen: boolean) => void;
+  setOpenReleaseModal: (isOpen: boolean) => void;
   setRequisitionItem: (item: RequisitionList) => void;
 }
 
@@ -53,6 +60,7 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
   setOpenModal,
   setOpenDeclineModal,
   setRequisitionItem,
+  setOpenReleaseModal,
 }) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
@@ -141,17 +149,85 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
   };
 
   const approveReq = (item: any) => {
-    setOpenModal(true);
     setRequisitionItem(item);
+    setOpenModal(true);
   };
   const declineReq = (item: any) => {
-    setOpenDeclineModal(true);
     setRequisitionItem(item);
+    setOpenDeclineModal(true);
+  };
+  const releaseItem = (item: any) => {
+    setRequisitionItem(item);
+    setOpenReleaseModal(true);
   };
 
-  const removePrefix = (str: string, prefix = 'App\\Models\\') => {
-    return str.replace(prefix, '');
+  const printItem = async (id: number) => {
+    try {
+      const response = await axios.get(
+        `${process.env.BASEURL}/requisitions/print/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+      console.log('Approve Response:', response);
+      if (response.status === 200) {
+        toast.success(`${response?.data?.message}`);
+      }
+      fetchData();
+      // setOpenModal(false);
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    }
   };
+
+  const [openViewModal, setOpenViewModal] = useState(false);
+
+  const handleViewClose = () => {
+    setOpenViewModal(false);
+  };
+
+  const [itemForRelease, setItemForRelease] = useState<any>({});
+
+  const viewItem = async (id: number) => {
+    try {
+      const response = await axios.get(
+        `${process.env.BASEURL}/requisitions/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+      console.log('Approve Response:', response);
+      if (response.status === 200) {
+        toast.success(`${response?.data?.message}`);
+      }
+      setItemForRelease(response?.data?.data);
+      setOpenViewModal(true);
+
+      //  fetchData();
+      // setOpenModal(false);
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    }
+  };
+
   const pathname = usePathname();
 
   return (
@@ -174,7 +250,16 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
           <tbody>
             {currentItems?.length > 0 &&
               currentItems?.map((item, index) => {
-                const { id, batch_code, requisition, requested_by } = item;
+                const {
+                  id,
+                  batch_code,
+                  requisition,
+                  requested_by,
+                  status,
+                  hod_status,
+                  company_rep_status,
+                  barge_master_status,
+                } = item;
                 return (
                   <tr className="border-b" key={id}>
                     <td className="py-2 text-center text-[#344054]">
@@ -194,24 +279,50 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
                     {pathname === '/requisitions' && (
                       <td className="py-2 text-center flex justify-left text-sm items-center">
                         <div className="flex gap-3">
-                          <Link
-                            href={`/requisitions/${id}`}
+                          <button
+                            onClick={() => viewItem(id)}
                             className="bg-blue-700 text-white p-2 text-sm rounded-md"
                           >
                             View
-                          </Link>
-                          <button
-                            className="bg-blue-700 text-white p-2 text-sm rounded-md"
-                            onClick={() => approveReq(item)}
-                          >
-                            Approve
                           </button>
-                          <button
-                            className="bg-blue-700 text-white p-2 text-sm rounded-md"
-                            onClick={() => declineReq(item)}
-                          >
-                            Reject
-                          </button>
+                          {!user?.is_authorized_for_release ? (
+                            <div className="flex gap-3">
+                              <button
+                                className="bg-green-700 text-white p-2 text-sm rounded-md"
+                                onClick={() => approveReq(item)}
+                              >
+                                {user?.is_hod && hod_status == 'pending'
+                                  ? 'Check'
+                                  : user?.is_barge_master &&
+                                    barge_master_status == 'pending'
+                                  ? 'Acknowledge'
+                                  : user?.is_company_rep &&
+                                    company_rep_status == 'pending'
+                                  ? 'Approve'
+                                  : ''}
+                              </button>
+                              <button
+                                className="bg-red-700 text-white p-2 text-sm rounded-md"
+                                onClick={() => declineReq(item)}
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          ) : status !== 'released' ? (
+                            <button
+                              className="bg-green-700 text-white p-2 text-sm rounded-md"
+                              onClick={() => releaseItem(item)}
+                            >
+                              Release
+                            </button>
+                          ) : (
+                            <button
+                              className="bg-blue-700 text-white p-2 text-sm rounded-md"
+                              onClick={() => printItem(id)}
+                            >
+                              Print Item
+                            </button>
+                          )}
                         </div>
                       </td>
                     )}
@@ -298,6 +409,18 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
           </div>
         </div>
       )} */}
+
+      <Modal
+        title=""
+        isOpen={openViewModal}
+        onClose={handleViewClose}
+        maxWidth="50%"
+      >
+        <ReleaseItemView
+          releaseItem={itemForRelease}
+          handleClose={handleViewClose}
+        />
+      </Modal>
     </div>
   );
 };

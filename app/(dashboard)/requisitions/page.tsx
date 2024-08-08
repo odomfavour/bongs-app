@@ -2,6 +2,7 @@
 import Modal from '@/components/dashboard/Modal';
 import ApproveRequisition from '@/components/requisitions/ApproveRequisition';
 import DeclineRequisition from '@/components/requisitions/DeclineRequisition';
+import ReleaseItem from '@/components/requisitions/ReleaseItem';
 import RequisitionListTable from '@/components/requisitions/RequisitionListTable';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
@@ -28,6 +29,10 @@ interface RequisitionItem {
   id: number;
   indent_number: string;
   batch_code: string;
+  hod_status: string;
+  company_rep_status: string;
+  barge_master_status: string;
+  status: string;
   requisition: Requisition;
   requested_by: RequestedBy;
 }
@@ -46,7 +51,7 @@ const Page = () => {
           Authorization: `Bearer ${user?.token}`,
         },
       });
-      console.log('resp', response.data);
+      console.log('resp', response);
       setRequisitions(response?.data?.data?.data);
     } catch (error: any) {
       console.error('Error:', error);
@@ -64,7 +69,7 @@ const Page = () => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [dispatch, router, user?.token]);
+  }, [dispatch, router, user]);
 
   useEffect(() => {
     fetchData();
@@ -80,13 +85,18 @@ const Page = () => {
   const handleDeclineClose = () => {
     setOpenDeclineModal(false);
   };
+  const [openReleaseModal, setOpenReleaseModal] = useState(false);
+
+  const handleReleaseClose = () => {
+    setOpenReleaseModal(false);
+  };
 
   const [requisitionItem, setRequisitionItem] = useState<any>({});
 
   return (
     <div>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
-        <p className="text-[32px] font-medium">Requisitions</p>
+        <p className="text-[32px] font-medium">Material Release</p>
         <div className="flex items-center gap-2 w-2/5">
           <div className="w-4/5">
             <div className="w-full relative">
@@ -120,6 +130,7 @@ const Page = () => {
           setOpenModal={setOpenModal}
           setOpenDeclineModal={setOpenDeclineModal}
           setRequisitionItem={setRequisitionItem}
+          setOpenReleaseModal={setOpenReleaseModal}
         />
       </div>
 
@@ -139,6 +150,19 @@ const Page = () => {
         <DeclineRequisition
           requisitionItem={requisitionItem}
           setOpenModal={setOpenDeclineModal}
+          fetchData={fetchData}
+        />
+      </Modal>
+
+      <Modal
+        title=""
+        isOpen={openReleaseModal}
+        onClose={handleReleaseClose}
+        maxWidth="40%"
+      >
+        <ReleaseItem
+          requisitionItem={requisitionItem}
+          setOpenModal={setOpenReleaseModal}
           fetchData={fetchData}
         />
       </Modal>

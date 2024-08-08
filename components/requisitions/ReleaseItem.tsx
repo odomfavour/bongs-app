@@ -29,17 +29,17 @@ interface ApproveRequisitionProps {
   fetchData: () => void;
 }
 
-const ApproveRequisition: React.FC<ApproveRequisitionProps> = ({
+const ReleaseItem: React.FC<ApproveRequisitionProps> = ({
   requisitionItem,
   setOpenModal,
   fetchData,
 }) => {
   const user = useSelector((state: any) => state.user.user);
 
-  const onApprove = async () => {
+  const onRelease = async () => {
     try {
       const response = await axios.post(
-        `${process.env.BASEURL}/requisitions/${requisitionItem?.id}/approve`,
+        `${process.env.BASEURL}/requisitions/${requisitionItem?.id}/release`,
         {},
         {
           headers: {
@@ -67,20 +67,18 @@ const ApproveRequisition: React.FC<ApproveRequisitionProps> = ({
 
   return (
     <div className="text-center">
-      <p className="my-6 text-2xl font-semibold">
-        Approve Material Requisition
-      </p>
+      <p className="my-6 text-2xl font-semibold">Release Item</p>
       <p className="md:w-2/3 w-11/12 mx-auto text-base">
-        You&apos;re about to approve the material requisition with Indent No{' '}
+        You&apos;re about to release the material requisition with Indent No{' '}
         {requisitionItem?.batch_code}. This action cannot be undone.
       </p>
       <div className="flex justify-center my-5">
         <div className="flex gap-4">
           <button
             className="rounded-md bg-blue-700 text-white py-2 px-4"
-            onClick={onApprove}
+            onClick={onRelease}
           >
-            Approve
+            Release
           </button>
           <button
             className="rounded-md border border-blue-700 text-blue-700 py-2 px-4"
@@ -94,4 +92,4 @@ const ApproveRequisition: React.FC<ApproveRequisitionProps> = ({
   );
 };
 
-export default ApproveRequisition;
+export default ReleaseItem;

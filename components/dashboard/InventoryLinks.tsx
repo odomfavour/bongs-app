@@ -4,24 +4,28 @@ import React from 'react';
 
 interface LinkItem {
   href: string;
-  text: string;
+  label: string;
+  labels: string[];
   img: string;
 }
 
 const links: LinkItem[] = [
   {
     href: '/inventories',
-    text: 'Project',
+    label: 'Project',
+    labels: ['Project'],
     img: 'inventories.png',
   },
   {
     href: '/miv-inventories',
-    text: 'MIV',
+    label: 'MIV',
+    labels: ['MIV'],
     img: 'inventories.png',
   },
   {
     href: '/requisitions',
-    text: 'Requisitions',
+    label: 'Material Release',
+    labels: ['Project', 'MIV'],
     img: 'inventories.png',
   },
 ];
@@ -38,27 +42,32 @@ const InventoryLinks: React.FC<InventoryLinksProps> = ({
   return (
     <div>
       <ul>
-        {links.map((link, index) => (
-          <li key={index} className="text-center py-3 pl-2">
-            <Link href={link.href} onClick={closeInnerSidebar}>
-              <div
-                className="w-full flex gap-3 items-center"
-                onClick={closeInnerSidebar}
-              >
-                <div className="relative w-[28px] h-[28px]">
-                  <Image
-                    src={`/icons/${link.img}`}
-                    width={28}
-                    height={38}
-                    priority
-                    alt="avatar"
-                  />
-                </div>
-                <p className="text-[14px]">{link.text}</p>
-              </div>
-            </Link>
-          </li>
-        ))}
+        {links.map(
+          (link, index) =>
+            subCategories.some((subCategory) =>
+              link.labels.includes(subCategory.name)
+            ) && (
+              <li key={index} className="text-center py-3 pl-2">
+                <Link href={link.href} onClick={closeInnerSidebar}>
+                  <div
+                    className="w-full flex gap-3 items-center"
+                    onClick={closeInnerSidebar}
+                  >
+                    <div className="relative w-[28px] h-[28px]">
+                      <Image
+                        src={`/icons/${link.img}`}
+                        width={28}
+                        height={38}
+                        priority
+                        alt="avatar"
+                      />
+                    </div>
+                    <p className="text-[14px]">{link.label}</p>
+                  </div>
+                </Link>
+              </li>
+            )
+        )}
       </ul>
     </div>
   );

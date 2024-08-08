@@ -11,6 +11,8 @@ import {
   categoryCountType,
   consumableCountType,
   DashboardCardType,
+  mostUsedInventoryPropType,
+  signMostUsedItemProp,
   sparePartCountType,
 } from "@/utils/types";
 import TopTenInnventories from "@/components/dashboard/charts/TopTenInnventories";
@@ -18,6 +20,9 @@ import Image from "next/image";
 import { months } from "@/utils/data";
 import InventoryRequisitionAnalysis from "@/components/dashboard/charts/InventoryRequisitionAnalysis";
 import { useSelector } from "react-redux";
+/* import { useRouter } from "next/router"; */
+import { useRouter} from "next/navigation"
+
 
 const Page = () => {
   const [dashboardData, setDashboardData] = useState<DashboardCardType[] | []>(
@@ -38,10 +43,12 @@ const Page = () => {
   const [categoryCounts, setCategoryCounts] =
     useState<categoryCountType | null>(null);
   
+  const [mostUsedInvory, setmostUsedInvory] = useState<signMostUsedItemProp[] | []>([])
+  
   const [year, setYear] = useState("")
   const [month, setMonth] = useState("")
   
-
+  const router = useRouter();
   useEffect(() => {
     const handleFetchData = async () => {
       try {
@@ -51,13 +58,13 @@ const Page = () => {
             const { message, data } = response;
             toast.success(message);
             console.log("dd", message, data);
-            const { total_requisitions } = data.requisition_data;
+            const { total_requisitions,
+              total_approved_requisitions } = data.requisition_data;
             const {
               total_inventory,
               total_project_inventory,
               total_project_consumable_inventory,
               total_project_sparepart_inventory,
-              total_approved_requisitions,
               total_miv_inventory,
               total_miv_sparepart_inventory,
               total_miv_consumable_inventory,
@@ -66,6 +73,10 @@ const Page = () => {
               spare_part_counts,
               category_counts,
             } = data.inventory_data;
+
+
+            const { most_used_inventory } = data.most_used_inventory_data
+            setmostUsedInvory(most_used_inventory)
          
             setCategoryCounts(category_counts);
             setConsumableCounts(consumable_counts);
@@ -112,7 +123,7 @@ const Page = () => {
     };
 
     handleFetchData();
-  }, [user,year, month]);
+  }, [user,year, month, router]);
 
   if (!isUIReady) {
     return (
@@ -161,7 +172,7 @@ const Page = () => {
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3"
         >
           <option value="">Year</option>
-          <option value="">2024</option>
+          <option value={"2024"}>2024</option>
         </select>
       </div>
 
@@ -205,7 +216,14 @@ const Page = () => {
           </div>
         </div>
         <div className="col-span-12  lg:col-span-4 gap-4  rounded-[23px] p-2 border-[1.2px] border-slate-300">
-          <TopTenInnventories />
+        
+          {
+          mostUsedInvory &&  <TopTenInnventories
+              data={ 
+                mostUsedInvory
+           }
+        /> 
+          }
         </div>
       </div>
 

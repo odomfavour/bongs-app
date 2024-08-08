@@ -47,7 +47,7 @@ const BargeComponentPage = () => {
   const fetchData = useCallback(async () => {
     try {
       dispatch(toggleLoading(true));
-      if (hasPermission('can view barge category')) {
+      if (hasPermission('can view barge component category')) {
         const response = await axios.get(
           `${process.env.BASEURL}/getBargeComponentCategories`,
           {
@@ -109,7 +109,7 @@ const BargeComponentPage = () => {
       </div>
       <div>
         <div className="flex justify-end mb-6">
-          {hasPermission('can create barge category') && (
+          {hasPermission('can create barge component category') && (
             <button
               className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
               onClick={() => setOpenModal(true)}

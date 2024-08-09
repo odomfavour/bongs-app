@@ -43,6 +43,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
   // const inventoryType = useSelector((state: any) => state.modal.inventoryType);
   const [formData, setFormData] = useState({
     project_id: null as number | null,
+    barge_id: 0,
     deck_id: 0,
     keystore_id: 0,
     unit_of_measurement_id: 0,
@@ -76,6 +77,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
       setFormData({
         project_id: bargeValues.project_id,
         subscriber_id: bargeValues.subscriber_id,
+        barge_id: bargeValues.barge_id,
         deck_id: bargeValues.deck_id,
         keystore_id: bargeValues.keystore_id,
         unit_of_measurement_id: bargeValues.unit_of_measurement_id,
@@ -158,6 +160,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
       setFormData({
         project_id: null as number | null,
         deck_id: 0,
+        barge_id: 0,
         keystore_id: 0,
         location_id: 0,
         vendor_id: 0,
@@ -210,21 +213,30 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
   const [locations, setLocations] = useState([]);
   const [vendors, setVendors] = useState([]);
   const [bEquipment, setBEquipment] = useState([]);
+  const [oal, setOal] = useState([]);
+  const [barges, setBarges] = useState([]);
   const pathname = usePathname();
   const fetchConsumablesData = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
       const [
         projectsResponse,
+        bargeResponse,
         decksResponse,
         uomResponse,
         storeOnBoardResponse,
         locationResponse,
         vendorResponse,
         bEquipmentResponse,
+        oalResponse,
         sparepartResponse,
       ] = await Promise.all([
         axios.get(`${process.env.BASEURL}/getProjects`, {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }),
+        axios.get(`${process.env.BASEURL}/barge`, {
           headers: {
             Authorization: `Bearer ${user?.token}`,
           },
@@ -259,6 +271,11 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
             Authorization: `Bearer ${user?.token}`,
           },
         }),
+        axios.get(`${process.env.BASEURL}/oilLubricantType`, {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }),
         axios.get(
           `${process.env.BASEURL}/${
             inventoryType === 'Engine'
@@ -278,15 +295,17 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
           }
         ),
       ]);
-      console.log('project', sparepartResponse, vendorResponse);
+      console.log('project', sparepartResponse, oalResponse);
       setProjects(projectsResponse?.data?.data?.data);
       setDecks(decksResponse?.data?.data?.data);
+      setBarges(bargeResponse?.data?.data?.data);
       setUom(uomResponse?.data?.data?.data);
       setStoreItems(storeOnBoardResponse?.data?.data?.data);
       setLocations(locationResponse?.data?.data?.data);
       setVendors(vendorResponse?.data?.data?.data);
       setBEquipment(bEquipmentResponse?.data?.data?.data);
       setEngineTypes(sparepartResponse?.data?.data?.data);
+      setOal(oalResponse?.data?.data?.data);
       // You can similarly setStoreItems if needed
     } catch (error: any) {
       console.error('Error:', error);
@@ -419,6 +438,33 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                 htmlFor="deck"
                 className="block mb-2 text-sm font-medium text-gray-900"
               >
+                Barge
+              </label>
+              <select
+                id="barge"
+                name="barge"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.deck_id}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    barge_id: parseInt(e.target.value),
+                  })
+                }
+              >
+                <option value="">Select Barge</option>
+                {barges?.map((barge: any) => (
+                  <option value={barge.id} key={barge.id}>
+                    {barge.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="deck"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
                 Deck
               </label>
               <select
@@ -544,7 +590,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                 }
               >
                 <option value="">Select OAL Type</option>
-                {bEquipment?.map((equipment: any) => (
+                {oal?.map((equipment: any) => (
                   <option value={equipment.id} key={equipment.id}>
                     {equipment.name}
                   </option>

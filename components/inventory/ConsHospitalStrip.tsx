@@ -99,7 +99,7 @@ const ConsHospitalStrip: React.FC<ConsHospitalStripProps> = ({
     try {
       dispatch(toggleLoading(true));
       const response = await axios.get(
-        `${process.env.BASEURL}/v1/consumable/hospital/export`,
+        `${process.env.BASEURL}/consumable/hospital/export`,
         {
           params: { format },
           responseType: 'blob',

@@ -1,6 +1,7 @@
+import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 interface Requisition {
@@ -19,6 +20,10 @@ interface RequisitionItem {
   id: number;
   indent_number: string;
   batch_code: string;
+  hod_status: string;
+  company_rep_status: string;
+  barge_master_status: string;
+  status: string;
   requisition: Requisition;
   requested_by: RequestedBy;
 }
@@ -34,9 +39,11 @@ const ApproveRequisition: React.FC<ApproveRequisitionProps> = ({
   setOpenModal,
   fetchData,
 }) => {
+  const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
 
   const onApprove = async () => {
+    dispatch(toggleLoading(true));
     try {
       const response = await axios.post(
         `${process.env.BASEURL}/requisitions/${requisitionItem?.id}/approve`,
@@ -62,6 +69,8 @@ const ApproveRequisition: React.FC<ApproveRequisitionProps> = ({
         error?.message ||
         'Unknown error';
       toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 
@@ -80,13 +89,21 @@ const ApproveRequisition: React.FC<ApproveRequisitionProps> = ({
             className="rounded-md bg-blue-700 text-white py-2 px-4"
             onClick={onApprove}
           >
-            Approve
+            {user?.is_hod && requisitionItem?.hod_status == 'pending'
+              ? 'Check'
+              : user?.is_barge_master &&
+                requisitionItem?.barge_master_status == 'pending'
+              ? 'Acknowledge'
+              : user?.is_company_rep &&
+                requisitionItem?.company_rep_status == 'pending'
+              ? 'Approve'
+              : ''}
           </button>
           <button
-            className="rounded-md border border-blue-700 text-blue-700 py-2 px-4"
+            className="rounded-md border border-red-700 text-red-700 py-2 px-4"
             onClick={() => setOpenModal(false)}
           >
-            Cancel
+            Close
           </button>
         </div>
       </div>

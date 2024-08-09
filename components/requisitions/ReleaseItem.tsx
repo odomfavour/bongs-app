@@ -1,6 +1,7 @@
+import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 interface Requisition {
@@ -34,9 +35,11 @@ const ReleaseItem: React.FC<ApproveRequisitionProps> = ({
   setOpenModal,
   fetchData,
 }) => {
+  const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
 
   const onRelease = async () => {
+    dispatch(toggleLoading(true));
     try {
       const response = await axios.post(
         `${process.env.BASEURL}/requisitions/${requisitionItem?.id}/release`,
@@ -62,6 +65,8 @@ const ReleaseItem: React.FC<ApproveRequisitionProps> = ({
         error?.message ||
         'Unknown error';
       toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 

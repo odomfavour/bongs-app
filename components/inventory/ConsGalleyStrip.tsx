@@ -73,7 +73,7 @@ const ConsGalleyStrip: React.FC<ConsGalleyStripProps> = ({
     setIsExportOpen(false);
     try {
       const response = await axios.get(
-        'https://bongsapi.dpanalyticsolution.com/api/v1/consumable/galleylaundry/export',
+        `${process.env.BASEURL}/consumable/galleylaundry/export`,
         {
           params: { format },
           responseType: 'blob',

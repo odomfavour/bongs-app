@@ -1,6 +1,7 @@
+import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 interface Requisition {
   id: number;
@@ -33,10 +34,12 @@ const DeclineRequisition: React.FC<ApproveRequisitionProps> = ({
   setOpenModal,
   fetchData,
 }) => {
+  const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
 
   const onDecline = async () => {
     try {
+      dispatch(toggleLoading(true));
       const response = await axios.post(
         `${process.env.BASEURL}/requisitions/${requisitionItem?.id}/reject`,
         { reason: formData.reason },
@@ -61,6 +64,8 @@ const DeclineRequisition: React.FC<ApproveRequisitionProps> = ({
         error?.message ||
         'Unknown error';
       toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
   const [formData, setFormData] = useState({

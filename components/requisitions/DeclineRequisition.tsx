@@ -73,13 +73,11 @@ const DeclineRequisition: React.FC<ApproveRequisitionProps> = ({
   });
   return (
     <div className="text-center">
-      <p className="my-6 text-2xl font-semibold">
-        Decline Material Requisition
-      </p>
+      <p className="my-6 text-2xl font-semibold">Decline Material Release</p>
       <div className="md:w-2/3 w-11/12 mx-auto ">
         <p className="text-base">
-          You&apos;re about to approve the material requisition with Indent No
-          MAT_548958. This action cannot be undone.
+          You&apos;re about to approve the material release with Indent No
+          {requisitionItem?.batch_code}. This action cannot be undone.
         </p>
         <textarea
           id="remark"

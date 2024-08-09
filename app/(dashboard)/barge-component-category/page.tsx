@@ -87,10 +87,10 @@ const BargeComponentPage = () => {
   return (
     <section>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
-        <p className="text-[32px] font-medium">Barge Equipment</p>
+        <p className="text-[32px] font-medium">Barge Equipment Category</p>
         <div className="flex items-center gap-2 w-2/5">
           <div className="w-4/5">
-            <div className="w-full relative">
+            {/* <div className="w-full relative">
               <input
                 type="search"
                 placeholder="Search here..."
@@ -99,7 +99,7 @@ const BargeComponentPage = () => {
               <div className="absolute  flex bottom-0 top-0 justify-center items-center left-3 text-primary cursor-pointer">
                 <FaSearch className="text-veriDark" />
               </div>
-            </div>
+            </div> */}
           </div>
 
           <button className="bg-grey-400 border text-sm p-3 rounded-md">

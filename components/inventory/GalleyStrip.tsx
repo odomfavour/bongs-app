@@ -124,7 +124,7 @@ const GalleyStrip: React.FC = () => {
           {isActionsOpen && (
             <div className="origin-top-right rounded-[16px] absolute left-0 -mt-2 w-[150px] py-2 px-2 shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-gray-100 z-30">
               <button className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start">
-                Material Requisition
+                Material Release
               </button>
               <button className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start">
                 Bulk Delete

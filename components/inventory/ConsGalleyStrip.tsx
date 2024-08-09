@@ -125,7 +125,7 @@ const ConsGalleyStrip: React.FC<ConsGalleyStripProps> = ({
                   setIsActionsOpen(false);
                 }}
               >
-                Material Requisition
+                Material Release
               </button>
               <button className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start">
                 Bulk Delete

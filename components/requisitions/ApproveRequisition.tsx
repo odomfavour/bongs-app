@@ -76,11 +76,9 @@ const ApproveRequisition: React.FC<ApproveRequisitionProps> = ({
 
   return (
     <div className="text-center">
-      <p className="my-6 text-2xl font-semibold">
-        Approve Material Requisition
-      </p>
+      <p className="my-6 text-2xl font-semibold">Approve Material Release</p>
       <p className="md:w-2/3 w-11/12 mx-auto text-base">
-        You&apos;re about to approve the material requisition with Indent No{' '}
+        You&apos;re about to approve the material release with Indent No{' '}
         {requisitionItem?.batch_code}. This action cannot be undone.
       </p>
       <div className="flex justify-center my-5">

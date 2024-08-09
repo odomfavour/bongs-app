@@ -353,7 +353,9 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
               <th className="text-sm text-left py-3">Description</th>
               <th className="text-sm text-left py-3">Qty</th>
               {/* <th className="text-sm text-center py-3">Part No.</th> */}
-              <th className="text-sm text-left py-3">Model</th>
+              <th className="text-sm text-left py-3">
+                {parent == 'Engine' || parent == 'Deck' ? 'Part No' : 'Model'}
+              </th>
               <th className="text-sm text-left py-3">Threshold</th>
               <th className="text-sm text-left py-3">Location</th>
               <th className="text-sm text-left py-3">Date Acquired</th>
@@ -396,7 +398,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
                       {index + 1}
                     </td>
                     <td className="py-2 text-left text-sm">
-                      {project?.project_name}
+                      {project?.project_name || 'DLB-Kenenna'}
                     </td>
                     {selectedItems.includes(item.id) && requisition ? (
                       <td>
@@ -419,7 +421,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
                     <td className="py-2 text-left text-sm">{stock_quantity}</td>
                     {/* <td className="py-2 text-center">{part_number}</td> */}
                     <td className="py-2 text-left text-sm">
-                      {model_grade || 'nil'}
+                      {model_grade || part_number}
                     </td>
                     <td className="py-2 text-left text-sm">{threshold}</td>
                     <td className="py-2 text-left text-sm">{location?.name}</td>

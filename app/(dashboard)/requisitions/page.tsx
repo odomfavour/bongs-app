@@ -121,7 +121,7 @@ const Page = () => {
             href="/requisition-history"
             className="bg-blue-500 text-white p-2 rounded-md"
           >
-            View Requisition History
+            View Release History
           </Link>
         </div>
         <RequisitionListTable

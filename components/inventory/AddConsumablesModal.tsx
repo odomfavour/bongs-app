@@ -43,7 +43,6 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
   // const inventoryType = useSelector((state: any) => state.modal.inventoryType);
   const [formData, setFormData] = useState({
     project_id: null as number | null,
-    barge_id: 0,
     deck_id: 0,
     keystore_id: 0,
     unit_of_measurement_id: 0,
@@ -77,7 +76,6 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
       setFormData({
         project_id: bargeValues.project_id,
         subscriber_id: bargeValues.subscriber_id,
-        barge_id: bargeValues.barge_id,
         deck_id: bargeValues.deck_id,
         keystore_id: bargeValues.keystore_id,
         unit_of_measurement_id: bargeValues.unit_of_measurement_id,
@@ -160,7 +158,6 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
       setFormData({
         project_id: null as number | null,
         deck_id: 0,
-        barge_id: 0,
         keystore_id: 0,
         location_id: 0,
         vendor_id: 0,
@@ -214,14 +211,12 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
   const [vendors, setVendors] = useState([]);
   const [bEquipment, setBEquipment] = useState([]);
   const [oal, setOal] = useState([]);
-  const [barges, setBarges] = useState([]);
   const pathname = usePathname();
   const fetchConsumablesData = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
       const [
         projectsResponse,
-        bargeResponse,
         decksResponse,
         uomResponse,
         storeOnBoardResponse,
@@ -232,11 +227,6 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
         sparepartResponse,
       ] = await Promise.all([
         axios.get(`${process.env.BASEURL}/getProjects`, {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }),
-        axios.get(`${process.env.BASEURL}/barge`, {
           headers: {
             Authorization: `Bearer ${user?.token}`,
           },
@@ -298,7 +288,6 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
       console.log('project', sparepartResponse, oalResponse);
       setProjects(projectsResponse?.data?.data?.data);
       setDecks(decksResponse?.data?.data?.data);
-      setBarges(bargeResponse?.data?.data?.data);
       setUom(uomResponse?.data?.data?.data);
       setStoreItems(storeOnBoardResponse?.data?.data?.data);
       setLocations(locationResponse?.data?.data?.data);
@@ -433,33 +422,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                 </select>
               </div>
             )}
-            <div className="mb-4">
-              <label
-                htmlFor="deck"
-                className="block mb-2 text-sm font-medium text-gray-900"
-              >
-                Barge
-              </label>
-              <select
-                id="barge"
-                name="barge"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                value={formData.deck_id}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    barge_id: parseInt(e.target.value),
-                  })
-                }
-              >
-                <option value="">Select Barge</option>
-                {barges?.map((barge: any) => (
-                  <option value={barge.id} key={barge.id}>
-                    {barge.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+
             <div className="mb-4">
               <label
                 htmlFor="deck"
@@ -568,35 +531,38 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                 ))}
               </select>
             </div>
-            <div className="mb-4">
-              <label
-                htmlFor="subscriber"
-                className="block mb-2 text-sm font-medium text-gray-900"
-              >
-                OAL Type
-              </label>
-              <select
-                id="subscriber"
-                name="subscriber_id"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                value={formData.oil_and_lubricant_type_id || ''}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    oil_and_lubricant_type_id: e.target.value
-                      ? parseInt(e.target.value)
-                      : null,
-                  })
-                }
-              >
-                <option value="">Select OAL Type</option>
-                {oal?.map((equipment: any) => (
-                  <option value={equipment.id} key={equipment.id}>
-                    {equipment.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {(inventoryType == 'Engine' || inventoryType == 'Deck') && (
+              <div className="mb-4">
+                <label
+                  htmlFor="subscriber"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  OAL Type
+                </label>
+                <select
+                  id="subscriber"
+                  name="subscriber_id"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                  value={formData.oil_and_lubricant_type_id || ''}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      oil_and_lubricant_type_id: e.target.value
+                        ? parseInt(e.target.value)
+                        : null,
+                    })
+                  }
+                >
+                  <option value="">Select OAL Type</option>
+                  {oal?.map((equipment: any) => (
+                    <option value={equipment.id} key={equipment.id}>
+                      {equipment.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             <div className="mb-4">
               <label
                 htmlFor="project_description"
@@ -681,7 +647,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                     ? 'Safety'
                     : inventoryType === 'Hospital'
                     ? 'Hospital'
-                    : 'Galleylaundry'}
+                    : 'Galleylaundry'}{' '}
                   Category
                 </option>
                 {engineTypes?.map((engineType: any) => (
@@ -719,8 +685,8 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                 ))}
               </select>
             </div>
-
-            {/* <div className="mb-4">
+            {inventoryType == 'Engine' || inventoryType == 'Deck' ? (
+              <div className="mb-4">
                 <label
                   htmlFor="project_name"
                   className="block mb-2 text-sm font-medium"
@@ -738,26 +704,29 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                     setFormData({ ...formData, part_number: e.target.value })
                   }
                 />
-              </div> */}
-            <div className="mb-4">
-              <label
-                htmlFor="model_grade"
-                className="block mb-2 text-sm font-medium"
-              >
-                Model Grade
-              </label>
-              <input
-                type="text"
-                id="model_grade"
-                name="model_grade"
-                placeholder="Input model grade"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                value={formData.model_grade}
-                onChange={(e) =>
-                  setFormData({ ...formData, model_grade: e.target.value })
-                }
-              />
-            </div>
+              </div>
+            ) : (
+              <div className="mb-4">
+                <label
+                  htmlFor="model_grade"
+                  className="block mb-2 text-sm font-medium"
+                >
+                  Model Grade
+                </label>
+                <input
+                  type="text"
+                  id="model_grade"
+                  name="model_grade"
+                  placeholder="Input model grade"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                  value={formData.model_grade}
+                  onChange={(e) =>
+                    setFormData({ ...formData, model_grade: e.target.value })
+                  }
+                />
+              </div>
+            )}
+
             <div className="mb-4">
               <label
                 htmlFor="location"

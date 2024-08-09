@@ -117,6 +117,7 @@ const Page = () => {
   if (!isClient) return null;
   return (
     <div>
+      <p className="text-[32px] font-medium mb-2">MIV Inventories</p>
       <div className=" inline-flex border rounded-[30px] p-2 mb-5">
         <button
           className={`${

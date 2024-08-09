@@ -2,6 +2,7 @@
 
 import {
   displayBargeValue,
+  toggleLoading,
   toggleLocationModal,
 } from '@/provider/redux/modalSlice';
 import { formatDate, removePrefix } from '@/utils/utils';
@@ -163,29 +164,37 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
 
   const printItem = async (id: number) => {
     try {
+      dispatch(toggleLoading(true));
       const response = await axios.get(
         `${process.env.BASEURL}/requisitions/print/${id}`,
         {
+          params: { format: 'pdf' },
+          responseType: 'blob',
           headers: {
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${user?.token}`,
           },
         }
       );
-      console.log('Approve Response:', response);
-      if (response.status === 200) {
-        toast.success(`${response?.data?.message}`);
-      }
-      fetchData();
-      // setOpenModal(false);
-    } catch (error: any) {
-      console.error('Error:', error);
 
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `export.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      toast.success(response?.data?.message);
+    } catch (error: any) {
+      console.error('Export failed:', error);
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
         error?.message ||
         'Unknown error';
       toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 
@@ -198,6 +207,7 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
   const [itemForRelease, setItemForRelease] = useState<any>({});
 
   const viewItem = async (id: number) => {
+    dispatch(toggleLoading(true));
     try {
       const response = await axios.get(
         `${process.env.BASEURL}/requisitions/${id}`,
@@ -225,6 +235,8 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
         error?.message ||
         'Unknown error';
       toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
     }
   };
 
@@ -241,7 +253,8 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
               <th className="text-sm text-left py-3">inventory Type</th>
               <th className="text-sm text-left py-3">Requested By</th>
 
-              <th className="text-sm text-left py-3">Requisition Data/Time</th>
+              <th className="text-sm text-left py-3">Date/Time</th>
+              <th className="text-sm text-left py-3">Status</th>
               {pathname === '/requisitions' && (
                 <th className="text-sm text-left py-3">Actions</th>
               )}
@@ -276,6 +289,7 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
                     <td className="py-2 text-left text-sm">
                       {formatDate(requisition?.created_at)}
                     </td>
+                    <td className="py-2 text-left text-sm">{status}</td>
                     {pathname === '/requisitions' && (
                       <td className="py-2 text-center flex justify-left text-sm items-center">
                         <div className="flex gap-3">
@@ -308,7 +322,7 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
                                 Reject
                               </button>
                             </div>
-                          ) : status !== 'released' ? (
+                          ) : status !== 'Released By Store Keeper' ? (
                             <button
                               className="bg-green-700 text-white p-2 text-sm rounded-md"
                               onClick={() => releaseItem(item)}
@@ -317,7 +331,7 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
                             </button>
                           ) : (
                             <button
-                              className="bg-blue-700 text-white p-2 text-sm rounded-md"
+                              className="bg-yellow-300 p-2 text-sm rounded-md"
                               onClick={() => printItem(id)}
                             >
                               Print Item

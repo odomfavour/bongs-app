@@ -5,6 +5,7 @@ import DeclineRequisition from '@/components/requisitions/DeclineRequisition';
 import RequisitionListTable from '@/components/requisitions/RequisitionListTable';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
@@ -92,7 +93,7 @@ const Page = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
-        <p className="text-[32px] font-medium">Requisition History</p>
+        <p className="text-[32px] font-medium">Material Release History</p>
         <div className="flex items-center gap-2 w-2/5">
           <div className="w-4/5">
             <div className="w-full relative">
@@ -112,6 +113,14 @@ const Page = () => {
         </div>
       </div>
       <div>
+        <div className="mb-3 flex justify-end">
+          <Link
+            href="/requisitions"
+            className="border border-blue-500 rounded-md py-2 px-4 text-blue-500"
+          >
+            Back
+          </Link>
+        </div>
         <RequisitionListTable
           data={requisitions}
           setOpenReleaseModal={() => {}}

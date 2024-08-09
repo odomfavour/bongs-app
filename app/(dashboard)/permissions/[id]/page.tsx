@@ -220,6 +220,28 @@ const Page = () => {
     }
   };
 
+  const handleToggleModule = (moduleId: number, checked: boolean) => {
+    const subCategoryPermissions = modules
+      .find((module) => module.id === moduleId)
+      ?.sub_categories.flatMap((sub) => sub.permissions.map((perm) => perm.id));
+
+    if (subCategoryPermissions) {
+      setUpdatedPermissions((prev) => {
+        const newPermissions = new Set(prev);
+        if (checked) {
+          subCategoryPermissions.forEach((permId) =>
+            newPermissions.add(permId)
+          );
+        } else {
+          subCategoryPermissions.forEach((permId) =>
+            newPermissions.delete(permId)
+          );
+        }
+        return newPermissions;
+      });
+    }
+  };
+
   return (
     <div>
       {/* <AssignRoleListTable
@@ -305,7 +327,26 @@ const Page = () => {
         <div className="grid grid-cols-4 gap-6 mb-6">
           {subCategoriesToShow?.map((sub) => (
             <div key={sub.id} className="rounded-md bg-[#F4F7FE] p-3">
-              <p className="mb-4 font-bold text-lg">{sub.name}</p>
+              {/* <p className="mb-4 font-bold text-lg">{sub.name}</p> */}
+              <div className="flex justify-between items-center mb-4">
+                <p className="mb-4 font-bold text-lg">{sub.name}</p>
+                <label className="inline-flex items-center">
+                  <input
+                    type="checkbox"
+                    onChange={(e) =>
+                      handleToggleModule(
+                        Number(selectedModule),
+                        e.target.checked
+                      )
+                    }
+                    checked={sub.permissions.every((perm) =>
+                      updatedPermissions.has(perm.id)
+                    )}
+                    className="sr-only peer"
+                  />
+                  <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
               {sub.permissions.map((permission) => (
                 <div key={permission.id}>
                   <label className="inline-flex justify-between w-full items-center cursor-pointer mb-3">

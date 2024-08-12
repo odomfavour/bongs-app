@@ -101,8 +101,11 @@ function GeneratorTable({
   selectedItems,
   handleSelect,
   generatorData,
-  
+  requisition,
+  quantities,
+  handleQuantityChange
 }: {
+  requisition: boolean;
   generatorData: SparePart[];
   parent: string;
   MOCK_DATA: any[];
@@ -116,17 +119,19 @@ function GeneratorTable({
   setSelectedItems: any;
   selectedItems: any;
   handleSelect: (id: number) => void;
+  quantities: { [key: number]: number },
+  handleQuantityChange: (id: number, quatity: number) => void
 }) {
-
   const pathname = usePathname();
   const columns = useMemo(() => {
-    if(pathname !== "/inventories"){
-   return COLUMNS.filter(item  => item.Header !== "Projects")
+    if (pathname !== "/inventories") {
+      return COLUMNS.filter((item) => item.Header !== "Projects");
     }
-    return COLUMNS
-  }
-    
-    , [COLUMNS, pathname]);
+    if(!(requisition && selectedItems.length > 0)){
+      return COLUMNS.filter((item) => item.Header !== "Qty Req");
+    }
+    return COLUMNS;
+  }, [COLUMNS, pathname, requisition, selectedItems]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
 
   const [countdowns, setCountdowns] = useState<
@@ -171,7 +176,6 @@ function GeneratorTable({
 
   const { globalFilter, pageIndex } = state;
   console.log("generatorData", generatorData, "columns", COLUMNS);
-  
 
   return (
     <>
@@ -205,8 +209,7 @@ function GeneratorTable({
               className="border-b bg-[#E9EDF4]"
             >
               <th className="py-2 text-center">Check Item</th>
-              {
-              headerGroup.headers.map((column, index) => (
+              {headerGroup.headers.map((column, index) => (
                 <th
                   className="py-2 text-center"
                   {...column.getHeaderProps()}
@@ -256,20 +259,47 @@ function GeneratorTable({
                   </td>
 
                   {row.cells.map((cell, index) => {
-                   
                     if (cell.column.Header === "Warranty Days") {
-                      console.log("this is the cell", cell)
-                      const newDate = new Date(cell.value)
-                    return  <Countdown
-                        key={index}
-                      date={newDate}
-                      intervalDelay={0}
-                      precision={3}
-                      renderer={props => <td   className="text-center">
-                                {props.days}d {props.hours}h {props.minutes}m {props.seconds}s
-                      </td>}
-                    />
+                      const newDate = new Date(cell.value);
+                      return (
+                        <Countdown
+                          key={index}
+                          date={newDate}
+                          intervalDelay={0}
+                          precision={3}
+                          renderer={(props) => (
+                            <td className="text-center">
+                              {props.days}d {props.hours}h {props.minutes}m{" "}
+                              {props.seconds}s
+                            </td>
+                          )}
+                        />
+                      );
+                    }
+
+                    if (cell.column.Header === "Qty Req") {
                      
+                      return (
+                       <div key={index}>
+                            {selectedItems.includes(row.original.id) && requisition ? (
+                      <td>
+                        <input
+                          type="number"
+                          className="p-3 border rounded-md w-[100px]"
+                          value={quantities[row.original.id] || ""}
+                          onChange={(e) =>
+                            handleQuantityChange(
+                              row.original.id,
+                              parseInt(e.target.value)
+                            )
+                          }
+                        />
+                      </td>
+                    ) : selectedItems.length > 0 && requisition ? (
+                     null
+                    ) : null}
+                       </div>
+                      );
                     }
 
                     return (

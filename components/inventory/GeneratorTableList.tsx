@@ -345,6 +345,9 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
         </div>
 
         <GeneratorTable
+        quantities={quantities}
+        handleQuantityChange={handleQuantityChange}
+        requisition={requisition}
         generatorData ={data}
           setSelectedItems={setSelectedItems}
           fetchedData={currentItems}
@@ -364,10 +367,10 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
               accessor:  "project",
             },
           
-            // {
-            //   Header:  "Qty Req",
-            //   accessor:  "qtyReq",
-            // },
+            {
+              Header:  "Qty Req",
+              accessor:  "qtyReq",
+            },
 
             {
               Header: "Description",
@@ -487,7 +490,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
                     ) : selectedItems.length > 0 && requisition ? (
                       <td></td>
                     ) : null}
-                    {selectedItems.length > 0 && requisition && <td></td>}
+                 this line was commented earlier   // {selectedItems.length > 0 && requisition && <td></td>}
                     <td className="text-left text-sm py-3">
                       {item?.description}
                     </td>

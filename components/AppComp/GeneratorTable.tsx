@@ -261,12 +261,12 @@ function GeneratorTable({
                       console.log("this is the cell", cell)
                       const newDate = new Date(cell.value)
                     return  <Countdown
+                        key={index}
                       date={newDate}
                       intervalDelay={0}
                       precision={3}
                       renderer={props => <td   className="text-center">
-                  {props.days}d {props.hours}h {props.minutes}m {props.seconds}s
-
+                                {props.days}d {props.hours}h {props.minutes}m {props.seconds}s
                       </td>}
                     />
                      

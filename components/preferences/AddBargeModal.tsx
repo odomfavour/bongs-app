@@ -7,6 +7,7 @@ import { FaPlus, FaMinus } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
+
 interface Subscriber {
   id: number;
   name: string;

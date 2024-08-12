@@ -6,6 +6,8 @@ import {
   toggleUomModal,
 } from '@/provider/redux/modalSlice';
 import { formatDate } from '@/utils/utils';
+
+
 import axios from 'axios';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -16,6 +18,8 @@ import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import RoleTable from '../AppComp/RoleTable';
+
 
 interface Roles {
   id: number;
@@ -128,17 +132,45 @@ const RolesListTable: React.FC<RolesListTableProps> = ({
     user?.permissions?.some(
       (permission: any) => permission.name === permissionName
     );
-  return (
+  
+    const itemList = currentItems.map((item, index) => {
+      return {
+        ...item,
+     
+        'S/N': `${index + 1}`,
+        name: item.name
+      };
+    });
+  
+    return (
     <div className="bg-white">
       <div className="overflow-x-auto">
-        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+
+        
+      <RoleTable
+            fetchedData={ currentItems}
+            loadingStates={ loadingStates }
+            handleDelete={handleDelete}
+            hasPermission = { hasPermission}
+            COLUMNS={[
+              {
+                Header: "S/N",
+                accessor: "S/N"
+            },   
+            {
+                Header: "Role Name",
+                   accessor: "name"
+            } 
+            ]}
+            MOCK_DATA={itemList}
+      />   
+
+ {/*    <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
               <th className="text-sm text-center py-3">Role Name</th>
-              {/*<th className="text-sm text-center py-3">HOD</th>
-              <th className="text-sm text-center py-3">Guard</th>
-              <th className="text-sm text-center py-3">Created On</th>*/}
+            
 
               <th className="text-sm text-center py-3">Actions</th>
             </tr>
@@ -151,11 +183,9 @@ const RolesListTable: React.FC<RolesListTableProps> = ({
                   <tr className="border-b" key={id}>
                     <td className="py-2 text-center text-[#344054]">
                       {index + 1}
-                    </td>
+                    </ztd>
                     <td className="py-2 text-center capitalize">{name}</td>
-                    {/* <td className="py-2 text-center"></td>
-                    <td className="py-2 text-center"></td>
-                    <td className="py-2 text-center"></td> */}
+                
 
                     <td className="py-2 text-center flex justify-center items-center">
                       <div className="flex gap-3">
@@ -165,12 +195,7 @@ const RolesListTable: React.FC<RolesListTableProps> = ({
                         >
                           Permissions
                         </Link>
-                        {/* <button
-                          className="bg-blue-700 text-white p-2 rounded-md"
-                          onClick={() => handleEdit(item)}
-                        >
-                          Edit
-                        </button> */}
+                       
                         {hasPermission('can delete roles') && (
                           <button
                             className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
@@ -212,7 +237,7 @@ const RolesListTable: React.FC<RolesListTableProps> = ({
               </tr>
             )}
           </tbody>
-        </table>
+     </table> */}
       </div>
     </div>
   );

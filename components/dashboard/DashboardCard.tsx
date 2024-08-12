@@ -13,7 +13,7 @@ function DashboardCard({
   materialReceivedPercent,
 
   materialRequisitionAmount,
-  totalApprovedMaterial = 100,
+  totalApprovedMaterial,
 
   mivAmount,
   mivConsumables,
@@ -115,6 +115,57 @@ function DashboardCard({
       </div>
 
       <div
+        className=" min-w-[150px] max-w-[281px] rounded-[23px] p-2 border-[1.2px] border-slate-300 mb-2 flex-1 items-center flex flex-col justify-center "
+        style={{
+          backgroundColor: '#DAD7FE80',
+        }}
+      >
+        <div className="flex flex-col items-center justify-center">
+          <span
+            className="font-[400px] font-[inter] text-lg block text-center  "
+            style={{
+              color: 'rgba(0, 0, 0, 0.7)',
+            }}
+          >
+            Total MIV
+          </span>
+          <span
+            className="font-[400px] font-[inter] text-lg text-center block"
+            style={{
+              color: 'rgba(0, 0, 0, 0.7)',
+            }}
+          >
+            Inventory Count
+          </span>
+        </div>
+        <div>
+          <span className="font-medium text-[#475467 font-[600px] text-[36px]">
+            {currencyFormatter(mivAmount)}
+          </span>
+        </div>
+        <div className="flex flex-col  justify-between items-center ">
+          <span
+            className="text-sm font-[inter] text-[12px] text-[#475467]"
+            style={{
+              color: 'rgba(0, 0, 0, 0.7)',
+            }}
+          >
+            Spare-Parts:
+            {mivSperePart}
+          </span>
+          <span
+            className="text-sm  font-[inter] text-[12px] text-[#475467]"
+            style={{
+              color: 'rgba(0, 0, 0, 0.7)',
+            }}
+          >
+            Consumables:
+            {mivConsumables}
+          </span>
+        </div>
+      </div>
+
+      <div
         className="min-w-[150px] max-w-[281px] p-2  rounded-[23px] border-[1.2px] border-slate-300 flex-1 items-center flex flex-col justify-center mb-2"
         style={{
           backgroundColor: 'rgba(255, 242, 220, 0.5)',
@@ -203,56 +254,7 @@ function DashboardCard({
         </div>
       </div>
 
-      <div
-        className=" min-w-[150px] max-w-[281px] rounded-[23px] p-2 border-[1.2px] border-slate-300 mb-2 flex-1 items-center flex flex-col justify-center "
-        style={{
-          backgroundColor: '#DAD7FE80',
-        }}
-      >
-        <div className="flex flex-col items-center justify-center">
-          <span
-            className="font-[400px] font-[inter] text-lg block text-center  "
-            style={{
-              color: 'rgba(0, 0, 0, 0.7)',
-            }}
-          >
-            Total MIV
-          </span>
-          <span
-            className="font-[400px] font-[inter] text-lg text-center block"
-            style={{
-              color: 'rgba(0, 0, 0, 0.7)',
-            }}
-          >
-            Inventory Count
-          </span>
-        </div>
-        <div>
-          <span className="font-medium text-[#475467 font-[600px] text-[36px]">
-            {currencyFormatter(mivAmount)}
-          </span>
-        </div>
-        <div className="flex flex-col  justify-between items-center ">
-          <span
-            className="text-sm font-[inter] text-[12px] text-[#475467]"
-            style={{
-              color: 'rgba(0, 0, 0, 0.7)',
-            }}
-          >
-            Spare-Parts:
-            {mivSperePart}
-          </span>
-          <span
-            className="text-sm  font-[inter] text-[12px] text-[#475467]"
-            style={{
-              color: 'rgba(0, 0, 0, 0.7)',
-            }}
-          >
-            Consumables:
-            {mivConsumables}
-          </span>
-        </div>
-      </div>
+     
     </div>
   );
 }

@@ -21,6 +21,7 @@ import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import Modal from '../dashboard/Modal';
 import ReleaseItemView from './ReleaseItemView';
+import RequisitionTable from '../AppComp/RequisitionTable';
 
 interface Requisition {
   id: number;
@@ -241,11 +242,69 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
   };
 
   const pathname = usePathname();
+   const itemList = currentItems.map((item, index) => {
+    const {
+      batch_code,
+      requisition,
+      requested_by,
+      status
+    } = item;
+      return {
+        ...item,
+        'S/N': `${index + 1}`,
+       indent:batch_code,
+       inventory:`${removePrefix(requisition?.inventoryable_type)}` ,
+       requestedBy:`${requested_by?.first_name} ${ requested_by?.last_name}`,
+       date: `${formatDate(requisition?.created_at)}`,
+       status,
+      };
+    });
 
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
-        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+
+          <RequisitionTable
+          releaseItem = { releaseItem }
+          user={user}
+          printItem = {printItem}
+          declineReq = {declineReq}
+          approveReq = {approveReq }
+            fetchedData={ currentItems}
+            loadingStates={ loadingStates }
+
+            viewItem = {viewItem} 
+            pathname = {pathname}
+            COLUMNS={[
+              {
+                Header: "S/N",
+                accessor: "S/N"
+            },   
+
+            {
+              Header: "Indent No",
+                 accessor: "indent"
+          },
+      {
+        Header: "Inventory Type",
+           accessor: "inventory"
+    } ,
+    {
+      Header: "Requested By",
+         accessor: "requestedBy"
+  } , 
+  {
+    Header: "Date/Time",
+       accessor: "date"
+}  ,
+{
+  Header: "Status",
+     accessor: "status"
+}
+]}
+            MOCK_DATA={itemList}
+      />    
+        {/* <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
@@ -355,11 +414,11 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
                         <p className="font-medium text-[#475467]">
                           No Requisition found
                         </p>
-                        {/* <p className="font-normal text-sm mt-3">
+                         <p className="font-normal text-sm mt-3">
                           Click “add location” button to get started in doing
                           your
                           <br /> first transaction on the platform
-                        </p> */}
+                        </p> 
                       </div>
                     </div>
                   </div>
@@ -367,7 +426,7 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
               </tr>
             )}
           </tbody>
-        </table>
+        </table>  */}
       </div>
 
       {/* {data.length > itemsPerPage && (

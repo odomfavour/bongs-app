@@ -15,6 +15,7 @@ import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import DepartmentTable from '../AppComp/DepartmentTable';
 
 interface User {
   id: number;
@@ -139,10 +140,51 @@ const DepartmentListTable: React.FC<DepartmentListTableProps> = ({
       (permission: any) => permission.name === permissionName
     );
 
+    
+    const itemList = currentItems.map((item, index) => {
+      const { id, user, role, department_name, created_at } = item;
+      return {
+        ...item,
+        'S/N': `${index + 1}`,
+        name: department_name,
+       createAt : formatDate(created_at),
+        role: role.name
+      };
+    });
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
-        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+
+      <DepartmentTable
+            fetchedData={ currentItems}
+            loadingStates={ loadingStates }
+            handleDelete={handleDelete}
+            hasPermission = { hasPermission}
+            handleEdit = {handleEdit}
+            COLUMNS={[
+              {
+                Header: "S/N",
+                accessor: "S/N"
+            },   
+
+            {
+              Header: "Name",
+                 accessor: "name"
+          } ,
+         
+     
+      {
+        Header: "Role",
+           accessor: "role"
+    } ,
+    {
+      Header: "Created On",
+         accessor: "createdOn"
+  }  
+            ]}
+            MOCK_DATA={itemList}
+      />   
+    {/*     <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
@@ -223,7 +265,7 @@ const DepartmentListTable: React.FC<DepartmentListTableProps> = ({
               </tr>
             )}
           </tbody>
-        </table>
+        </table> */}
       </div>
     </div>
   );

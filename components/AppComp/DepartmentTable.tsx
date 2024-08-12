@@ -1,7 +1,8 @@
-import { Deck, ProjectType } from '@/utils/types';
+import { Deck } from '@/utils/types';
 import React, { useMemo } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { FaRegFolderClosed } from 'react-icons/fa6';
+import Link from "next/link"
 import {
   useTable,
   usePagination,
@@ -13,24 +14,44 @@ import {
   UsePaginationInstanceProps,
 } from 'react-table';
 
-function ProjectTable({
+interface Role {
+  id: number;
+  name: string;
+}
+interface User {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    role: string;
+  }
+
+interface Department {
+    id: number;
+    department_name: string;
+    user: User;
+    role: Role;
+    created_at: string;
+  }
+  
+function DepartmentTable({
   MOCK_DATA,
   COLUMNS,
-  handleEdit,
+  hasPermission,
   handleDelete,
   loadingStates,
   fetchedData,
-  hasPermission
+  handleEdit
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
-  handleEdit: (data: ProjectType) => void;
   handleDelete: (id: number) => void;
+  handleEdit: (data:Department) =>  void
   loadingStates: {
     [key: number]: boolean;
   };
-    hasPermission: (permission: string) => boolean
-  fetchedData: ProjectType[];
+  fetchedData: Department[];
+  hasPermission: (permission: string) => boolean
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
@@ -76,7 +97,7 @@ function ProjectTable({
 
   return (
     <>
-      <div className="flex mb-4 items-center gap-2 md:w-2/5 w-full ml-auto">
+      <div className="flex  items-center gap-2 md:w-2/5 w-full ml-auto my-4">
         <div className="md:w-4/5 w-3/5">
           <div className="w-full relative">
             <input
@@ -95,10 +116,12 @@ function ProjectTable({
         <button className="bg-grey-400 border text-sm p-3 rounded-md">
           Add Filter
         </button>
-      </div>
+      </div> 
 
       <table {...getTableProps()}>
         <thead>
+
+          
           {headerGroups.map((headerGroup, index) => (
             <tr {...headerGroup.getHeaderGroupProps()} key={index} className='border-b bg-[#E9EDF4]'>
               {headerGroup.headers.map((column, index) => (
@@ -110,7 +133,12 @@ function ProjectTable({
                   {column.render('Header')}
                 </th>
               ))}
-              <th className="py-2 text-center">Actions</th>
+
+              {
+               (hasPermission('can update department') ||
+               hasPermission('can delete department')) &&   <th className="py-2 text-center">Actions</th>
+              }
+            
             </tr>
           ))}
         </thead>
@@ -118,21 +146,23 @@ function ProjectTable({
           {page.length == 0 ? (
             <tr className="text-center text-primary bg-white">
               <td className="py-2 text-center" colSpan={10}>
-                <div className="flex justify-center items-center  min-h-[60vh]">
-                  <div>
-                    <div className="flex justify-center items-center">
-                      <FaRegFolderClosed className="text-4xl" />
+                <div className="flex justify-center items-center mt-8 ">
+                    <div>
+                      <div className="flex justify-center items-center">
+                        <FaRegFolderClosed className="text-4xl" />
+                      </div>
+                      <div className="mt-5">
+                        <p className="font-medium text-[#475467]">
+                          No Department found
+                        </p>
+                        <p className="font-normal text-sm mt-3">
+                          Click “add Department” button to get started in doing
+                          your
+                          <br /> first transaction on the platform
+                        </p>
+                      </div>
                     </div>
-                    <div className="mt-5">
-                      <p className="font-medium text-[#475467]">
-                        No Project found
-                      </p>
-                      <p className="font-normal text-sm mt-3">
-                        Click “add project” button to get started in doing your
-                        <br /> first transaction on the platform
-                      </p>
-                    </div>
-                  </div>
+              
                 </div>
               </td>
             </tr>
@@ -146,18 +176,17 @@ function ProjectTable({
                       <td
                         className="text-center"
                         {...cell.getCellProps()}
-                        key={_index}
+                        key={index}
                       >
                         {cell.render('Cell')}
                       </td>
                     );
                   })}
-                  <td>
-                  {(hasPermission('can update project') ||
-                      hasPermission('can delete project')) && (
-                      <td className="py-2 text-center flex justify-left items-center">
+                  {(hasPermission('can update department') ||
+                      hasPermission('can delete department')) && (
+                      <td className="py-2 text-center flex justify-center items-center">
                         <div className="flex gap-3">
-                          {hasPermission('can update project') && (
+                          {hasPermission('can update department') && (
                             <button
                               className="bg-blue-700 text-white text-sm p-2 rounded-md"
                               onClick={() => {
@@ -168,11 +197,12 @@ function ProjectTable({
                                   return handleEdit(selectedRow);
                                 }
                               }}
+
                             >
                               Edit
                             </button>
                           )}
-                          {hasPermission('can delete project') && (
+                          {hasPermission('can delete department') && (
                             <button
                               className="bg-red-700 text-white text-sm p-2 rounded-md flex items-center justify-center"
                               onClick={() => handleDelete(row.original.id)}
@@ -188,15 +218,15 @@ function ProjectTable({
                         </div>
                       </td>
                     )}
-             
-                  </td>
+   
                 </tr>
               );
             })
           )}
         </tbody>
       </table>
-      <div className="flex flex-row justify-end mt-3">
+       {
+        page.length !== 0 &&    <div className="flex flex-row justify-end mt-3">
         <span>
           Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
         </span>
@@ -213,8 +243,9 @@ function ProjectTable({
           Next
         </button>
       </div>
+       }
     </>
   );
 }
 
-export default ProjectTable;
+export default DepartmentTable;

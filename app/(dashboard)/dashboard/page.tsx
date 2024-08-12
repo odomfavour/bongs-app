@@ -128,8 +128,7 @@ const Page = () => {
   if (!isUIReady) {
     return (
       <div className="h-screen flex  justify-center items-center">
-        <h3>No Data</h3>
-        {/* <div className="w-16 h-16 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div> */}
+         <div className="w-16 h-16 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div> 
       </div>
     );
   }

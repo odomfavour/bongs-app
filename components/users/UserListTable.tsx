@@ -15,7 +15,8 @@ import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-
+import UsersTable from '../AppComp/UsersTable';
+import { Span } from 'next/dist/trace';
 interface Role {
   id: number;
   name: string;
@@ -130,15 +131,64 @@ const UserListTable: React.FC<UserListTableProps> = ({
       (permission: any) => permission.name === permissionName
     );
 
+
+    const itemList = currentItems.map((item, index) => {
+      const userRoles = item.roles.map(role => role.name)
+      return {
+        ...item,
+        'S/N': `${index + 1}`,
+        name: item.name,
+        phoneNumber: item.phone_number,
+        email: item.email,
+        role: userRoles.join(",")
+      };
+    });
+
+
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
-        <table className="table-auto w-full text-primary rounded-2xl mb-5">
+      <UsersTable
+            fetchedData={ currentItems}
+            loadingStates={ loadingStates }
+            handleDelete={handleDelete}
+            hasPermission = { hasPermission}
+            handleEdit = {handleEdit}
+            COLUMNS={[
+              {
+                Header: "S/N",
+                accessor: "S/N"
+            },   
+
+            {
+              Header: "Name",
+                 accessor: "name"
+          } ,
+          {
+            Header: "Email",
+               accessor: "email"
+        } ,
+        {
+          Header: "Phone Number",
+             accessor: "phoneNumber"
+      }  ,
+      {
+        Header: "Role",
+           accessor: "role"
+    } 
+            ]}
+            MOCK_DATA={itemList}
+      />   
+
+
+
+
+        {/* <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
               <th className="text-sm text-left py-3">Name</th>
-              {/* <th className="text-sm text-center py-3">Last Name</th> */}
+             <th className="text-sm text-center py-3">Last Name</th> 
               <th className="text-sm text-left py-3">Email</th>
               <th className="text-sm text-left py-3">Phone Number</th>
               <th className="text-sm text-left py-3">Role</th>
@@ -155,7 +205,7 @@ const UserListTable: React.FC<UserListTableProps> = ({
                       {index + 1}
                     </td>
                     <td className="py-2 text-left text-sm">{name}</td>
-                    {/* <td className="py-2 text-center">{last_name}</td> */}
+                     <td className="py-2 text-center">{last_name}</td> 
                     <td className="py-2 text-left text-sm">{email}</td>
                     <td className="py-2 text-left text-sm">{phone_number}</td>
                     <td className="py-2 text-left text-sm capitalize">
@@ -215,7 +265,8 @@ const UserListTable: React.FC<UserListTableProps> = ({
               </tr>
             )}
           </tbody>
-        </table>
+        </table> */}
+        
       </div>
     </div>
   );

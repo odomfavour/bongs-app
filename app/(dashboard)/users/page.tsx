@@ -191,24 +191,7 @@ const Page = () => {
     <section>
       <div className="flex md:flex-row gap-5 flex-col justify-between md:items-center items-start mb-5 pb-10 border-b">
         <p className="text-[32px] font-medium ">{activeTab}</p>
-        <div className="flex items-center gap-2 md:w-2/5 w-full">
-          <div className="md:w-4/5 w-3/5">
-            <div className="w-full relative">
-              <input
-                type="search"
-                placeholder="Search here..."
-                className="bg-gray-50 pl-8 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-              />
-              <div className="absolute flex bottom-0 top-0 justify-center items-center left-3 text-primary cursor-pointer">
-                <FaSearch className="text-veriDark" />
-              </div>
-            </div>
-          </div>
-
-          <button className="bg-grey-400 border text-sm p-3 rounded-md">
-            Add Filter
-          </button>
-        </div>
+       
       </div>
       <div className="flex justify-end mb-6">
         {activeTab === 'Users' && hasPermission('can create user') ? (

@@ -79,12 +79,12 @@ const SafetyPanel: React.FC<SafetyPanelProps> = ({
   };
   return (
     <div>
-      <div className="my-4">
+      {/* <div className="my-4">
         <SafetyStrip
           toggleRequisition={toggleRequisition}
           setOpenModal={setOpenModal}
         />
-      </div>
+      </div> */}
       <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2  gap-2">
         {safetyCategories.map((tab) => (
           <button

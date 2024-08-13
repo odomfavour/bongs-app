@@ -1,4 +1,5 @@
 'use client';
+import Modal from '@/components/dashboard/Modal';
 import AddEngineModal from '@/components/inventory/AddEngineModal';
 import ConsumablesDeckPanel from '@/components/inventory/ConsumablesDeckPanel';
 import ConsumablesEnginePanel from '@/components/inventory/ConsumablesEnginePanel';
@@ -6,9 +7,13 @@ import ConsumablesGalleyPanel from '@/components/inventory/ConsumablesGalleyPane
 import ConsumablesHospitalPanel from '@/components/inventory/ConsumablesHospital';
 import ConsumablesSafetyPanel from '@/components/inventory/ConsumablesSafetyPanel';
 import DeckPanel from '@/components/inventory/DeckPanel';
+import DeckStrip from '@/components/inventory/DeckStrip';
 import EnginePanel from '@/components/inventory/EnginePanel';
+import EngineStrip from '@/components/inventory/EngineStrip';
 import HospitalPanel from '@/components/inventory/HospitalPanel';
+import HospitalStrip from '@/components/inventory/HospitalStrip';
 import SafetyPanel from '@/components/inventory/SafetyPanel';
+import SafetyStrip from '@/components/inventory/SafetyStrip';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -33,6 +38,10 @@ const Page = () => {
   const toggleRequisition = () => {
     setRequisition(!requisition);
     console.log('req', requisition);
+  };
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
   };
 
   const fetchData = useCallback(async () => {
@@ -113,64 +122,77 @@ const Page = () => {
     setIsClient(true);
   }, []);
   if (!isClient) return null;
+
   return (
     <div>
-      <p className="text-[32px] font-medium mb-2">Project Inventories</p>
-      <div className=" inline-flex border rounded-[30px] p-2 mb-5">
-        <button
-          className={`${
-            activeTab === 'spare-parts' ? 'bg-blue-600 text-white' : ''
-          } p-3 border rounded-s-[30px]`}
-          onClick={() => setActiveTab('spare-parts')}
-        >
-          Spare parts
-        </button>
-        <button
-          className={`${
-            activeTab === 'consumables' ? 'bg-blue-600 text-white' : ''
-          } p-3 border rounded-e-[30px]`}
-          onClick={() => setActiveTab('consumables')}
-        >
-          Consumables
-        </button>
-      </div>
-      <div className="flex justify-between items-center mb-5 pb-10 border-b">
-        <div>
-          <select
-            id="selectedOption"
-            value={selectedOption}
-            onChange={(e) => setSelectedOption(e.target.value)}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-          >
-            <option value="">Choose Option</option>
-            <option value="engine">Engine</option>
-            <option value="deck">Deck</option>
-            <option value="safety">Safety</option>
-            <option value="hospital">Hospital</option>
-            {activeTab === 'consumables' && (
-              <option value="galley">Galley</option>
-            )}
-          </select>
-        </div>
-        <div className="flex items-center gap-2 w-2/5">
-          <div className="w-4/5">
-            <div className="w-full relative">
-              <input
-                type="search"
-                placeholder="Search here..."
-                className="bg-gray-50 pl-8 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-              />
-              <div className="absolute flex bottom-0 top-0 justify-center items-center left-3 text-primary cursor-pointer">
-                <FaSearch className="text-veriDark" />
-              </div>
-            </div>
+      <p className="text-[30px] font-medium mb-2">Project Inventories</p>
+      <div className="flex justify-between">
+        <div className="flex items-center gap-3">
+          <div className="inline-flex border rounded-[30px] p-1">
+            <button
+              className={`${
+                activeTab === 'spare-parts' ? 'bg-blue-600 text-white' : ''
+              } p-2 border rounded-s-[30px] text-sm`}
+              onClick={() => setActiveTab('spare-parts')}
+            >
+              Spare parts
+            </button>
+            <button
+              className={`${
+                activeTab === 'consumables' ? 'bg-blue-600 text-white' : ''
+              } p-2 border rounded-e-[30px] text-sm`}
+              onClick={() => setActiveTab('consumables')}
+            >
+              Consumables
+            </button>
           </div>
 
-          <button className="bg-grey-400 border text-sm p-3 rounded-md">
-            Add Filter
-          </button>
+          <div>
+            <select
+              id="selectedOption"
+              value={selectedOption}
+              onChange={(e) => setSelectedOption(e.target.value)}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+            >
+              <option value="">Choose Option</option>
+              <option value="engine">Engine</option>
+              <option value="deck">Deck</option>
+              <option value="safety">Safety</option>
+              <option value="hospital">Hospital</option>
+              {activeTab === 'consumables' && (
+                <option value="galley">Galley</option>
+              )}
+            </select>
+          </div>
+        </div>
+        <div>
+          {activeTab === 'spare-parts' && selectedOption === 'engine' && (
+            <EngineStrip
+              toggleRequisition={toggleRequisition}
+              setOpenModal={setOpenModal}
+            />
+          )}
+          {activeTab === 'spare-parts' && selectedOption === 'deck' && (
+            <DeckStrip
+              toggleRequisition={toggleRequisition}
+              setOpenModal={setOpenModal}
+            />
+          )}
+          {activeTab === 'spare-parts' && selectedOption === 'safety' && (
+            <SafetyStrip
+              toggleRequisition={toggleRequisition}
+              setOpenModal={setOpenModal}
+            />
+          )}
+          {activeTab === 'spare-parts' && selectedOption === 'hospital' && (
+            <HospitalStrip
+              toggleRequisition={toggleRequisition}
+              setOpenModal={setOpenModal}
+            />
+          )}
         </div>
       </div>
+      <div className="flex justify-between items-center mb-5 pb-10 border-b"></div>
       {activeTab === 'spare-parts' && selectedOption === 'engine' && (
         <EnginePanel
           engineCategories={categories}
@@ -245,6 +267,21 @@ const Page = () => {
           toggleRequisition={toggleRequisition}
         />
       )}
+
+      <Modal
+        // title={
+        //   Object.keys(bargeValues).length > 0 ? 'Edit Engine' : 'Add New Engine'
+        // }
+        isOpen={openModal}
+        onClose={handleClose}
+        maxWidth="70%"
+      >
+        <AddEngineModal
+          fetchData={fetchData}
+          handleClose={handleClose}
+          inventoryType="Engine"
+        />
+      </Modal>
     </div>
   );
 };

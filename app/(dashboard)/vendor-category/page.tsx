@@ -92,40 +92,19 @@ const VendorCategoryPage = () => {
     <section>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
         <p className="text-[32px] font-medium">Vendor Category</p>
-        <div className="flex items-center gap-2 w-2/5">
-          <div className="w-4/5">
-            <div className="w-full relative">
-              <input
-                type="search"
-                placeholder="Search here..."
-                className="bg-gray-50 pl-8 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-              />
-              <div className="absolute  flex bottom-0 top-0 justify-center items-center left-3 text-primary cursor-pointer">
-                <FaSearch className="text-veriDark" />
-              </div>
-            </div>
-          </div>
-
-          <button className="bg-grey-400 border text-sm p-3 rounded-md">
-            Add Filter
+        {hasPermission('can create vendor category') && (
+          <button
+            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+            onClick={() => {
+              dispatch(displayBargeValue({}));
+              setOpenModal(true);
+            }}
+          >
+            Add Vendor Category
           </button>
-        </div>
+        )}
       </div>
       <div>
-        <div className="flex justify-end mb-6">
-          {hasPermission('can create vendor category') && (
-            <button
-              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-              onClick={() => {
-                dispatch(displayBargeValue({}));
-                setOpenModal(true);
-              }}
-            >
-              Add Vendor Category
-            </button>
-          )}
-        </div>
-
         <VendorCategoryListTable
           data={vendorCat}
           fetchData={fetchData}

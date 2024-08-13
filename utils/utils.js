@@ -1,4 +1,5 @@
 export const formatDate = (dateString) => {
+  if (!dateString) return '-';
   const date = new Date(dateString);
 
   const dateOptions = {
@@ -65,5 +66,5 @@ export const calculateCountdown = (endDate) => {
 };
 
 export const removePrefix = (str, prefix = 'App\\Models\\') => {
-  return str.replace(prefix, '');
+  return str?.replace(prefix, '');
 };

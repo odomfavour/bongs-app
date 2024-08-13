@@ -90,12 +90,12 @@ const DeckPanel: React.FC<DeckPanelProps> = ({
   };
   return (
     <div>
-      <div className="my-4">
+      {/* <div className="my-4">
         <DeckStrip
           toggleRequisition={toggleRequisition}
           setOpenModal={setOpenModal}
         />
-      </div>
+      </div> */}
       <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2  gap-2">
         {deckCategories.map((tab) => (
           <button

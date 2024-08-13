@@ -78,12 +78,12 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
   }, [activeId, fetchData]);
   return (
     <div>
-      <div className="my-4">
+      {/* <div className="my-4">
         <HospitalStrip
           toggleRequisition={toggleRequisition}
           setOpenModal={setOpenModal}
         />
-      </div>
+      </div> */}
       <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2  gap-2">
         {hospitalCategories.map((tab) => (
           <button

@@ -191,55 +191,54 @@ const Page = () => {
     <section>
       <div className="flex md:flex-row gap-5 flex-col justify-between md:items-center items-start mb-5 pb-10 border-b">
         <p className="text-[32px] font-medium ">{activeTab}</p>
-       
-      </div>
-      <div className="flex justify-end mb-6">
-        {activeTab === 'Users' && hasPermission('can create user') ? (
-          <button
-            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-            onClick={() => {
-              dispatch(displayBargeValue({}));
-              setOpenUserModal(true);
-            }}
-          >
-            Add User
-          </button>
-        ) : activeTab === 'Roles' && hasPermission('can create roles') ? (
-          <button
-            className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-            onClick={() => {
-              dispatch(displayBargeValue({}));
-              setOpenRoleModal(true);
-            }}
-          >
-            Add Role
-          </button>
-        ) : (
-          //  : activeTab == 'Permissions' ? (
-          //   <button
-          //     className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-          //     onClick={() => {
-          //       dispatch(displayBargeValue({}));
-          //       dispatch(toggleAddPermissionModal());
-          //     }}
-          //   >
-          //     Add Permission
-          //   </button>
-          // )
-          <>
-            {hasPermission('can create department') && (
-              <button
-                className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
-                onClick={() => {
-                  dispatch(displayBargeValue({}));
-                  setOpenDeptModal(true);
-                }}
-              >
-                Add Department
-              </button>
-            )}
-          </>
-        )}
+        <div className="">
+          {activeTab === 'Users' && hasPermission('can create user') ? (
+            <button
+              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+              onClick={() => {
+                dispatch(displayBargeValue({}));
+                setOpenUserModal(true);
+              }}
+            >
+              Add User
+            </button>
+          ) : activeTab === 'Roles' && hasPermission('can create roles') ? (
+            <button
+              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+              onClick={() => {
+                dispatch(displayBargeValue({}));
+                setOpenRoleModal(true);
+              }}
+            >
+              Add Role
+            </button>
+          ) : (
+            //  : activeTab == 'Permissions' ? (
+            //   <button
+            //     className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+            //     onClick={() => {
+            //       dispatch(displayBargeValue({}));
+            //       dispatch(toggleAddPermissionModal());
+            //     }}
+            //   >
+            //     Add Permission
+            //   </button>
+            // )
+            <>
+              {hasPermission('can create department') && (
+                <button
+                  className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+                  onClick={() => {
+                    dispatch(displayBargeValue({}));
+                    setOpenDeptModal(true);
+                  }}
+                >
+                  Add Department
+                </button>
+              )}
+            </>
+          )}
+        </div>
       </div>
 
       <div className="grid md:grid-cols-4 grid-cols-2 flex-wrap items-center gap-2">

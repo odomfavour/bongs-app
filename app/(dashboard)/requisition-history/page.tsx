@@ -27,6 +27,8 @@ interface RequestedBy {
 interface RequisitionItem {
   id: number;
   indent_number: string;
+  material_type: string;
+  created_at: string;
   batch_code: string;
   hod_status: string;
   company_rep_status: string;

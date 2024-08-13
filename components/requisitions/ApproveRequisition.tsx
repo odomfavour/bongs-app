@@ -32,14 +32,12 @@ interface ApproveRequisitionProps {
   requisitionItem: RequisitionItem;
   setOpenModal: (isOpen: boolean) => void;
   fetchData: () => void;
-  setMaterials: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 const ApproveRequisition: React.FC<ApproveRequisitionProps> = ({
   requisitionItem,
   setOpenModal,
   fetchData,
-  setMaterials,
 }) => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);

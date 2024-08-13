@@ -10,7 +10,7 @@ import axios from 'axios';
 // import { EmptyProductIcon } from '@/utils/utils';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FaExternalLinkAlt, FaPenAlt, FaTrashAlt } from 'react-icons/fa';
 import { FaMagnifyingGlass, FaRegFolderClosed } from 'react-icons/fa6';
@@ -38,6 +38,8 @@ interface RequestedBy {
 interface RequisitionList {
   id: number;
   indent_number: string;
+  material_type: string;
+  created_at: string;
   batch_code: string;
   hod_status: string;
   company_rep_status: string;
@@ -204,106 +206,108 @@ const RequisitionListTable: React.FC<RequisitionListTableProps> = ({
   const handleViewClose = () => {
     setOpenViewModal(false);
   };
-
+  const router = useRouter();
   const [itemForRelease, setItemForRelease] = useState<any>({});
 
   const viewItem = async (id: number) => {
-    dispatch(toggleLoading(true));
-    try {
-      const response = await axios.get(
-        `${process.env.BASEURL}/requisitions/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
-      console.log('Approve Response:', response);
-      if (response.status === 200) {
-        toast.success(`${response?.data?.message}`);
-      }
-      setItemForRelease(response?.data?.data);
-      setOpenViewModal(true);
+    const selectedRel: any = currentItems.find((rel) => rel.id === id);
+    // console.log('selectedRel', selectedRe);
 
-      //  fetchData();
-      // setOpenModal(false);
-    } catch (error: any) {
-      console.error('Error:', error);
+    localStorage.setItem('selectedRelease', JSON.stringify(selectedRel));
 
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.response?.data?.errors ||
-        error?.message ||
-        'Unknown error';
-      toast.error(`${errorMessage}`);
-    } finally {
-      dispatch(toggleLoading(false));
-    }
+    router.push(`/requisitions/${id}`);
+    // dispatch(toggleLoading(true));
+    // try {
+    //   const response = await axios.get(
+    //     `${process.env.BASEURL}/requisitions/${id}`,
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${user?.token}`,
+    //       },
+    //     }
+    //   );
+    //   console.log('Approve Response:', response);
+    //   if (response.status === 200) {
+    //     toast.success(`${response?.data?.message}`);
+    //   }
+    //   setItemForRelease(response?.data?.data);
+    //   setOpenViewModal(true);
+
+    //   //  fetchData();
+    //   // setOpenModal(false);
+    // } catch (error: any) {
+    //   console.error('Error:', error);
+
+    //   const errorMessage =
+    //     error?.response?.data?.message ||
+    //     error?.response?.data?.errors ||
+    //     error?.message ||
+    //     'Unknown error';
+    //   toast.error(`${errorMessage}`);
+    // } finally {
+    //   dispatch(toggleLoading(false));
+    // }
   };
 
   const pathname = usePathname();
-   const itemList = currentItems.map((item, index) => {
+  const itemList = currentItems?.map((item, index) => {
     const {
       batch_code,
+      material_type,
+      created_at,
       requisition,
       requested_by,
-      status
+      status,
     } = item;
-      return {
-        ...item,
-        'S/N': `${index + 1}`,
-       indent:batch_code,
-       inventory:`${removePrefix(requisition?.inventoryable_type)}` ,
-       requestedBy:`${requested_by?.first_name} ${ requested_by?.last_name}`,
-       date: `${formatDate(requisition?.created_at)}`,
-       status,
-      };
-    });
+    return {
+      ...item,
+      'S/N': `${index + 1}`,
+      indent: batch_code,
+      inventory: `${material_type}`,
+      requestedBy: `${requested_by?.first_name} ${requested_by?.last_name}`,
+      date: `${formatDate(created_at)}`,
+      status,
+    };
+  });
 
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
-
-          <RequisitionTable
-          releaseItem = { releaseItem }
+        <RequisitionTable
+          releaseItem={releaseItem}
           user={user}
-          printItem = {printItem}
-          declineReq = {declineReq}
-          approveReq = {approveReq }
-            fetchedData={ currentItems}
-            loadingStates={ loadingStates }
-
-            viewItem = {viewItem} 
-            pathname = {pathname}
-            COLUMNS={[
-              {
-                Header: "S/N",
-                accessor: "S/N"
-            },   
+          printItem={printItem}
+          declineReq={declineReq}
+          approveReq={approveReq}
+          fetchedData={currentItems}
+          loadingStates={loadingStates}
+          viewItem={viewItem}
+          pathname={pathname}
+          COLUMNS={[
+            {
+              Header: 'S/N',
+              accessor: 'S/N',
+            },
 
             {
-              Header: "Indent No",
-                 accessor: "indent"
-          },
-      {
-        Header: "Inventory Type",
-           accessor: "inventory"
-    } ,
-    {
-      Header: "Requested By",
-         accessor: "requestedBy"
-  } , 
-  {
-    Header: "Date/Time",
-       accessor: "date"
-}  ,
-{
-  Header: "Status",
-     accessor: "status"
-}
-]}
-            MOCK_DATA={itemList}
-      />    
+              Header: 'Indent No',
+              accessor: 'indent',
+            },
+            {
+              Header: 'Inventory Type',
+              accessor: 'inventory',
+            },
+            {
+              Header: 'Requested By',
+              accessor: 'requestedBy',
+            },
+            {
+              Header: 'Date/Time',
+              accessor: 'date',
+            },
+          ]}
+          MOCK_DATA={itemList}
+        />
         {/* <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">

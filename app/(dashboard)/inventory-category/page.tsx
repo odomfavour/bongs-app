@@ -141,24 +141,6 @@ const Page = () => {
         <div>
           <p className="mb-8">Inventory Category</p>
         </div>
-        <div className="flex items-center gap-2 w-2/5">
-          <div className="w-4/5">
-            <div className="w-full relative">
-              <input
-                type="search"
-                placeholder="Search here..."
-                className="bg-gray-50 pl-8 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-              />
-              <div className="absolute flex bottom-0 top-0 justify-center items-center left-3 text-primary cursor-pointer">
-                <FaSearch className="text-veriDark" />
-              </div>
-            </div>
-          </div>
-
-          <button className="bg-grey-400 border text-sm p-3 rounded-md">
-            Add Filter
-          </button>
-        </div>
       </div>
 
       <div className="mb-14 flex justify-between items-center">
@@ -182,9 +164,8 @@ const Page = () => {
         <div>
           {selectedOption && (
             <button
-              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] capitalize text-white bg-[#1455D3]"
+              className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-2 px-6 rounded-[30px] capitalize text-white bg-[#1455D3]"
               onClick={() => {
-                console.log('sbhdjhgsdhjg');
                 dispatch(displayBargeValue({}));
                 // dispatch(
                 //   toggleAddInventoryTypeModal({

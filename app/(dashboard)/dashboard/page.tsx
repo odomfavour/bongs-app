@@ -20,7 +20,7 @@ import Image from "next/image";
 import { months } from "@/utils/data";
 import InventoryRequisitionAnalysis from "@/components/dashboard/charts/InventoryRequisitionAnalysis";
 import { useSelector } from "react-redux";
-/* import { useRouter } from "next/router"; */
+
 import { useRouter} from "next/navigation"
 
 
@@ -44,7 +44,7 @@ const Page = () => {
     useState<categoryCountType | null>(null);
   
   const [mostUsedInvory, setmostUsedInvory] = useState<signMostUsedItemProp[] | []>([])
-  
+  console.log("ran inner now")
   const [year, setYear] = useState("")
   const [month, setMonth] = useState("")
   
@@ -56,10 +56,10 @@ const Page = () => {
           const response = await fetchDashboardDataApi({year, month});
           if (response.status) {
             const { message, data } = response;
+            console.log("dashboard data", data)
             toast.success(message);
-            console.log("dd", message, data);
-            const { total_requisitions,
-              total_approved_requisitions } = data.requisition_data;
+            const { total_requisitions
+             } = data.requisition_data;
             const {
               total_inventory,
               total_project_inventory,
@@ -84,10 +84,11 @@ const Page = () => {
 
             const { total_items_received, percentage_change } =
               data.total_items_received_data;
-
+              const {total_approved_materials
+              } = data.material_release_data
         
             setRequisitionApprovedByMonth(
-              data.requisition_data.approved_requisitions_by_month
+              data.requisition_data.delivered_requisitions_by_month
             );
             setInventoryOverTime(data.filtered_inventory_data);
 
@@ -99,7 +100,7 @@ const Page = () => {
                 sparePartInventory: total_project_sparepart_inventory,
                 consumablesInventory: total_project_consumable_inventory,
                 materialRequisitionAmount: total_requisitions,
-                totalApprovedMaterial: total_approved_requisitions,
+                totalApprovedMaterial: total_approved_materials,
                 mivAmount: total_miv_inventory,
                 mivConsumables: total_miv_consumable_inventory,
                 mivSperePart: total_miv_sparepart_inventory,
@@ -187,7 +188,7 @@ const Page = () => {
       <div className="grid grid-cols-12 gap-4 mb-4">
         <div className="col-span-12 lg:col-span-8 gap-4">
           <div className="grid grid-cols-12 gap-4 mb-[8px]">
-            <div className="col-span-12 lg:col-span-6  rounded-[23px] p-2 border-[1.2px] border-slate-300">
+            <div className="col-span-12 lg:col-span-6 min-h-[45vh]  rounded-[23px] p-2 border-[1.2px] border-slate-300">
               {inventoryOverTime && (
                 <LineAndbarchart inventoryOverTime={inventoryOverTime} />
               )}
@@ -199,7 +200,7 @@ const Page = () => {
             </div>
           </div>
           <div className="grid grid-cols-12 gap-4">
-            <div className=" col-span-12 lg:col-span-6  rounded-[23px] p-2 border-[1.2px] border-slate-300">
+            <div className=" col-span-12 lg:col-span-6 min-h-[45vh]   rounded-[23px] p-2 border-[1.2px] border-slate-300">
               {consumableCounts && sparePartCounts && (
                 <Barchart
                   consumable_counts={consumableCounts}
@@ -207,14 +208,14 @@ const Page = () => {
                 />
               )}
             </div>
-            <div className="col-span-12 lg:col-span-6  rounded-[23px] p-2 border-[1.2px] border-slate-300">
+            <div className="col-span-12 lg:col-span-6 min-h-[45vh]   rounded-[23px] p-2 border-[1.2px] border-slate-300">
               {categoryCounts && (
                 <InventoryRequisitionAnalysis categoryCounts={categoryCounts} />
               )}
             </div>
           </div>
         </div>
-        <div className="col-span-12  lg:col-span-4 gap-4  rounded-[23px] p-2 border-[1.2px] border-slate-300">
+        <div className="col-span-12 min-h-[45vh]   lg:col-span-4 gap-4  rounded-[23px] p-2 border-[1.2px] border-slate-300">
         
           {
           mostUsedInvory &&  <TopTenInnventories

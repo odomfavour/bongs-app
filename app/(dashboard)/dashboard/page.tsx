@@ -188,7 +188,7 @@ const Page = () => {
       <div className="grid grid-cols-12 gap-4 mb-4">
         <div className="col-span-12 lg:col-span-8 gap-4">
           <div className="grid grid-cols-12 gap-4 mb-[8px]">
-            <div className="col-span-12 lg:col-span-6  rounded-[23px] p-2 border-[1.2px] border-slate-300">
+            <div className="col-span-12 lg:col-span-6 min-h-[45vh]  rounded-[23px] p-2 border-[1.2px] border-slate-300">
               {inventoryOverTime && (
                 <LineAndbarchart inventoryOverTime={inventoryOverTime} />
               )}
@@ -200,7 +200,7 @@ const Page = () => {
             </div>
           </div>
           <div className="grid grid-cols-12 gap-4">
-            <div className=" col-span-12 lg:col-span-6  rounded-[23px] p-2 border-[1.2px] border-slate-300">
+            <div className=" col-span-12 lg:col-span-6 min-h-[45vh]   rounded-[23px] p-2 border-[1.2px] border-slate-300">
               {consumableCounts && sparePartCounts && (
                 <Barchart
                   consumable_counts={consumableCounts}
@@ -208,14 +208,14 @@ const Page = () => {
                 />
               )}
             </div>
-            <div className="col-span-12 lg:col-span-6  rounded-[23px] p-2 border-[1.2px] border-slate-300">
+            <div className="col-span-12 lg:col-span-6 min-h-[45vh]   rounded-[23px] p-2 border-[1.2px] border-slate-300">
               {categoryCounts && (
                 <InventoryRequisitionAnalysis categoryCounts={categoryCounts} />
               )}
             </div>
           </div>
         </div>
-        <div className="col-span-12  lg:col-span-4 gap-4  rounded-[23px] p-2 border-[1.2px] border-slate-300">
+        <div className="col-span-12 min-h-[45vh]   lg:col-span-4 gap-4  rounded-[23px] p-2 border-[1.2px] border-slate-300">
         
           {
           mostUsedInvory &&  <TopTenInnventories

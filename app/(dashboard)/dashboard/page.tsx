@@ -84,7 +84,7 @@ const Page = () => {
 
             const { total_items_received, percentage_change } =
               data.total_items_received_data;
-              const {total_approved_materials
+              const {total_approved_materials, total_materials
               } = data.material_release_data
         
             setRequisitionApprovedByMonth(
@@ -99,7 +99,7 @@ const Page = () => {
                 inventoryAmount: total_project_inventory,
                 sparePartInventory: total_project_sparepart_inventory,
                 consumablesInventory: total_project_consumable_inventory,
-                materialRequisitionAmount: total_requisitions,
+                materialRequisitionAmount: total_materials,
                 totalApprovedMaterial: total_approved_materials,
                 mivAmount: total_miv_inventory,
                 mivConsumables: total_miv_consumable_inventory,

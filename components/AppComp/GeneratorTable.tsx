@@ -225,7 +225,15 @@ function GeneratorTable({
     try {
       dispatch(toggleLoading(true));
       const response = await axios.get(
-        `${process.env.BASEURL}/sparepart/engine/export`,
+        `${process.env.BASEURL}/sparepart/${
+          parent === 'Engine'
+            ? 'engine'
+            : parent === 'Deck'
+            ? 'deck'
+            : parent === 'Safety'
+            ? 'safety'
+            : 'hospital'
+        }/export`,
         {
           params: { format },
           responseType: 'blob',

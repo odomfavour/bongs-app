@@ -17,7 +17,10 @@ interface HospitalPanelProps {
   hospitalCategories: { id: number; name: string; count: string }[];
   user: User;
   requisition: boolean;
+  openModal: boolean;
   toggleRequisition: () => void;
+  handleClose: () => void;
+  setOpenModal: (isOpen: boolean) => void;
 }
 
 const HospitalPanel: React.FC<HospitalPanelProps> = ({
@@ -25,6 +28,9 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
   user,
   requisition,
   toggleRequisition,
+  openModal,
+  handleClose,
+  setOpenModal,
 }) => {
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
@@ -32,11 +38,7 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const pathname = usePathname();
-  const [openModal, setOpenModal] = useState(false);
   const bargeValues = useSelector((state: any) => state.modal.bargeValues);
-  const handleClose = () => {
-    setOpenModal(false);
-  };
 
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;

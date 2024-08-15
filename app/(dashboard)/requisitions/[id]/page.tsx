@@ -7,6 +7,7 @@ import RequisitionListTable from '@/components/requisitions/RequisitionListTable
 import RequisitionViewListTable from '@/components/requisitions/RequisitionViewTable';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
@@ -100,8 +101,9 @@ const Page = () => {
   }, [fetchData]);
   return (
     <div>
-      <div className="flex justify-between items-center mb-5 pb-10 border-b">
-        <p className="text-[32px] font-medium">Material Release</p>
+      <div className=" mb-5 pb-10 border-b">
+        <Link href="/requisitions">Back</Link>
+        <p className="text-[32px] font-medium mt-3">Material Release</p>
         {/* <div className="flex items-center gap-2 w-2/5">
           <div className="w-4/5">
             <div className="w-full relative">
@@ -123,7 +125,7 @@ const Page = () => {
       </div>
       <div>
         <RequisitionViewListTable
-          data={materials}
+          data={materials || []}
           fetchData={() => {}}
           setOpenModal={setOpenModal}
           setOpenDeclineModal={setOpenDeclineModal}

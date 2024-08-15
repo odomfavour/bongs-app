@@ -32,29 +32,33 @@ interface EnginePanelProps {
   user: User;
   fetchLoading: boolean;
   requisition: boolean;
+  openModal: boolean;
   toggleRequisition: () => void;
+  handleClose: () => void;
+  setOpenModal: (isOpen: boolean) => void;
 }
 
 const EnginePanel: React.FC<EnginePanelProps> = ({
   engineCategories,
+  openModal,
   user,
+  handleClose,
   fetchLoading,
   requisition,
   toggleRequisition,
+  setOpenModal,
 }) => {
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
   const [spareparts, setSpareparts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const pathname = usePathname();
-  const isAddEngineModalOpen = useSelector(
-    (state: any) => state.modal.isAddEngineModalOpen
-  );
+
   const bargeValues = useSelector((state: any) => state.modal.bargeValues);
-  const [openModal, setOpenModal] = useState(false);
-  const handleClose = () => {
-    setOpenModal(false);
-  };
+  // const [openModal, setOpenModal] = useState(false);
+  // const handleClose = () => {
+  //   setOpenModal(false);
+  // };
   const dispatch = useDispatch();
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
@@ -94,7 +98,7 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
   }, [engineCategories]);
   useEffect(() => {
     fetchData();
-  }, [activeId, fetchData, isAddEngineModalOpen]);
+  }, [activeId, fetchData]);
 
   // const filteredSpareparts = spareparts.filter((sparepart) =>
   //   pathname === '/miv-inventories' ? !sparepart.project : sparepart.project

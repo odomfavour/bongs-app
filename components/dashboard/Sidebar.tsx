@@ -6,6 +6,7 @@ import PreferencesLinks from './PreferencesLinks';
 import InventoryLinks from './InventoryLinks';
 import { FaX } from 'react-icons/fa6';
 import { usePathname } from 'next/navigation';
+import ProcurementLinks from './ProcurementLinks';
 
 interface Module {
   sub_categories: any;
@@ -343,6 +344,13 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
             <InventoryLinks
               closeInnerSidebar={closeInnerSidebar}
               subCategories={getSubCategories('Inventory Module')}
+            />
+          )}
+
+          {activeTab === 'Procurement' && (
+            <ProcurementLinks
+              closeInnerSidebar={closeInnerSidebar}
+              subCategories={getSubCategories('Procurement Module')}
             />
           )}
           {/* Add other conditions for other tabs here */}

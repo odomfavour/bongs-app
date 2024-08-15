@@ -1,11 +1,14 @@
 'use client';
 import Modal from '@/components/dashboard/Modal';
 import ApproveRequisition from '@/components/requisitions/ApproveRequisition';
+import DeclineRequisition from '@/components/requisitions/DeclineRequisition';
+import ReleaseItem from '@/components/requisitions/ReleaseItem';
 import RequisitionListTable from '@/components/requisitions/RequisitionListTable';
 import RequisitionViewListTable from '@/components/requisitions/RequisitionViewTable';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,6 +30,37 @@ const Page = () => {
       created_at: '',
     },
   ]);
+  const [itemGroup, setItemGroup] = useState<any>({});
+  const [materials, setMaterials] = useState([]);
+  // useEffect(() => {
+  //   const selectedRelease = localStorage.getItem('selectedRelease');
+  //   if (selectedRelease) {
+  //     console.log('first', JSON.parse(selectedRelease).materials);
+  //     setItemGroup(JSON.parse(selectedRelease));
+  //     setMaterials(JSON.parse(selectedRelease).materials);
+  //   } else {
+  //     setItemGroup(null); // or some default value like {}
+  //   }
+  // }, []);
+  const { id } = useParams();
+
+  const [openModal, setOpenModal] = useState(false);
+  const handleClose = () => {
+    setOpenModal(false);
+  };
+
+  const [openDeclineModal, setOpenDeclineModal] = useState(false);
+
+  const handleDeclineClose = () => {
+    setOpenDeclineModal(false);
+  };
+  const [openReleaseModal, setOpenReleaseModal] = useState(false);
+
+  const handleReleaseClose = () => {
+    setOpenReleaseModal(false);
+  };
+
+  const [requisitionItem, setRequisitionItem] = useState<any>({});
   const router = useRouter();
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
@@ -34,13 +68,16 @@ const Page = () => {
   const fetchData = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
-      const response = await axios.get(`${process.env.BASEURL}/requisitions`, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
+      const response = await axios.get(
+        `${process.env.BASEURL}/requisitions/grouped-materials/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
       console.log('resp', response);
-      // setLocations(response?.data?.data?.data);
+      setMaterials(response?.data?.data?.materials);
     } catch (error: any) {
       console.error('Error:', error);
 
@@ -57,21 +94,17 @@ const Page = () => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [dispatch, router, user?.token]);
+  }, [dispatch, id, router, user?.token]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
-  const [openModal, setOpenModal] = useState(false);
-  const handleClose = () => {
-    setOpenModal(false);
-  };
   return (
     <div>
-      <div className="flex justify-between items-center mb-5 pb-10 border-b">
-        <p className="text-[32px] font-medium">Requisitions</p>
-        <div className="flex items-center gap-2 w-2/5">
+      <div className=" mb-5 pb-10 border-b">
+        <Link href="/requisitions">Back</Link>
+        <p className="text-[32px] font-medium mt-3">Material Release</p>
+        {/* <div className="flex items-center gap-2 w-2/5">
           <div className="w-4/5">
             <div className="w-full relative">
               <input
@@ -88,14 +121,50 @@ const Page = () => {
           <button className="bg-grey-400 border text-sm p-3 rounded-md">
             Add Filter
           </button>
-        </div>
+        </div> */}
       </div>
       <div>
         <RequisitionViewListTable
-          data={requisitions}
-          fetchData={fetchData}
+          data={materials || []}
+          fetchData={() => {}}
           setOpenModal={setOpenModal}
+          setOpenDeclineModal={setOpenDeclineModal}
+          setRequisitionItem={setRequisitionItem}
+          setOpenReleaseModal={setOpenReleaseModal}
         />
+
+        <Modal title="" isOpen={openModal} onClose={handleClose} maxWidth="40%">
+          <ApproveRequisition
+            requisitionItem={requisitionItem}
+            setOpenModal={setOpenModal}
+            fetchData={fetchData}
+          />
+        </Modal>
+        <Modal
+          title=""
+          isOpen={openDeclineModal}
+          onClose={handleDeclineClose}
+          maxWidth="40%"
+        >
+          <DeclineRequisition
+            requisitionItem={requisitionItem}
+            setOpenModal={setOpenDeclineModal}
+            fetchData={fetchData}
+          />
+        </Modal>
+
+        <Modal
+          title=""
+          isOpen={openReleaseModal}
+          onClose={handleReleaseClose}
+          maxWidth="40%"
+        >
+          <ReleaseItem
+            requisitionItem={requisitionItem}
+            setOpenModal={setOpenReleaseModal}
+            fetchData={fetchData}
+          />
+        </Modal>
       </div>
     </div>
   );

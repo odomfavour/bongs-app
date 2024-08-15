@@ -28,6 +28,8 @@ interface RequestedBy {
 interface RequisitionItem {
   id: number;
   indent_number: string;
+  material_type: string;
+  created_at: string;
   batch_code: string;
   hod_status: string;
   company_rep_status: string;
@@ -52,6 +54,7 @@ const Page = () => {
         },
       });
       console.log('resp', response);
+
       setRequisitions(response?.data?.data?.data);
     } catch (error: any) {
       console.error('Error:', error);
@@ -97,7 +100,6 @@ const Page = () => {
     <div>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
         <p className="text-[32px] font-medium">Material Release</p>
-      
       </div>
       <div>
         <div className="mb-5 flex justify-end">
@@ -117,39 +119,6 @@ const Page = () => {
           setOpenReleaseModal={setOpenReleaseModal}
         />
       </div>
-
-      <Modal title="" isOpen={openModal} onClose={handleClose} maxWidth="40%">
-        <ApproveRequisition
-          requisitionItem={requisitionItem}
-          setOpenModal={setOpenModal}
-          fetchData={fetchData}
-        />
-      </Modal>
-      <Modal
-        title=""
-        isOpen={openDeclineModal}
-        onClose={handleDeclineClose}
-        maxWidth="40%"
-      >
-        <DeclineRequisition
-          requisitionItem={requisitionItem}
-          setOpenModal={setOpenDeclineModal}
-          fetchData={fetchData}
-        />
-      </Modal>
-
-      <Modal
-        title=""
-        isOpen={openReleaseModal}
-        onClose={handleReleaseClose}
-        maxWidth="40%"
-      >
-        <ReleaseItem
-          requisitionItem={requisitionItem}
-          setOpenModal={setOpenReleaseModal}
-          fetchData={fetchData}
-        />
-      </Modal>
     </div>
   );
 };

@@ -27,6 +27,8 @@ interface RequestedBy {
 interface RequisitionItem {
   id: number;
   indent_number: string;
+  material_type: string;
+  created_at: string;
   batch_code: string;
   hod_status: string;
   company_rep_status: string;
@@ -93,7 +95,7 @@ const Page = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
-        <p className="text-[32px] font-medium">Material Release History</p>
+        <p className="text-[30px] font-medium">Material Release History</p>
         {/* <div className="flex items-center gap-2 w-2/5">
           <div className="w-4/5">
             <div className="w-full relative">

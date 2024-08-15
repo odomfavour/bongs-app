@@ -29,7 +29,10 @@ interface DeckPanelProps {
   deckCategories: { id: number; name: string; count: string }[];
   user: User;
   requisition: boolean;
+  openModal: boolean;
   toggleRequisition: () => void;
+  handleClose: () => void;
+  setOpenModal: (isOpen: boolean) => void;
 }
 
 const DeckPanel: React.FC<DeckPanelProps> = ({
@@ -37,6 +40,9 @@ const DeckPanel: React.FC<DeckPanelProps> = ({
   user,
   requisition,
   toggleRequisition,
+  openModal,
+  setOpenModal,
+  handleClose,
 }) => {
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
@@ -84,18 +90,15 @@ const DeckPanel: React.FC<DeckPanelProps> = ({
   useEffect(() => {
     fetchData();
   }, [activeId, fetchData]);
-  const [openModal, setOpenModal] = useState(false);
-  const handleClose = () => {
-    setOpenModal(false);
-  };
+
   return (
     <div>
-      <div className="my-4">
+      {/* <div className="my-4">
         <DeckStrip
           toggleRequisition={toggleRequisition}
           setOpenModal={setOpenModal}
         />
-      </div>
+      </div> */}
       <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2  gap-2">
         {deckCategories.map((tab) => (
           <button

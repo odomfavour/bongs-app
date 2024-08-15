@@ -2,12 +2,14 @@
 
 import {
   displayBargeValue,
+  toggleLoading,
   toggleLocationModal,
 } from '@/provider/redux/modalSlice';
 import { formatDate } from '@/utils/utils';
 import axios from 'axios';
 // import { EmptyProductIcon } from '@/utils/utils';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { FaExternalLinkAlt, FaPenAlt, FaTrashAlt } from 'react-icons/fa';
 import { FaMagnifyingGlass, FaRegFolderClosed } from 'react-icons/fa6';
@@ -19,22 +21,57 @@ import Swal from 'sweetalert2';
 
 interface Requisition {
   id: number;
-  indent_number: string;
-  inventory_type: string;
-  requested_by: string;
+  inventoryable_type: string;
+  quantity: number;
   created_at: string;
 }
 
+interface RequestedBy {
+  id: number;
+  first_name: string;
+  last_name: string;
+}
+
+interface Inventoryable {
+  stock_quantity: number;
+  threshold: number;
+}
+interface RequisitionList {
+  id: number;
+  indent_number: string;
+  material_type: string;
+  created_at: string;
+  batch_code: string;
+  hod_status: string;
+  company_rep_status: string;
+  barge_master_status: string;
+  quantity: number;
+  status: string;
+  inventoryable: Inventoryable;
+  requisition: Requisition;
+  requested_by: RequestedBy;
+  hod_approved_at: string;
+  barge_master_approval_at: string;
+  company_rep_approved_at: string;
+  store_keeper_released_at: string;
+}
+
 interface RequisitionListTableProps {
-  data: Requisition[];
+  data: RequisitionList[];
   fetchData: () => void;
   setOpenModal: (isOpen: boolean) => void;
+  setOpenDeclineModal: (isOpen: boolean) => void;
+  setOpenReleaseModal: (isOpen: boolean) => void;
+  setRequisitionItem: (item: RequisitionList) => void;
 }
 
 const RequisitionViewListTable: React.FC<RequisitionListTableProps> = ({
   data,
   fetchData,
   setOpenModal,
+  setOpenDeclineModal,
+  setRequisitionItem,
+  setOpenReleaseModal,
 }) => {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
@@ -121,8 +158,55 @@ const RequisitionViewListTable: React.FC<RequisitionListTableProps> = ({
     }
   };
 
-  const approveReq = async () => {
+  // const pathname = usePathname
+
+  const approveReq = (item: any) => {
+    setRequisitionItem(item);
     setOpenModal(true);
+  };
+  const declineReq = (item: any) => {
+    setRequisitionItem(item);
+    setOpenDeclineModal(true);
+  };
+  const releaseItem = (item: any) => {
+    setRequisitionItem(item);
+    setOpenReleaseModal(true);
+  };
+
+  const printItem = async (id: number) => {
+    try {
+      dispatch(toggleLoading(true));
+      const response = await axios.get(
+        `${process.env.BASEURL}/requisitions/print/${id}`,
+        {
+          params: { format: 'pdf' },
+          responseType: 'blob',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `export.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      toast.success(response?.data?.message);
+    } catch (error: any) {
+      console.error('Export failed:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
   };
 
   return (
@@ -133,71 +217,150 @@ const RequisitionViewListTable: React.FC<RequisitionListTableProps> = ({
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
               <th className="text-sm text-left py-3">Indent No</th>
-              <th className="text-sm text-left py-3">inventory Type</th>
-              <th className="text-sm text-left py-3">Requested By</th>
+              <th className="text-sm text-left py-3">Qty</th>
+              <th className="text-sm text-left py-3">Stock Qty</th>
 
-              <th className="text-sm text-left py-3">Requisition Data/Time</th>
+              <th className="text-sm text-left py-3">Requisition time</th>
+              <th className="text-sm text-left py-3">Status</th>
+              <th className="text-sm text-left py-3">Hod time</th>
+
+              <th className="text-sm text-left py-3">BM time</th>
+
+              <th className="text-sm text-left py-3">Company Rep time</th>
+
+              <th className="text-sm text-left py-3">Storekeeper By</th>
+
               <th className="text-sm text-left py-3">Actions</th>
             </tr>
           </thead>
+
           <tbody>
-            {currentItems.length > 0 &&
-              currentItems.map((item, index) => {
+            {currentItems?.length > 0 &&
+              currentItems?.map((item, index) => {
                 const {
                   id,
-                  indent_number,
-                  inventory_type,
-                  requested_by,
+                  inventoryable,
+                  batch_code,
                   created_at,
+                  hod_approved_at,
+                  barge_master_approval_at,
+                  company_rep_approved_at,
+                  store_keeper_released_at,
+                  hod_status,
+                  barge_master_status,
+                  company_rep_status,
+                  status,
                 } = item;
                 return (
                   <tr className="border-b" key={id}>
                     <td className="py-2 text-center text-[#344054]">
                       {index + 1}
                     </td>
-                    <td className="py-2 text-left text-sm">{indent_number}</td>
-                    <td className="py-2 text-left text-sm">{inventory_type}</td>
-                    <td className="py-2 text-left text-sm">{requested_by}</td>
-
+                    <td className="py-2 text-left text-sm">{batch_code}</td>
+                    <td className="py-2 text-left text-sm">
+                      {inventoryable?.stock_quantity}
+                    </td>
+                    <td className="py-2 text-left text-sm">
+                      {inventoryable?.threshold}
+                    </td>
                     <td className="py-2 text-left text-sm">
                       {formatDate(created_at)}
                     </td>
-                    <td className="py-2 text-center flex justify-left text-sm items-center">
-                      <div className="flex gap-3">
-                        <button className="bg-blue-700 text-white p-2 text-sm rounded-md">
-                          View
-                        </button>
-                        <button
-                          className="bg-blue-700 text-white p-2 text-sm rounded-md"
-                          onClick={approveReq}
-                        >
-                          Approve
-                        </button>
-                        <button className="bg-blue-700 text-white p-2 text-sm rounded-md">
-                          Reject
-                        </button>
-                      </div>
+
+                    <td className="py-2 text-left text-sm">{status}</td>
+                    <td className="py-2 text-left text-sm">
+                      {formatDate(hod_approved_at)}
                     </td>
+
+                    <td className="py-2 text-left text-sm">
+                      {formatDate(barge_master_approval_at || 0)}
+                    </td>
+
+                    <td className="py-2 text-left text-sm">
+                      {formatDate(company_rep_approved_at || 0)}
+                    </td>
+
+                    <td className="py-2 text-left text-sm">
+                      {formatDate(store_keeper_released_at || 0)}
+                    </td>
+
+                    {/* {pathname === '/requisitions' && ( */}
+                    <td className="">
+                      {/* <button
+      onClick={() => viewItem(id)}
+      className="bg-blue-700 text-white p-2 text-sm rounded-md"
+    >
+      View
+    </button> */}
+                      {!user?.is_authorized_for_release ? (
+                        <>
+                          {(user?.is_hod && hod_status === 'pending') ||
+                          (user?.is_barge_master &&
+                            barge_master_status === 'pending') ||
+                          (user?.is_company_rep &&
+                            company_rep_status === 'pending') ? (
+                            <div className="flex gap-3">
+                              <button
+                                className="bg-green-700 text-white p-2 text-sm rounded-md"
+                                onClick={() => approveReq(item)}
+                              >
+                                {user?.is_hod && hod_status === 'pending'
+                                  ? 'Check'
+                                  : user?.is_barge_master &&
+                                    barge_master_status === 'pending'
+                                  ? 'Acknowledge'
+                                  : user?.is_company_rep &&
+                                    company_rep_status === 'pending'
+                                  ? 'Approve'
+                                  : ''}
+                              </button>
+                              <button
+                                className="bg-red-700 text-white p-2 text-sm rounded-md"
+                                onClick={() => declineReq(item)}
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          ) : null}
+                        </>
+                      ) : status !== 'Released By Store Keeper' ? (
+                        <button
+                          className="bg-green-700 text-white p-2 text-sm rounded-md"
+                          onClick={() => releaseItem(item)}
+                        >
+                          Release
+                        </button>
+                      ) : (
+                        <button
+                          className="bg-yellow-300 p-2 text-sm rounded-md"
+                          onClick={() => printItem(id)}
+                        >
+                          Print
+                        </button>
+                      )}
+                    </td>
+
+                    {/* )} */}
                   </tr>
                 );
               })}
-            {currentItems.length == 0 && (
+            {currentItems?.length == 0 && (
               <tr className="text-center text-primary bg-white">
                 <td className="py-2 text-center" colSpan={10}>
-                  <div className="flex justify-center items-center  min-h-[60vh]">
+                  <div className="flex justify-center items-center min-h-[30vh]">
                     <div>
                       <div className="flex justify-center items-center">
                         <FaRegFolderClosed className="text-4xl" />
                       </div>
                       <div className="mt-5">
                         <p className="font-medium text-[#475467]">
-                          No Locations found
+                          No Requistions found
                         </p>
-                        <p className="font-normal text-sm mt-3">
+                        {/* <p className="font-normal text-sm mt-3">
                           Click “add location” button to get started in doing
                           your
                           <br /> first transaction on the platform
-                        </p>
+                        </p> */}
                       </div>
                     </div>
                   </div>

@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { FaSearch } from "react-icons/fa";
-import { FaRegFolderClosed } from "react-icons/fa6";
-import Link from "next/link";
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { FaSearch } from 'react-icons/fa';
+import { FaRegFolderClosed } from 'react-icons/fa6';
+import Link from 'next/link';
 import {
   useTable,
   usePagination,
@@ -11,10 +11,13 @@ import {
   UseGlobalFiltersInstanceProps,
   UsePaginationState,
   UsePaginationInstanceProps,
-} from "react-table";
-import { calculateCountdown } from "@/utils/utils";
-import Countdown from "react-countdown";
-import { usePathname } from "next/navigation";
+} from 'react-table';
+import { calculateCountdown } from '@/utils/utils';
+import Countdown from 'react-countdown';
+import { usePathname } from 'next/navigation';
+import { toggleLoading } from '@/provider/redux/modalSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
 
 interface Deck {
   name: string;
@@ -103,7 +106,8 @@ function GeneratorTable({
   generatorData,
   requisition,
   quantities,
-  handleQuantityChange
+  handleQuantityChange,
+  toggleRequisition,
 }: {
   requisition: boolean;
   generatorData: SparePart[];
@@ -119,16 +123,17 @@ function GeneratorTable({
   setSelectedItems: any;
   selectedItems: any;
   handleSelect: (id: number) => void;
-  quantities: { [key: number]: number },
-  handleQuantityChange: (id: number, quatity: number) => void
+  quantities: { [key: number]: number };
+  handleQuantityChange: (id: number, quatity: number) => void;
+  toggleRequisition: () => void;
 }) {
   const pathname = usePathname();
   const columns = useMemo(() => {
-    if (pathname !== "/inventories") {
-      return COLUMNS.filter((item) => item.Header !== "Projects");
+    if (pathname !== '/inventories') {
+      return COLUMNS.filter((item) => item.Header !== 'Projects');
     }
-    if(!(requisition && selectedItems.length > 0)){
-      return COLUMNS.filter((item) => item.Header !== "Qty Req");
+    if (!(requisition && selectedItems.length > 0)) {
+      return COLUMNS.filter((item) => item.Header !== 'Qty Req');
     }
     return COLUMNS;
   }, [COLUMNS, pathname, requisition, selectedItems]);
@@ -175,16 +180,160 @@ function GeneratorTable({
   ) as CustomTableInstance<any>;
 
   const { globalFilter, pageIndex } = state;
-  console.log("generatorData", generatorData, "columns", COLUMNS);
+  console.log('generatorData', generatorData, 'columns', COLUMNS);
+  const dispatch = useDispatch();
+  const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
+  const user = useSelector((state: any) => state.user.user);
+  const toggleActionsDropdown = () => {
+    setIsActionsOpen(!isActionsOpen);
+    setIsExportOpen(false); // Close the export dropdown if it is open
+  };
+
+  const toggleExportDropdown = () => {
+    setIsExportOpen(!isExportOpen);
+    setIsActionsOpen(false); // Close the actions dropdown if it is open
+  };
+
+  const actionsRef = useRef<HTMLDivElement>(null);
+  const exportRef = useRef<HTMLDivElement>(null);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      actionsRef.current &&
+      !actionsRef.current.contains(event.target as Node)
+    ) {
+      setIsActionsOpen(false);
+    }
+    if (
+      exportRef.current &&
+      !exportRef.current.contains(event.target as Node)
+    ) {
+      setIsExportOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleExport = async (format: string) => {
+    setIsExportOpen(false);
+    try {
+      dispatch(toggleLoading(true));
+      const response = await axios.get(
+        `${process.env.BASEURL}/sparepart/${
+          parent === 'Engine'
+            ? 'engine'
+            : parent === 'Deck'
+            ? 'deck'
+            : parent === 'Safety'
+            ? 'safety'
+            : 'hospital'
+        }/export`,
+        {
+          params: { format },
+          responseType: 'blob',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `export.${format}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (error) {
+      console.error('Export failed:', error);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  };
 
   return (
     <>
-      <div className="flex  items-center gap-2 md:w-2/5 w-full ml-auto my-4">
-        <div className="md:w-4/5 w-3/5">
+      <div className="flex items-center justify-between my-4 px-2">
+        <div className="w-3/5">
+          <div className="flex">
+            <div
+              ref={actionsRef}
+              className="relative inline-block text-left mr-4"
+            >
+              {/* Actions Dropdown button */}
+              <button
+                className="text-[#1455D3] px-4 py-2 border border-[#1455D3] rounded-[30px] inline-flex items-center"
+                onClick={toggleActionsDropdown}
+              >
+                Actions
+              </button>
+
+              {/* Actions Dropdown content */}
+              {isActionsOpen && (
+                <div className="origin-top-right rounded-[16px] absolute left-0 -mt-2 w-[150px] py-2 px-2 shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-gray-100 z-30">
+                  <button
+                    className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start"
+                    onClick={() => {
+                      toggleRequisition();
+                      setIsActionsOpen(false);
+                    }}
+                  >
+                    Material Release
+                  </button>
+                  <button className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start">
+                    Bulk Delete
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div ref={exportRef} className="relative inline-block text-left">
+              {/* Export Dropdown button */}
+              <button
+                className="text-[#1455D3] px-4 py-2 border border-[#1455D3] rounded-[30px] inline-flex items-center"
+                onClick={toggleExportDropdown}
+              >
+                Export
+              </button>
+
+              {/* Export Dropdown content */}
+              {isExportOpen && (
+                <div className="origin-top-right rounded-[16px] absolute left-0 -mt-2 w-[150px] py-2 px-2 shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-gray-100 z-30">
+                  {/* <button
+                className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start"
+                onClick={() => handleExport('pdf')}
+              >
+                PDF
+              </button> */}
+                  <button
+                    className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start"
+                    onClick={() => handleExport('xlsx')}
+                  >
+                    Excel
+                  </button>
+                  {/* <button
+                className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start"
+                onClick={() => handleExport('csv')}
+              >
+                CSV
+              </button> */}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="w-2/5">
           <div className="w-full relative">
             <input
               type="search"
-              value={globalFilter || ""}
+              value={globalFilter || ''}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Search here... now"
               className="bg-gray-50 pl-8 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
@@ -194,10 +343,6 @@ function GeneratorTable({
             </div>
           </div>
         </div>
-
-        <button className="bg-grey-400 border text-sm p-3 rounded-md">
-          Add Filter
-        </button>
       </div>
 
       <table {...getTableProps()}>
@@ -215,7 +360,7 @@ function GeneratorTable({
                   {...column.getHeaderProps()}
                   key={index}
                 >
-                  {column.render("Header")}
+                  {column.render('Header')}
                 </th>
               ))}
 
@@ -259,7 +404,7 @@ function GeneratorTable({
                   </td>
 
                   {row.cells.map((cell, index) => {
-                    if (cell.column.Header === "Warranty Days") {
+                    if (cell.column.Header === 'Warranty Days') {
                       const newDate = new Date(cell.value);
                       return (
                         <Countdown
@@ -269,7 +414,7 @@ function GeneratorTable({
                           precision={3}
                           renderer={(props) => (
                             <td className="text-center">
-                              {props.days}d {props.hours}h {props.minutes}m{" "}
+                              {props.days}d {props.hours}h {props.minutes}m{' '}
                               {props.seconds}s
                             </td>
                           )}
@@ -277,28 +422,27 @@ function GeneratorTable({
                       );
                     }
 
-                    if (cell.column.Header === "Qty Req") {
-                     
+                    if (cell.column.Header === 'Qty Req') {
                       return (
-                       <div key={index}>
-                            {selectedItems.includes(row.original.id) && requisition ? (
-                      <td>
-                        <input
-                          type="number"
-                          className="p-3 border rounded-md w-[100px]"
-                          value={quantities[row.original.id] || ""}
-                          onChange={(e) =>
-                            handleQuantityChange(
-                              row.original.id,
-                              parseInt(e.target.value)
-                            )
-                          }
-                        />
-                      </td>
-                    ) : selectedItems.length > 0 && requisition ? (
-                     null
-                    ) : null}
-                       </div>
+                        <div key={index}>
+                          {selectedItems.includes(row.original.id) &&
+                          requisition ? (
+                            <td>
+                              <input
+                                type="number"
+                                className="p-3 border rounded-md w-[100px]"
+                                value={quantities[row.original.id] || ''}
+                                onChange={(e) =>
+                                  handleQuantityChange(
+                                    row.original.id,
+                                    parseInt(e.target.value)
+                                  )
+                                }
+                              />
+                            </td>
+                          ) : selectedItems.length > 0 &&
+                            requisition ? null : null}
+                        </div>
                       );
                     }
 
@@ -308,7 +452,7 @@ function GeneratorTable({
                         {...cell.getCellProps()}
                         key={index}
                       >
-                        {cell.render("Cell")}
+                        {cell.render('Cell')}
                       </td>
                     );
                   })}
@@ -356,7 +500,7 @@ function GeneratorTable({
                             ></path>
                           </svg>
                         ) : (
-                          "Delete"
+                          'Delete'
                         )}
                       </button>
                     </div>
@@ -370,7 +514,7 @@ function GeneratorTable({
       {page.length !== 0 && (
         <div className="flex flex-row justify-end mt-3">
           <span>
-            Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{" "}
+            Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
           </span>
 
           <button
@@ -378,8 +522,8 @@ function GeneratorTable({
             disabled={!canPreviousPage}
             onClick={() => previousPage()}
           >
-            {" "}
-            Previous{" "}
+            {' '}
+            Previous{' '}
           </button>
           <button disabled={!canNextPage} onClick={() => nextPage()}>
             Next

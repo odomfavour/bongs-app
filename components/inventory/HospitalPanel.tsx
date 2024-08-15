@@ -17,7 +17,10 @@ interface HospitalPanelProps {
   hospitalCategories: { id: number; name: string; count: string }[];
   user: User;
   requisition: boolean;
+  openModal: boolean;
   toggleRequisition: () => void;
+  handleClose: () => void;
+  setOpenModal: (isOpen: boolean) => void;
 }
 
 const HospitalPanel: React.FC<HospitalPanelProps> = ({
@@ -25,6 +28,9 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
   user,
   requisition,
   toggleRequisition,
+  openModal,
+  handleClose,
+  setOpenModal,
 }) => {
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
@@ -32,11 +38,7 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const pathname = usePathname();
-  const [openModal, setOpenModal] = useState(false);
   const bargeValues = useSelector((state: any) => state.modal.bargeValues);
-  const handleClose = () => {
-    setOpenModal(false);
-  };
 
   const fetchData = useCallback(async () => {
     if (activeId === undefined) return;
@@ -78,12 +80,12 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
   }, [activeId, fetchData]);
   return (
     <div>
-      <div className="my-4">
+      {/* <div className="my-4">
         <HospitalStrip
           toggleRequisition={toggleRequisition}
           setOpenModal={setOpenModal}
         />
-      </div>
+      </div> */}
       <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2  gap-2">
         {hospitalCategories.map((tab) => (
           <button

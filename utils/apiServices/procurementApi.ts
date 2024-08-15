@@ -25,3 +25,42 @@ export const fetchProcurementChartDataApi = async (params: {
       })
     return response.data
 }
+
+
+
+
+
+export const fetchAllRfqDataApi = async () => { 
+    const data = localStorage.getItem("bongsUser")
+  const { token } = data && JSON.parse(data)
+  
+    let url = `${baseUrl}/procurement/rfq`
+
+    const response = await axios.get(`${url}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+    
+      })
+    return response.data
+}
+
+
+
+
+export const fetchAllBidDataApi = async () => { 
+  const data = localStorage.getItem("bongsUser")
+const { token } = data && JSON.parse(data)
+
+  let url = `${baseUrl}/procurement/bid`
+
+  const response = await axios.get(`${url}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+  
+    })
+  return response.data
+}
+
+

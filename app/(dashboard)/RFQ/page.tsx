@@ -1,12 +1,13 @@
 "use client";
+import RFQTable from "@/components/AppComp/RFQTable";
 import ProcurementCharts from "@/components/dashboard/charts/ProcurementCharts";
 import ProcurementAddRequestModal from "@/components/procurement/ProcurementAddRequestModal";
 
 import ProcurementModal from "@/components/procurement/ProcurementModal";
-import { fetchProcurementChartDataApi } from "@/utils/apiServices/procurementApi";
+import { fetchAllBidDataApi, fetchAllRfqDataApi, fetchProcurementChartDataApi } from "@/utils/apiServices/procurementApi";
 import { procurementMenuList } from "@/utils/data";
 import { useRouter } from "next/navigation";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import { FaBedPulse, FaBullseye } from "react-icons/fa6";
 import { toast } from "react-toastify";
@@ -20,24 +21,68 @@ const route = useRouter()
 
   
   const [isUIReady, setIsUIReady] = useState(false)
+  const [rfqStatus, setRfqStatus] = useState<
+  {
+    expired: number,
+    sent: number,
+    responded: number
+  }>(
+    {
+      expired: 0,
+      sent: 0,
+      responded: 0
+    }
+  )
+  const [totalBudget, setTotalsBudget] = useState< number>(0)
+
+
+  const [allBidData, setAllBidData] = useState<any[]>([])
+
+
+  const [allRfq, setAllRfq] = useState<any[]>([])
 
   
   const [year, setYear] = useState("")
 
+  const [yearFormServer, setYearFromServer] = useState<string>("")
+
   const handleClose = () => setOpenModal(!openModal)
 
 
-  const fetchConsumablesData = useCallback(async () => {
+  const fetchProcurementsData = useCallback(async () => {
     setIsUIReady(false)
      try {
        const [
          procurementDashboardResponse,
+         allRfqData,
+         allBidData
         
        ] = await Promise.all([
-        fetchProcurementChartDataApi({year})
+        fetchProcurementChartDataApi({year}),
+        fetchAllRfqDataApi(),
+        fetchAllBidDataApi()
          
        ]);
-       console.log('procurementResponse', procurementDashboardResponse);
+       console.log('procurementResponse', procurementDashboardResponse, "all rfq", allRfqData, "allBidData", allBidData);
+       setAllBidData(allBidData.data.data)
+       setAllRfq(allRfqData.data.data)
+
+   
+
+       const {
+        data,
+        status
+       } = procurementDashboardResponse
+       if(status){
+              const {rfq_status, total_budget, year} = data
+              setRfqStatus( {
+                expired: rfq_status.expired,
+                sent: rfq_status.sent,
+                responded:rfq_status.responded
+              })
+              setTotalsBudget(total_budget)
+              setYearFromServer(year)
+       }
        setIsUIReady(true)
       
        // You can similarly setStoreItems if needed
@@ -54,7 +99,14 @@ const route = useRouter()
      } finally {
       
      }
-   }, [year, route]);
+   }, [year]);
+
+
+
+
+   useEffect(() => {
+    fetchProcurementsData()
+   },[year, route, fetchProcurementsData])
 
   if (!isUIReady) {
     return (
@@ -64,8 +116,24 @@ const route = useRouter()
     );
   }
 
+  const handleOpenModal = () => {
+    setOpenModal(!openModal)
+  }
+
+const  itemList = allRfq.map(item => {
+  return {
+      rfqId: `RFQ ${item.id}`,
+      title:item.title ,
+      noOfBirds: item.bid_count,
+      status: item.status,
+      awardedBirds: 0,
+      performanceInvoice: 0,
+      deadline: item.bidding_deadline
+  }
+})
+
   return (
-    <div  className="relative">
+    <div  className="relative bg-[#f8f8f8]">
 
         {/* show dark background */}
  {
@@ -75,7 +143,12 @@ const route = useRouter()
  }
         {/* show dark background ends */}
       {/* chart sction starts */}
-      <ProcurementCharts />
+      <ProcurementCharts
+      rfq_status={rfqStatus}
+      total_budget={totalBudget}
+      year={yearFormServer}
+      allBidData={allBidData}
+      />
       {/* chart section nds */}
       {/* search field */}
       <div className="flex flex-row items-center justify-between mt-8">
@@ -101,10 +174,12 @@ const route = useRouter()
 {
   procurementMenuList.map(menu => <div key={menu.key}
   onClick={() => setselectedMenu(menu.menuHeading)}
-  className={ `${selectedMenu === menu.menuHeading ? "bg-[#1E1E1E]" : "bg-[#d9d9d9]"}  flex items-center justify-center flex-1 rounded-t-md h-[50px]`}
+  className={ `${selectedMenu === menu.menuHeading ? "bg-[#1E1E1E]" : "bg-[#d9d9d9]"}  flex items-center justify-center flex-1 rounded-t-md min-h-[50px]`}
   >
     <span className="text-center text-white text-2xl font-medium font-['Inter']">
-      {menu.menuHeading}
+      {menu.menuHeading} {
+        menu.menuHeading === "RFQS" && `(${allRfq.length})`
+      }
     </span>
   </div>)
 }
@@ -112,14 +187,53 @@ const route = useRouter()
 {/* menu list ends */}
 
 
-      {/* table section starts */}
-      <div className="bg-[#d9d9d9]  py-4 border-t-2  border-t-[#D9D9D9]">
 
-      </div>
+
+
+      {/* table section starts */}
+    
 
       {/* table section ends */}
 
-
+      <RFQTable
+           fetchedData={allRfq}
+         
+           handleOpenModal = {handleOpenModal}
+          
+           COLUMNS={[
+             {
+               Header: "RFQ ID",
+               accessor: "rfqId"
+           },
+           {
+               Header: "Title",
+                  accessor: "title"
+           },
+           {
+               Header: "No. Of Birds",
+               accessor: "noOfBirds"
+           },
+           {
+               Header: "Status",
+               accessor: "status"
+           },
+           {
+               Header: "Awarded Bids",
+               accessor: "awardedBids"
+           },
+           {
+               Header: "Performance Invoice",
+               accessor: "performanceInvoice"
+             },
+             {
+               Header: "Deadline",
+                  accessor: "deadline"
+             }
+            
+    
+           ]}
+            MOCK_DATA={itemList}
+        /> 
       {/* modal section starts */}
   
       <ProcurementModal

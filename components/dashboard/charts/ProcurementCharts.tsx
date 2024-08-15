@@ -16,14 +16,8 @@ import {
   Legend,
 } from "recharts";
 
-const data = [
-  { name: "Group A", value: 400 },
-  { name: "Group B", value: 300 },
-  { name: "Group C", value: 300 },
-  { name: "Group D", value: 200 },
-];
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const COLORS = ["#96f2d7", "#c69cf4", "#ffc9c9"];
 
 const RADIAN = Math.PI / 180;
 const renderCustomizedLabel = ({
@@ -105,14 +99,42 @@ const data2 = [
   },
 ];
 
-function ProcurementCharts() {
+
+
+
+function ProcurementCharts({
+rfq_status,
+year,
+total_budget,
+allBidData
+}: {
+rfq_status: {
+  expired: number,
+  sent: number,
+  responded: number
+},
+year: string,
+total_budget: number,
+allBidData: any[]
+}) {
+
+  console.log("data for rfq", rfq_status)
+
+  const data = [
+    { name: "Pending", value: rfq_status.sent || 10 },
+    { name: "Responded", value: rfq_status.responded  || 10 },
+    { name: "Expired", value: rfq_status.expired  || 10 },
+  ];
+  
+
   return (
-    <div className="flex flex-row justify-between space-x-8">
-         <div className="flex-1 p-[7.42px]  rounded-lg justify-center items-center shadow inline-flex">
-        <ResponsiveContainer width="100%" height={400}>
+    <div className="flex flex-row justify-between space-x-8 h-[40vh]">
+         <div className="flex-1 p-[7.42px]  rounded-lg justify-center items-center shadow inline-flex bg-white">
+
+        <ResponsiveContainer width="100%" height={"90%"}>
           <LineChart
-            width={500}
-            height={300}
+            width={400}
+            height={400}
             data={data2}
             margin={{
               top: 5,
@@ -136,59 +158,30 @@ function ProcurementCharts() {
           </LineChart>
         </ResponsiveContainer>
       </div>
-      <div className="flex-1 flex-col p-[7.42px]  rounded-lg justify-center items-center shadow inline-flex">
-        <ResponsiveContainer width={"100%"} height={400} >
+      <div className="flex-1 flex-col p-[7.42px]  rounded-lg justify-center items-center shadow inline-flex h-full bg-white">
+      <p className="text-black text-left text-[13.04px] font-semibold font-['Inter']">Total RFQ’s Status</p>
+        <ResponsiveContainer width={"100%"} height={'90%'} >
          <PieChart>
             <Pie
               data={data}
+              outerRadius={"80%"}
               cx="50%"
               cy="50%"
               labelLine={false}
               label={renderCustomizedLabel}
-              outerRadius={80}
+            
               fill="#8884d8"
               dataKey="value"
-              height={'100%'}
+              height={'80%'}
+            
+              
             >
               <Tooltip />
               <Legend
                 iconType='circle'
                 align='right'
                 verticalAlign='bottom'
-                content={() => { 
-                return  <div className='flex flex-row justify-between items-center mb-4'>
-
-                <div className="flex flex-row justify-center items-center mb-4 ">
-                        <span className="text-center text-gray-500">
-                        Inventory Over Time
-                        </span>
-                        </div>
-
-                <div className='flex flex-roow items-center space-x-2'>
-                <div className='flex flex-row items-center'>
-                <RxDotFilled
-                    color='green'
-                    size={32}
-                />
-                    <span>
-                    
-                    </span>
-                    <span className="text-center text-gray-500">
-                        Inventory
-                        </span>
-                </div>
-                <div className='flex-row flex items-center'>
-                <RxDotFilled
-                    color='blue'
-                    size={32}
-                />
-                <span className="text-center text-gray-500">
-                    Counts
-                    </span>
-                </div>
-                </div>
-                </div>
-                }}
+              
               /> 
               {data.map((entry, index) => (
                 <Cell
@@ -222,6 +215,24 @@ function ProcurementCharts() {
             </span>
           </div>
         </div>
+      
+      </div>
+      <div className="flex-1 flex-col p-[7.42px]  rounded-lg justify-center items-center shadow inline-flex bg-white h-full">
+     {/* {
+      allBidData.length > 0 ?  <p className="text-black text-start text-[13.04px] font-semibold font-['Inter']">Updates</p> :
+       <div className="flex items-center justify-center">
+        <p className="text-black text-start text-lg font-semibold font-['Inter']">
+          No Bid found
+        </p>
+       </div>
+     } */}
+      <div className="flex items-center justify-center">
+        <p className="text-black text-start text-lg font-semibold font-['Inter']">
+          No Bid found
+        </p>
+       </div>
+       
+       
       
       </div>
    

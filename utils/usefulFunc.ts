@@ -1,4 +1,7 @@
 import React from 'react';
+import Select from 'react-select';
+import Flag from 'react-world-flags';
+
 import Countdown, { CountdownRendererFn } from 'react-countdown';
 export const currencyFormatter = (amount: number) => {
     const newCurrency = new Intl.NumberFormat()
@@ -8,14 +11,5 @@ export const currencyFormatter = (amount: number) => {
 
 
 
-
-
-interface CountdownTimerProps {
-  targetDate: Date;
-}
-
-export const CountdownTimer = ({ targetDate }: CountdownTimerProps) => {
- return 
-};
 
 

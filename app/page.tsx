@@ -1,4 +1,5 @@
 'use client';
+import 'react-datepicker/dist/react-datepicker-cssmodules.css';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';

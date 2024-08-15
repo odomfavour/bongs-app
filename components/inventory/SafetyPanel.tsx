@@ -18,7 +18,10 @@ interface SafetyPanelProps {
   safetyCategories: { id: number; name: string; count: string }[];
   user: User;
   requisition: boolean;
+  openModal: boolean;
   toggleRequisition: () => void;
+  handleClose: () => void;
+  setOpenModal: (isOpen: boolean) => void;
 }
 
 const SafetyPanel: React.FC<SafetyPanelProps> = ({
@@ -26,6 +29,9 @@ const SafetyPanel: React.FC<SafetyPanelProps> = ({
   user,
   requisition,
   toggleRequisition,
+  handleClose,
+  openModal,
+  setOpenModal,
 }) => {
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
@@ -73,10 +79,6 @@ const SafetyPanel: React.FC<SafetyPanelProps> = ({
     fetchData();
   }, [activeId, fetchData]);
 
-  const [openModal, setOpenModal] = useState(false);
-  const handleClose = () => {
-    setOpenModal(false);
-  };
   return (
     <div>
       {/* <div className="my-4">

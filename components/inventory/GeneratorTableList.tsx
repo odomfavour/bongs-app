@@ -230,7 +230,10 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
 
   //   return () => clearInterval(interval);
   // }, [data]);
-
+  const [openDisplayModal, setOpenDisplayModal] = useState(false);
+  const handleDisplayClose = () => {
+    setOpenDisplayModal(false);
+  };
   const handleRequisition = async (selectedItems: number[]) => {
     const selectedQuantities = selectedItems.map((id) => ({
       id,
@@ -265,6 +268,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
       setSelectedItems([]);
       toggleRequisition();
       fetchdata();
+      handleDisplayClose();
       toast.success(response.data.message);
       // Swal.fire('Deleted!', 'Your items have been deleted.', 'success');
     } catch (error: any) {
@@ -296,10 +300,6 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
     }));
   };
 
-  const [openDisplayModal, setOpenDisplayModal] = useState(false);
-  const handleDisplayClose = () => {
-    setOpenDisplayModal(false);
-  };
   const [isProjectActive, setIsProjectActive] = useState(true);
   const [projects, setProjects] = useState([]);
   const [formData, setFormData] = useState({
@@ -757,6 +757,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
           onClose={handleDisplayClose}
           maxWidth="50%"
         >
+          <h3 className="mb-3 text-2xl">Selected Materials to Release</h3>
           <div className="flex items-center mb-4">
             <label htmlFor="projectToggle" className="mr-2 font-semibold">
               Project :
@@ -764,56 +765,64 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
             <input
               type="checkbox"
               id="projectToggle"
-              checked={isProjectActive}
-              // onChange={() => setIsProjectActive(!isProjectActive)}
+              checked={pathname == '/inventories' ? true : isProjectActive}
+              onChange={() => {
+                if (!(pathname == '/inventories')) {
+                  setIsProjectActive(!isProjectActive);
+                }
+              }}
               className="form-checkbox"
             />
             <span className="ml-2">
               {isProjectActive ? 'Active' : 'Inactive'}
             </span>
           </div>
-          <div className="mb-4">
-            <label
-              htmlFor="subscriber"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Project
-            </label>
-            <select
-              id="subscriber"
-              name="subscriber_id"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-              value={
-                formData.project_id !== null
-                  ? formData?.project_id?.toString()
-                  : ''
-              }
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  project_id: e.target.value ? parseInt(e.target.value) : null,
-                })
-              }
-            >
-              <option value="">Select Project</option>
-              {projects?.map((project: any) => (
-                <option
-                  value={project.id}
-                  key={project.id}
-                  className="capitalize"
-                >
-                  {project.project_name
-                    .split(' ')
-                    .map(
-                      (word: any) =>
-                        word.charAt(0).toUpperCase() +
-                        word.slice(1).toLowerCase()
-                    )
-                    .join(' ')}
-                </option>
-              ))}
-            </select>
-          </div>
+          {isProjectActive && (
+            <div className="mb-4">
+              <label
+                htmlFor="subscriber"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Project
+              </label>
+              <select
+                id="subscriber"
+                name="subscriber_id"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={
+                  formData.project_id !== null
+                    ? formData?.project_id?.toString()
+                    : ''
+                }
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    project_id: e.target.value
+                      ? parseInt(e.target.value)
+                      : null,
+                  })
+                }
+              >
+                <option value="">Select Project</option>
+                {projects?.map((project: any) => (
+                  <option
+                    value={project.id}
+                    key={project.id}
+                    className="capitalize"
+                  >
+                    {project.project_name
+                      .split(' ')
+                      .map(
+                        (word: any) =>
+                          word.charAt(0).toUpperCase() +
+                          word.slice(1).toLowerCase()
+                      )
+                      .join(' ')}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           {/* Selected Items Table */}
           <h2 className="text-xl font-semibold mb-4">Selected Items</h2>
           <table className="min-w-full bg-white">
@@ -847,7 +856,12 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
             </button>
             <button
               onClick={() => handleRequisition(selectedItems)}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
+              className={`px-4 py-2 rounded text-white ${
+                selectedItems.length === 0 || !isProjectActive
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-blue-500 hover:bg-blue-600'
+              }`}
+              disabled={selectedItems.length === 0 && !formData.project_id}
             >
               Confirm & Submit
             </button>

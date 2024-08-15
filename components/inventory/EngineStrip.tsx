@@ -57,7 +57,7 @@ const EngineStrip: React.FC<EngineStripProps> = ({
     <div className="flex justify-between items-center w-full">
       <div className="flex items-center gap-3">
         <button
-          className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3]"
+          className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-2 px-6 rounded-[30px] text-white bg-[#1455D3]"
           onClick={() => {
             dispatch(displayBargeValue({}));
             setOpenModal(true);
@@ -66,7 +66,7 @@ const EngineStrip: React.FC<EngineStripProps> = ({
         >
           Add Engine
         </button>
-        <label className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-3 px-6 rounded-[30px] text-white bg-[#1455D3] cursor-pointer">
+        <label className="bg-grey-400 border-[3px] border-[#1455D3] text-sm py-2 px-6 rounded-[30px] text-white bg-[#1455D3] cursor-pointer">
           Bulk Upload
           <input
             type="file"

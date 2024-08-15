@@ -1,6 +1,10 @@
 'use client';
 import Modal from '@/components/dashboard/Modal';
 import AddEngineModal from '@/components/inventory/AddEngineModal';
+import ConsDeckStrip from '@/components/inventory/ConsDeckStrip';
+import ConsEngineStrip from '@/components/inventory/ConsEngineStrip';
+import ConsHospitalStrip from '@/components/inventory/ConsHospitalStrip';
+import ConsSafetyStrip from '@/components/inventory/ConsSafetyStrip';
 import ConsumablesDeckPanel from '@/components/inventory/ConsumablesDeckPanel';
 import ConsumablesEnginePanel from '@/components/inventory/ConsumablesEnginePanel';
 import ConsumablesGalleyPanel from '@/components/inventory/ConsumablesGalleyPanel';
@@ -125,9 +129,9 @@ const Page = () => {
 
   return (
     <div>
-      <p className="text-[30px] font-medium mb-2">Project Inventories</p>
       <div className="flex justify-between">
         <div className="flex items-center gap-3">
+          <p className="text-[30px] font-medium mb-2">Project Inventories</p>
           <div className="inline-flex border rounded-[30px] p-1">
             <button
               className={`${
@@ -190,37 +194,73 @@ const Page = () => {
               setOpenModal={setOpenModal}
             />
           )}
+          {activeTab === 'consumables' && selectedOption === 'engine' && (
+            <ConsEngineStrip
+              toggleRequisition={toggleRequisition}
+              setOpenModal={setOpenModal}
+            />
+          )}
+          {activeTab === 'consumables' && selectedOption === 'deck' && (
+            <ConsDeckStrip
+              toggleRequisition={toggleRequisition}
+              setOpenModal={setOpenModal}
+            />
+          )}
+          {activeTab === 'consumables' && selectedOption === 'safety' && (
+            <ConsSafetyStrip
+              toggleRequisition={toggleRequisition}
+              setOpenModal={setOpenModal}
+            />
+          )}
+          {activeTab === 'consumables' && selectedOption === 'hospital' && (
+            <ConsHospitalStrip
+              toggleRequisition={toggleRequisition}
+              setOpenModal={setOpenModal}
+            />
+          )}
         </div>
       </div>
       <div className="flex justify-between items-center mb-5 pb-10 border-b"></div>
       {activeTab === 'spare-parts' && selectedOption === 'engine' && (
         <EnginePanel
+          openModal={openModal}
           engineCategories={categories}
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
           fetchLoading={loading}
+          handleClose={handleClose}
+          setOpenModal={setOpenModal}
         />
       )}
       {activeTab === 'spare-parts' && selectedOption === 'deck' && (
         <DeckPanel
+          openModal={openModal}
           deckCategories={categories}
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
+          handleClose={handleClose}
+          setOpenModal={setOpenModal}
         />
       )}
 
       {activeTab === 'spare-parts' && selectedOption === 'safety' && (
         <SafetyPanel
+          openModal={openModal}
           safetyCategories={categories}
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
+          handleClose={handleClose}
+          setOpenModal={setOpenModal}
         />
       )}
       {activeTab === 'spare-parts' && selectedOption === 'hospital' && (
         <HospitalPanel
+          openModal={openModal}
+          handleClose={handleClose}
+          setOpenModal={setOpenModal}
           hospitalCategories={categories}
           user={user}
           requisition={requisition}
@@ -229,6 +269,9 @@ const Page = () => {
       )}
       {activeTab === 'consumables' && selectedOption === 'engine' && (
         <ConsumablesEnginePanel
+          openModal={openModal}
+          handleClose={handleClose}
+          setOpenModal={setOpenModal}
           engineCategories={categories}
           user={user}
           requisition={requisition}
@@ -237,6 +280,9 @@ const Page = () => {
       )}
       {activeTab === 'consumables' && selectedOption === 'deck' && (
         <ConsumablesDeckPanel
+          openModal={openModal}
+          handleClose={handleClose}
+          setOpenModal={setOpenModal}
           deckCategories={categories}
           user={user}
           requisition={requisition}
@@ -245,6 +291,9 @@ const Page = () => {
       )}
       {activeTab === 'consumables' && selectedOption === 'galley' && (
         <ConsumablesGalleyPanel
+          openModal={openModal}
+          handleClose={handleClose}
+          setOpenModal={setOpenModal}
           galleyCategories={categories}
           user={user}
           requisition={requisition}
@@ -253,6 +302,9 @@ const Page = () => {
       )}
       {activeTab === 'consumables' && selectedOption === 'hospital' && (
         <ConsumablesHospitalPanel
+          openModal={openModal}
+          handleClose={handleClose}
+          setOpenModal={setOpenModal}
           hospitalCategories={categories}
           user={user}
           requisition={requisition}
@@ -261,27 +313,15 @@ const Page = () => {
       )}
       {activeTab === 'consumables' && selectedOption === 'safety' && (
         <ConsumablesSafetyPanel
+          openModal={openModal}
+          handleClose={handleClose}
+          setOpenModal={setOpenModal}
           safetyCategories={categories}
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
         />
       )}
-
-      <Modal
-        // title={
-        //   Object.keys(bargeValues).length > 0 ? 'Edit Engine' : 'Add New Engine'
-        // }
-        isOpen={openModal}
-        onClose={handleClose}
-        maxWidth="70%"
-      >
-        <AddEngineModal
-          fetchData={fetchData}
-          handleClose={handleClose}
-          inventoryType="Engine"
-        />
-      </Modal>
     </div>
   );
 };

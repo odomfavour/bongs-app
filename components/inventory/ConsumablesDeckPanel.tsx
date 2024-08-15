@@ -19,7 +19,10 @@ interface CEnginePanelProps {
   deckCategories: { id: number; name: string; count: string }[];
   user: User;
   requisition: boolean;
+  openModal: boolean;
   toggleRequisition: () => void;
+  handleClose: () => void;
+  setOpenModal: (isOpen: boolean) => void;
 }
 
 const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
@@ -27,6 +30,9 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   user,
   requisition,
   toggleRequisition,
+  handleClose,
+  setOpenModal,
+  openModal,
 }) => {
   console.log('engine', deckCategories?.[0]?.name);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
@@ -82,19 +88,14 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
     }
   }, [activeId, fetchData, isAddConsumeablesModalOpen]);
 
-  const [openModal, setOpenModal] = useState(false);
-  const handleClose = () => {
-    setOpenModal(false);
-  };
-
   return (
     <div>
-      <div className="my-4">
+      {/* <div className="my-4">
         <ConsDeckStrip
           toggleRequisition={toggleRequisition}
           setOpenModal={setOpenModal}
         />
-      </div>
+      </div> */}
       <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2  gap-2">
         {deckCategories.map((tab: any) => (
           <button

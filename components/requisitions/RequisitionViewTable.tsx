@@ -228,15 +228,15 @@ const RequisitionViewListTable: React.FC<RequisitionListTableProps> = ({
 
               <th className="text-sm text-left py-3">Company Rep time</th>
 
-              <th className="text-sm text-left py-3">Shopkeeper By</th>
+              <th className="text-sm text-left py-3">Storekeeper By</th>
 
               <th className="text-sm text-left py-3">Actions</th>
             </tr>
           </thead>
 
           <tbody>
-            {currentItems.length > 0 &&
-              currentItems.map((item, index) => {
+            {currentItems?.length > 0 &&
+              currentItems?.map((item, index) => {
                 const {
                   id,
                   inventoryable,
@@ -294,7 +294,7 @@ const RequisitionViewListTable: React.FC<RequisitionListTableProps> = ({
     </button> */}
                       {!user?.is_authorized_for_release ? (
                         <>
-                          {(user?.ishod && hod_status === 'pending') ||
+                          {(user?.is_hod && hod_status === 'pending') ||
                           (user?.is_barge_master &&
                             barge_master_status === 'pending') ||
                           (user?.is_company_rep &&
@@ -335,7 +335,7 @@ const RequisitionViewListTable: React.FC<RequisitionListTableProps> = ({
                           className="bg-yellow-300 p-2 text-sm rounded-md"
                           onClick={() => printItem(id)}
                         >
-                          Print Item
+                          Print
                         </button>
                       )}
                     </td>
@@ -344,23 +344,23 @@ const RequisitionViewListTable: React.FC<RequisitionListTableProps> = ({
                   </tr>
                 );
               })}
-            {currentItems.length == 0 && (
+            {currentItems?.length == 0 && (
               <tr className="text-center text-primary bg-white">
                 <td className="py-2 text-center" colSpan={10}>
-                  <div className="flex justify-center items-center min-h-[60vh]">
+                  <div className="flex justify-center items-center min-h-[30vh]">
                     <div>
                       <div className="flex justify-center items-center">
                         <FaRegFolderClosed className="text-4xl" />
                       </div>
                       <div className="mt-5">
                         <p className="font-medium text-[#475467]">
-                          No Locations found
+                          No Requistions found
                         </p>
-                        <p className="font-normal text-sm mt-3">
+                        {/* <p className="font-normal text-sm mt-3">
                           Click “add location” button to get started in doing
                           your
                           <br /> first transaction on the platform
-                        </p>
+                        </p> */}
                       </div>
                     </div>
                   </div>

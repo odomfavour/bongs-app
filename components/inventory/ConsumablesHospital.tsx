@@ -20,6 +20,9 @@ interface CEnginePanelProps {
   user: User;
   requisition: boolean;
   toggleRequisition: () => void;
+  openModal: boolean;
+  handleClose: () => void;
+  setOpenModal: (isOpen: boolean) => void;
 }
 
 const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
@@ -27,6 +30,9 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   user,
   requisition,
   toggleRequisition,
+  openModal,
+  setOpenModal,
+  handleClose,
 }) => {
   console.log('engine', hospitalCategories?.[0]?.name);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
@@ -80,18 +86,14 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
     fetchData();
   }, [activeId, fetchData, isAddConsumeablesModalOpen]);
 
-  const [openModal, setOpenModal] = useState(false);
-  const handleClose = () => {
-    setOpenModal(false);
-  };
   return (
     <div>
-      <div className="my-4">
+      {/* <div className="my-4">
         <ConsHospitalStrip
           toggleRequisition={toggleRequisition}
           setOpenModal={setOpenModal}
         />
-      </div>
+      </div> */}
       <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2  gap-2">
         {hospitalCategories.map((tab: any) => (
           <button

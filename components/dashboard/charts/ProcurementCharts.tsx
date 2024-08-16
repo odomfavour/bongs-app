@@ -118,7 +118,7 @@ total_budget: number,
 allBidData: any[]
 }) {
 
-  console.log("data for rfq", rfq_status)
+console.log("total_budget new", total_budget)
 
   const data = [
     { name: "Pending", value: rfq_status.sent || 10 },
@@ -216,6 +216,8 @@ allBidData: any[]
           </div>
         </div>
       
+      </div>
+      <div className="flex-1 flex-col p-[7.42px]  rounded-lg justify-center items-center shadow inline-flex bg-white h-full">
       </div>
       <div className="flex-1 flex-col p-[7.42px]  rounded-lg justify-center items-center shadow inline-flex bg-white h-full">
      {/* {

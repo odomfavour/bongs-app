@@ -63,4 +63,3 @@ const { token } = data && JSON.parse(data)
   return response.data
 }
 
-

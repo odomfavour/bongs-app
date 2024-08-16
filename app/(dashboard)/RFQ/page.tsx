@@ -1,11 +1,14 @@
 "use client";
-import RFQTable from "@/components/AppComp/RFQTable";
+import BIDTable from "@/components/AppComp/BIDTable";
+import RFQTable from "@/components/AppComp/BIDTable";
 import ProcurementCharts from "@/components/dashboard/charts/ProcurementCharts";
+import Modal from "@/components/dashboard/Modal";
 import ProcurementAddRequestModal from "@/components/procurement/ProcurementAddRequestModal";
 
 import ProcurementModal from "@/components/procurement/ProcurementModal";
 import { fetchAllBidDataApi, fetchAllRfqDataApi, fetchProcurementChartDataApi } from "@/utils/apiServices/procurementApi";
 import { procurementMenuList } from "@/utils/data";
+import { currencyFormatter } from "@/utils/usefulFunc";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 import { FaPlus, FaSearch } from "react-icons/fa";
@@ -67,7 +70,7 @@ const route = useRouter()
        setAllBidData(allBidData.data.data)
        setAllRfq(allRfqData.data.data)
 
-   
+ 
 
        const {
         data,
@@ -102,7 +105,7 @@ const route = useRouter()
    }, [year]);
 
 
-
+   console.log("all allRfq", allRfq)
 
    useEffect(() => {
     fetchProcurementsData()
@@ -120,7 +123,19 @@ const route = useRouter()
     setOpenModal(!openModal)
   }
 
-const  itemList = allRfq.map(item => {
+const  itemListRFQ = allRfq.map(item => {
+  return {
+      rfqId: `RFQ ${item.id}`,
+      title:item.title ,
+      type: item.procurement_type,
+      status: item.status,
+      budget: `${item.currency}${currencyFormatter(item.budget)}`,
+      date: item.bidding_deadline
+  }
+})
+
+
+const  itemListBid = allRfq.map(item => {
   return {
       rfqId: `RFQ ${item.id}`,
       title:item.title ,
@@ -133,14 +148,10 @@ const  itemList = allRfq.map(item => {
 })
 
   return (
-    <div  className="relative bg-[#f8f8f8]">
+    <div  className=" bg-[#f8f8f8]">
 
         {/* show dark background */}
- {
-    openModal &&   <div
-    className="bg-black opacity-50 h-screen w-screen absolute top-0 bottom-0 z-10 overflow-hidden"
-    />
- }
+
         {/* show dark background ends */}
       {/* chart sction starts */}
       <ProcurementCharts
@@ -153,9 +164,20 @@ const  itemList = allRfq.map(item => {
       {/* search field */}
       <div className="flex flex-row items-center justify-between mt-8">
         <div className="">
-          <span className="text-black text-[32px] font-medium font-['Inter']">
-            Request For Quotations(RFQs)
+        <span className="text-black text-[32px] font-medium font-['Inter']">
+          
+            {
+        selectedMenu === "RFQS" && `Request For Quotations(RFQs)`
+      
+        }
+          {
+         selectedMenu === "Bids" && `Bids Evaluation `
+      }
           </span>
+      
+    
+         
+       
         </div>
         <div
         onClick = {() => setOpenModal(!openModal)}
@@ -174,12 +196,17 @@ const  itemList = allRfq.map(item => {
 {
   procurementMenuList.map(menu => <div key={menu.key}
   onClick={() => setselectedMenu(menu.menuHeading)}
-  className={ `${selectedMenu === menu.menuHeading ? "bg-[#1E1E1E]" : "bg-[#d9d9d9]"}  flex items-center justify-center flex-1 rounded-t-md min-h-[50px]`}
+  className={ `${selectedMenu === menu.menuHeading ? "bg-[#1E1E1E]" : "bg-[#d9d9d9]"} cursor-pointer  flex items-center justify-center flex-1 rounded-t-md min-h-[50px]`}
   >
     <span className="text-center text-white text-2xl font-medium font-['Inter']">
-      {menu.menuHeading} {
+      {menu.menuHeading} 
+      {
         menu.menuHeading === "RFQS" && `(${allRfq.length})`
+        }
+      {
+          menu.menuHeading === "Bids" && `(${allBidData.length})`
       }
+    
     </span>
   </div>)
 }
@@ -195,54 +222,99 @@ const  itemList = allRfq.map(item => {
 
       {/* table section ends */}
 
-      <RFQTable
-           fetchedData={allRfq}
-         
-           handleOpenModal = {handleOpenModal}
-          
-           COLUMNS={[
-             {
-               Header: "RFQ ID",
-               accessor: "rfqId"
-           },
-           {
-               Header: "Title",
-                  accessor: "title"
-           },
-           {
-               Header: "No. Of Birds",
-               accessor: "noOfBirds"
-           },
-           {
-               Header: "Status",
-               accessor: "status"
-           },
-           {
-               Header: "Awarded Bids",
-               accessor: "awardedBids"
-           },
-           {
-               Header: "Performance Invoice",
-               accessor: "performanceInvoice"
-             },
-             {
-               Header: "Deadline",
-                  accessor: "deadline"
-             }
-            
+     {
+     selectedMenu === "RFQS" &&  
+     <RFQTable
+     fetchedData={allRfq}
+   
+     handleOpenModal = {handleOpenModal}
     
-           ]}
-            MOCK_DATA={itemList}
-        /> 
+     COLUMNS={[
+       {
+         Header: "RFQ ID",
+         accessor: "rfqId"
+     },
+     {
+         Header: "Title",
+            accessor: "title"
+     },
+     {
+         Header: "Type",
+         accessor: "type"
+     },
+     {
+         Header: "Budget",
+         accessor: "budget"
+     },
+     {
+         Header: "Status",
+         accessor: "status"
+     },
+     {
+         Header: "Date",
+         accessor: "date"
+       }
+      
+
+     ]}
+      MOCK_DATA={itemListRFQ}
+  /> 
+
+
+     }
+        {
+
+          selectedMenu  === "Bids" && <BIDTable
+          fetchedData={allBidData}
+         
+          handleOpenModal = {handleOpenModal}
+         
+          COLUMNS={[
+            {
+              Header: "RFQ ID",
+              accessor: "rfqId"
+          },
+          {
+              Header: "Title",
+                 accessor: "title"
+          },
+          {
+              Header: "No. Of Birds",
+              accessor: "noOfBirds"
+          },
+          {
+              Header: "Status",
+              accessor: "status"
+          },
+          {
+              Header: "Awarded Bids",
+              accessor: "awardedBids"
+          },
+          {
+              Header: "Performance Invoice",
+              accessor: "performanceInvoice"
+            },
+            {
+              Header: "Deadline",
+                 accessor: "deadline"
+            }
+           
+   
+          ]}
+           MOCK_DATA={itemListBid}
+        
+        />
+        }
       {/* modal section starts */}
   
-      <ProcurementModal
+      <Modal
     isOpen = {openModal}
     title={"Request For Quotations"}
     onClose = {handleClose}
+    maxWidth="900px"
   >
   <ProcurementAddRequestModal />
-  </ProcurementModal>
+  </Modal>
 
       {/* modal section ends */}
     </div>

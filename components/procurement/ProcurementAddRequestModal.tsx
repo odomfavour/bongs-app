@@ -28,7 +28,7 @@ function ProcurementAddRequestModal() {
   const [amount, setAmount] = useState<string | null>(null);
 
   return (
-    <div className="flex flex-row py-8 space-x-12">
+    <div className="flex flex-row py-8 space-x-12 w-full">
       <div className="">
         <div>
           <p className="text-black text-lg font-normal font-['Inter']">
@@ -266,15 +266,15 @@ function ProcurementAddRequestModal() {
             Title
           </p>
         </div>
-        <div className="flex flex-row items-center space-x-12">
+        <div className="flex flex-row items-center space-x-4">
           <input
             name=""
             id=""
             onChange={e => setRFQHeading(e.target.value)}
             placeholder="Input RFQ title"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-full"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 flex-1"
           />
-          <div className="w-44 h-[46px] bg-[#d9d9d9] rounded-[10px] border justify-center items-center flex flex-row space-x-1 cursor-pointer">
+          <div className=" bg-[#d9d9d9] rounded-[10px] border justify-center items-center flex flex-row space-x-1 cursor-pointer p-2">
             <FaPlus />
             <p className="text-black text-xl font-normal font-['Inter']">
               Add More

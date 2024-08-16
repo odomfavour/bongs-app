@@ -1,6 +1,7 @@
 "use client";
 import BIDTable from "@/components/AppComp/BIDTable";
 import RFQTable from "@/components/AppComp/BIDTable";
+import MemoTable from "@/components/AppComp/MemoTable";
 import ProcurementCharts from "@/components/dashboard/charts/ProcurementCharts";
 import Modal from "@/components/dashboard/Modal";
 import ProcurementAddRequestModal from "@/components/procurement/ProcurementAddRequestModal";
@@ -77,7 +78,7 @@ const route = useRouter()
 
          
        ]);
-       console.log('procurementResponse', procurementDashboardResponse, "all rfq", allRfqData, "allBidData", allBidData);
+       console.log('procurementResponse', procurementDashboardResponse, "all rfq", allRfqData, "allBidData", allBidData, "all memo", allMemo, "all purchased",  allPurchaseOrder, "all quality", allQualityAssurance);
        setAllBidData(allBidData.data.data)
        setAllRfq(allRfqData.data.data)
        setAllMemoData(allMemo.data.data)
@@ -115,7 +116,7 @@ const route = useRouter()
      }
    }, [year]);
 
-console.log("this is the order purchase", allPurhaseOrderData)
+console.log("this is the order purchase", allPurhaseOrderData, "memo data", allMemoData, "QA/QC data", allQualityAssuranceData)
   //  console.log("all allRfq", allRfq)
 
    useEffect(() => {
@@ -134,8 +135,9 @@ console.log("this is the order purchase", allPurhaseOrderData)
     setOpenModal(!openModal)
   }
 
-const  itemListRFQ = allRfq.map(item => {
+const  itemListRFQ = allRfq.map((item,i) => {
   return {
+    "S/N": i + 1,
       rfqId: `RFQ ${item.id}`,
       title:item.title ,
       type: item.procurement_type,
@@ -146,8 +148,23 @@ const  itemListRFQ = allRfq.map(item => {
 })
 
 
-const  itemListBid = allRfq.map(item => {
+const  itemListBid = allRfq.map((item,i)=> {
   return {
+    "S/N": i + 1,
+      rfqId: `RFQ ${item.id}`,
+      title:item.title ,
+      noOfBid: item.bid_count,
+      status: item.status,
+      awardedBids: 0,
+      performaInvoice: 0,
+      deadline: item.bidding_deadline
+  }
+})
+
+
+const  itemListMemo = allRfq.map((item,i)=> {
+  return {
+    "S/N": i + 1,
       rfqId: `RFQ ${item.id}`,
       title:item.title ,
       noOfBid: item.bid_count,
@@ -269,6 +286,10 @@ const  itemListBid = allRfq.map(item => {
      handleOpenModal = {handleOpenModal}
     
      COLUMNS={[
+      {
+        Header: "S/N",
+        accessor: "S/N"
+    },
        {
          Header: "RFQ ID",
          accessor: "rfqId"
@@ -298,8 +319,6 @@ const  itemListBid = allRfq.map(item => {
      ]}
       MOCK_DATA={itemListRFQ}
   /> 
-
-
      }
         {
 
@@ -309,6 +328,10 @@ const  itemListBid = allRfq.map(item => {
           handleOpenModal = {handleOpenModal}
          
           COLUMNS={[
+            {
+              Header: "S/N",
+              accessor: "S/N"
+          },
             {
               Header: "RFQ ID",
               accessor: "rfqId"
@@ -341,9 +364,60 @@ const  itemListBid = allRfq.map(item => {
    
           ]}
            MOCK_DATA={itemListBid}
-        
         />
         }
+
+{
+
+selectedMenu  === "Memo" && <MemoTable
+fetchedData={allMemoData}
+
+handleOpenModal = {handleOpenModal}
+
+COLUMNS={[
+  {
+    Header: "S/N",
+    accessor: "S/N"
+},
+  {
+    Header: "BID ID",
+    accessor: "bidId"
+},
+{
+    Header: "Title",
+       accessor: "title"
+},
+{
+    Header: "Type",
+    accessor: "type"
+},
+{
+  Header: "Signatory",
+  accessor: "signatory"
+},
+{
+  Header: "Author",
+  accessor: "author"
+},
+{
+    Header: "Status",
+    accessor: "status"
+},
+
+
+  {
+    Header: "Date",
+       accessor: "date"
+  }
+ 
+
+]}
+ MOCK_DATA={itemListBid}
+/>
+}
+
+
+
       {/* modal section starts */}
   
       <Modal

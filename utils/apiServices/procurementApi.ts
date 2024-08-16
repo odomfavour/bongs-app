@@ -45,9 +45,6 @@ export const fetchAllRfqDataApi = async () => {
     return response.data
 }
 
-
-
-
 export const fetchAllBidDataApi = async () => { 
   const data = localStorage.getItem("bongsUser")
 const { token } = data && JSON.parse(data)
@@ -62,4 +59,53 @@ const { token } = data && JSON.parse(data)
     })
   return response.data
 }
+
+export const fetchAllMemoDataApi = async () => { 
+  const data = localStorage.getItem("bongsUser")
+const { token } = data && JSON.parse(data)
+
+  let url = `${baseUrl}/procurement/memo`
+
+  const response = await axios.get(`${url}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+  
+    })
+  return response.data
+}
+
+export const fetchAllPurchaseOrderDataApi = async () => { 
+  const data = localStorage.getItem("bongsUser")
+const { token } = data && JSON.parse(data)
+
+  let url = `${baseUrl}/procurement/purchase-order`
+
+  const response = await axios.get(`${url}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+  
+    })
+  return response.data
+}
+
+export const fetchAllQualityAssuranceDataApi = async () => { 
+  const data = localStorage.getItem("bongsUser")
+const { token } = data && JSON.parse(data)
+
+  let url = `${baseUrl}/procurement/quality-assurance`
+
+  const response = await axios.get(`${url}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+  
+    })
+  return response.data
+}
+
+
+
+
 

@@ -1,3 +1,4 @@
+import { constants } from "buffer";
 import React from "react";
 import { RxDotFilled } from "react-icons/rx";
 
@@ -126,7 +127,36 @@ console.log("total_budget new", total_budget)
     { name: "Expired", value: rfq_status.expired  || 10 },
   ];
   
+const newObject = Object.values(total_budget)
 
+const currency = Object.keys(total_budget)[0]
+
+
+
+const months = Object.keys(newObject[0])
+/* extract spent data */
+
+
+const otherData = Object.values(newObject[0]) as any[]
+
+console.log("months",months,"otherData", otherData)
+
+const chartData = []
+for (let index = 0; index < months.length; index++) {
+  const budget = otherData[index].total_budget
+  const spent = otherData[index].total_spent
+  const month = months[index]
+  chartData.push({
+    Budget: budget,
+    Spent: spent,
+    month
+  })
+
+  
+}
+
+
+console.log("this is the chart data", chartData, "all bid data", allBidData)
   return (
     <div className="flex flex-row justify-between space-x-8 h-[40vh]">
          <div className="flex-1 p-[7.42px]  rounded-lg justify-center items-center shadow inline-flex bg-white">
@@ -135,7 +165,7 @@ console.log("total_budget new", total_budget)
           <LineChart
             width={400}
             height={400}
-            data={data2}
+            data={chartData}
             margin={{
               top: 5,
               right: 30,
@@ -144,17 +174,20 @@ console.log("total_budget new", total_budget)
             }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
+            <XAxis dataKey="month" />
             <YAxis />
             <Tooltip />
             <Legend />
             <Line
               type="monotone"
-              dataKey="pv"
-              stroke="#8884d8"
+              dataKey="Budget"
+              stroke="black"
+              strokeWidth={3}
               activeDot={{ r: 8 }}
             />
-            <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+            <Line type="monotone" dataKey="Spent" stroke="#1455D3" 
+            strokeWidth={3}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -205,6 +238,7 @@ console.log("total_budget new", total_budget)
 
             <span className="text-black text-sm font-medium font-['Inter']">
              Responded
+        
             </span>
           </div>
           <div className="flex flex-row space-x-2 items-center">
@@ -217,22 +251,41 @@ console.log("total_budget new", total_budget)
         </div>
       
       </div>
-      <div className="flex-1 flex-col p-[7.42px]  rounded-lg justify-center items-center shadow inline-flex bg-white h-full">
+      <div className="flex-1 flex-col p-[7.42px]   rounded-lg shadow inline-flex bg-white h-full">
       </div>
       <div className="flex-1 flex-col p-[7.42px]  rounded-lg justify-center items-center shadow inline-flex bg-white h-full">
-     {/* {
-      allBidData.length > 0 ?  <p className="text-black text-start text-[13.04px] font-semibold font-['Inter']">Updates</p> :
+     {
+      allBidData.length > 0 ? <div >
+        <div className="flex flex-row space-x-4  items-center">
+        <p className="text-black text-start text-[13.04px] font-semibold font-['Inter']">Updates</p>
+        <div className="bg-blue-800 rounded-lg">
+          <span className="text-sm text-white">
+           {allBidData.slice(0,4).length} new 
+          </span>
+
+        
+        </div>
+
+        </div>
+        <div>
+      { allBidData.slice(0,4).map((bid, i) => <div key={i} className="flex-row  justify-between">
+          <div>
+
+          </div>
+          <div></div>
+      </div>
+      )}
+
+        </div>
+
+      </div> :
        <div className="flex items-center justify-center">
         <p className="text-black text-start text-lg font-semibold font-['Inter']">
           No Bid found
         </p>
        </div>
-     } */}
-      <div className="flex items-center justify-center">
-        <p className="text-black text-start text-lg font-semibold font-['Inter']">
-          No Bid found
-        </p>
-       </div>
+     }
+     
        
        
       

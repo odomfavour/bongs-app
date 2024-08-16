@@ -6,13 +6,12 @@ import Modal from "@/components/dashboard/Modal";
 import ProcurementAddRequestModal from "@/components/procurement/ProcurementAddRequestModal";
 
 import ProcurementModal from "@/components/procurement/ProcurementModal";
-import { fetchAllBidDataApi, fetchAllRfqDataApi, fetchProcurementChartDataApi } from "@/utils/apiServices/procurementApi";
+import { fetchAllBidDataApi, fetchAllMemoDataApi, fetchAllPurchaseOrderDataApi, fetchAllQualityAssuranceDataApi, fetchAllRfqDataApi, fetchProcurementChartDataApi } from "@/utils/apiServices/procurementApi";
 import { procurementMenuList } from "@/utils/data";
 import { currencyFormatter } from "@/utils/usefulFunc";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
-import { FaPlus, FaSearch } from "react-icons/fa";
-import { FaBedPulse, FaBullseye } from "react-icons/fa6";
+
 import { toast } from "react-toastify";
 
 function Page() {
@@ -41,6 +40,10 @@ const route = useRouter()
 
   const [allBidData, setAllBidData] = useState<any[]>([])
 
+  const [allMemoData, setAllMemoData] = useState<any[]>([])
+  const [allPurhaseOrderData, setAllPurhaseOrderData] = useState<any[]>([])
+  const [allQualityAssuranceData, setAllQualityAssuranceData] = useState<any[]>([])
+
 
   const [allRfq, setAllRfq] = useState<any[]>([])
 
@@ -58,20 +61,28 @@ const route = useRouter()
        const [
          procurementDashboardResponse,
          allRfqData,
-         allBidData
+         allBidData,
+         allMemo,
+         allPurchaseOrder,
+         allQualityAssurance
         
        ] = await Promise.all([
         fetchProcurementChartDataApi({year}),
         fetchAllRfqDataApi(),
-        fetchAllBidDataApi()
+        fetchAllBidDataApi(),
+        fetchAllMemoDataApi(),
+        fetchAllPurchaseOrderDataApi(),
+        fetchAllQualityAssuranceDataApi()
+
+
          
        ]);
        console.log('procurementResponse', procurementDashboardResponse, "all rfq", allRfqData, "allBidData", allBidData);
        setAllBidData(allBidData.data.data)
        setAllRfq(allRfqData.data.data)
-
- 
-
+       setAllMemoData(allMemo.data.data)
+       setAllPurhaseOrderData(allPurchaseOrder.data.data)
+       setAllQualityAssuranceData(allQualityAssurance.data.data)
        const {
         data,
         status
@@ -104,8 +115,8 @@ const route = useRouter()
      }
    }, [year]);
 
-
-   console.log("all allRfq", allRfq)
+console.log("this is the order purchase", allPurhaseOrderData)
+  //  console.log("all allRfq", allRfq)
 
    useEffect(() => {
     fetchProcurementsData()
@@ -139,10 +150,10 @@ const  itemListBid = allRfq.map(item => {
   return {
       rfqId: `RFQ ${item.id}`,
       title:item.title ,
-      noOfBirds: item.bid_count,
+      noOfBid: item.bid_count,
       status: item.status,
-      awardedBirds: 0,
-      performanceInvoice: 0,
+      awardedBids: 0,
+      performaInvoice: 0,
       deadline: item.bidding_deadline
   }
 })
@@ -162,9 +173,9 @@ const  itemListBid = allRfq.map(item => {
       />
       {/* chart section nds */}
       {/* search field */}
-      <div className="flex flex-row items-center justify-between mt-8">
-        <div className="">
-        <span className="text-black text-[32px] font-medium font-['Inter']">
+      <div className="flex flex-row items-center justify-between py-2 mt-8 ">
+       
+        <span className="text-black text-bold text-[32px] font-medium font-['Inter']">
           
             {
         selectedMenu === "RFQS" && `Request For Quotations(RFQs)`
@@ -173,13 +184,26 @@ const  itemListBid = allRfq.map(item => {
           {
          selectedMenu === "Bids" && `Bids Evaluation `
       }
+        {
+         selectedMenu === "Memo" && `Memo`
+      }
+        {
+         selectedMenu === "Purchase Orders" && `Purchase Orders`
+      }
+        {
+         selectedMenu === "QA/QC" && `Quality Assurance and Control`
+      }
+         {
+         selectedMenu === "GRN" && `Goods Received`
+      }
           </span>
       
     
          
        
-        </div>
-        <div
+
+          {
+        selectedMenu === "RFQS" &&   <div
         onClick = {() => setOpenModal(!openModal)}
         className=" border border-[#1354d2]  rounded-[10px]  justify-center items-center  flex flex-row px-2 py-1 cursor-pointer ">
           
@@ -187,6 +211,9 @@ const  itemListBid = allRfq.map(item => {
            New Request
           </span>
         </div>
+      
+        }
+      
       </div>
 
       {/* search field ends */}
@@ -205,6 +232,18 @@ const  itemListBid = allRfq.map(item => {
         }
       {
           menu.menuHeading === "Bids" && `(${allBidData.length})`
+      }
+       {
+          menu.menuHeading === "Memo" && `(${allMemoData.length})`
+      }
+       {
+          menu.menuHeading === "Purchase Orders" && `(${allPurhaseOrderData.length})`
+      }
+       {
+          menu.menuHeading === "QA/QC" && `(${allQualityAssuranceData.length})`
+      }
+      {
+          menu.menuHeading === "GRN" && `(${allQualityAssuranceData.length})`
       }
     
     </span>
@@ -279,8 +318,8 @@ const  itemListBid = allRfq.map(item => {
                  accessor: "title"
           },
           {
-              Header: "No. Of Birds",
-              accessor: "noOfBirds"
+              Header: "No. Of Bids",
+              accessor: "noOfBids"
           },
           {
               Header: "Status",
@@ -291,8 +330,8 @@ const  itemListBid = allRfq.map(item => {
               accessor: "awardedBids"
           },
           {
-              Header: "Performance Invoice",
-              accessor: "performanceInvoice"
+              Header: "Proforma Invoice",
+              accessor: "performaInvoice"
             },
             {
               Header: "Deadline",

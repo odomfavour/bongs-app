@@ -1,5 +1,6 @@
 'use client';
 import Modal from '@/components/dashboard/Modal';
+import AddRequisitions from '@/components/requisitions/AddRequisitions';
 import ApproveRequisition from '@/components/requisitions/ApproveRequisition';
 import DeclineRequisition from '@/components/requisitions/DeclineRequisition';
 import ReleaseItem from '@/components/requisitions/ReleaseItem';
@@ -87,16 +88,6 @@ const Page = () => {
   const handleClose = () => {
     setOpenModal(false);
   };
-  const [openDeclineModal, setOpenDeclineModal] = useState(false);
-
-  const handleDeclineClose = () => {
-    setOpenDeclineModal(false);
-  };
-  const [openReleaseModal, setOpenReleaseModal] = useState(false);
-
-  const handleReleaseClose = () => {
-    setOpenReleaseModal(false);
-  };
 
   const [requisitionItem, setRequisitionItem] = useState<any>({});
 
@@ -107,7 +98,10 @@ const Page = () => {
       </div>
       <div>
         <div className="mb-5 flex justify-end">
-          <button className="bg-blue-500 text-white p-2 rounded-md">
+          <button
+            className="bg-blue-500 text-white p-2 rounded-md"
+            onClick={() => setOpenModal(true)}
+          >
             New Requisition
           </button>
         </div>
@@ -115,11 +109,14 @@ const Page = () => {
           data={requisitions}
           fetchData={fetchData}
           setOpenModal={setOpenModal}
-          setOpenDeclineModal={setOpenDeclineModal}
+          setOpenDeclineModal={() => {}}
           setRequisitionItem={setRequisitionItem}
-          setOpenReleaseModal={setOpenReleaseModal}
+          setOpenReleaseModal={() => {}}
         />
       </div>
+      <Modal title="" isOpen={openModal} onClose={handleClose} maxWidth="60%">
+        <AddRequisitions handleClose={handleClose} fetchData={fetchData} />
+      </Modal>
     </div>
   );
 };

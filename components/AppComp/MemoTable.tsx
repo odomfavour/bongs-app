@@ -1,5 +1,4 @@
 import { Barge } from '@/utils/types';
-import { formatDate } from '@/utils/utils';
 import React, { useMemo } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { FaRegFolderClosed } from 'react-icons/fa6';
@@ -67,7 +66,7 @@ function MemoTable({
 
   const { globalFilter, pageIndex } = state;
 
-  console.log('the fetched data', fetchedData);
+  console.log('the fetched data memo', fetchedData);
 
   return (
     <>
@@ -148,15 +147,19 @@ function MemoTable({
                     );
                   })}
                   <td>
-                    <div className="flex-row flex items-center justify-center rounded-lg p-2 space-x-2 bg-[#a16207] ">
-                   <button onClick={() => {
-                    handleOpenModal()
+                  <td className='flex justify-center items-center'>
+                    <div className="flex-row flex items-center w-max justify-center rounded-xl px-2 py-1 bg-[#a16207] cursor-pointer ">
+                   <span onClick={() => {
+                    // handleOpenModal()
+
+
                    }}
-                   className='text-center text-white'
+                   className='text-center text-sm text-white'
                    >
                     View More
-                   </button>
+                   </span>
                     </div>
+                  </td>
                   </td>
                 </tr>
               );

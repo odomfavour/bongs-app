@@ -1,6 +1,8 @@
+import { dateFormaterRelative } from "@/utils/usefulFunc";
 import { constants } from "buffer";
+import Link from "next/link";
 import React from "react";
-import { RxDotFilled } from "react-icons/rx";
+import { IoIosArrowRoundForward } from "react-icons/io";
 
 import {
   PieChart,
@@ -16,7 +18,6 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-
 
 const COLORS = ["#96f2d7", "#c69cf4", "#ffc9c9"];
 
@@ -100,67 +101,61 @@ const data2 = [
   },
 ];
 
-
-
-
 function ProcurementCharts({
-rfq_status,
-year,
-total_budget,
-allBidData
+  rfq_status,
+  year,
+  total_budget,
+  allBidData,
 }: {
-rfq_status: {
-  expired: number,
-  sent: number,
-  responded: number
-},
-year: string,
-total_budget: number,
-allBidData: any[]
+  rfq_status: {
+    expired: number;
+    sent: number;
+    responded: number;
+  };
+  year: string;
+  total_budget: number;
+  allBidData: any[];
 }) {
-
-console.log("total_budget new", total_budget)
+  console.log("total_budget new", total_budget);
 
   const data = [
-    { name: "Pending", value: rfq_status.sent || 10 },
-    { name: "Responded", value: rfq_status.responded  || 10 },
-    { name: "Expired", value: rfq_status.expired  || 10 },
+    { name: "Pending", value: rfq_status.sent },
+    { name: "Responded", value: rfq_status.responded },
+    { name: "Expired", value: rfq_status.expired },
   ];
-  
-const newObject = Object.values(total_budget)
 
-const currency = Object.keys(total_budget)[0]
+  const newObject = Object.values(total_budget);
 
+  const currency = Object.keys(total_budget)[0];
 
+  const months = Object.keys(newObject[0]);
+  /* extract spent data */
 
-const months = Object.keys(newObject[0])
-/* extract spent data */
+  const otherData = Object.values(newObject[0]) as any[];
 
+  console.log("months", months, "otherData", otherData);
 
-const otherData = Object.values(newObject[0]) as any[]
+  const chartData = [];
+  for (let index = 0; index < months.length; index++) {
+    const budget = otherData[index].total_budget;
+    const spent = otherData[index].total_spent;
+    const month = months[index];
+    chartData.push({
+      Budget: budget,
+      Spent: spent,
+      month,
+    });
+  }
 
-console.log("months",months,"otherData", otherData)
-
-const chartData = []
-for (let index = 0; index < months.length; index++) {
-  const budget = otherData[index].total_budget
-  const spent = otherData[index].total_spent
-  const month = months[index]
-  chartData.push({
-    Budget: budget,
-    Spent: spent,
-    month
-  })
-
-  
-}
-
-
-console.log("this is the chart data", chartData, "all bid data", allBidData)
+  console.log(
+    "this is the chart data",
+    chartData,
+    "all bid data from inner",
+    allBidData
+  );
   return (
     <div className="flex flex-row justify-between space-x-8 h-[40vh]">
-         <div className="flex-1 p-[7.42px]  rounded-lg justify-center items-center shadow inline-flex bg-white">
-
+      <div className="flex-1 p-[7.42px]  rounded-lg justify-center items-center shadow inline-flex bg-white">
         <ResponsiveContainer width="100%" height={"90%"}>
           <LineChart
             width={400}
@@ -185,16 +180,21 @@ console.log("this is the chart data", chartData, "all bid data", allBidData)
               strokeWidth={3}
               activeDot={{ r: 8 }}
             />
-            <Line type="monotone" dataKey="Spent" stroke="#1455D3" 
-            strokeWidth={3}
+            <Line
+              type="monotone"
+              dataKey="Spent"
+              stroke="#1455D3"
+              strokeWidth={3}
             />
           </LineChart>
         </ResponsiveContainer>
       </div>
       <div className="flex-1 flex-col p-[7.42px]  rounded-lg justify-center items-center shadow inline-flex h-full bg-white">
-      <p className="text-black text-left text-[13.04px] font-semibold font-['Inter']">Total RFQ’s Status</p>
-        <ResponsiveContainer width={"100%"} height={'90%'} >
-         <PieChart>
+        <p className="text-black text-left text-[13.04px] font-semibold font-['Inter']">
+          Total RFQ’s Status
+        </p>
+        <ResponsiveContainer width={"100%"} height={"90%"}>
+          <PieChart>
             <Pie
               data={data}
               outerRadius={"80%"}
@@ -202,20 +202,12 @@ console.log("this is the chart data", chartData, "all bid data", allBidData)
               cy="50%"
               labelLine={false}
               label={renderCustomizedLabel}
-            
               fill="#8884d8"
               dataKey="value"
-              height={'80%'}
-            
-              
+              height={"80%"}
             >
               <Tooltip />
-              <Legend
-                iconType='circle'
-                align='right'
-                verticalAlign='bottom'
-              
-              /> 
+              <Legend iconType="circle" align="right" verticalAlign="bottom" />
               {data.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
@@ -237,60 +229,104 @@ console.log("this is the chart data", chartData, "all bid data", allBidData)
             <span className="w-3 h-3 rounded-full bg-[#c69cf4]" />
 
             <span className="text-black text-sm font-medium font-['Inter']">
-             Responded
-        
+              Responded
             </span>
           </div>
           <div className="flex flex-row space-x-2 items-center">
             <span className="w-3 h-3 rounded-full bg-[#ffc9c9]" />
 
             <span className="text-black text-sm font-medium font-['Inter']">
-            Expired
+              Expired
             </span>
           </div>
         </div>
-      
       </div>
-      <div className="flex-1 flex-col p-[7.42px]   rounded-lg shadow inline-flex bg-white h-full">
-      </div>
-      <div className="flex-1 flex-col p-[7.42px]  rounded-lg justify-center items-center shadow inline-flex bg-white h-full">
-     {
-      allBidData.length > 0 ? <div >
-        <div className="flex flex-row space-x-4  items-center">
-        <p className="text-black text-start text-[13.04px] font-semibold font-['Inter']">Updates</p>
-        <div className="bg-blue-800 rounded-lg">
-          <span className="text-sm text-white">
-           {allBidData.slice(0,4).length} new 
-          </span>
+      <div className="flex-1 flex-col p-[7.42px]   rounded-lg shadow inline-flex bg-white h-full"></div>
+      <div className="flex-1 flex-col px-[7.42px]   rounded-lg  shadow inline-flex bg-white h-full overflow-y-scroll">
+        {allBidData.length > 0 ? (
+          <div className="">
+            {/*bid update  header sction starts */}
+            <div className="flex flex-row justify-between items-center sticky top-0 left-0 right-0 bg-white pt-[7.42px]">
+              <div className="flex flex-row space-x-2  items-center">
+                <p className="text-black text-xl font-semibold font-['Inter']">
+                  Updates
+                </p>
 
-        
-        </div>
+                <div className="bg-blue-800 rounded-2xl px-2">
+                  <span className="text-sm text-white">
+                    {allBidData.slice(0, 4).length} new
+                  </span>
+                </div>
+              </div>
+              <Link href={""} className="flex flex-row space-x-1 items-center">
+                <span className="text-black text-sm font-['Inter']">
+                  See All
+                </span>
+                <IoIosArrowRoundForward />
+              </Link>
+            </div>
 
-        </div>
-        <div>
-      { allBidData.slice(0,4).map((bid, i) => <div key={i} className="flex-row  justify-between">
-          <div>
+            {/*bid update  header section ends */}
 
+            {/* bid list starts */}
+
+            <div className="flex flex-col space-y-4 mt-4">
+              {allBidData.slice(0, 4).map((bid, i) => {
+              const {
+                dateFromNow,
+                formattedDate
+
+              } =  dateFormaterRelative(bid.created_at)
+            return      <div key={i} className="flex-row  justify-between">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span>
+                        New bid for RFQ {bid.request_for_quotations.id}
+                      </span>
+                    <Link href={""}>
+                 <span className="bg-blue-500  rounded-xl text-sm px-6 border-0 py-1 text-white">
+                        View
+                      </span>
+                 </Link>
+
+                    </div>
+                    <div className="flex items-center justify-between">
+                     <div className="flex flex-row items-center space-x-4">
+                     <span>
+                       {
+                         dateFromNow
+                       }
+                      </span>
+                      <div
+                      className="w-3 h-3 rounded-full bg-gray-300"
+                      />
+                      <span>
+                       {
+                            formattedDate
+                       }
+                      </span>
+                     </div>
+                    <Link href={""}>
+                 <span className="  text-sm text-center border-0 py-1 text-white">
+                        ignore
+                      </span>
+                 </Link>
+
+                    </div>
+                  </div>
+                  {/* bid list ends */}
+                </div>
+              })}
+            </div>
           </div>
-          <div></div>
+        ) : (
+          <div className="flex items-center justify-center">
+            <p className="text-black text-start text-lg font-semibold font-['Inter']">
+              No Bid found
+            </p>
+          </div>
+        )}
       </div>
-      )}
-
-        </div>
-
-      </div> :
-       <div className="flex items-center justify-center">
-        <p className="text-black text-start text-lg font-semibold font-['Inter']">
-          No Bid found
-        </p>
-       </div>
-     }
-     
-       
-       
-      
-      </div>
-   
     </div>
   );
 }

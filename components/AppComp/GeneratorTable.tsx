@@ -105,11 +105,14 @@ function GeneratorTable({
   handleSelect,
   generatorData,
   requisition,
+  bulkDelete,
   quantities,
   handleQuantityChange,
   toggleRequisition,
+  toggleBulkDelete,
 }: {
   requisition: boolean;
+  bulkDelete: boolean;
   generatorData: SparePart[];
   parent: string;
   MOCK_DATA: any[];
@@ -126,6 +129,7 @@ function GeneratorTable({
   quantities: { [key: number]: number };
   handleQuantityChange: (id: number, quatity: number) => void;
   toggleRequisition: () => void;
+  toggleBulkDelete: () => void;
 }) {
   const pathname = usePathname();
   const columns = useMemo(() => {
@@ -287,7 +291,13 @@ function GeneratorTable({
                   >
                     Material Release
                   </button>
-                  <button className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start">
+                  <button
+                    className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start"
+                    onClick={() => {
+                      toggleBulkDelete();
+                      setIsActionsOpen(false);
+                    }}
+                  >
                     Bulk Delete
                   </button>
                 </div>
@@ -353,7 +363,9 @@ function GeneratorTable({
               key={index}
               className="border-b bg-[#E9EDF4]"
             >
-              <th className="py-2 text-center">Check Item</th>
+              {(requisition || bulkDelete) && (
+                <th className="py-2 text-center">Check Item</th>
+              )}
               {headerGroup.headers.map((column, index) => (
                 <th
                   className="py-2 text-center"
@@ -371,7 +383,7 @@ function GeneratorTable({
         <tbody {...getTableBodyProps()}>
           {page.length == 0 ? (
             <tr className="text-center text-primary bg-white">
-              <td className="py-2 text-center" colSpan={11}>
+              <td className="py-2 text-center" colSpan={14}>
                 <div className="flex justify-center items-center  my-6">
                   <div>
                     <div className="flex justify-center items-center">
@@ -395,13 +407,15 @@ function GeneratorTable({
               prepareRow(row);
               return (
                 <tr {...row.getRowProps()} key={_index}>
-                  <td className="text-center py-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedItems.includes(row.original.id)}
-                      onChange={() => handleSelect(row.original.id)}
-                    />
-                  </td>
+                  {(requisition || bulkDelete) && (
+                    <td className="text-center py-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.includes(row.original.id)}
+                        onChange={() => handleSelect(row.original.id)}
+                      />
+                    </td>
+                  )}
 
                   {row.cells.map((cell, index) => {
                     if (cell.column.Header === 'Warranty Days') {
@@ -426,22 +440,21 @@ function GeneratorTable({
                       return (
                         <div key={index}>
                           {selectedItems.includes(row.original.id) &&
-                          requisition ? (
-                            <td>
-                              <input
-                                type="number"
-                                className="p-3 border rounded-md w-[100px]"
-                                value={quantities[row.original.id] || ''}
-                                onChange={(e) =>
-                                  handleQuantityChange(
-                                    row.original.id,
-                                    parseInt(e.target.value)
-                                  )
-                                }
-                              />
-                            </td>
-                          ) : selectedItems.length > 0 &&
-                            requisition ? null : null}
+                            requisition && (
+                              <td>
+                                <input
+                                  type="number"
+                                  className="p-3 border rounded-md w-[100px]"
+                                  value={quantities[row.original.id] || ''}
+                                  onChange={(e) =>
+                                    handleQuantityChange(
+                                      row.original.id,
+                                      parseInt(e.target.value)
+                                    )
+                                  }
+                                />
+                              </td>
+                            )}
                         </div>
                       );
                     }

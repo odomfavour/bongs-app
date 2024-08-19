@@ -23,8 +23,14 @@ const links: LinkItem[] = [
     img: 'inventories.png',
   },
   {
-    href: '/requisitions',
+    href: '/material-release',
     label: 'Material Release',
+    labels: ['Project', 'MIV'],
+    img: 'inventories.png',
+  },
+  {
+    href: '/requisitions',
+    label: 'Material Requisition',
     labels: ['Project', 'MIV'],
     img: 'inventories.png',
   },

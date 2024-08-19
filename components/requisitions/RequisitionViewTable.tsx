@@ -57,6 +57,7 @@ interface RequisitionList {
 }
 
 interface RequisitionListTableProps {
+  reqId: string;
   data: RequisitionList[];
   fetchData: () => void;
   setOpenModal: (isOpen: boolean) => void;
@@ -67,6 +68,7 @@ interface RequisitionListTableProps {
 
 const RequisitionViewListTable: React.FC<RequisitionListTableProps> = ({
   data,
+  reqId,
   fetchData,
   setOpenModal,
   setOpenDeclineModal,
@@ -333,7 +335,7 @@ const RequisitionViewListTable: React.FC<RequisitionListTableProps> = ({
                       ) : (
                         <button
                           className="bg-yellow-300 p-2 text-sm rounded-md"
-                          onClick={() => printItem(id)}
+                          onClick={() => printItem(Number(reqId))}
                         >
                           Print
                         </button>
@@ -346,7 +348,7 @@ const RequisitionViewListTable: React.FC<RequisitionListTableProps> = ({
               })}
             {currentItems?.length == 0 && (
               <tr className="text-center text-primary bg-white">
-                <td className="py-2 text-center" colSpan={10}>
+                <td className="py-2 text-center" colSpan={14}>
                   <div className="flex justify-center items-center min-h-[30vh]">
                     <div>
                       <div className="flex justify-center items-center">
@@ -354,7 +356,7 @@ const RequisitionViewListTable: React.FC<RequisitionListTableProps> = ({
                       </div>
                       <div className="mt-5">
                         <p className="font-medium text-[#475467]">
-                          No Requistions found
+                          No Releases found
                         </p>
                         {/* <p className="font-normal text-sm mt-3">
                           Click “add location” button to get started in doing

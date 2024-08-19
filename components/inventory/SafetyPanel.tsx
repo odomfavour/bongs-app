@@ -22,6 +22,8 @@ interface SafetyPanelProps {
   toggleRequisition: () => void;
   handleClose: () => void;
   setOpenModal: (isOpen: boolean) => void;
+  bulkDelete: boolean;
+  toggleBulkDelete: () => void;
 }
 
 const SafetyPanel: React.FC<SafetyPanelProps> = ({
@@ -32,6 +34,8 @@ const SafetyPanel: React.FC<SafetyPanelProps> = ({
   handleClose,
   openModal,
   setOpenModal,
+  bulkDelete,
+  toggleBulkDelete,
 }) => {
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
@@ -113,6 +117,8 @@ const SafetyPanel: React.FC<SafetyPanelProps> = ({
         requisition={requisition}
         setOpenModal={setOpenModal}
         toggleRequisition={toggleRequisition}
+        bulkDelete={bulkDelete}
+        toggleBulkDelete={toggleBulkDelete}
       />
 
       <Modal

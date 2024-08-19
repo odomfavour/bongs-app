@@ -23,6 +23,8 @@ interface CEnginePanelProps {
   toggleRequisition: () => void;
   handleClose: () => void;
   setOpenModal: (isOpen: boolean) => void;
+  bulkDelete: boolean;
+  toggleBulkDelete: () => void;
 }
 
 const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
@@ -33,6 +35,8 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   openModal,
   setOpenModal,
   handleClose,
+  bulkDelete,
+  toggleBulkDelete,
 }) => {
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
@@ -118,6 +122,8 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
         requisition={requisition}
         setOpenModal={setOpenModal}
         toggleRequisition={toggleRequisition}
+        bulkDelete={bulkDelete}
+        toggleBulkDelete={toggleBulkDelete}
       />
       <Modal
         title={

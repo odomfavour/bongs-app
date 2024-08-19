@@ -113,10 +113,14 @@ const Page = () => {
   }, [fetchData, isAddEngineModalOpen]);
 
   const [requisition, setRequisition] = useState(false);
+  const [bulkDelete, setBulkDelete] = useState(false);
   const toggleRequisition = () => {
     setRequisition(!requisition);
+    console.log('req', requisition);
   };
-
+  const toggleBulkDelete = () => {
+    setBulkDelete(!bulkDelete);
+  };
   const [openModal, setOpenModal] = useState(false);
   const handleClose = () => {
     setOpenModal(false);
@@ -237,6 +241,8 @@ const Page = () => {
           fetchLoading={loading}
           handleClose={handleClose}
           setOpenModal={setOpenModal}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
         />
       )}
       {activeTab === 'spare-parts' && selectedOption === 'deck' && (
@@ -248,6 +254,8 @@ const Page = () => {
           toggleRequisition={toggleRequisition}
           handleClose={handleClose}
           setOpenModal={setOpenModal}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
         />
       )}
 
@@ -260,6 +268,8 @@ const Page = () => {
           toggleRequisition={toggleRequisition}
           handleClose={handleClose}
           setOpenModal={setOpenModal}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
         />
       )}
       {activeTab === 'spare-parts' && selectedOption === 'hospital' && (
@@ -271,6 +281,8 @@ const Page = () => {
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
         />
       )}
       {activeTab === 'consumables' && selectedOption === 'engine' && (
@@ -282,6 +294,8 @@ const Page = () => {
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
         />
       )}
       {activeTab === 'consumables' && selectedOption === 'deck' && (
@@ -293,6 +307,8 @@ const Page = () => {
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
         />
       )}
       {activeTab === 'consumables' && selectedOption === 'galley' && (
@@ -304,6 +320,8 @@ const Page = () => {
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
         />
       )}
       {activeTab === 'consumables' && selectedOption === 'hospital' && (
@@ -315,6 +333,8 @@ const Page = () => {
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
         />
       )}
       {activeTab === 'consumables' && selectedOption === 'safety' && (
@@ -326,6 +346,8 @@ const Page = () => {
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
         />
       )}
     </div>

@@ -103,6 +103,8 @@ interface ConsumablesListTableProps {
   requisition: boolean;
   setOpenModal: (isOpen: boolean) => void;
   toggleRequisition: () => void;
+  bulkDelete: boolean;
+  toggleBulkDelete: () => void;
 }
 
 const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
@@ -112,6 +114,8 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
   requisition,
   setOpenModal,
   toggleRequisition,
+  bulkDelete,
+  toggleBulkDelete,
 }) => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
@@ -284,6 +288,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
       console.log('Requisition Response:', response);
       setSelectedItems([]);
       toggleRequisition();
+      toggleBulkDelete();
       fetchdata();
       handleDisplayClose();
       toast.success(response.data.message);
@@ -460,17 +465,19 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
               Review Selected Items
             </button>
           )}
-          <button
-            className={`p-2 rounded-md ${
-              selectedItems.length === 0
-                ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                : 'bg-red-700 text-white'
-            }`}
-            onClick={() => handleDelete(selectedItems)}
-            disabled={selectedItems.length === 0}
-          >
-            Delete Selected
-          </button>
+          {bulkDelete && (
+            <button
+              className={`p-2 rounded-md ${
+                selectedItems.length === 0
+                  ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                  : 'bg-red-700 text-white'
+              }`}
+              onClick={() => handleDelete(selectedItems)}
+              disabled={selectedItems.length === 0}
+            >
+              Delete Selected
+            </button>
+          )}
         </div>
         <div className="flex mb-2">
           <div
@@ -497,7 +504,13 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
                 >
                   Material Release
                 </button>
-                <button className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start">
+                <button
+                  className="block p-2 text-xs text-gray-700 hover:bg-gray-100 w-full text-start"
+                  onClick={() => {
+                    toggleBulkDelete();
+                    setIsActionsOpen(false);
+                  }}
+                >
                   Bulk Delete
                 </button>
               </div>
@@ -541,13 +554,15 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
         <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
-              <th className="text-sm text-center pl-3 py-3 rounded">
-                <input
-                  type="checkbox"
-                  checked={selectedItems.length === currentItems.length}
-                  onChange={handleSelectAll}
-                />
-              </th>
+              {(requisition || bulkDelete) && (
+                <th className="text-sm text-center pl-3 py-3 rounded">
+                  <input
+                    type="checkbox"
+                    checked={selectedItems.length === currentItems.length}
+                    onChange={handleSelectAll}
+                  />
+                </th>
+              )}
               <th className="text-sm text-left pl-3 py-3 rounded">S/N</th>
               <th className="text-sm text-left py-3">Project</th>
               {requisition && selectedItems.length > 0 && (
@@ -590,13 +605,15 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
                 } = item;
                 return (
                   <tr className="border-b" key={id}>
-                    <td className="py-2 text-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.includes(id)}
-                        onChange={() => handleSelectItem(id)}
-                      />
-                    </td>
+                    {(requisition || bulkDelete) && (
+                      <td className="py-2 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(id)}
+                          onChange={() => handleSelectItem(id)}
+                        />
+                      </td>
+                    )}
                     <td className="py-2 text-center text-sm text-[#344054]">
                       {index + 1}
                     </td>
@@ -703,7 +720,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
               })}
             {currentItems.length == 0 && (
               <tr className="text-center text-primary bg-white">
-                <td className="py-2 text-center" colSpan={10}>
+                <td className="py-2 text-center" colSpan={14}>
                   <div className="flex justify-center items-center  min-h-[60vh]">
                     <div>
                       <div className="flex justify-center items-center">

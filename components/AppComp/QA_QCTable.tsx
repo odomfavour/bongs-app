@@ -1,10 +1,8 @@
-import { setDraftStateAction } from "@/provider/redux/procurementSlice";
-import { Barge } from "@/utils/types";
-import { formatDate } from "@/utils/utils";
-import React, { useMemo } from "react";
-import { FaSearch } from "react-icons/fa";
-import { FaRegFolderClosed } from "react-icons/fa6";
-import { useDispatch } from "react-redux";
+import { Barge } from '@/utils/types';
+import { formatDate } from '@/utils/utils';
+import React, { useMemo } from 'react';
+import { FaSearch } from 'react-icons/fa';
+import { FaRegFolderClosed } from 'react-icons/fa6';
 import {
   useTable,
   usePagination,
@@ -14,18 +12,19 @@ import {
   UseGlobalFiltersInstanceProps,
   UsePaginationState,
   UsePaginationInstanceProps,
-} from "react-table";
+} from 'react-table';
 
-function RFQTable({
+function QA_QCTable({
   MOCK_DATA,
   COLUMNS,
   fetchedData,
-  handleOpenModal,
+  handleOpenModal
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
   fetchedData: Barge[];
-  handleOpenModal: () => void;
+  handleOpenModal: () => void
+  
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
@@ -68,9 +67,7 @@ function RFQTable({
 
   const { globalFilter, pageIndex } = state;
 
-const dispatch = useDispatch()
-
-  console.log("fetched rfq data", fetchedData)
+  console.log('the fetched data', fetchedData);
 
   return (
     <>
@@ -79,7 +76,7 @@ const dispatch = useDispatch()
           <div className="w-full relative">
             <input
               type="search"
-              value={globalFilter || ""}
+              value={globalFilter || ''}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Search here... now"
               className="bg-gray-50 pl-8 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
@@ -98,18 +95,14 @@ const dispatch = useDispatch()
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup, index) => (
-            <tr
-              {...headerGroup.getHeaderGroupProps()}
-              key={index}
-              className="border-b bg-[#E9EDF4]"
-            >
+            <tr {...headerGroup.getHeaderGroupProps()} key={index} className='border-b bg-[#E9EDF4]'>
               {headerGroup.headers.map((column, index) => (
                 <th
                   className="py-2 text-center"
                   {...column.getHeaderProps()}
                   key={index}
                 >
-                  {column.render("Header")}
+                  {column.render('Header')}
                 </th>
               ))}
               <th className="py-2 text-center">Actions</th>
@@ -127,11 +120,10 @@ const dispatch = useDispatch()
                     </div>
                     <div className="mt-5">
                       <p className="font-medium text-[#475467]">
-                        No RFQs found
+                        No Bid found
                       </p>
                       <p className="font-normal text-sm mt-3">
-                        Click “add new request” button to get started in doing
-                        your
+                        Click “add new bid” button to get started in doing your
                         <br /> first transaction on the platform
                       </p>
                     </div>
@@ -142,7 +134,6 @@ const dispatch = useDispatch()
           ) : (
             page.map((row, index) => {
               prepareRow(row);
-              console.log("row inner rqs", row)
               return (
                 <tr {...row.getRowProps()} key={index}>
                   {row.cells.map((cell, index) => {
@@ -152,49 +143,19 @@ const dispatch = useDispatch()
                         {...cell.getCellProps()}
                         key={index}
                       >
-                        {cell.render("Cell")}
+                        {cell.render('Cell')}
                       </td>
                     );
                   })}
-                  <td className="flex justify-center items-center">
-                    <div className="flex-row flex items-center w-max justify-center rounded-xl px-2 py-1 bg-[#a16207] cursor-pointer ">
-                      <span
-                        onClick={() => {
-                          const draftList = row.original.procurement.procurement_requisitions
-                          .map((item: any)  =>  {
-                            const attachments = item.attachements.map((pic: any) =>{
-                               return {
-                                attachment_uri: pic.attachment_uri
-                               }
-                            })
-                           return {
-                            stock_quantity : item.stock_quantity,
-                            description: item.description,
-                            attachments: attachments,
-                           
-                           }
-                          })
-                           
-
-
-                          const data = {
-                            subscriber: row.original.subscriber.name,
-                            procurementType: row.original.procurement_type,
-                            subscriberId:row.original.subscriber_id,
-                            procurementId:row.original.procurement_id,
-                            id: row.original.id,
-                            title: row.original.title,
-                            draftList,
-                            
-                          }
-                        
-                          dispatch(setDraftStateAction(data))
-                              handleOpenModal();
-                        }}
-                        className="text-center text-sm text-white"
-                      >
-                        View More
-                      </span>
+                  <td>
+                    <div className="flex-row flex items-center justify-center rounded-lg p-2 space-x-2 bg-[#a16207] ">
+                   <button onClick={() => {
+                    handleOpenModal()
+                   }}
+                   className='text-center text-white'
+                   >
+                    View More
+                   </button>
                     </div>
                   </td>
                 </tr>
@@ -205,7 +166,7 @@ const dispatch = useDispatch()
       </table>
       <div className="flex flex-row justify-end mt-3">
         <span>
-          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{" "}
+          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
         </span>
 
         <button
@@ -213,8 +174,8 @@ const dispatch = useDispatch()
           disabled={!canPreviousPage}
           onClick={() => previousPage()}
         >
-          {" "}
-          Previous{" "}
+          {' '}
+          Previous{' '}
         </button>
         <button disabled={!canNextPage} onClick={() => nextPage()}>
           Next
@@ -224,4 +185,4 @@ const dispatch = useDispatch()
   );
 }
 
-export default RFQTable;
+export default QA_QCTable;

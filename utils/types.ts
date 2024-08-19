@@ -260,3 +260,15 @@ export interface signMostUsedItemProp{
 export interface mostUsedInventoryPropType {
   data: signMostUsedItemProp[] | []
 }
+
+export type draftListType = {
+  stock_quantity: number,
+  description: string,
+  attachments: any
+}[]
+
+
+export type dratfProcurementType  = {
+  title: string,
+  draftList: draftListType 
+}

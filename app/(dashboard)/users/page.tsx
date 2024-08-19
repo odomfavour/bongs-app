@@ -106,6 +106,8 @@ const Page = () => {
           Authorization: `Bearer ${user?.token}`,
         },
       });
+
+      console.log("users response", usersResponse)
       setUsers(usersResponse?.data?.data?.data);
     } catch (error: any) {
       handleApiError(error);

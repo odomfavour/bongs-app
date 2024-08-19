@@ -1,0 +1,63 @@
+import { createSlice } from '@reduxjs/toolkit';
+
+
+const initialState = {
+  draftProcurementState: {
+    procurementType: "",
+    subscriber: "",
+    subscriberId:"",
+    procurementId:"",
+    title: "",
+    draftList:{
+        stock_quantity: null,
+  description: "",
+  attachments: []
+    }
+  },
+  allCategory: null,
+  allProjects: null,
+  allVendors: null,
+  allDepartments: null
+};
+
+export const procurementSlice = createSlice({
+  name: 'procurement',
+  initialState,
+  reducers: {
+  setDraftStateAction: (state, action) => {
+       console.log("action passed", action)
+       state.draftProcurementState.procurementType = "draft"
+       state.draftProcurementState.subscriber = action.payload.subscriber
+       state.draftProcurementState.subscriberId = action.payload.subscriberId
+       state.procurementId = action.payload.procurementId
+    state.draftProcurementState.title = action.payload.title
+   state.draftProcurementState.draftList = action.payload.draftList
+  },
+  populateAllCategory: (state, action ) => {
+   state.allCategory = action.payload
+  },
+  populateAllProjects: (state, action ) => {
+    state.allProjects = action.payload
+   },
+   populateAllVendors: (state, action ) => {
+    state.allVendors = action.payload
+   },
+   populateAllDepartments: (state, action) => {
+    state.allDepartments = action.payload
+   }
+
+
+}
+    
+});
+
+// Action creators are generated for each case reducer function
+export const {
+  setDraftStateAction,
+  populateAllCategory,
+  populateAllProjects,
+  populateAllVendors,
+  populateAllDepartments
+} = procurementSlice.actions;
+
+export default procurementSlice.reducer;

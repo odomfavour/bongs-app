@@ -22,7 +22,7 @@ import Swal from 'sweetalert2';
 import Modal from '../dashboard/Modal';
 import ReleaseItemView from './ReleaseItemView';
 import RequisitionTable from '../AppComp/RequisitionTable';
-// import ReleaseTable from '../AppComp/ReleaseTable';
+import ReleaseTable from '../AppComp/ReleaseTable';
 
 interface Requisition {
   id: number;
@@ -39,7 +39,7 @@ interface RequestedBy {
 interface RequisitionList {
   id: number;
   indent_number: string;
-  requisition_type: string;
+  material_type: string;
   created_at: string;
   batch_code: string;
   hod_status: string;
@@ -59,7 +59,7 @@ interface ReleaseListTableProps {
   setRequisitionItem: (item: RequisitionList) => void;
 }
 
-const RequisitionListTable: React.FC<ReleaseListTableProps> = ({
+const ReleaseListTable: React.FC<ReleaseListTableProps> = ({
   data,
   fetchData,
   setOpenModal,
@@ -252,10 +252,9 @@ const RequisitionListTable: React.FC<ReleaseListTableProps> = ({
 
   const pathname = usePathname();
   const itemList = currentItems?.map((item, index) => {
-    console.log('rhrhf', item.requisition_type);
     const {
       batch_code,
-      requisition_type,
+      material_type,
       created_at,
       requisition,
       requested_by,
@@ -265,7 +264,7 @@ const RequisitionListTable: React.FC<ReleaseListTableProps> = ({
       ...item,
       'S/N': `${index + 1}`,
       indent: batch_code,
-      inventory: `${requisition_type}`,
+      inventory: `${material_type}`,
       requestedBy: `${requested_by?.first_name} ${requested_by?.last_name}`,
       date: `${formatDate(created_at)}`,
       status,
@@ -275,7 +274,7 @@ const RequisitionListTable: React.FC<ReleaseListTableProps> = ({
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
-        <RequisitionTable
+        <ReleaseTable
           releaseItem={releaseItem}
           user={user}
           printItem={printItem}
@@ -306,10 +305,6 @@ const RequisitionListTable: React.FC<ReleaseListTableProps> = ({
             {
               Header: 'Date/Time',
               accessor: 'date',
-            },
-            {
-              Header: 'Status',
-              accessor: 'status',
             },
           ]}
           MOCK_DATA={itemList}
@@ -508,4 +503,4 @@ const RequisitionListTable: React.FC<ReleaseListTableProps> = ({
   );
 };
 
-export default RequisitionListTable;
+export default ReleaseListTable;

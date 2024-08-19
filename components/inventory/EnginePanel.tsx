@@ -34,6 +34,8 @@ interface EnginePanelProps {
   requisition: boolean;
   openModal: boolean;
   toggleRequisition: () => void;
+  bulkDelete: boolean;
+  toggleBulkDelete: () => void;
   handleClose: () => void;
   setOpenModal: (isOpen: boolean) => void;
 }
@@ -45,7 +47,9 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
   handleClose,
   fetchLoading,
   requisition,
+  bulkDelete,
   toggleRequisition,
+  toggleBulkDelete,
   setOpenModal,
 }) => {
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
@@ -143,6 +147,8 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
           requisition={requisition}
           setOpenModal={setOpenModal}
           toggleRequisition={toggleRequisition}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
         />
       )}
       <Modal

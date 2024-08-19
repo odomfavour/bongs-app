@@ -31,6 +31,8 @@ interface DeckPanelProps {
   requisition: boolean;
   openModal: boolean;
   toggleRequisition: () => void;
+  bulkDelete: boolean;
+  toggleBulkDelete: () => void;
   handleClose: () => void;
   setOpenModal: (isOpen: boolean) => void;
 }
@@ -40,6 +42,8 @@ const DeckPanel: React.FC<DeckPanelProps> = ({
   user,
   requisition,
   toggleRequisition,
+  bulkDelete,
+  toggleBulkDelete,
   openModal,
   setOpenModal,
   handleClose,
@@ -125,6 +129,8 @@ const DeckPanel: React.FC<DeckPanelProps> = ({
         requisition={requisition}
         setOpenModal={setOpenModal}
         toggleRequisition={toggleRequisition}
+        bulkDelete={bulkDelete}
+        toggleBulkDelete={toggleBulkDelete}
       />
       <Modal
         title={

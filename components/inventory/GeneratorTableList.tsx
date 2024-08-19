@@ -91,8 +91,10 @@ interface GeneratorListTableProps {
   fetchdata: () => void;
   parent: string;
   requisition: boolean;
+  bulkDelete: boolean;
   setOpenModal: (isOpen: boolean) => void;
   toggleRequisition: () => void;
+  toggleBulkDelete: () => void;
 }
 
 const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
@@ -100,8 +102,10 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
   fetchdata,
   parent,
   requisition,
+  bulkDelete,
   setOpenModal,
   toggleRequisition,
+  toggleBulkDelete,
 }) => {
   const dispatch = useDispatch();
   const pathname = usePathname();
@@ -267,6 +271,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
       console.log('Requisition Response:', response);
       setSelectedItems([]);
       toggleRequisition();
+      toggleBulkDelete();
       fetchdata();
       handleDisplayClose();
       toast.success(response.data.message);
@@ -451,17 +456,19 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
                 Review Selected Items
               </button>
             )}
-            <button
-              className={`p-2 rounded-md ${
-                selectedItems.length === 0
-                  ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                  : 'bg-red-700 text-white'
-              }`}
-              onClick={() => handleDelete(selectedItems)}
-              disabled={selectedItems.length === 0}
-            >
-              Delete Selected
-            </button>
+            {bulkDelete && (
+              <button
+                className={`p-2 rounded-md ${
+                  selectedItems.length === 0
+                    ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                    : 'bg-red-700 text-white'
+                }`}
+                onClick={() => handleDelete(selectedItems)}
+                disabled={selectedItems.length === 0}
+              >
+                Delete Selected
+              </button>
+            )}
           </div>
         </section>
 
@@ -470,6 +477,8 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
           quantities={quantities}
           handleQuantityChange={handleQuantityChange}
           requisition={requisition}
+          bulkDelete={bulkDelete}
+          toggleBulkDelete={toggleBulkDelete}
           generatorData={data}
           setSelectedItems={setSelectedItems}
           fetchedData={currentItems}

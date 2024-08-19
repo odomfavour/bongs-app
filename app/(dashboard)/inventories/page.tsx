@@ -39,9 +39,13 @@ const Page = () => {
   );
 
   const [requisition, setRequisition] = useState(false);
+  const [bulkDelete, setBulkDelete] = useState(false);
   const toggleRequisition = () => {
     setRequisition(!requisition);
     console.log('req', requisition);
+  };
+  const toggleBulkDelete = () => {
+    setBulkDelete(!bulkDelete);
   };
   const [openModal, setOpenModal] = useState(false);
   const handleClose = () => {
@@ -228,6 +232,8 @@ const Page = () => {
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
           fetchLoading={loading}
           handleClose={handleClose}
           setOpenModal={setOpenModal}
@@ -240,6 +246,8 @@ const Page = () => {
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
           handleClose={handleClose}
           setOpenModal={setOpenModal}
         />
@@ -252,6 +260,8 @@ const Page = () => {
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
           handleClose={handleClose}
           setOpenModal={setOpenModal}
         />
@@ -265,6 +275,8 @@ const Page = () => {
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
         />
       )}
       {activeTab === 'consumables' && selectedOption === 'engine' && (
@@ -276,6 +288,8 @@ const Page = () => {
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
         />
       )}
       {activeTab === 'consumables' && selectedOption === 'deck' && (
@@ -287,6 +301,8 @@ const Page = () => {
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
         />
       )}
       {activeTab === 'consumables' && selectedOption === 'galley' && (
@@ -298,6 +314,8 @@ const Page = () => {
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
         />
       )}
       {activeTab === 'consumables' && selectedOption === 'hospital' && (
@@ -309,6 +327,8 @@ const Page = () => {
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
         />
       )}
       {activeTab === 'consumables' && selectedOption === 'safety' && (
@@ -320,6 +340,8 @@ const Page = () => {
           user={user}
           requisition={requisition}
           toggleRequisition={toggleRequisition}
+          toggleBulkDelete={toggleBulkDelete}
+          bulkDelete={bulkDelete}
         />
       )}
     </div>

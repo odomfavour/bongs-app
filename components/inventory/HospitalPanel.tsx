@@ -21,6 +21,8 @@ interface HospitalPanelProps {
   toggleRequisition: () => void;
   handleClose: () => void;
   setOpenModal: (isOpen: boolean) => void;
+  bulkDelete: boolean;
+  toggleBulkDelete: () => void;
 }
 
 const HospitalPanel: React.FC<HospitalPanelProps> = ({
@@ -31,6 +33,8 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
   openModal,
   handleClose,
   setOpenModal,
+  bulkDelete,
+  toggleBulkDelete,
 }) => {
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
@@ -113,6 +117,8 @@ const HospitalPanel: React.FC<HospitalPanelProps> = ({
         requisition={requisition}
         setOpenModal={setOpenModal}
         toggleRequisition={toggleRequisition}
+        bulkDelete={bulkDelete}
+        toggleBulkDelete={toggleBulkDelete}
       />
       <Modal
         title={

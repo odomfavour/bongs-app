@@ -2,7 +2,7 @@
 import Modal from '@/components/dashboard/Modal';
 import ApproveRequisition from '@/components/requisitions/ApproveRequisition';
 import DeclineRequisition from '@/components/requisitions/DeclineRequisition';
-import RequisitionListTable from '@/components/requisitions/RequisitionListTable';
+import RequisitionListTable from '@/components/requisitions/ReleaseListTable';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import Link from 'next/link';
@@ -117,7 +117,7 @@ const Page = () => {
       <div>
         <div className="mb-3 flex justify-end">
           <Link
-            href="/requisitions"
+            href="/material-releases"
             className="border border-blue-500 rounded-md py-2 px-4 text-blue-500"
           >
             Back

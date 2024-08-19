@@ -1,11 +1,10 @@
 'use client';
 import Modal from '@/components/dashboard/Modal';
-import AddRequisitions from '@/components/requisitions/AddRequisitions';
 import ApproveRequisition from '@/components/requisitions/ApproveRequisition';
 import DeclineRequisition from '@/components/requisitions/DeclineRequisition';
 import ReleaseItem from '@/components/requisitions/ReleaseItem';
-import RequisitionListTable from '@/components/requisitions/RequisitionListTable';
-import RequisitionViewListTable from '@/components/requisitions/RequisitionViewTable';
+import ReleaseListTable from '@/components/requisitions/ReleaseListTable';
+import RequisitionListTable from '@/components/requisitions/ReleaseListTable';
 import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import Link from 'next/link';
@@ -30,7 +29,7 @@ interface RequestedBy {
 interface RequisitionItem {
   id: number;
   indent_number: string;
-  requisition_type: string;
+  material_type: string;
   created_at: string;
   batch_code: string;
   hod_status: string;
@@ -50,14 +49,11 @@ const Page = () => {
   const fetchData = useCallback(async () => {
     dispatch(toggleLoading(true));
     try {
-      const response = await axios.get(
-        `${process.env.BASEURL}/procurement-requisition`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${process.env.BASEURL}/requisitions`, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
       console.log('resp', response);
 
       setRequisitions(response?.data?.data?.data);
@@ -88,35 +84,42 @@ const Page = () => {
   const handleClose = () => {
     setOpenModal(false);
   };
+  const [openDeclineModal, setOpenDeclineModal] = useState(false);
+
+  const handleDeclineClose = () => {
+    setOpenDeclineModal(false);
+  };
+  const [openReleaseModal, setOpenReleaseModal] = useState(false);
+
+  const handleReleaseClose = () => {
+    setOpenReleaseModal(false);
+  };
 
   const [requisitionItem, setRequisitionItem] = useState<any>({});
 
   return (
     <div>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
-        <p className="text-[32px] font-medium">Material Requisition</p>
+        <p className="text-[32px] font-medium">Material Release</p>
       </div>
       <div>
         <div className="mb-5 flex justify-end">
-          <button
+          <Link
+            href="/requisition-history"
             className="bg-blue-500 text-white p-2 rounded-md"
-            onClick={() => setOpenModal(true)}
           >
-            New Requisition
-          </button>
+            View Release History
+          </Link>
         </div>
-        <RequisitionListTable
+        <ReleaseListTable
           data={requisitions}
           fetchData={fetchData}
           setOpenModal={setOpenModal}
-          setOpenDeclineModal={() => {}}
+          setOpenDeclineModal={setOpenDeclineModal}
           setRequisitionItem={setRequisitionItem}
-          setOpenReleaseModal={() => {}}
+          setOpenReleaseModal={setOpenReleaseModal}
         />
       </div>
-      <Modal title="" isOpen={openModal} onClose={handleClose} maxWidth="60%">
-        <AddRequisitions handleClose={handleClose} fetchData={fetchData} />
-      </Modal>
     </div>
   );
 };

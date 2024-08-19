@@ -102,7 +102,7 @@ const Page = () => {
   return (
     <div>
       <div className=" mb-5 pb-10 border-b">
-        <Link href="/requisitions">Back</Link>
+        <Link href="/material-release">Back</Link>
         <p className="text-[32px] font-medium mt-3">Material Release</p>
         {/* <div className="flex items-center gap-2 w-2/5">
           <div className="w-4/5">
@@ -125,8 +125,8 @@ const Page = () => {
       </div>
       <div>
         <RequisitionViewListTable
-          reqId=""
           data={materials || []}
+          reqId={id as string}
           fetchData={() => {}}
           setOpenModal={setOpenModal}
           setOpenDeclineModal={setOpenDeclineModal}

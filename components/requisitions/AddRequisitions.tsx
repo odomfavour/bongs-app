@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation';
 import React, { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import Modal from '../dashboard/Modal';
+import ReqViewForm from './ReqViewForm';
 
 interface AddRequisitionsModalProps {
   handleClose: () => void;
@@ -25,154 +27,40 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
   // const inventoryType = useSelector((state: any) => state.modal.inventoryType);
   const pathname = usePathname();
   const [formData, setFormData] = useState({
-    project_id: null as number | null,
-    deck_id: 0,
-    keystore_id: 0,
     uom_id: 0,
-    location_id: 0,
-    vendor_id: 0,
-    safety_category_id: null,
-    barge_equipment_id: 0,
     stock_quantity: 0 as number | string,
-    threshold: 0 as number | string,
     critical_level: '',
     part_number: '',
     model_number: '',
     description: '',
-    date_acquired: '',
-    waranty_period: '',
-    subscriber_id: user?.subscriber_id || ('' as string | number),
-    status: false,
-    sparepart_engine_category_id: null,
-    sparepart_deck_category_id: null,
-    sparepart_hospital_category_id: null,
     type: 'sparepart',
     remark: '',
     barge_category: '',
+    barge_asset: '',
+    barge_asset_id: '',
     attachements: [] as File[],
   });
 
   useEffect(() => {
     if (Object.keys(bargeValues).length > 0) {
       setFormData({
-        project_id: bargeValues.project_id,
-        subscriber_id: bargeValues.subscriber_id,
-        deck_id: bargeValues.deck_id,
         type: bargeValues.type,
-        keystore_id: bargeValues.keystore_id,
         uom_id: bargeValues.uom_id,
-        location_id: bargeValues.location_id,
-        vendor_id: bargeValues.vendor_id,
-        safety_category_id: bargeValues.safety_category_id,
-        barge_equipment_id: bargeValues.barge_equipment_id,
         stock_quantity: bargeValues.stock_quantity,
-        threshold: bargeValues.threshold,
         critical_level: bargeValues.critical_level,
         part_number: bargeValues.part_number,
         model_number: bargeValues.model_number,
         description: bargeValues.description,
-        date_acquired: bargeValues.date_acquired,
-        waranty_period: bargeValues.waranty_period,
         remark: bargeValues.remark,
-        status: bargeValues.status === 'active',
-        sparepart_engine_category_id: bargeValues.sparepart_engine_category_id,
-        sparepart_deck_category_id: bargeValues.sparepart_deck_category_id,
-        sparepart_hospital_category_id:
-          bargeValues.sparepart_hospital_category_id,
         barge_category: bargeValues.barge_category,
+        barge_asset: '',
+        barge_asset_id: '',
         attachements: bargeValues.attachements,
       });
     }
   }, [bargeValues]);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Add your form submission logic here
-    try {
-      setLoading(true);
-      const url =
-        Object.keys(bargeValues).length > 0
-          ? `${process.env.BASEURL}/sparepart/${
-              inventoryType === 'Engine'
-                ? 'engine'
-                : inventoryType === 'Deck'
-                ? 'deck'
-                : inventoryType === 'Safety'
-                ? 'safety'
-                : 'hospital'
-            }/update/${bargeValues.id}`
-          : `${process.env.BASEURL}/sparepart/${
-              inventoryType === 'Engine'
-                ? 'engine'
-                : inventoryType === 'Deck'
-                ? 'deck'
-                : inventoryType === 'Safety'
-                ? 'safety'
-                : 'hospital'
-            }/add`;
-      const method = Object.keys(bargeValues).length > 0 ? 'PATCH' : 'POST';
-
-      const response = await axios({
-        method,
-        url,
-        data: {
-          ...formData,
-          status: formData.status ? 'active' : 'inactive',
-        },
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-      console.log('Response:', response);
-
-      toast.success(`${response?.data?.message}`);
-
-      setFormData({
-        project_id: null as number | null,
-        deck_id: 0,
-        keystore_id: 0,
-        uom_id: 0,
-        location_id: 0,
-        vendor_id: 0,
-        safety_category_id: null,
-        barge_equipment_id: 0,
-        type: 'sparepart',
-        stock_quantity: 0 as number | string,
-        threshold: 0 as number | string,
-        critical_level: '',
-        part_number: '',
-        model_number: '',
-        description: '',
-        date_acquired: '',
-        waranty_period: '',
-        remark: '',
-        subscriber_id: user?.subscriber_id as string | number,
-        status: false,
-        sparepart_engine_category_id: null,
-        sparepart_deck_category_id: null,
-        sparepart_hospital_category_id: null,
-        barge_category: '',
-        attachements: [] as File[],
-      });
-      // dispatch(toggleAddEngineModal(''));
-      fetchData();
-      handleClose();
-      // Handle success (e.g., close modal, show success message)
-    } catch (error: any) {
-      console.error('Error:', error);
-
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.response?.data?.errors ||
-        error?.message ||
-        'Unknown error';
-      toast.error(`${errorMessage}`);
-      // Handle error (e.g., show error message)
-    } finally {
-      setLoading(false);
-    }
-  };
   const [engineTypes, setEngineTypes] = useState([]);
   const [decks, setDecks] = useState([]);
   const [storeItems, setStoreItems] = useState([]);
@@ -280,6 +168,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
             endpoint = 'sparepart-hospital-category';
             break;
           default:
+            endpoint = 'sparepart-engine-category';
             break;
         }
       } else if (type === 'consumable') {
@@ -321,21 +210,64 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
 
   const [previews, setPreviews] = useState<any>([]);
 
-  const handleFileChange = (e: any) => {
-    const files: File[] = Array.from(e.target.files);
-    setFormData({ ...formData, attachements: files });
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files: File[] = Array.from(e.target.files);
 
-    const filePreviews = files.map((file: any) => URL.createObjectURL(file));
-    setPreviews((prev: any) => [...prev, ...filePreviews]);
+      // Update attachments in formData
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        attachements: [...prevFormData.attachements, ...files],
+      }));
+
+      // Generate preview URLs for each file and update previews state
+      const newPreviews = files.map((file) => URL.createObjectURL(file));
+      setPreviews((prevPreviews: any) => [...prevPreviews, ...newPreviews]);
+    }
   };
 
   const handleRemovePreview = (index: number) => {
+    // Remove the preview and corresponding file
     setPreviews((prev: any) => prev.filter((_: any, i: number) => i !== index));
+    setFormData({
+      ...formData,
+      attachements: formData.attachements.filter((_, i) => i !== index),
+    });
+  };
+  // Function to get a preview URL for a file
+  const getPreviewUrl = (file: File) => {
+    return URL.createObjectURL(file);
+  };
+  const [tableData, setTableData] = useState<any[]>([]);
+
+  const addItem = () => {
+    console.log('item', formData);
+    setTableData((prevData) => [...prevData, formData]); // Push current formData to tableData state
+    setFormData({
+      uom_id: 0,
+      stock_quantity: 0 as number | string,
+      critical_level: '',
+      part_number: '',
+      model_number: '',
+      description: '',
+      type: 'sparepart',
+      remark: '',
+      barge_category: '',
+      barge_asset: '',
+      barge_asset_id: '',
+      attachements: [] as File[],
+    });
+    setPreviews([]);
+  };
+
+  const [openReqModal, setOpenReqModal] = useState(false);
+  const handleReqClose = () => {
+    setOpenReqModal(false);
   };
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <section>
         <div className="grid grid-cols-2 gap-5 mb-2">
           <div className="grid grid-cols-2 gap-5">
             <div className="flex items-center pl-4 border border-gray-200 rounded dark:border-gray-700 cursor-pointer">
@@ -378,7 +310,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
         </div>
         <div className="grid grid-cols-3 gap-5">
           <div>
-            {!user?.subscriber_id && (
+            {/* {!user?.subscriber_id && (
               <div className="mb-4">
                 <label
                   htmlFor="subscriber"
@@ -406,7 +338,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                   ))}
                 </select>
               </div>
-            )}
+            )} */}
 
             <div className="mb-4">
               <label
@@ -500,43 +432,16 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                 id="sparepart_type"
                 name="sparepart_type"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                value={
-                  formData.barge_category === 'engine'
-                    ? formData.sparepart_engine_category_id || ''
-                    : inventoryType === 'Deck'
-                    ? formData.sparepart_deck_category_id || ''
-                    : inventoryType === 'Safety'
-                    ? formData.safety_category_id || ''
-                    : formData.sparepart_hospital_category_id || ''
-                }
+                value={formData.barge_asset_id}
                 onChange={(e) => {
-                  const value = parseInt(e.target.value, 10) || '';
-                  const key =
-                    inventoryType === 'Engine'
-                      ? 'sparepart_engine_category_id'
-                      : inventoryType === 'Deck'
-                      ? 'sparepart_deck_category_id'
-                      : inventoryType === 'Safety'
-                      ? 'safety_category_id'
-                      : 'sparepart_hospital_category_id';
-
                   setFormData({
                     ...formData,
-                    [key]: value,
+                    barge_asset_id: e.target.value,
+                    barge_asset: e.target.selectedOptions[0].text,
                   });
                 }}
               >
-                <option value="">
-                  Select{' '}
-                  {inventoryType === 'Engine'
-                    ? 'Engine'
-                    : inventoryType === 'Deck'
-                    ? 'Deck'
-                    : inventoryType === 'Safety'
-                    ? 'Safety'
-                    : 'Hospital'}{' '}
-                  Category
-                </option>
+                <option value="">Select Category</option>
                 {bargeAssets?.map((engineType: any) => (
                   <option value={engineType.id} key={engineType.id}>
                     {engineType.name
@@ -719,23 +624,20 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
 
         <div className="flex justify-end">
           <button
-            type="submit"
+            type="button"
             className={`bg-blue-600 text-white p-3 rounded-lg ${
               loading ? 'opacity-50 cursor-not-allowed' : ''
             }`}
             disabled={loading}
+            onClick={addItem}
           >
-            {loading
-              ? 'Submitting...'
-              : Object.keys(bargeValues).length > 0
-              ? `Update ${inventoryType}`
-              : `Add`}
+            Add
           </button>
         </div>
-      </form>
+      </section>
 
       <div className="mt-3">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto mt-6">
           <table className="min-w-full bg-white border border-gray-200">
             <thead>
               <tr className="bg-gray-100">
@@ -757,49 +659,132 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="p-2border-b text-sm text-gray-700">1</td>
-                <td className="p-2 border-b text-sm text-gray-700">12</td>
-                <td className="p-2 border-b text-sm text-gray-700">testing</td>
-                <td className="px-2 border-b text-sm text-gray-700"></td>
-                <td className="p-2 border-b text-sm text-gray-700">
-                  <div className="flex gap-2">
-                    <button
-                      className="bg-blue-500 hover:bg-blue-600 text-white font-bold p-2 rounded"
-                      type="button"
-                    >
-                      Attach File
-                    </button>
-                    <button
-                      className="bg-red-500 hover:bg-red-600 text-white font-bold p-2 rounded mr-2"
-                      type="button"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </td>
-              </tr>
+              {tableData.length > 0 &&
+                tableData.map((item, index) => (
+                  <tr key={index}>
+                    <td className="px-6 py-3 border-b text-sm text-gray-700">
+                      {index + 1}
+                    </td>
+                    <td className="px-6 py-3 border-b text-sm text-gray-700">
+                      {item.stock_quantity}
+                    </td>
+                    <td className="px-6 py-3 border-b text-sm text-gray-700">
+                      {item.description}
+                    </td>
+                    <td className="px-6 py-3 border-b text-sm text-gray-700">
+                      {/* Render attachments if any */}
+                      {item.attachements.length > 0 ? (
+                        <div className="flex gap-2">
+                          {item?.attachements.map(
+                            (file: any, fileIndex: number) => (
+                              <div
+                                key={fileIndex}
+                                className="relative h-[30px] w-[30px]"
+                              >
+                                {file.type.startsWith('image/') ? (
+                                  <Image
+                                    src={getPreviewUrl(file)}
+                                    alt={`Attachment ${index + 1}`}
+                                    layout="fill"
+                                    objectFit="cover"
+                                    className="rounded"
+                                  />
+                                ) : (
+                                  <div className="w-16 h-16 flex items-center justify-center bg-gray-200 border border-gray-300 rounded">
+                                    <span className="text-xs text-gray-600">
+                                      File
+                                    </span>
+                                  </div>
+                                )}
+                                <button
+                                  type="button"
+                                  className="absolute top-1 right-1 text-red-500 hover:text-red-700"
+                                  onClick={() => {
+                                    const newAttachments =
+                                      item.attachments.filter(
+                                        (_: any, i: number) => i !== fileIndex
+                                      );
+                                    setTableData(
+                                      tableData.map((data, idx) =>
+                                        idx === index
+                                          ? {
+                                              ...data,
+                                              attachments: newAttachments,
+                                            }
+                                          : data
+                                      )
+                                    );
+                                  }}
+                                >
+                                  &times;
+                                </button>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      ) : (
+                        'No attachments'
+                      )}
+                    </td>
+                    <td className="px-6 py-3 border-b text-sm text-gray-700">
+                      <div className="flex gap-2">
+                        <button
+                          className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-2 py-1 rounded"
+                          type="button"
+                        >
+                          Attach File
+                        </button>
+                        <button
+                          className="bg-red-500 hover:bg-red-600 text-white font-bold px-2 py-1 rounded"
+                          type="button"
+                          onClick={() => {
+                            setTableData(
+                              tableData.filter((_, i) => i !== index)
+                            );
+                          }}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              {tableData.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="px-6 py-3 text-center text-gray-500"
+                  >
+                    No data available. Please add items to the table.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
         <div className="mt-2">
           <div className="flex justify-end">
             <button
-              type="submit"
+              type="button"
               className={`bg-blue-600 text-white p-3 rounded-lg ${
                 loading ? 'opacity-50 cursor-not-allowed' : ''
               }`}
               disabled={loading}
+              onClick={() => setOpenReqModal(true)}
             >
-              {loading
-                ? 'Submitting...'
-                : Object.keys(bargeValues).length > 0
-                ? `Update ${inventoryType}`
-                : `Request`}
+              Request
             </button>
           </div>
         </div>
       </div>
+      <Modal
+        title=""
+        isOpen={openReqModal}
+        onClose={handleReqClose}
+        maxWidth="60%"
+      >
+        <ReqViewForm tableData={tableData} handleClose={handleReqClose} />
+      </Modal>
     </div>
   );
 };

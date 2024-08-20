@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { subscribe } from 'diagnostics_channel';
 import Image from 'next/image';
 import React, { FormEvent, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -33,22 +34,26 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({ tableData }) => {
     e.preventDefault();
     // Add your form submission logic here
 
-    const formDataToSend = new FormData();
-    // Append title and user data
-    formDataToSend.append('requisition_title', title);
-    formDataToSend.append('subscriber_id', user?.subscriber_id || '');
-    formDataToSend.append('department_id', user?.department_id || 1);
+    // const formDataToSend = new FormData();
+    // // Append title and user data
+    // formDataToSend.append('requisition_title', title);
+    // formDataToSend.append('subscriber_id', user?.subscriber_id || '');
+    // formDataToSend.append('department_id', user?.department_id || 1);
 
-    // Append requisition data as a JSON string
-    formDataToSend.append('requisition', JSON.stringify(tableData));
+    // // Append requisition data as a JSON string
+    // formDataToSend.append('requisition', [...tableData]);
     try {
       const response = await axios.post(
         `${process.env.BASEURL}/procurement-requisition`,
-        formDataToSend,
+        {
+          requisition: tableData,
+          subscriber_id: user?.subscriber_id,
+          department_id: 1,
+          requisition_title: title,
+        },
         {
           headers: {
             Authorization: `Bearer ${user?.token}`,
-            'Content-Type': 'multipart/form-data',
           },
         }
       );

@@ -39,6 +39,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
     barge_asset: '',
     barge_asset_id: '',
     attachements: [] as File[],
+    inventoryable_id: 1,
   });
 
   useEffect(() => {
@@ -56,6 +57,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
         barge_asset: '',
         barge_asset_id: '',
         attachements: bargeValues.attachements,
+        inventoryable_id: bargeValues.inventoryable_id,
       });
     }
   }, [bargeValues]);
@@ -256,6 +258,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
       barge_asset: '',
       barge_asset_id: '',
       attachements: [] as File[],
+      inventoryable_id: 1,
     });
     setPreviews([]);
   };

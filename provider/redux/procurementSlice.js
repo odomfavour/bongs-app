@@ -1,13 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 
+
 const initialState = {
   draftProcurementState: {
-    procurementType: "",
     subscriber: "",
     subscriberId:"",
     procurementId:"",
     title: "",
+    id: null,
     draftList:{
         stock_quantity: null,
   description: "",
@@ -25,11 +26,10 @@ export const procurementSlice = createSlice({
   initialState,
   reducers: {
   setDraftStateAction: (state, action) => {
-       console.log("action passed", action)
-       state.draftProcurementState.procurementType = "draft"
+      console.log("action sent", action.payload)
        state.draftProcurementState.subscriber = action.payload.subscriber
        state.draftProcurementState.subscriberId = action.payload.subscriberId
-       state.procurementId = action.payload.procurementId
+       state.draftProcurementState.id = action.payload.id
     state.draftProcurementState.title = action.payload.title
    state.draftProcurementState.draftList = action.payload.draftList
   },

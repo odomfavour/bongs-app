@@ -106,7 +106,7 @@ const Page = () => {
           </button>
         </div>
         <RequisitionListTable
-          data={requisitions}
+          data={requisitions || []}
           fetchData={fetchData}
           setOpenModal={setOpenModal}
           setOpenDeclineModal={() => {}}

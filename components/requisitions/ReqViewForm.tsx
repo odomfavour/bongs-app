@@ -28,12 +28,14 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({ tableData }) => {
   const [title, setTitle] = useState('');
   const user = useSelector((state: any) => state.user.user);
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    console.log('data', tableData);
+
     e.preventDefault();
     // Add your form submission logic here
 
     const formDataToSend = new FormData();
     // Append title and user data
-    formDataToSend.append('title', title);
+    formDataToSend.append('requisition_title', title);
     formDataToSend.append('subscriber_id', user?.subscriber_id || '');
     formDataToSend.append('department_id', user?.department_id || 1);
 
@@ -101,7 +103,7 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({ tableData }) => {
             type="text"
             id="title"
             name="model_number"
-            placeholder="Input model number"
+            placeholder="Input title"
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
             value={title}
             onChange={(e) => setTitle(e.target.value)}

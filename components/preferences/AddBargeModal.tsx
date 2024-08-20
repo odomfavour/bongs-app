@@ -7,7 +7,6 @@ import { FaPlus, FaMinus } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-
 interface Subscriber {
   id: number;
   name: string;
@@ -39,6 +38,7 @@ const AddBargeModal: React.FC<AddBargeModalProps> = ({
     deck_level: 0,
     status: false,
     remark: '',
+    barge_location: '',
   };
 
   const [formData, setFormData] = useState(initialState);
@@ -53,6 +53,7 @@ const AddBargeModal: React.FC<AddBargeModalProps> = ({
         deck_level: bargeValues.deck_level,
         status: bargeValues.status,
         remark: bargeValues.remark,
+        barge_location: bargeValues.barge_location,
       });
     }
   }, [bargeValues]);
@@ -172,6 +173,21 @@ const AddBargeModal: React.FC<AddBargeModalProps> = ({
                 value={formData.name}
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
+                }
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="name" className="block mb-2 text-sm font-medium">
+                Barge Location
+              </label>
+              <input
+                type="text"
+                id="barge_location"
+                placeholder="Input barge location"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.barge_location}
+                onChange={(e) =>
+                  setFormData({ ...formData, barge_location: e.target.value })
                 }
               />
             </div>

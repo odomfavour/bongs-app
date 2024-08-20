@@ -384,7 +384,7 @@ function GeneratorTable({
           {page.length == 0 ? (
             <tr className="text-center text-primary bg-white">
               <td className="py-2 text-center" colSpan={14}>
-                <div className="flex justify-center items-center  my-6">
+                <div className="flex justify-center items-center  my-8">
                   <div>
                     <div className="flex justify-center items-center">
                       <FaRegFolderClosed className="text-4xl" />

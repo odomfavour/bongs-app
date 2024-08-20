@@ -86,6 +86,8 @@ interface SparePart {
   user: User;
 }
 
+
+
 interface GeneratorListTableProps {
   data: SparePart[];
   fetchdata: () => void;
@@ -268,7 +270,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
         }
       );
 
-      console.log('Requisition Response:', response);
+    
       setSelectedItems([]);
       toggleRequisition();
       toggleBulkDelete();

@@ -3,11 +3,10 @@ import {
 } from "@/utils/data";
 import Image from "next/image";
 import React, { useCallback, useEffect, useState } from "react";
-import Flag from "react-world-flags";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaPlus } from "react-icons/fa";
-import { FaRegFolderClosed } from "react-icons/fa6";
+import {  FaRegFolderClosed } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAllDepartmentDataApi,
@@ -23,11 +22,14 @@ import {
   populateAllProjects,
   populateAllVendors,
 } from "@/provider/redux/procurementSlice";
+import { toggleLoading } from "@/provider/redux/modalSlice";
 
 function ProcurementAddRequestModal() {
   /* 
 "OEM Specific"|"3rd Party Vendors"| "Internal Procurement"
 */
+
+
 
   const { title, draftList, procurementType, subscriber, subscriberId, procurementId, id } = useSelector(
     (state: any) => state.procurement.draftProcurementState
@@ -58,6 +60,7 @@ function ProcurementAddRequestModal() {
   const [allCategory, setAllCategory] = useState<
     | {
         categoryName: string;
+        categoryId: number
       }[]
     | []
   >(allCateryFromRedux);
@@ -75,13 +78,13 @@ function ProcurementAddRequestModal() {
 
   const [selectedClient, setSelectedClient] = useState("");
 
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   const [selectedDepartment, setSelectedDepartment] = useState("");
 
   const [startDate, setStartDate] = useState(new Date());
 
-  const [RFQType, setRFQType] = useState("OEM Specific");
+  const [RFQType, setRFQType] = useState("");
 
   const [RFQHeading, setRFQHeading] = useState("");
 
@@ -99,7 +102,7 @@ function ProcurementAddRequestModal() {
       allDepartmentsFromRedux !== null
     )
       return;
-    setIsUIReady(false);
+      dispatch(toggleLoading(true))
     try {
       const [allProjectsData, vendorCategoryData, vendorsData, departmentData] =
         await Promise.all([
@@ -108,17 +111,8 @@ function ProcurementAddRequestModal() {
           fetchAllVendorDataApi(),
           fetchAllDepartmentDataApi(),
         ]);
-      setIsUIReady(true);
-      console.log(
-        "allProjectsData",
-        allProjectsData,
-        "vendorCategoryData",
-        vendorCategoryData,
-        "Vendor data",
-        vendorsData,
-        "all departmentData",
-        departmentData
-      );
+        dispatch(toggleLoading(false))
+    
       const projectList = allProjectsData.data.data.map((project: any) => {
         return {
           projectName: project.project_name,
@@ -138,11 +132,12 @@ function ProcurementAddRequestModal() {
 
       setAllVendors(vendorsList);
       dispatch(populateAllVendors(vendorsList));
-
+      
       const categoryList = vendorCategoryData.data.data.map(
-        (category: { name: string }) => {
+        (category: { name: string, id: number }) => {
           return {
             categoryName: category.name,
+            categoryId: category.id
           };
         }
       );
@@ -163,6 +158,7 @@ function ProcurementAddRequestModal() {
 
       // You can similarly setStoreItems if needed
     } catch (error: any) {
+      dispatch(toggleLoading(false))
       console.error("Error:", error);
 
       const errorMessage =
@@ -184,18 +180,76 @@ function ProcurementAddRequestModal() {
 
 const handleUpdateRfq = async () => {
     try {
+      
       const updateData = {
         id, 
         rfqUpdateData: {
-          procurement_type: procurementType,
+          procurement_type: RFQType,
           subcriber_id: subscriberId,
           procurement_id: procurementId,
           title,
-           
+          amount,
+          date:startDate,
+          client_project_department: "",
+          vendor_category_id:"",
+          vendors:[""]
+
+
         }
       }
-      await updateRFQDataApi(updateData)
-     } catch (error: any) {
+      if(!RFQType){
+        toast.error("procurement type is required")
+        return
+      }
+  if(RFQType === "OEM Specific"){
+    if( !selectedClient){
+      toast.error("Marhant is required")
+      return
+    }
+    if( !selectedVendor){
+      toast.error("Vendor is required")
+      return 
+    }
+    
+       updateData.rfqUpdateData.client_project_department = selectedClient
+       updateData.rfqUpdateData.vendors = [selectedVendor]
+       
+  }
+  if(RFQType === "3rd Party Vendors"){
+    if( !selectedProject){
+      toast.error("project is required")
+      return
+    }
+    if( !selectedCategory){
+      toast.error("category is required")
+      return
+    }
+    updateData.rfqUpdateData.client_project_department = selectedProject
+    updateData.rfqUpdateData.vendor_category_id = selectedCategory
+  }
+  if(RFQType === "Internal Procurement"){
+    if(!selectedCategory){
+      toast.error("vendor category is required")
+      return
+    }
+    if( !selectedDepartment){
+      toast.error("department is required")
+    }
+    updateData.rfqUpdateData.vendor_category_id = selectedCategory
+    updateData.rfqUpdateData.client_project_department = selectedDepartment
+  }
+
+    dispatch(toggleLoading(true))
+    console.log("data sent", updateData)
+
+    return 
+   const response =   await updateRFQDataApi(updateData)
+   
+      dispatch(toggleLoading(false))
+      toast.success("Procurement made successfully")
+    
+    } catch (error: any) {
+      dispatch(toggleLoading(false))
       console.error("Error:", error);
 
       const errorMessage =
@@ -204,8 +258,11 @@ const handleUpdateRfq = async () => {
         error?.message ||
         "Unknown error";
       toast.error(`${errorMessage}`);
+     
     } finally {
+      dispatch(toggleLoading(false))
     }
+
 }
 
   if (!isUIReady) {
@@ -229,7 +286,9 @@ const handleUpdateRfq = async () => {
             onChange={(e) => setRFQType(e.target.value)}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
           >
-          
+           <option className=" text-black text-sm font-normal font-['Inter']">
+                  Select procurement type
+                  </option>
             {RFQTypeDataArray.map((item, index) => {
               return (
                 <option
@@ -251,7 +310,7 @@ const handleUpdateRfq = async () => {
             <div>
               <div className="mt-2">
                 <p className="text-black text-lg font-normal font-['Inter']">
-                  Choose a Client
+                 Marchant/Customer
                 </p>
                 <select
                   name=""
@@ -260,7 +319,7 @@ const handleUpdateRfq = async () => {
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
                   <option className=" text-black text-sm font-normal font-['Inter']">
-                    --Select--
+                   Select marchant
                   </option>
                   <option
                         value={subscriber}
@@ -283,7 +342,7 @@ const handleUpdateRfq = async () => {
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
                   <option className=" text-black text-sm font-normal font-['Inter']">
-                    --Select--
+                    Select OEM
                   </option>
                   {allVendors?.map((item, index) => {
                     return (
@@ -314,7 +373,7 @@ const handleUpdateRfq = async () => {
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
                   <option className=" text-black text-sm font-normal font-['Inter']">
-                    --Select--
+                   Select project
                   </option>
                   {allProject.map((item, index) => {
                     return (
@@ -341,12 +400,12 @@ const handleUpdateRfq = async () => {
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
                   <option className=" text-black text-sm font-normal font-['Inter']">
-                    --Select--
+                  Select vendor category
                   </option>
                   {allCategory.map((item, index) => {
                     return (
                       <option
-                        value={item.categoryName}
+                        value={item.categoryId}
                         key={index}
                         className=" text-black text-sm font-normal font-['Inter']"
                       >
@@ -372,7 +431,7 @@ const handleUpdateRfq = async () => {
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
                   <option className=" text-black text-sm font-normal font-['Inter']">
-                    --Select--
+                   Select department
                   </option>
                   {allDepartment.map((item, index) => {
                     return (
@@ -399,12 +458,12 @@ const handleUpdateRfq = async () => {
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
                   <option className=" text-black text-sm font-normal font-['Inter']">
-                    --Select--
+                  Select vendor category
                   </option>
                   {allCategory.map((item, index) => {
                     return (
                       <option
-                        value={item.categoryName}
+                        value={item.categoryId}
                         key={index}
                         className=" text-black text-sm font-normal font-['Inter']"
                       >
@@ -524,23 +583,35 @@ const handleUpdateRfq = async () => {
                     <td className="flex flex-row items-center justify-center space-x-2">
                       <button
                         disabled={procurementType == "draft" ? true : false}
-                        className={`rounded-xl px-2 bg-blue-600 text-white text-sm  ${
+                        className={` text-white text-sm  ${
                           procurementType == "draft"
                             ? "cursor-not-allowed"
                             : "cursor-pointer"
                         }`}
                       >
-                        Attach file
+                         <Image src={"/icons/upload.png"} 
+                     alt="upload"
+                     width={14}
+                     height={14}
+                   
+                     
+                     />
+                    
                       </button>
                       <button
                         disabled={procurementType == "draft" ? true : false}
-                        className={`rounded-xl px-2 bg-red-600 text-white text-sm  ${
+                        className={`  ${
                           procurementType == "draft"
                             ? "cursor-not-allowed"
                             : "cursor-pointer"
                         }`}
                       >
-                        Remove
+                       <Image src={"/icons/delete.png"} 
+                      alt="delete"
+                     width={14}
+                     height={14}
+                     
+                     />
                       </button>
                     </td>
                   </tr>
@@ -548,7 +619,9 @@ const handleUpdateRfq = async () => {
               </tbody>
             </table>
             <div className="flex flex-row justify-end mt-8">
-              <button className="rounded-xl bg-blue-900 text-white py-2 px-4">
+              <button
+              onClick={() => handleUpdateRfq()}
+              className="rounded-xl bg-blue-900 text-white py-2 px-4">
                 Submit
               </button>
             </div>

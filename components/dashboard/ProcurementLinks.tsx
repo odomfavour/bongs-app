@@ -4,40 +4,46 @@ import React from 'react';
 
 const links = [
   {
+    href: '/Overview',
+    labels: ['', '', ''],
+    label: 'Overview',
+    img: 'procurementOverview.png',
+  },
+  {
     href: '/RFQ',
     labels: ['', '', ''],
     label: 'RFQ',
-    img: 'preference_barge_setup_deck.png',
+    img: 'rfqIcon.png',
   },
   {
     href: '/BID',
     labels: [''],
     label: 'BID',
-    img: 'project.png',
+    img: 'bidIcon.png',
   },
   {
     href: '/Memo',
     label: 'MEMO',
     labels: [''],
-    img: 'Preferences_units.png',
+    img: 'memoIcon.png',
   },
   {
     href: '/Purchase',
     labels: [''],
     label: 'Purchase',
-    img: 'preference_safety_category.png',
+    img: 'purchaseOrderIcon.png',
   },
   {
     href: '/QA_QC',
     label: 'QA/QC',
     labels: [''],
-    img: 'Preferences_location.png',
+    img: 'QCIcon.png',
   },
   {
     href: '/GRN',
     label: 'GRN',
     labels: [''],
-    img: 'preference_Equipment_type.png',
+    img: 'GRNIcon.png',
   }
 ];
 

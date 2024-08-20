@@ -64,8 +64,11 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
   //   setOpenModal(false);
   // };
   const dispatch = useDispatch();
-  const fetchData = useCallback(async () => {
+
+  const fetchData = useCallback(async ( ) => {
     if (activeId === undefined) return;
+
+
     let endpoint = `${process.env.BASEURL}/sparepart/engine/${activeId}`;
     if (pathname === '/inventories') {
       console.log('inverntor');
@@ -78,7 +81,7 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
           Authorization: `Bearer ${user?.token}`,
         },
       });
-      console.log('resp', response);
+      console.log('resp 99', response);
       setSpareparts(response?.data?.data?.data);
     } catch (error: any) {
       console.error('Error:', error);
@@ -95,11 +98,12 @@ const EnginePanel: React.FC<EnginePanelProps> = ({
   }, [activeId, dispatch, pathname, user?.token]);
 
   useEffect(() => {
-    if (engineCategories && engineCategories.length > 0) {
+    if (engineCategories && engineCategories.length > 0)  {
       setActiveTab(engineCategories[0].name);
       setActiveId(engineCategories[0].id);
     }
   }, [engineCategories]);
+
   useEffect(() => {
     fetchData();
   }, [activeId, fetchData]);

@@ -131,8 +131,8 @@ const UserListTable: React.FC<UserListTableProps> = ({
       (permission: any) => permission.name === permissionName
     );
 
-
-    const itemList = currentItems.map((item, index) => {
+ console.log("user data", data)
+    const itemList = data.map((item, index) => {
       const userRoles = item.roles.map(role => role.name)
       return {
         ...item,

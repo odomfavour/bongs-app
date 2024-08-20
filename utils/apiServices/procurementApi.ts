@@ -108,4 +108,89 @@ const { token } = data && JSON.parse(data)
 
 
 
+export const fetchAllProjectDataApi = async() => {
+  const data = localStorage.getItem("bongsUser")
+  const { token } = data && JSON.parse(data)
+  
+    let url = `${baseUrl}/getProjects`
+  
+    const response = await axios.get(`${url}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+    
+      })
+    return response.data
+}
+
+export const fetchAllVendorCategoryDataApi = async() => {
+  const data = localStorage.getItem("bongsUser")
+  const { token } = data && JSON.parse(data)
+  
+    let url = `${baseUrl}/getVendorCategories`
+  
+    const response = await axios.get(`${url}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+    
+      })
+    return response.data
+}
+
+export const fetchAllVendorDataApi = async() => {
+  const data = localStorage.getItem("bongsUser")
+  const { token } = data && JSON.parse(data)
+  
+    let url = `${baseUrl}/getVendors`
+  
+    const response = await axios.get(`${url}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+    
+      })
+    return response.data
+}
+
+
+export const fetchAllDepartmentDataApi = async() => {
+  const data = localStorage.getItem("bongsUser")
+  const { token } = data && JSON.parse(data)
+  
+    let url = `${baseUrl}/getDepartments`
+  
+    const response = await axios.get(`${url}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+    
+      })
+    return response.data
+}
+
+
+
+
+
+export const updateRFQDataApi = async(uploadData: {
+  id: number,
+  rfqUpdateData: any
+}) => {
+  const data = localStorage.getItem("bongsUser")
+  const { token } = data && JSON.parse(data)
+  const {id, rfqUpdateData} = uploadData
+  
+    let url = `${baseUrl}/procurement/rfq/${id}`
+  
+    const response = await axios.put(`${url}`,rfqUpdateData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+    
+      })
+    return response.data
+}
+
+
 

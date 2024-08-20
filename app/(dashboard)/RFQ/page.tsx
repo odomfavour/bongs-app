@@ -1,58 +1,64 @@
 "use client";
 import BIDTable from "@/components/AppComp/BIDTable";
-import RFQTable from "@/components/AppComp/BIDTable";
+import RFQTable from "@/components/AppComp/RFQTable";
+import GRNTable from "@/components/AppComp/GRNTable";
+import MemoTable from "@/components/AppComp/MemoTable";
+import PurchaseOrderTable from "@/components/AppComp/PurchaseOrderTable";
+import QA_QCTable from "@/components/AppComp/QA_QCTable";
 import ProcurementCharts from "@/components/dashboard/charts/ProcurementCharts";
 import Modal from "@/components/dashboard/Modal";
 import ProcurementAddRequestModal from "@/components/procurement/ProcurementAddRequestModal";
-
-import ProcurementModal from "@/components/procurement/ProcurementModal";
 import { fetchAllBidDataApi, fetchAllMemoDataApi, fetchAllPurchaseOrderDataApi, fetchAllQualityAssuranceDataApi, fetchAllRfqDataApi, fetchProcurementChartDataApi } from "@/utils/apiServices/procurementApi";
 import { procurementMenuList } from "@/utils/data";
 import { currencyFormatter } from "@/utils/usefulFunc";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
-
 import { toast } from "react-toastify";
+import { draftListType, dratfProcurementType } from "@/utils/types";
+import { formatDate } from "@/utils/utils";
 
 function Page() {
-  const [openModal, setOpenModal] = useState(false);
+
+const [openModal, setOpenModal] = useState(false);
 
 const route = useRouter()
 
-  const [selectedMenu, setselectedMenu] = useState("RFQS")
+const [selectedMenu, setselectedMenu] = useState("RFQS")
+ 
+const [isUIReady, setIsUIReady] = useState(false)
 
-  
-  const [isUIReady, setIsUIReady] = useState(false)
-  const [rfqStatus, setRfqStatus] = useState<
+const [rfqStatus, setRfqStatus] = useState<
   {
     expired: number,
     sent: number,
     responded: number
-  }>(
+}>(
     {
       expired: 0,
       sent: 0,
       responded: 0
     }
-  )
-  const [totalBudget, setTotalsBudget] = useState< number>(0)
+)
 
+const [totalBudget, setTotalsBudget] = useState< number>(0)
 
-  const [allBidData, setAllBidData] = useState<any[]>([])
+const [allBidData, setAllBidData] = useState<any[]>([])
 
   const [allMemoData, setAllMemoData] = useState<any[]>([])
   const [allPurhaseOrderData, setAllPurhaseOrderData] = useState<any[]>([])
   const [allQualityAssuranceData, setAllQualityAssuranceData] = useState<any[]>([])
 
-
   const [allRfq, setAllRfq] = useState<any[]>([])
 
-  
   const [year, setYear] = useState("")
 
   const [yearFormServer, setYearFromServer] = useState<string>("")
 
+  // type of procurement daraf items
+
+
   const handleClose = () => setOpenModal(!openModal)
+
 
 
   const fetchProcurementsData = useCallback(async () => {
@@ -73,11 +79,8 @@ const route = useRouter()
         fetchAllMemoDataApi(),
         fetchAllPurchaseOrderDataApi(),
         fetchAllQualityAssuranceDataApi()
-
-
-         
        ]);
-       console.log('procurementResponse', procurementDashboardResponse, "all rfq", allRfqData, "allBidData", allBidData);
+      //  console.log('procurementResponse', procurementDashboardResponse, "all rfq", allRfqData, "allBidData", allBidData, "all memo", allMemo, "all purchased",  allPurchaseOrder, "all quality", allQualityAssurance);
        setAllBidData(allBidData.data.data)
        setAllRfq(allRfqData.data.data)
        setAllMemoData(allMemo.data.data)
@@ -115,39 +118,94 @@ const route = useRouter()
      }
    }, [year]);
 
-console.log("this is the order purchase", allPurhaseOrderData)
-  //  console.log("all allRfq", allRfq)
+// console.log("this is the order purchase", allPurhaseOrderData, "memo data 33", allMemoData, "QA/QC data", allQualityAssuranceData)
+
+//  console.log("all allRfq", allRfq)
 
    useEffect(() => {
     fetchProcurementsData()
    },[year, route, fetchProcurementsData])
 
-  if (!isUIReady) {
-    return (
-      <div className="h-screen flex  justify-center items-center">
-         <div className="w-16 h-16 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div> 
-      </div>
-    );
-  }
+
 
   const handleOpenModal = () => {
     setOpenModal(!openModal)
   }
 
-const  itemListRFQ = allRfq.map(item => {
+
+
+const  itemListRFQ = allRfq.map((item,i) => {
   return {
+    ...item,
+    "S/N": i + 1,
       rfqId: `RFQ ${item.id}`,
       title:item.title ,
       type: item.procurement_type,
       status: item.status,
-      budget: `${item.currency}${currencyFormatter(item.budget)}`,
+      budget: `${item?.currency}${item.budget !== null ?  currencyFormatter(item.budget) : ""}`,
       date: item.bidding_deadline
   }
 })
 
-
-const  itemListBid = allRfq.map(item => {
+// {
+//   "id": 1,
+//   "subscriber_id": 1,
+//   "procurement_id": 4,
+//   "project_id": 1,
+//   "rfq_code": "671020",
+//   "title": "Need Engineering Tools",
+//   "procurement_type": "MIV-IR",
+//   "client_project_department": "Engineering",
+//   "vendor_category_id": null,
+//   "budget": 700000,
+//   "currency": "NGN",
+//   "bid_count": 1,
+//   "delivery_date": "2024-12-30",
+//   "bidding_deadline": "2024-11-20",
+//   "status": "sent",
+//   "has_responded": 1,
+//   "proforma_invoice": null,
+//   "awarded_bid": 2,
+//   "deleted_at": null,
+//   "created_at": "2024-08-16T09:16:16.000000Z",
+//   "updated_at": "2024-08-16T17:36:03.000000Z"
+// }
+const  itemListBid = allBidData.map((item,i)=> {
   return {
+    ...item,
+    "S/N": i + 1,
+      rfqId: `RFQ ${item.id}`,
+      title:item.request_for_quotations.title,
+       noOfBid:item.request_for_quotations.bid_count,
+      status: item.status,
+      awardedBids: item.request_for_quotations.awarded_bid ? `BID -  ${item.request_for_quotations.awarded_bid}` : "Nil",
+      performaInvoice: item.request_for_quotations.proforma_invoice ? `Invoive - ${ item.request_for_quotations.proforma_invoice}` : "Nil",
+      deadline: item.request_for_quotations.bidding_deadline
+  }
+})
+
+const itemListPurchaseOrders = allPurhaseOrderData.map((item,i)=> {
+  return {
+    ...item,
+    "S/N": i + 1,
+      poId: `PO ${item.id}`,
+      title:item.request_for_quotations.title,
+      type: item.request_for_quotations.
+      procurement_type,
+      status: item.status,
+      date: item.request_for_quotations.bidding_deadline,
+      cost:`${item.bid.currency}${ currencyFormatter(item.bid.cost)}`,
+      timeline: item.request_for_quotations.delivery_date,
+      signatory: item.memo.signatory_count,
+      vendor: item.bid.vendor
+
+  }
+})
+
+const itemlistAllQualityAssuranceData = allQualityAssuranceData.map((item,i)=> {
+  return {
+    ...item,
+    "S/N": i + 1,
       rfqId: `RFQ ${item.id}`,
       title:item.title ,
       noOfBid: item.bid_count,
@@ -158,12 +216,33 @@ const  itemListBid = allRfq.map(item => {
   }
 })
 
+const  itemListMemo = allMemoData.map((item,i)=> {
+  return {
+    ...item,
+    "S/N": i + 1,
+    bidId:`BID ${item.bid_id}`,
+      title:item.request_for_quotations.title,
+      type: item.request_for_quotations.
+      procurement_type,
+      status: item.status,
+      signatory: 0,
+      author: `${item.author.first_name} ${item.author.last_name}`,
+      date: item.request_for_quotations.delivery_date
+  }
+})
+
+
+
+if (!isUIReady) {
+  return (
+    <div className="h-screen flex  justify-center items-center">
+       <div className="w-16 h-16 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div> 
+    </div>
+  );
+}
+
   return (
     <div  className=" bg-[#f8f8f8]">
-
-        {/* show dark background */}
-
-        {/* show dark background ends */}
       {/* chart sction starts */}
       <ProcurementCharts
       rfq_status={rfqStatus}
@@ -205,7 +284,7 @@ const  itemListBid = allRfq.map(item => {
           {
         selectedMenu === "RFQS" &&   <div
         onClick = {() => setOpenModal(!openModal)}
-        className=" border border-[#1354d2]  rounded-[10px]  justify-center items-center  flex flex-row px-2 py-1 cursor-pointer ">
+        className=" border border-[#1354d2]  rounded-xl  justify-center items-center  flex flex-row px-2  cursor-pointer ">
           
           <span className="text-[#1354d2] text-xl font-normal font-['Inter']">
            New Request
@@ -269,6 +348,10 @@ const  itemListBid = allRfq.map(item => {
      handleOpenModal = {handleOpenModal}
     
      COLUMNS={[
+      {
+        Header: "S/N",
+        accessor: "S/N"
+    },
        {
          Header: "RFQ ID",
          accessor: "rfqId"
@@ -298,8 +381,6 @@ const  itemListBid = allRfq.map(item => {
      ]}
       MOCK_DATA={itemListRFQ}
   /> 
-
-
      }
         {
 
@@ -310,6 +391,10 @@ const  itemListBid = allRfq.map(item => {
          
           COLUMNS={[
             {
+              Header: "S/N",
+              accessor: "S/N"
+          },
+            {
               Header: "RFQ ID",
               accessor: "rfqId"
           },
@@ -319,7 +404,7 @@ const  itemListBid = allRfq.map(item => {
           },
           {
               Header: "No. Of Bids",
-              accessor: "noOfBids"
+              accessor: "noOfBid"
           },
           {
               Header: "Status",
@@ -341,18 +426,231 @@ const  itemListBid = allRfq.map(item => {
    
           ]}
            MOCK_DATA={itemListBid}
-        
         />
         }
+
+{
+
+selectedMenu  === "Memo" && <MemoTable
+fetchedData={allMemoData}
+
+handleOpenModal = {handleOpenModal}
+
+COLUMNS={[
+  {
+    Header: "S/N",
+    accessor: "S/N"
+},
+  {
+    Header: "BID ID",
+    accessor: "bidId"
+},
+{
+    Header: "Title",
+       accessor:"title"
+},
+{
+    Header: "Type",
+    accessor: "type"
+},
+{
+  Header: "Signatory",
+  accessor: "signatory"
+},
+{
+  Header: "Author",
+  accessor: "author"
+},
+{
+    Header: "Status",
+    accessor: "status"
+},
+
+
+  {
+    Header: "Date",
+       accessor: "date"
+  }
+ 
+
+]}
+ MOCK_DATA={itemListMemo}
+/>
+}
+
+
+{
+
+selectedMenu  === "Purchase Orders" && <PurchaseOrderTable
+fetchedData={allPurhaseOrderData}
+
+handleOpenModal = {handleOpenModal}
+
+COLUMNS={[
+  {
+    Header: "S/N",
+    accessor: "S/N"
+},
+  {
+    Header: "PO ID",
+    accessor: "poId"
+},
+{
+    Header: "Title",
+       accessor: "title"
+},
+{
+    Header: "Type",
+    accessor: "type"
+},
+{
+  Header: "Vendor",
+  accessor: "vendor"
+},
+{
+  Header: "Cost",
+  accessor: "cost"
+},
+{
+  Header: "Signatory",
+  accessor: "signatory"
+},
+{
+  Header: "Timeline",
+  accessor: "timeline"
+},
+{
+    Header: "Status",
+    accessor: "status"
+},
+
+
+  {
+    Header:"Date",
+       accessor:"date"
+  }
+ 
+
+]}
+ MOCK_DATA={itemListPurchaseOrders}
+/>
+}
+
+
+{
+
+selectedMenu  === "QA/QC" && <QA_QCTable
+fetchedData={allQualityAssuranceData}
+
+handleOpenModal = {handleOpenModal}
+
+COLUMNS={[
+  {
+    Header: "S/N",
+    accessor: "S/N"
+},
+  {
+    Header: "PO ID",
+    accessor: "poId"
+},
+{
+    Header: "Title",
+       accessor: "title"
+},
+{
+    Header: "Type",
+    accessor: "type"
+},
+{
+  Header: "Inventory",
+  accessor: "inventory"
+},
+{
+  Header: "Attachment",
+  accessor: "attachment"
+},
+{
+    Header: "Status",
+    accessor: "status"
+},
+
+
+  {
+    Header: "Date",
+       accessor: "date"
+  }
+ 
+
+]}
+ MOCK_DATA={itemlistAllQualityAssuranceData}
+/>
+}
+
+
+
+{
+
+selectedMenu  === "GRN" && <GRNTable
+fetchedData={allMemoData}
+
+handleOpenModal = {handleOpenModal}
+
+COLUMNS={[
+  {
+    Header: "S/N",
+    accessor: "S/N"
+},
+  {
+    Header: "PO ID",
+    accessor: "poId"
+},
+{
+    Header: "Title",
+       accessor: "title"
+},
+{
+    Header: "Type",
+    accessor: "type"
+},
+{
+  Header: "Inventory",
+  accessor: "inventory"
+},
+{
+  Header: "Vendor",
+  accessor: "vendor"
+},
+{
+    Header: "Payment",
+    accessor: "payment"
+},
+
+
+  {
+    Header: "Date",
+       accessor: "date"
+  }
+ 
+
+]}
+ MOCK_DATA={itemListBid}
+/>
+}
+
+
+
+
+
       {/* modal section starts */}
   
       <Modal
     isOpen = {openModal}
     title={"Request For Quotations"}
     onClose = {handleClose}
-    maxWidth="900px"
+    maxWidth="1050px"
   >
-  <ProcurementAddRequestModal />
+  <ProcurementAddRequestModal
+  />
   </Modal>
 
       {/* modal section ends */}

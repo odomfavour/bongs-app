@@ -67,7 +67,7 @@ function BidTable({
 
   const { globalFilter, pageIndex } = state;
 
-  console.log('the fetched data', fetchedData);
+  console.log('the fetched data from bid', fetchedData);
 
   return (
     <>
@@ -134,9 +134,31 @@ function BidTable({
           ) : (
             page.map((row, index) => {
               prepareRow(row);
+              console.log("row inner bid", row)
               return (
                 <tr {...row.getRowProps()} key={index}>
                   {row.cells.map((cell, index) => {
+                  
+                  
+                    if(row.cells[index].column.Header === "Status")  {
+                      return (
+                        <td
+                         className='flex items-center justify-center'
+                          {...cell.getCellProps()}
+                          key={index}
+                        >
+                          <span  className={`text-center ${row.original.status === "pending" ? "text-red-600 bg-red-200 rounded-xl text-sm px-2 py-1" : "text-green-600 bg-green-200 rounded-xl text-sm px-2 py-1"}`}>
+                          {row.original.status}
+                          </span>
+                        
+                        </td>
+                      );
+                    }
+
+
+                  
+                    
+
                     return (
                       <td
                         className="text-center"
@@ -147,15 +169,17 @@ function BidTable({
                       </td>
                     );
                   })}
-                  <td>
-                    <div className="flex-row flex items-center justify-center rounded-lg p-2 space-x-2 bg-[#a16207] ">
-                   <button onClick={() => {
+                  <td className='flex justify-center items-center'>
+                    <div className="flex-row flex items-center w-max justify-center rounded-xl px-2 py-1 bg-[#a16207] cursor-pointer ">
+                   <span onClick={() => {
                     handleOpenModal()
+
+
                    }}
-                   className='text-center text-white'
+                   className='text-center text-sm text-white'
                    >
                     View More
-                   </button>
+                   </span>
                     </div>
                   </td>
                 </tr>

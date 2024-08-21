@@ -14,25 +14,25 @@ const links: LinkItem[] = [
     href: '/inventories',
     label: 'Project',
     labels: ['Project'],
-    img: 'inventories.png',
+    img: 'i-projects.svg',
   },
   {
     href: '/miv-inventories',
     label: 'MIV',
     labels: ['MIV'],
-    img: 'inventories.png',
+    img: 'preference_barge_setup_deck.png',
   },
   {
     href: '/material-release',
     label: 'Material Release',
     labels: ['Project', 'MIV'],
-    img: 'inventories.png',
+    img: 'm-release.svg',
   },
   {
     href: '/requisitions',
     label: 'Material Requisition',
     labels: ['Project', 'MIV'],
-    img: 'inventories.png',
+    img: 'requisition.svg',
   },
 ];
 

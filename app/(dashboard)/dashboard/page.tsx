@@ -1,28 +1,27 @@
-"use client";
+'use client';
 
-import React, { useCallback, useEffect, useState } from "react";
-import Areachart from "@/components/dashboard/charts/Areachart";
-import Barchart from "@/components/dashboard/charts/Barchart";
-import LineAndbarchart from "@/components/dashboard/charts/LineAndBarchart";
-import DashboardCard from "@/components/dashboard/DashboardCard";
-import { fetchDashboardDataApi } from "@/utils/apiServices/dashboard";
-import { toast } from "react-toastify";
+import React, { useCallback, useEffect, useState } from 'react';
+import Areachart from '@/components/dashboard/charts/Areachart';
+import Barchart from '@/components/dashboard/charts/Barchart';
+import LineAndbarchart from '@/components/dashboard/charts/LineAndBarchart';
+import DashboardCard from '@/components/dashboard/DashboardCard';
+import { fetchDashboardDataApi } from '@/utils/apiServices/dashboard';
+import { toast } from 'react-toastify';
 import {
   categoryCountType,
   consumableCountType,
   DashboardCardType,
   signMostUsedItemProp,
   sparePartCountType,
-} from "@/utils/types";
-import TopTenInnventories from "@/components/dashboard/charts/TopTenInnventories";
-import Image from "next/image";
-import { months } from "@/utils/data";
-import InventoryRequisitionAnalysis from "@/components/dashboard/charts/InventoryRequisitionAnalysis";
-import { useSelector } from "react-redux";
+} from '@/utils/types';
+import TopTenInnventories from '@/components/dashboard/charts/TopTenInnventories';
+import Image from 'next/image';
+import { months } from '@/utils/data';
+import InventoryRequisitionAnalysis from '@/components/dashboard/charts/InventoryRequisitionAnalysis';
+import { useSelector } from 'react-redux';
 
-import { useRouter} from "next/navigation"
-import MaterialRequisitionAnalysisChart from "@/components/dashboard/charts/MetarialRequisitionAnalysisChart";
-
+import { useRouter } from 'next/navigation';
+import MaterialRequisitionAnalysisChart from '@/components/dashboard/charts/MetarialRequisitionAnalysisChart';
 
 const Page = () => {
   const [dashboardData, setDashboardData] = useState<DashboardCardType[] | []>(
@@ -32,12 +31,12 @@ const Page = () => {
     string[] | []
   >([]);
 
-  const [materialRequisitionAnalysisData, setMaterialRequisitionAnalysisData] = useState<{
-    totalMaterialReleased: number;
-    totalRequisitionReceived: number;
-    totalRequisitionMade: number;
-  } | null>(null);
-
+  const [materialRequisitionAnalysisData, setMaterialRequisitionAnalysisData] =
+    useState<{
+      totalMaterialReleased: number;
+      totalRequisitionReceived: number;
+      totalRequisitionMade: number;
+    } | null>(null);
 
   const [inventoryOverTime, setInventoryOverTime] = useState<{
     months: string[];
@@ -50,25 +49,26 @@ const Page = () => {
     useState<sparePartCountType | null>(null);
   const [categoryCounts, setCategoryCounts] =
     useState<categoryCountType | null>(null);
-  
-  const [mostUsedInvory, setmostUsedInvory] = useState<signMostUsedItemProp[] | []>([])
- 
-  const [year, setYear] = useState("")
-  const [month, setMonth] = useState("")
-  
+
+  const [mostUsedInvory, setmostUsedInvory] = useState<
+    signMostUsedItemProp[] | []
+  >([]);
+
+  const [year, setYear] = useState('');
+  const [month, setMonth] = useState('');
+
   const router = useRouter();
 
-
-  const handleFetchData = useCallback( async () => {
+  const handleFetchData = useCallback(async () => {
     try {
       if (user?.subscriber_id) {
-        const response = await fetchDashboardDataApi({year, month});
+        const response = await fetchDashboardDataApi({ year, month });
         if (response.status) {
           const { message, data } = response;
-          console.log("dashboard data", data)
+          console.log('dashboard data', data);
           toast.success(message);
-          const { total_requisitions, total_approved_requisitions
-           } = data.requisition_data;
+          const { total_requisitions, total_approved_requisitions } =
+            data.requisition_data;
           const {
             total_inventory,
             total_project_inventory,
@@ -83,35 +83,30 @@ const Page = () => {
             category_counts,
           } = data.inventory_data;
 
+          const { most_used_inventory } = data.most_used_inventory_data;
+          setmostUsedInvory(most_used_inventory);
 
-          const { most_used_inventory } = data.most_used_inventory_data
-          setmostUsedInvory(most_used_inventory)
-       
           setCategoryCounts(category_counts);
           setConsumableCounts(consumable_counts);
           setSparePartCounts(spare_part_counts);
 
           const { total_items_received, percentage_change } =
             data.total_items_received_data;
-            const {total_approved_materials, total_materials, 
-              released_materials_by_month, total_released_materials
-              
-            } = data.material_release_data
-      
+          const {
+            total_approved_materials,
+            total_materials,
+            released_materials_by_month,
+            total_released_materials,
+          } = data.material_release_data;
 
-
-           
-          setRequisitionApprovedByMonth(
-            released_materials_by_month
-          );
+          setRequisitionApprovedByMonth(released_materials_by_month);
           setInventoryOverTime(data.filtered_inventory_data);
 
-
           setMaterialRequisitionAnalysisData({
-            totalMaterialReleased:total_released_materials,
-            totalRequisitionReceived:total_approved_requisitions,
-            totalRequisitionMade:total_items_received
-          })
+            totalMaterialReleased: total_released_materials,
+            totalRequisitionReceived: total_approved_requisitions,
+            totalRequisitionMade: total_items_received,
+          });
           setDashboardData([
             {
               stockCountAmount: total_inventory,
@@ -138,19 +133,19 @@ const Page = () => {
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
         error?.message ||
-        "Unknown error";
+        'Unknown error';
       toast.error(`${errorMessage}`);
     }
-  }, [user.subscriber_id, year, month])
- 
+  }, [user?.subscriber_id, year, month]);
+
   useEffect(() => {
     handleFetchData();
-  }, [user,year, month, router, handleFetchData]);
+  }, [user, year, month, router, handleFetchData]);
 
   if (!isUIReady) {
     return (
       <div className="h-screen flex  justify-center items-center">
-         <div className="w-16 h-16 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div> 
+        <div className="w-16 h-16 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -158,7 +153,7 @@ const Page = () => {
   return (
     <div
       style={{
-        backgroundColor: "rgb(244,245,246)",
+        backgroundColor: 'rgb(244,245,246)',
       }}
       className="p-2"
     >
@@ -166,7 +161,7 @@ const Page = () => {
 
       <div className="flex flex-row justify-end items-center space-x-2 mb-4">
         <Image
-          src={"/icons/filterPic.png"}
+          src={'/icons/filterPic.png'}
           alt="filter"
           className="w-[27px] h-[30px]"
           width={27}
@@ -174,12 +169,12 @@ const Page = () => {
           objectFit="contain"
         />
         <select
-          onChange={e => setMonth(e.target.value)}
+          onChange={(e) => setMonth(e.target.value)}
           name=""
           id=""
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3"
         >
-          <option value={""}>month</option>
+          <option value={''}>month</option>
           {months.map((item) => (
             <option key={item} value={item}>
               {item}
@@ -187,13 +182,13 @@ const Page = () => {
           ))}
         </select>
         <select
-          onChange={e => e.target.value}
+          onChange={(e) => e.target.value}
           name=""
           id=""
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3"
         >
           <option value="">Year</option>
-          <option value={"2024"}>2024</option>
+          <option value={'2024'}>2024</option>
         </select>
       </div>
 
@@ -220,19 +215,13 @@ const Page = () => {
               />
             </div>
             <div className="col-span-12 lg:col-span-4  rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white min-h-[45vh]">
-        {
-          mostUsedInvory &&  <TopTenInnventories
-              data={ 
-                mostUsedInvory
-           }
-        /> 
-          }
-        </div>
+              {mostUsedInvory && <TopTenInnventories data={mostUsedInvory} />}
+            </div>
           </div>
           <div className="grid grid-cols-12 gap-4">
             <div className=" col-span-12 lg:col-span-4 min-h-[45vh]   rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white">
               {consumableCounts && sparePartCounts && (
-                <Barchart 
+                <Barchart
                   consumable_counts={consumableCounts}
                   spare_part_counts={sparePartCounts}
                 />
@@ -244,15 +233,12 @@ const Page = () => {
               )}
             </div>
             <div className="col-span-12 lg:col-span-4 min-h-[45vh]   rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white">
-       <MaterialRequisitionAnalysisChart
-       materialReleaseStatus={materialRequisitionAnalysisData}
-       
-       />
-        </div>
+              <MaterialRequisitionAnalysisChart
+                materialReleaseStatus={materialRequisitionAnalysisData}
+              />
+            </div>
           </div>
         </div>
-      
-       
       </div>
 
       {/* chart sectio ends */}

@@ -19,11 +19,11 @@ function Barchart({ consumable_counts, spare_part_counts }: BarchartPropType) {
 
   const [selectConsumableCount, setSelectConsumableCount] = useState("");
 
-  const consumableCountKeys = Object.keys(consumable_counts);
-  const consumableCountValues = Object.values(consumable_counts);
+  const consumableCountKeys = Object?.keys(consumable_counts);
+  const consumableCountValues = Object?.values(consumable_counts);
 
-  const sparePartCountKeys = Object.keys(spare_part_counts);
-  const sparePartCountValues = Object.values(spare_part_counts);
+  const sparePartCountKeys = Object?.keys(spare_part_counts);
+  const sparePartCountValues = Object?.values(spare_part_counts);
 
   /* create an object for both consumables and sparePart */
   const AllInventoryData = []

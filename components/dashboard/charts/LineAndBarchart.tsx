@@ -24,8 +24,8 @@ const LineAndbarchart = ({
   
   const newObj = inventoryOverTime.months
 
-  const countsArray = newObj && Object.values(newObj);
-   const monthArray = Object.keys(newObj); 
+  const countsArray = newObj && Object?.values(newObj);
+   const monthArray = Object?.keys(newObj); 
 
     /* assigning each monnth to its value */
   

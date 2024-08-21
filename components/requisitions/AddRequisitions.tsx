@@ -39,8 +39,11 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
     barge_asset: '',
     barge_asset_id: '',
     attachements: [] as File[],
-    inventoryable_id: 1,
+    inventoryable_id: null,
+    backendUrl: [] as File[],
   });
+
+  const [displayData, setDisplayData] = useState({});
 
   useEffect(() => {
     if (Object.keys(bargeValues).length > 0) {
@@ -58,6 +61,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
         barge_asset_id: '',
         attachements: bargeValues.attachements,
         inventoryable_id: bargeValues.inventoryable_id,
+        backendUrl: [],
       });
     }
   }, [bargeValues]);
@@ -212,19 +216,43 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
 
   const [previews, setPreviews] = useState<any>([]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files: File[] = Array.from(e.target.files);
 
-      // Update attachments in formData
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        attachements: [...prevFormData.attachements, ...files],
-      }));
+      // Convert each file to a base64 string
+      const filePromises = files.map((file) => {
+        return new Promise<{ attachement: string }>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onloadend = () => {
+            if (reader.result) {
+              // Extract the base64 string
+              const base64String = reader.result.toString().split(',')[1];
+              resolve({ attachement: base64String });
+            } else {
+              reject('File reading failed');
+            }
+          };
+          reader.onerror = reject;
+        });
+      });
 
-      // Generate preview URLs for each file and update previews state
-      const newPreviews = files.map((file) => URL.createObjectURL(file));
-      setPreviews((prevPreviews: any) => [...prevPreviews, ...newPreviews]);
+      try {
+        const newAttachments = await Promise.all(filePromises);
+
+        // Update attachments in formData
+        setFormData((prevFormData: any) => ({
+          ...prevFormData,
+          attachements: [...prevFormData.attachements, ...newAttachments],
+        }));
+
+        // Generate preview URLs for each file and update previews state
+        const newPreviews = files.map((file) => URL.createObjectURL(file));
+        setPreviews((prevPreviews: any) => [...prevPreviews, ...newPreviews]);
+      } catch (error) {
+        console.error('Error processing files', error);
+      }
     }
   };
 
@@ -258,7 +286,8 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
       barge_asset: '',
       barge_asset_id: '',
       attachements: [] as File[],
-      inventoryable_id: 1,
+      backendUrl: [] as File[],
+      inventoryable_id: null,
     });
     setPreviews([]);
   };
@@ -679,50 +708,55 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                       {item.attachements.length > 0 ? (
                         <div className="flex gap-2">
                           {item?.attachements.map(
-                            (file: any, fileIndex: number) => (
-                              <div
-                                key={fileIndex}
-                                className="relative h-[30px] w-[30px]"
-                              >
-                                {file.type.startsWith('image/') ? (
-                                  <Image
-                                    src={getPreviewUrl(file)}
-                                    alt={`Attachment ${index + 1}`}
-                                    layout="fill"
-                                    objectFit="cover"
-                                    className="rounded"
-                                  />
-                                ) : (
-                                  <div className="w-16 h-16 flex items-center justify-center bg-gray-200 border border-gray-300 rounded">
-                                    <span className="text-xs text-gray-600">
-                                      File
-                                    </span>
-                                  </div>
-                                )}
-                                <button
-                                  type="button"
-                                  className="absolute top-1 right-1 text-red-500 hover:text-red-700"
-                                  onClick={() => {
-                                    const newAttachments =
-                                      item.attachments.filter(
-                                        (_: any, i: number) => i !== fileIndex
-                                      );
-                                    setTableData(
-                                      tableData.map((data, idx) =>
-                                        idx === index
-                                          ? {
-                                              ...data,
-                                              attachments: newAttachments,
-                                            }
-                                          : data
-                                      )
-                                    );
-                                  }}
+                            (file: any, fileIndex: number) => {
+                              console.log('file', file);
+                              return (
+                                <div
+                                  key={fileIndex}
+                                  className="relative h-[30px] w-[30px]"
                                 >
-                                  &times;
-                                </button>
-                              </div>
-                            )
+                                  {file?.attachement?.type.startsWith(
+                                    'image/'
+                                  ) ? (
+                                    <Image
+                                      src={getPreviewUrl(file.attachement)}
+                                      alt={`Attachment ${index + 1}`}
+                                      layout="fill"
+                                      objectFit="cover"
+                                      className="rounded"
+                                    />
+                                  ) : (
+                                    <div className="w-16 h-16 flex items-center justify-center bg-gray-200 border border-gray-300 rounded">
+                                      <span className="text-xs text-gray-600">
+                                        File
+                                      </span>
+                                    </div>
+                                  )}
+                                  <button
+                                    type="button"
+                                    className="absolute top-1 right-1 text-red-500 hover:text-red-700"
+                                    onClick={() => {
+                                      const newAttachments =
+                                        item.attachments.filter(
+                                          (_: any, i: number) => i !== fileIndex
+                                        );
+                                      setTableData(
+                                        tableData.map((data, idx) =>
+                                          idx === index
+                                            ? {
+                                                ...data,
+                                                attachments: newAttachments,
+                                              }
+                                            : data
+                                        )
+                                      );
+                                    }}
+                                  >
+                                    &times;
+                                  </button>
+                                </div>
+                              );
+                            }
                           )}
                         </div>
                       ) : (

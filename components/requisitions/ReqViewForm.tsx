@@ -159,9 +159,11 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({ tableData }) => {
                                   key={fileIndex}
                                   className="relative h-[30px] w-[30px]"
                                 >
-                                  {file.type.startsWith('image/') ? (
+                                  {file?.attachement?.type.startsWith(
+                                    'image/'
+                                  ) ? (
                                     <Image
-                                      src={getPreviewUrl(file)}
+                                      src={getPreviewUrl(file.attachement)}
                                       alt={`Attachment ${index + 1}`}
                                       layout="fill"
                                       objectFit="cover"

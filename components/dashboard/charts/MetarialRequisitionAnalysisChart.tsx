@@ -104,8 +104,11 @@ function MaterialRequisitionAnalysisChart({
        Material Requisitions Analysis
        </p>
           <p className="text-gray-500 text-sm mb-4 font-['Inter'] text-center ">No data found</p>
-        </div>:  <div>
+        </div>:  <div className="flex flex-row items-center justify-center">
             <div className="ml-2">
+            <p className="text-gray-500  mb-4 font-['Inter'] text-center ">
+       Material Requisitions Analysis
+       </p>
       
           <div className="flex flex-row space-x-2 items-center">
             <span className="w-3 h-3 rounded-full bg-[#08981FB2]" />

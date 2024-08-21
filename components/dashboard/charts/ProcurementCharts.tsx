@@ -82,14 +82,14 @@ function ProcurementCharts({
     { name: "Expired", value: rfq_status.expired },
   ];
 
-  const newObject = Object.values(total_budget);
+  const newObject = Object?.values(total_budget);
 
-  const currency = Object.keys(total_budget)[0];
+  const currency = Object?.keys(total_budget)[0];
 
-  const months = Object.keys(newObject[0]);
+  const months = Object?.keys(newObject[0]);
   /* extract spent data */
 
-  const otherData = Object.values(newObject[0]) as any[];
+  const otherData = Object?.values(newObject[0]) as any[];
 
 
 
@@ -105,27 +105,7 @@ function ProcurementCharts({
     });
   }
 
-// 
-{/* <YAxis
-            dataKey={"value"}
-           
-          />
-          <Legend
-            align="center"
-            verticalAlign="top"
-            content={() => {
-              return (
-                <div className="flex flex-row justify-center items-center mb-4 text-gray-500">
-                  <span className="text-center">
-                    Requisition Approved by Months
-                  </span>
-                </div>
-              );
-            }}
-          />
-          <Tooltip /> */}
 
-// 
   return (
     <div className="flex flex-row justify-between space-x-8 h-[40vh]">
       <div className="flex-1 p-[7.42px]  rounded-lg justify-center items-center shadow inline-flex bg-white">
@@ -190,7 +170,7 @@ function ProcurementCharts({
               dataKey="value"
               height={"80%"}
             >
-              <Tooltip />
+            
               <Legend iconType="circle" align="right" verticalAlign="bottom" />
               {data.map((entry, index) => (
                 <Cell
@@ -199,6 +179,7 @@ function ProcurementCharts({
                 />
               ))}
             </Pie>
+            <Tooltip />
           </PieChart>
         </ResponsiveContainer>
         <div className="mx-auto flex-row flex space-x-4 items-center">

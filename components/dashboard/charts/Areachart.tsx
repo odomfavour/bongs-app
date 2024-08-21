@@ -18,9 +18,12 @@ function Areachart({
 }) {
 
 
-  
-  const countsArray = Object.values(requisitionApprovedByMonth);
-  const monthArray = Object.keys(requisitionApprovedByMonth);
+
+
+ 
+
+  const countsArray = Object?.values(requisitionApprovedByMonth);
+  const monthArray = Object?.keys(requisitionApprovedByMonth);
 
 
   /* assigning each monnth to its value */
@@ -53,7 +56,7 @@ function Areachart({
               return (
                 <div className="flex flex-row justify-center items-center mb-4 text-gray-500">
                   <span className="text-center">
-                    Requisition Approved by Months
+                   Material released by Months
                   </span>
                 </div>
               );
@@ -63,8 +66,9 @@ function Areachart({
           <Area
             type="monotone"
             dataKey="value"
-            stroke="#BFBEB9"
+            stroke="#DED9D1"
             fill="#FEFBF4"
+            strokeWidth={3}
           />
         </AreaChart>
       </ResponsiveContainer>

@@ -18,9 +18,11 @@ function InventoryRequisitionAnalysis({
     const [dataToDisplay, setdataToDisplay] = useState<any[] | []>([])
     
 
-    const categoryCountKeys = Object.keys(categoryCounts);
-    const categoryCountValues = Object.values(categoryCounts);
+    const categoryCountKeys = Object?.keys(categoryCounts);
+    const categoryCountValues = Object?.values(categoryCounts);
 
+
+    console.log("category counts", categoryCounts)
     
   return (
     <div>

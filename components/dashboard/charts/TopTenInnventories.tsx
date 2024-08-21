@@ -13,7 +13,7 @@ function TopTenInnventories({
 
   /* create an array containg only the values of the countArray */
 
-  const countArrayKeys = Object.values(countArray)
+  const countArrayKeys = Object?.values(countArray)
   
   /* get the height value from the countArrayKeys */
 
@@ -40,19 +40,19 @@ function TopTenInnventories({
     
   }
 
-  console.log("this is the count",  categoryNameCountPercentCountValueArray)
+  
   return (
-    <div>
-     <div className="flex flex-row justify-center items-center mb-4 text-gray-500 py-4">
+    <div className="flex-1  justify-center items-center   h-full">
+     <div className="flex flex-row justify-center items-center mb-4 text-gray-500 ">
                   <span className="text-center">
                    Top 10 Used Inventories
                   </span>
       </div>
       { 
-     categoryNameCountPercentCountValueArray.length > 0 ?  <div>
+     categoryNameCountPercentCountValueArray.length > 0 ?  <div className='flex-1 overflow-y-scroll'>
      { 
-       categoryNameCountPercentCountValueArray.map(item => <div key={item.key} className='flex flex-row items-center space-x-4 px-4'>
-         <span className='text-center text-gray-500'>
+       categoryNameCountPercentCountValueArray.map(item => <div key={item.key} className='flex flex-row items-center space-x-2 space-y-2 px-4'>
+         <span className=' text-gray-500 w-2/6 block text-left '>
            { item.categoryName}
          </span>
          <div className='flex flex-row items-center space-x-2 flex-1'>

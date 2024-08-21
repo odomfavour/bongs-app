@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Areachart from "@/components/dashboard/charts/Areachart";
 import Barchart from "@/components/dashboard/charts/Barchart";
 import LineAndbarchart from "@/components/dashboard/charts/LineAndBarchart";
@@ -11,7 +11,6 @@ import {
   categoryCountType,
   consumableCountType,
   DashboardCardType,
-  mostUsedInventoryPropType,
   signMostUsedItemProp,
   sparePartCountType,
 } from "@/utils/types";
@@ -22,6 +21,7 @@ import InventoryRequisitionAnalysis from "@/components/dashboard/charts/Inventor
 import { useSelector } from "react-redux";
 
 import { useRouter} from "next/navigation"
+import MaterialRequisitionAnalysisChart from "@/components/dashboard/charts/MetarialRequisitionAnalysisChart";
 
 
 const Page = () => {
@@ -31,6 +31,14 @@ const Page = () => {
   const [requisitionApprovedByMonth, setRequisitionApprovedByMonth] = useState<
     string[] | []
   >([]);
+
+  const [materialRequisitionAnalysisData, setMaterialRequisitionAnalysisData] = useState<{
+    totalMaterialReleased: number;
+    totalRequisitionReceived: number;
+    totalRequisitionMade: number;
+  } | null>(null);
+
+
   const [inventoryOverTime, setInventoryOverTime] = useState<{
     months: string[];
   } | null>(null);
@@ -44,87 +52,100 @@ const Page = () => {
     useState<categoryCountType | null>(null);
   
   const [mostUsedInvory, setmostUsedInvory] = useState<signMostUsedItemProp[] | []>([])
-  console.log("ran inner now")
+ 
   const [year, setYear] = useState("")
   const [month, setMonth] = useState("")
   
   const router = useRouter();
-  useEffect(() => {
-    const handleFetchData = async () => {
-      try {
-        if (user?.subscriber_id) {
-          const response = await fetchDashboardDataApi({year, month});
-          if (response.status) {
-            const { message, data } = response;
-            console.log("dashboard data", data)
-            toast.success(message);
-            const { total_requisitions
-             } = data.requisition_data;
-            const {
-              total_inventory,
-              total_project_inventory,
-              total_project_consumable_inventory,
-              total_project_sparepart_inventory,
-              total_miv_inventory,
-              total_miv_sparepart_inventory,
-              total_miv_consumable_inventory,
-              percentage_change_total_inventory,
-              consumable_counts,
-              spare_part_counts,
-              category_counts,
-            } = data.inventory_data;
 
 
-            const { most_used_inventory } = data.most_used_inventory_data
-            setmostUsedInvory(most_used_inventory)
-         
-            setCategoryCounts(category_counts);
-            setConsumableCounts(consumable_counts);
-            setSparePartCounts(spare_part_counts);
+  const handleFetchData = useCallback( async () => {
+    try {
+      if (user?.subscriber_id) {
+        const response = await fetchDashboardDataApi({year, month});
+        if (response.status) {
+          const { message, data } = response;
+          console.log("dashboard data", data)
+          toast.success(message);
+          const { total_requisitions, total_approved_requisitions
+           } = data.requisition_data;
+          const {
+            total_inventory,
+            total_project_inventory,
+            total_project_consumable_inventory,
+            total_project_sparepart_inventory,
+            total_miv_inventory,
+            total_miv_sparepart_inventory,
+            total_miv_consumable_inventory,
+            percentage_change_total_inventory,
+            consumable_counts,
+            spare_part_counts,
+            category_counts,
+          } = data.inventory_data;
 
-            const { total_items_received, percentage_change } =
-              data.total_items_received_data;
-              const {total_approved_materials, total_materials
-              } = data.material_release_data
-        
-            setRequisitionApprovedByMonth(
-              data.requisition_data.delivered_requisitions_by_month
-            );
-            setInventoryOverTime(data.filtered_inventory_data);
 
-            setDashboardData([
-              {
-                stockCountAmount: total_inventory,
-                stockCountPercent: percentage_change_total_inventory,
-                inventoryAmount: total_project_inventory,
-                sparePartInventory: total_project_sparepart_inventory,
-                consumablesInventory: total_project_consumable_inventory,
-                materialRequisitionAmount: total_materials,
-                totalApprovedMaterial: total_approved_materials,
-                mivAmount: total_miv_inventory,
-                mivConsumables: total_miv_consumable_inventory,
-                mivSperePart: total_miv_sparepart_inventory,
-                materialReceivedAmount: total_items_received,
-                materialReceivedPercent: percentage_change,
-              },
-            ]);
+          const { most_used_inventory } = data.most_used_inventory_data
+          setmostUsedInvory(most_used_inventory)
+       
+          setCategoryCounts(category_counts);
+          setConsumableCounts(consumable_counts);
+          setSparePartCounts(spare_part_counts);
 
-            setIsUIReady(true);
-          }
+          const { total_items_received, percentage_change } =
+            data.total_items_received_data;
+            const {total_approved_materials, total_materials, 
+              released_materials_by_month, total_released_materials
+              
+            } = data.material_release_data
+      
+
+
+           
+          setRequisitionApprovedByMonth(
+            released_materials_by_month
+          );
+          setInventoryOverTime(data.filtered_inventory_data);
+
+
+          setMaterialRequisitionAnalysisData({
+            totalMaterialReleased:total_released_materials,
+            totalRequisitionReceived:total_approved_requisitions,
+            totalRequisitionMade:total_items_received
+          })
+          setDashboardData([
+            {
+              stockCountAmount: total_inventory,
+              stockCountPercent: percentage_change_total_inventory,
+              inventoryAmount: total_project_inventory,
+              sparePartInventory: total_project_sparepart_inventory,
+              consumablesInventory: total_project_consumable_inventory,
+              materialRequisitionAmount: total_materials,
+              totalApprovedMaterial: total_approved_materials,
+              mivAmount: total_miv_inventory,
+              mivConsumables: total_miv_consumable_inventory,
+              mivSperePart: total_miv_sparepart_inventory,
+              materialReceivedAmount: total_items_received,
+              materialReceivedPercent: percentage_change,
+            },
+          ]);
+
+          setIsUIReady(true);
         }
-      } catch (error: any) {
-        setIsUIReady(true);
-        const errorMessage =
-          error?.response?.data?.message ||
-          error?.response?.data?.errors ||
-          error?.message ||
-          "Unknown error";
-        toast.error(`${errorMessage}`);
       }
-    };
-
+    } catch (error: any) {
+      setIsUIReady(true);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        "Unknown error";
+      toast.error(`${errorMessage}`);
+    }
+  }, [user.subscriber_id, year, month])
+ 
+  useEffect(() => {
     handleFetchData();
-  }, [user,year, month, router]);
+  }, [user,year, month, router, handleFetchData]);
 
   if (!isUIReady) {
     return (
@@ -186,38 +207,20 @@ const Page = () => {
       {/* chart section starts */}
 
       <div className="grid grid-cols-12 gap-4 mb-4">
-        <div className="col-span-12 lg:col-span-8 gap-4">
+        <div className="col-span-12 gap-4">
           <div className="grid grid-cols-12 gap-4 mb-[8px]">
-            <div className="col-span-12 lg:col-span-6 min-h-[45vh]  rounded-[23px] p-2 border-[1.2px] border-slate-300">
+            <div className="col-span-12 lg:col-span-4 min-h-[45vh]  rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white">
               {inventoryOverTime && (
                 <LineAndbarchart inventoryOverTime={inventoryOverTime} />
               )}
             </div>
-            <div className="col-span-12 lg:col-span-6  rounded-[23px] p-2 border-[1.2px] border-slate-300">
+            <div className="col-span-12 lg:col-span-4  rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white min-h-[45vh]">
               <Areachart
                 requisitionApprovedByMonth={requisitionApprovedByMonth}
               />
             </div>
-          </div>
-          <div className="grid grid-cols-12 gap-4">
-            <div className=" col-span-12 lg:col-span-6 min-h-[45vh]   rounded-[23px] p-2 border-[1.2px] border-slate-300">
-              {consumableCounts && sparePartCounts && (
-                <Barchart
-                  consumable_counts={consumableCounts}
-                  spare_part_counts={sparePartCounts}
-                />
-              )}
-            </div>
-            <div className="col-span-12 lg:col-span-6 min-h-[45vh]   rounded-[23px] p-2 border-[1.2px] border-slate-300">
-              {categoryCounts && (
-                <InventoryRequisitionAnalysis categoryCounts={categoryCounts} />
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="col-span-12 min-h-[45vh]   lg:col-span-4 gap-4  rounded-[23px] p-2 border-[1.2px] border-slate-300">
-        
-          {
+            <div className="col-span-12 lg:col-span-4  rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white min-h-[45vh]">
+        {
           mostUsedInvory &&  <TopTenInnventories
               data={ 
                 mostUsedInvory
@@ -225,6 +228,31 @@ const Page = () => {
         /> 
           }
         </div>
+          </div>
+          <div className="grid grid-cols-12 gap-4">
+            <div className=" col-span-12 lg:col-span-4 min-h-[45vh]   rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white">
+              {consumableCounts && sparePartCounts && (
+                <Barchart 
+                  consumable_counts={consumableCounts}
+                  spare_part_counts={sparePartCounts}
+                />
+              )}
+            </div>
+            <div className="col-span-12 lg:col-span-4 min-h-[45vh]   rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white">
+              {categoryCounts && (
+                <InventoryRequisitionAnalysis categoryCounts={categoryCounts} />
+              )}
+            </div>
+            <div className="col-span-12 lg:col-span-4 min-h-[45vh]   rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white">
+       <MaterialRequisitionAnalysisChart
+       materialReleaseStatus={materialRequisitionAnalysisData}
+       
+       />
+        </div>
+          </div>
+        </div>
+      
+       
       </div>
 
       {/* chart sectio ends */}

@@ -189,7 +189,6 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
               </div>
             </li>
           )}
-
           {hasPermission('Procurement Module') && (
             <li
               className={`border-b text-center ${
@@ -229,7 +228,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
                     <div className="flex justify-center items-center">
                       <div className="relative w-[28px] h-[28px]">
                         <Image
-                          src="/icons/report.webp"
+                          src="/icons/report.svg"
                           width={28}
                           height={38}
                           priority

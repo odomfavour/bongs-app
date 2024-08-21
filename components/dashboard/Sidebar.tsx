@@ -189,32 +189,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
               </div>
             </li>
           )}
-          {hasPermission('Reports Module') && (
-            <li
-              className={`border-b text-center ${
-                activeTab === 'Reports' ? 'bg-gray-200' : ''
-              }`}
-            >
-              <Link href="#" onClick={closeInnerSidebar}>
-                <div className="w-full h-[90px] flex justify-center items-center">
-                  <div>
-                    <div className="flex justify-center items-center">
-                      <div className="relative w-[28px] h-[28px]">
-                        <Image
-                          src="/icons/sidebar_Reports.png"
-                          width={28}
-                          height={38}
-                          priority
-                          alt="avatar"
-                        />
-                      </div>
-                    </div>
-                    <p className="mt-2 text-[13px]">Reports</p>
-                  </div>
-                </div>
-              </Link>
-            </li>
-          )}
+
           {hasPermission('Procurement Module') && (
             <li
               className={`border-b text-center ${
@@ -240,6 +215,32 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
                   <p className="mt-2 text-[13px]">Procurement</p>
                 </div>
               </div>
+            </li>
+          )}
+          {hasPermission('Procurement Module') && (
+            <li
+              className={`border-b text-center ${
+                activeTab === 'Reports' ? 'bg-gray-200' : ''
+              }`}
+            >
+              <Link href="#" onClick={closeInnerSidebar}>
+                <div className="w-full h-[90px] flex justify-center items-center">
+                  <div>
+                    <div className="flex justify-center items-center">
+                      <div className="relative w-[28px] h-[28px]">
+                        <Image
+                          src="/icons/report.webp"
+                          width={28}
+                          height={38}
+                          priority
+                          alt="avatar"
+                        />
+                      </div>
+                    </div>
+                    <p className="mt-2 text-[13px]">Reports</p>
+                  </div>
+                </div>
+              </Link>
             </li>
           )}
           {hasPermission('User Management Module') && (

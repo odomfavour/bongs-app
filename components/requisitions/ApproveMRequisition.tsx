@@ -19,7 +19,7 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
   const [tableData, setTableData] = useState<any[]>([]);
-  const [procurementItem, setProcurementItem] = useState({});
+  const [procurementItem, setProcurementItem] = useState<any>({});
 
   const fetchReq = useCallback(async () => {
     dispatch(toggleLoading(true));

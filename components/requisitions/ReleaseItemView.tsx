@@ -43,7 +43,6 @@ const ReleaseItemView: React.FC<ViewReleaseItemProps> = ({
   releaseItem,
   handleClose,
 }) => {
-  console.log('relea', releaseItem);
   return (
     <div className="pb-10">
       <p className="my-6 text-2xl font-semibold text-center">

@@ -22,6 +22,7 @@ import Swal from 'sweetalert2';
 import Modal from '../dashboard/Modal';
 import ReleaseItemView from './ReleaseItemView';
 import RequisitionTable from '../AppComp/RequisitionTable';
+import ApproveMRequisition from './ApproveMRequisition';
 // import ReleaseTable from '../AppComp/ReleaseTable';
 
 interface Requisition {
@@ -207,16 +208,29 @@ const RequisitionListTable: React.FC<ReleaseListTableProps> = ({
   const handleViewClose = () => {
     setOpenViewModal(false);
   };
+  const [openApproveModal, setOpenApproveModal] = useState(false);
+
+  const handleCloseApprove = () => {
+    setOpenApproveModal(false);
+  };
   const router = useRouter();
   const [itemForRelease, setItemForRelease] = useState<any>({});
-
+  const [selectedReq, setSelectedReq] = useState(0);
   const viewItem = async (id: number) => {
     const selectedRel: any = currentItems.find((rel) => rel.id === id);
     // console.log('selectedRel', selectedRe);
 
     localStorage.setItem('selectedRelease', JSON.stringify(selectedRel));
 
-    router.push(`/material-release/${id}`);
+    if (pathname === '/requisitions') {
+      setSelectedReq(id);
+
+      setOpenApproveModal(true);
+
+      console.log(id);
+    } else {
+      router.push(`/material-release/${id}`);
+    }
     // dispatch(toggleLoading(true));
     // try {
     //   const response = await axios.get(
@@ -502,6 +516,18 @@ const RequisitionListTable: React.FC<ReleaseListTableProps> = ({
         <ReleaseItemView
           releaseItem={itemForRelease}
           handleClose={handleViewClose}
+        />
+      </Modal>
+      <Modal
+        title=""
+        isOpen={openApproveModal}
+        onClose={handleCloseApprove}
+        maxWidth="60%"
+      >
+        <ApproveMRequisition
+          selectedReq={selectedReq}
+          fetchData={fetchData}
+          setOpenModal={setOpenApproveModal}
         />
       </Modal>
     </div>

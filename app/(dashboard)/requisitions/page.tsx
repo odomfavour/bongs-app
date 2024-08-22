@@ -145,7 +145,7 @@ const Page = () => {
         />
       </Modal>
       <Modal
-        title=""
+        title="Review Material Requisitions"
         isOpen={openReqModal}
         onClose={handleReqClose}
         maxWidth="60%"

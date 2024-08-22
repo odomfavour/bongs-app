@@ -4,6 +4,7 @@ import AddRequisitions from '@/components/requisitions/AddRequisitions';
 import ApproveRequisition from '@/components/requisitions/ApproveRequisition';
 import DeclineRequisition from '@/components/requisitions/DeclineRequisition';
 import ReleaseItem from '@/components/requisitions/ReleaseItem';
+import ReqViewForm from '@/components/requisitions/ReqViewForm';
 import RequisitionListTable from '@/components/requisitions/RequisitionListTable';
 import RequisitionViewListTable from '@/components/requisitions/RequisitionViewTable';
 import { toggleLoading } from '@/provider/redux/modalSlice';
@@ -39,6 +40,22 @@ interface RequisitionItem {
   status: string;
   requisition: Requisition;
   requested_by: RequestedBy;
+}
+
+interface FormData {
+  uom_id: number;
+  stock_quantity: number | string;
+  critical_level: string;
+  part_number: string;
+  model_number: string;
+  description: string;
+  type: string;
+  remark: string;
+  barge_category: string;
+  barge_asset: string;
+  barge_asset_id: string;
+  attachements: File[];
+  inventoryable_id: number | null;
 }
 
 const Page = () => {
@@ -90,7 +107,11 @@ const Page = () => {
   };
 
   const [requisitionItem, setRequisitionItem] = useState<any>({});
-
+  const [tableData, setTableData] = useState<FormData[]>([]);
+  const [openReqModal, setOpenReqModal] = useState(false);
+  const handleReqClose = () => {
+    setOpenReqModal(false);
+  };
   return (
     <div>
       <div className="flex justify-between items-center mb-5 pb-10 border-b">
@@ -115,7 +136,25 @@ const Page = () => {
         />
       </div>
       <Modal title="" isOpen={openModal} onClose={handleClose} maxWidth="60%">
-        <AddRequisitions handleClose={handleClose} fetchData={fetchData} />
+        <AddRequisitions
+          handleClose={handleClose}
+          fetchData={fetchData}
+          setOpenReqModal={setOpenReqModal}
+          tableData={tableData}
+          setTableData={setTableData}
+        />
+      </Modal>
+      <Modal
+        title=""
+        isOpen={openReqModal}
+        onClose={handleReqClose}
+        maxWidth="60%"
+      >
+        <ReqViewForm
+          tableData={tableData}
+          handleClose={handleReqClose}
+          fetchData={fetchData}
+        />
       </Modal>
     </div>
   );

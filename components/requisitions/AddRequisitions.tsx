@@ -7,17 +7,35 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Modal from '../dashboard/Modal';
 import ReqViewForm from './ReqViewForm';
-
+interface FormData {
+  uom_id: number;
+  stock_quantity: number | string;
+  critical_level: string;
+  part_number: string;
+  model_number: string;
+  description: string;
+  type: string;
+  remark: string;
+  barge_category: string;
+  barge_asset: string;
+  barge_asset_id: string;
+  attachements: File[];
+  inventoryable_id: number | null;
+}
 interface AddRequisitionsModalProps {
   handleClose: () => void;
   fetchData: () => void;
-  inventoryType?: string;
+  setOpenReqModal: (open: boolean) => void;
+  tableData: FormData[]; // Replace `any[]` with the specific type of tableData if known
+  setTableData: React.Dispatch<React.SetStateAction<FormData[]>>;
 }
 
 const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
   handleClose,
   fetchData,
-  inventoryType,
+  setOpenReqModal,
+  tableData,
+  setTableData,
 }) => {
   const dispatch = useDispatch();
   const subscribers = useSelector((state: any) => state.modal.subscribers);
@@ -40,7 +58,6 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
     barge_asset_id: '',
     attachements: [] as File[],
     inventoryable_id: null,
-    backendUrl: [] as File[],
   });
 
   const [displayData, setDisplayData] = useState({});
@@ -61,7 +78,6 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
         barge_asset_id: '',
         attachements: bargeValues.attachements,
         inventoryable_id: bargeValues.inventoryable_id,
-        backendUrl: [],
       });
     }
   }, [bargeValues]);
@@ -219,40 +235,16 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files: File[] = Array.from(e.target.files);
+      const displayAttachments = files.map((file) => ({ attachement: file }));
+      // Update attachments in formData
+      setFormData((prevFormData: any) => ({
+        ...prevFormData,
+        attachements: [...prevFormData.attachements, ...displayAttachments],
+      }));
 
-      // Convert each file to a base64 string
-      const filePromises = files.map((file) => {
-        return new Promise<{ attachement: string }>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(file);
-          reader.onloadend = () => {
-            if (reader.result) {
-              // Extract the base64 string
-              const base64String = reader.result.toString().split(',')[1];
-              resolve({ attachement: base64String });
-            } else {
-              reject('File reading failed');
-            }
-          };
-          reader.onerror = reject;
-        });
-      });
-
-      try {
-        const newAttachments = await Promise.all(filePromises);
-
-        // Update attachments in formData
-        setFormData((prevFormData: any) => ({
-          ...prevFormData,
-          attachements: [...prevFormData.attachements, ...newAttachments],
-        }));
-
-        // Generate preview URLs for each file and update previews state
-        const newPreviews = files.map((file) => URL.createObjectURL(file));
-        setPreviews((prevPreviews: any) => [...prevPreviews, ...newPreviews]);
-      } catch (error) {
-        console.error('Error processing files', error);
-      }
+      // Generate preview URLs for each file and update previews state
+      const newPreviews = files.map((file) => URL.createObjectURL(file));
+      setPreviews((prevPreviews: any) => [...prevPreviews, ...newPreviews]);
     }
   };
 
@@ -268,11 +260,11 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
   const getPreviewUrl = (file: File) => {
     return URL.createObjectURL(file);
   };
-  const [tableData, setTableData] = useState<any[]>([]);
 
   const addItem = () => {
     console.log('item', formData);
-    setTableData((prevData) => [...prevData, formData]); // Push current formData to tableData state
+    setTableData((prevData) => [...prevData, formData]);
+
     setFormData({
       uom_id: 0,
       stock_quantity: 0 as number | string,
@@ -286,15 +278,9 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
       barge_asset: '',
       barge_asset_id: '',
       attachements: [] as File[],
-      backendUrl: [] as File[],
       inventoryable_id: null,
     });
     setPreviews([]);
-  };
-
-  const [openReqModal, setOpenReqModal] = useState(false);
-  const handleReqClose = () => {
-    setOpenReqModal(false);
   };
 
   return (
@@ -705,7 +691,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                     </td>
                     <td className="px-6 py-3 border-b text-sm text-gray-700">
                       {/* Render attachments if any */}
-                      {item.attachements.length > 0 ? (
+                      {item?.attachements?.length > 0 ? (
                         <div className="flex gap-2">
                           {item?.attachements.map(
                             (file: any, fileIndex: number) => {
@@ -737,7 +723,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                                     className="absolute top-1 right-1 text-red-500 hover:text-red-700"
                                     onClick={() => {
                                       const newAttachments =
-                                        item.attachments.filter(
+                                        item.attachements.filter(
                                           (_: any, i: number) => i !== fileIndex
                                         );
                                       setTableData(
@@ -807,21 +793,16 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                 loading ? 'opacity-50 cursor-not-allowed' : ''
               }`}
               disabled={loading}
-              onClick={() => setOpenReqModal(true)}
+              onClick={() => {
+                setOpenReqModal(true);
+                handleClose();
+              }}
             >
               Request
             </button>
           </div>
         </div>
       </div>
-      <Modal
-        title=""
-        isOpen={openReqModal}
-        onClose={handleReqClose}
-        maxWidth="60%"
-      >
-        <ReqViewForm tableData={tableData} handleClose={handleReqClose} />
-      </Modal>
     </div>
   );
 };

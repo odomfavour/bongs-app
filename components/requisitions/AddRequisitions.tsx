@@ -7,17 +7,35 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Modal from '../dashboard/Modal';
 import ReqViewForm from './ReqViewForm';
-
+interface FormData {
+  uom_id: number;
+  stock_quantity: number | string;
+  critical_level: string;
+  part_number: string;
+  model_number: string;
+  description: string;
+  type: string;
+  remark: string;
+  barge_category: string;
+  barge_asset: string;
+  barge_asset_id: string;
+  attachements: File[];
+  inventoryable_id: number | null;
+}
 interface AddRequisitionsModalProps {
   handleClose: () => void;
   fetchData: () => void;
-  inventoryType?: string;
+  setOpenReqModal: (open: boolean) => void;
+  tableData: FormData[]; // Replace `any[]` with the specific type of tableData if known
+  setTableData: React.Dispatch<React.SetStateAction<FormData[]>>;
 }
 
 const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
   handleClose,
   fetchData,
-  inventoryType,
+  setOpenReqModal,
+  tableData,
+  setTableData,
 }) => {
   const dispatch = useDispatch();
   const subscribers = useSelector((state: any) => state.modal.subscribers);
@@ -39,8 +57,10 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
     barge_asset: '',
     barge_asset_id: '',
     attachements: [] as File[],
-    inventoryable_id: 1,
+    inventoryable_id: null,
   });
+
+  const [displayData, setDisplayData] = useState({});
 
   useEffect(() => {
     if (Object.keys(bargeValues).length > 0) {
@@ -212,14 +232,14 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
 
   const [previews, setPreviews] = useState<any>([]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files: File[] = Array.from(e.target.files);
-
+      const displayAttachments = files.map((file) => ({ attachement: file }));
       // Update attachments in formData
-      setFormData((prevFormData) => ({
+      setFormData((prevFormData: any) => ({
         ...prevFormData,
-        attachements: [...prevFormData.attachements, ...files],
+        attachements: [...prevFormData.attachements, ...displayAttachments],
       }));
 
       // Generate preview URLs for each file and update previews state
@@ -240,11 +260,11 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
   const getPreviewUrl = (file: File) => {
     return URL.createObjectURL(file);
   };
-  const [tableData, setTableData] = useState<any[]>([]);
 
   const addItem = () => {
     console.log('item', formData);
-    setTableData((prevData) => [...prevData, formData]); // Push current formData to tableData state
+    setTableData((prevData) => [...prevData, formData]);
+
     setFormData({
       uom_id: 0,
       stock_quantity: 0 as number | string,
@@ -258,14 +278,9 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
       barge_asset: '',
       barge_asset_id: '',
       attachements: [] as File[],
-      inventoryable_id: 1,
+      inventoryable_id: null,
     });
     setPreviews([]);
-  };
-
-  const [openReqModal, setOpenReqModal] = useState(false);
-  const handleReqClose = () => {
-    setOpenReqModal(false);
   };
 
   return (
@@ -676,53 +691,58 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                     </td>
                     <td className="px-6 py-3 border-b text-sm text-gray-700">
                       {/* Render attachments if any */}
-                      {item.attachements.length > 0 ? (
+                      {item?.attachements?.length > 0 ? (
                         <div className="flex gap-2">
                           {item?.attachements.map(
-                            (file: any, fileIndex: number) => (
-                              <div
-                                key={fileIndex}
-                                className="relative h-[30px] w-[30px]"
-                              >
-                                {file.type.startsWith('image/') ? (
-                                  <Image
-                                    src={getPreviewUrl(file)}
-                                    alt={`Attachment ${index + 1}`}
-                                    layout="fill"
-                                    objectFit="cover"
-                                    className="rounded"
-                                  />
-                                ) : (
-                                  <div className="w-16 h-16 flex items-center justify-center bg-gray-200 border border-gray-300 rounded">
-                                    <span className="text-xs text-gray-600">
-                                      File
-                                    </span>
-                                  </div>
-                                )}
-                                <button
-                                  type="button"
-                                  className="absolute top-1 right-1 text-red-500 hover:text-red-700"
-                                  onClick={() => {
-                                    const newAttachments =
-                                      item.attachments.filter(
-                                        (_: any, i: number) => i !== fileIndex
-                                      );
-                                    setTableData(
-                                      tableData.map((data, idx) =>
-                                        idx === index
-                                          ? {
-                                              ...data,
-                                              attachments: newAttachments,
-                                            }
-                                          : data
-                                      )
-                                    );
-                                  }}
+                            (file: any, fileIndex: number) => {
+                              console.log('file', file);
+                              return (
+                                <div
+                                  key={fileIndex}
+                                  className="relative h-[30px] w-[30px]"
                                 >
-                                  &times;
-                                </button>
-                              </div>
-                            )
+                                  {file?.attachement?.type.startsWith(
+                                    'image/'
+                                  ) ? (
+                                    <Image
+                                      src={getPreviewUrl(file.attachement)}
+                                      alt={`Attachment ${index + 1}`}
+                                      layout="fill"
+                                      objectFit="cover"
+                                      className="rounded"
+                                    />
+                                  ) : (
+                                    <div className="w-16 h-16 flex items-center justify-center bg-gray-200 border border-gray-300 rounded">
+                                      <span className="text-xs text-gray-600">
+                                        File
+                                      </span>
+                                    </div>
+                                  )}
+                                  <button
+                                    type="button"
+                                    className="absolute top-1 right-1 text-red-500 hover:text-red-700"
+                                    onClick={() => {
+                                      const newAttachments =
+                                        item.attachements.filter(
+                                          (_: any, i: number) => i !== fileIndex
+                                        );
+                                      setTableData(
+                                        tableData.map((data, idx) =>
+                                          idx === index
+                                            ? {
+                                                ...data,
+                                                attachments: newAttachments,
+                                              }
+                                            : data
+                                        )
+                                      );
+                                    }}
+                                  >
+                                    &times;
+                                  </button>
+                                </div>
+                              );
+                            }
                           )}
                         </div>
                       ) : (
@@ -773,21 +793,16 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                 loading ? 'opacity-50 cursor-not-allowed' : ''
               }`}
               disabled={loading}
-              onClick={() => setOpenReqModal(true)}
+              onClick={() => {
+                setOpenReqModal(true);
+                handleClose();
+              }}
             >
               Request
             </button>
           </div>
         </div>
       </div>
-      <Modal
-        title=""
-        isOpen={openReqModal}
-        onClose={handleReqClose}
-        maxWidth="60%"
-      >
-        <ReqViewForm tableData={tableData} handleClose={handleReqClose} />
-      </Modal>
     </div>
   );
 };

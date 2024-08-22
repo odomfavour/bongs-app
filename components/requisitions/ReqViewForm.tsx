@@ -1,8 +1,9 @@
+import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import { subscribe } from 'diagnostics_channel';
 import Image from 'next/image';
 import React, { FormEvent, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 interface ReqViewFormProps {
@@ -22,26 +23,22 @@ interface ReqViewFormProps {
   }[];
 
   handleClose: () => void;
+  fetchData: () => void;
 }
 
-const ReqViewForm: React.FC<ReqViewFormProps> = ({ tableData }) => {
+const ReqViewForm: React.FC<ReqViewFormProps> = ({
+  tableData,
+  fetchData,
+  handleClose,
+}) => {
   console.log('taag', tableData);
+  const dispatch = useDispatch();
   const [title, setTitle] = useState('');
   const user = useSelector((state: any) => state.user.user);
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    console.log('data', tableData);
-
     e.preventDefault();
     // Add your form submission logic here
-
-    // const formDataToSend = new FormData();
-    // // Append title and user data
-    // formDataToSend.append('requisition_title', title);
-    // formDataToSend.append('subscriber_id', user?.subscriber_id || '');
-    // formDataToSend.append('department_id', user?.department_id || 1);
-
-    // // Append requisition data as a JSON string
-    // formDataToSend.append('requisition', [...tableData]);
+    dispatch(toggleLoading(true));
     try {
       const response = await axios.post(
         `${process.env.BASEURL}/procurement-requisition`,
@@ -54,12 +51,14 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({ tableData }) => {
         {
           headers: {
             Authorization: `Bearer ${user?.token}`,
+            'Content-Type': 'multipart/form-data',
           },
         }
       );
 
       toast.success(`${response?.data?.message}`);
-
+      fetchData();
+      handleClose();
       //   setFormData({
       //     uom_id: 0,
       //     stock_quantity: 0 as number | string,
@@ -91,6 +90,7 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({ tableData }) => {
       // Handle error (e.g., show error message)
     } finally {
       //    setLoading(false);
+      dispatch(toggleLoading(true));
     }
   };
 
@@ -159,9 +159,11 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({ tableData }) => {
                                   key={fileIndex}
                                   className="relative h-[30px] w-[30px]"
                                 >
-                                  {file.type.startsWith('image/') ? (
+                                  {file?.attachement?.type.startsWith(
+                                    'image/'
+                                  ) ? (
                                     <Image
-                                      src={getPreviewUrl(file)}
+                                      src={getPreviewUrl(file.attachement)}
                                       alt={`Attachment ${index + 1}`}
                                       layout="fill"
                                       objectFit="cover"

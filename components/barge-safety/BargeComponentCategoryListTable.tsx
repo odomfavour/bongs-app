@@ -56,7 +56,7 @@ const BargeComponentCategoryListTable: React.FC<
     );
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 100;
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;

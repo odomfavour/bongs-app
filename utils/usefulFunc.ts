@@ -5,7 +5,7 @@ import moment from 'moment';
 
 import Countdown, { CountdownRendererFn } from 'react-countdown';
 export const currencyFormatter = (amount: number) => {
-   if(!amount) return 
+  //  if(amount ) return 
     const newCurrency = new Intl.NumberFormat()
     const result = newCurrency.format(amount)
     return result
@@ -26,6 +26,16 @@ export const dateFormaterRelative = (dateString: string) => {
     dateFromNow: relativeTime,
     formattedDate
   }
+
+}
+
+
+export const dateFormater = (date: Date) => {
+
+  // format date in the for "YYYY MM DD"
+  const formatedDate = moment(date).format("YYYY-MM-DD" )
+
+  return formatedDate
 
 }
   

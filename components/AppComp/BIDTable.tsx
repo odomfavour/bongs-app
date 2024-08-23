@@ -1,8 +1,12 @@
-import { Barge } from '@/utils/types';
-import { formatDate } from '@/utils/utils';
-import React, { useMemo } from 'react';
-import { FaSearch } from 'react-icons/fa';
-import { FaRegFolderClosed } from 'react-icons/fa6';
+import { toggleLoading } from "@/provider/redux/modalSlice";
+import { fetchBidForRfqDataApi } from "@/utils/apiServices/procurementApi";
+import { Barge } from "@/utils/types";
+import { currencyFormatter, dateFormater } from "@/utils/usefulFunc";
+import { formatDate } from "@/utils/utils";
+import React, { useMemo } from "react";
+import { FaSearch } from "react-icons/fa";
+import { FaRegFolderClosed } from "react-icons/fa6";
+import { useDispatch } from "react-redux";
 import {
   useTable,
   usePagination,
@@ -12,22 +16,26 @@ import {
   UseGlobalFiltersInstanceProps,
   UsePaginationState,
   UsePaginationInstanceProps,
-} from 'react-table';
+} from "react-table";
+import { toast } from "react-toastify";
 
 function BidTable({
   MOCK_DATA,
   COLUMNS,
   fetchedData,
-  handleOpenModal
+  handleOpenModal,
+  handleGetAllBidForSingleRfqFunc,
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
   fetchedData: Barge[];
-  handleOpenModal: () => void
-  
+  handleOpenModal: () => void;
+  handleGetAllBidForSingleRfqFunc: (rfqbid: any, rfqId: any) => void;
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
+
+  const dispatch = useDispatch();
 
   type CustomTableInstance<T extends object> = TableInstance<T> &
     UseGlobalFiltersInstanceProps<T> &
@@ -67,7 +75,7 @@ function BidTable({
 
   const { globalFilter, pageIndex } = state;
 
-  console.log('the fetched data from bid', fetchedData);
+  console.log("the fetched data from bid", fetchedData);
 
   return (
     <>
@@ -76,7 +84,7 @@ function BidTable({
           <div className="w-full relative">
             <input
               type="search"
-              value={globalFilter || ''}
+              value={globalFilter || ""}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Search here... now"
               className="bg-gray-50 pl-8 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
@@ -95,14 +103,18 @@ function BidTable({
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup, index) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={index} className='border-b bg-[#E9EDF4]'>
+            <tr
+              {...headerGroup.getHeaderGroupProps()}
+              key={index}
+              className="border-b bg-[#E9EDF4]"
+            >
               {headerGroup.headers.map((column, index) => (
                 <th
                   className="py-2 text-center"
                   {...column.getHeaderProps()}
                   key={index}
                 >
-                  {column.render('Header')}
+                  {column.render("Header")}
                 </th>
               ))}
               <th className="py-2 text-center">Actions</th>
@@ -119,9 +131,7 @@ function BidTable({
                       <FaRegFolderClosed className="text-4xl" />
                     </div>
                     <div className="mt-5">
-                      <p className="font-medium text-[#475467]">
-                        No Bid found
-                      </p>
+                      <p className="font-medium text-[#475467]">No Bid found</p>
                       <p className="font-normal text-sm mt-3">
                         Click “add new bid” button to get started in doing your
                         <br /> first transaction on the platform
@@ -134,30 +144,29 @@ function BidTable({
           ) : (
             page.map((row, index) => {
               prepareRow(row);
-              console.log("row inner bid", row)
+              console.log("row inner bid", row.original);
               return (
                 <tr {...row.getRowProps()} key={index}>
                   {row.cells.map((cell, index) => {
-                  
-                  
-                    if(row.cells[index].column.Header === "Status")  {
+                    if (row.cells[index].column.Header === "Status") {
                       return (
                         <td
-                         className='flex items-center justify-center'
+                          className="flex items-center justify-center"
                           {...cell.getCellProps()}
                           key={index}
                         >
-                          <span  className={`text-center ${row.original.status === "pending" ? "text-red-600 bg-red-200 rounded-xl text-sm px-2 py-1" : "text-green-600 bg-green-200 rounded-xl text-sm px-2 py-1"}`}>
-                          {row.original.status}
+                          <span
+                            className={`text-center ${
+                              row.original.status === "pending"
+                                ? "text-red-600 bg-red-200 rounded-xl text-sm px-2 py-1"
+                                : "text-green-600 bg-green-200 rounded-xl text-sm px-2 py-1"
+                            }`}
+                          >
+                            {row.original.status}
                           </span>
-                        
                         </td>
                       );
                     }
-
-
-                  
-                    
 
                     return (
                       <td
@@ -165,21 +174,61 @@ function BidTable({
                         {...cell.getCellProps()}
                         key={index}
                       >
-                        {cell.render('Cell')}
+                        {cell.render("Cell")}
                       </td>
                     );
                   })}
-                  <td className='flex justify-center items-center'>
+                  <td className="flex justify-center items-center">
                     <div className="flex-row flex items-center w-max justify-center rounded-xl px-2 py-1 bg-[#a16207] cursor-pointer ">
-                   <span onClick={() => {
-                    handleOpenModal()
-
-
-                   }}
-                   className='text-center text-sm text-white'
-                   >
-                    View More
-                   </span>
+                      <span
+                        onClick={() => {
+                          const getAlBidForRfq = async () => {
+                           try{
+                            dispatch(toggleLoading(true));
+                            const response = await fetchBidForRfqDataApi(
+                              row.original.request_for_quotation_id
+                            );
+                            console.log(
+                              "bid data fetched for single rfq",
+                              data
+                            );
+                            dispatch(toggleLoading(false));
+                            console.log("show data from server", response)
+                        
+                            const bid = response.data.data.map((bid: any) => {
+                              return {
+                                BID: bid.id,
+                                isAwarded: bid.is_awarded,
+                                dateReceived: dateFormater(bid.created_at),
+                                vendor: bid.vendor,
+                                pricing: currencyFormatter(bid.grandTotal),
+                                paymentTerms: bid.payment_term,
+                                rate: bid.evaluation_point,
+                                deliveryPeriod: bid.delivery_date,
+                                currency: bid.currency,
+                              };
+                            });
+ 
+                            const rfqId = row.original.request_for_quotation_id;
+                         
+                            handleGetAllBidForSingleRfqFunc(bid, rfqId);
+                            handleOpenModal();
+                           }catch(error: any){
+                            console.error('Error:', error);
+                          const errorMessage =
+                          error?.response?.data?.message ||
+                          error?.response?.data?.errors ||
+                          error?.message ||
+                          'Unknown error';
+                               toast.error(`${errorMessage}`);
+                            }
+                          };
+                          getAlBidForRfq();
+                        }}
+                        className="text-center text-sm text-white"
+                      >
+                        View More
+                      </span>
                     </div>
                   </td>
                 </tr>
@@ -190,7 +239,7 @@ function BidTable({
       </table>
       <div className="flex flex-row justify-end mt-3">
         <span>
-          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
+          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{" "}
         </span>
 
         <button
@@ -198,8 +247,8 @@ function BidTable({
           disabled={!canPreviousPage}
           onClick={() => previousPage()}
         >
-          {' '}
-          Previous{' '}
+          {" "}
+          Previous{" "}
         </button>
         <button disabled={!canNextPage} onClick={() => nextPage()}>
           Next

@@ -26,12 +26,14 @@ export const procurementSlice = createSlice({
   initialState,
   reducers: {
   setDraftStateAction: (state, action) => {
-      console.log("action sent", action.payload)
+
+    console.log("data sent true action",action.payload )
        state.draftProcurementState.subscriber = action.payload.subscriber
        state.draftProcurementState.subscriberId = action.payload.subscriberId
        state.draftProcurementState.id = action.payload.id
     state.draftProcurementState.title = action.payload.title
    state.draftProcurementState.draftList = action.payload.draftList
+   state.draftProcurementState.procurementId = action.payload.procurementId
   },
   populateAllCategory: (state, action ) => {
    state.allCategory = action.payload

@@ -102,7 +102,7 @@ export interface DashboardCardType {
 
 
   materialRequisitionAmount: number,
-  totalApprovedMaterial: number,
+  materialReleasedPercentageChange: number,
 
  
    materialReceivedAmount: number,
@@ -112,8 +112,27 @@ export interface DashboardCardType {
   mivConsumables: number,
   mivAmount: number,
 
+  totalMaterialRequisition: number,
+  totalMaterialRequisitionApproved: number,
+
 }
 
+
+
+export type updateDraftProcurementType = {
+  subscriber_id: number,
+  procurement_id: number,
+  project_id?: number,
+  title: string,
+  procurement_type: string,
+  client_project_department: string,
+  vendor_category_id?: number,
+  budget: number,
+  currency:string,
+  delivery_date?: string,
+  bidding_deadline: string,
+  vendors?: number[]
+}
 
 
 

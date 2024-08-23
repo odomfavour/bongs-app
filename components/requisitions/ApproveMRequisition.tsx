@@ -20,6 +20,7 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
   const user = useSelector((state: any) => state.user.user);
   const [tableData, setTableData] = useState<any[]>([]);
   const [procurementItem, setProcurementItem] = useState<any>({});
+  const [comment, setComment] = useState<string | null>(null);
 
   const fetchReq = useCallback(async () => {
     dispatch(toggleLoading(true));
@@ -54,6 +55,42 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
   useEffect(() => {
     fetchReq();
   }, [fetchReq]);
+
+  const handleApproveOrReject = async (status: 'approved' | 'rejected') => {
+    dispatch(toggleLoading(true));
+    try {
+      const response = await axios.post(
+        `${process.env.BASEURL}/procurement-requisition/${selectedReq}`,
+        {
+          id: selectedReq,
+          status,
+          comment: comment || null, // The comment can be null if not provided
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+      console.log('Approve Response:', response);
+      if (response.status === 200) {
+        toast.success(`${response?.data?.message}`);
+      }
+      fetchData();
+      setOpenModal(false);
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  };
 
   const getPreviewUrl = (file: File) => {
     return URL.createObjectURL(file);
@@ -100,7 +137,7 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
                     </td>
                     <td className="px-6 py-3 border-b text-sm text-gray-700">
                       {/* Render attachments if any */}
-                      {/* {item.attachements.length > 0 ? (
+                      {item.attachements.length > 0 ? (
                         <div className="flex gap-2">
                           {item?.attachements.map(
                             (file: any, fileIndex: number) => (
@@ -108,11 +145,9 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
                                 key={fileIndex}
                                 className="relative h-[30px] w-[30px]"
                               >
-                                {file?.attachement?.type.startsWith(
-                                  'image/'
-                                ) ? (
+                                {file?.attachement ? (
                                   <Image
-                                    src={getPreviewUrl(file?.attachement)}
+                                    src={`/${file?.attachement}`}
                                     alt={`Attachment ${index + 1}`}
                                     layout="fill"
                                     objectFit="cover"
@@ -131,7 +166,7 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
                         </div>
                       ) : (
                         'No attachments'
-                      )} */}
+                      )}
                     </td>
                     <td className="px-6 py-3 border-b text-sm text-gray-700">
                       <div className="flex gap-2">
@@ -170,28 +205,37 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
           </table>
         </div>
       </div>
-      <div className="mt-5">
-        <label htmlFor="comment">Comment</label>
-        <textarea
-          id="remark"
-          rows={4}
-          placeholder="Input any comments"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-        ></textarea>
-      </div>
-      <div className="flex justify-end my-4">
-        <div className="flex gap-4">
-          <button
-            className="rounded-md border border-red-700 text-red-700 py-2 px-4"
-            onClick={() => setOpenModal(false)}
-          >
-            Decline
-          </button>
-          <button className="rounded-md bg-blue-700 text-white py-2 px-4">
-            Approve
-          </button>
-        </div>
-      </div>
+      {user?.is_barge_master &&
+      procurementItem?.barge_master_status !== 'approved' ? (
+        <>
+          <div className="mt-5">
+            <label htmlFor="comment">Comment</label>
+            <textarea
+              id="remark"
+              rows={4}
+              placeholder="Input any comments"
+              onChange={(e) => setComment(e.target.value)}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+            ></textarea>
+          </div>
+          <div className="flex justify-end my-4">
+            <div className="flex gap-4">
+              <button
+                className="rounded-md border border-red-700 text-red-700 py-2 px-4"
+                onClick={() => handleApproveOrReject('rejected')}
+              >
+                Decline
+              </button>
+              <button
+                className="rounded-md bg-blue-700 text-white py-2 px-4"
+                onClick={() => handleApproveOrReject('approved')}
+              >
+                Approve
+              </button>
+            </div>
+          </div>
+        </>
+      ) : null}
     </div>
   );
 };

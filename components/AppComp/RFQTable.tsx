@@ -70,7 +70,7 @@ function RFQTable({
 
 const dispatch = useDispatch()
 
-  console.log("fetched rfq data", fetchedData)
+
 
   return (
     <>
@@ -142,7 +142,6 @@ const dispatch = useDispatch()
           ) : (
             page.map((row, index) => {
               prepareRow(row);
-              console.log("row inner rqs", row)
               return (
                 <tr {...row.getRowProps()} key={index}>
                   {row.cells.map((cell, index) => {
@@ -176,7 +175,7 @@ const dispatch = useDispatch()
                           })
                            
 
-
+                            
                           const data = {
                             subscriber: row.original.subscriber.name,
                             procurementType: row.original.procurement_type,
@@ -187,7 +186,9 @@ const dispatch = useDispatch()
                             draftList,
                             
                           }
-                         
+                        
+                      
+                    
                           dispatch(setDraftStateAction(data))
                               handleOpenModal();
                         }}

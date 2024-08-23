@@ -171,8 +171,7 @@ export const fetchAllDepartmentDataApi = async() => {
 
 
 
-
-
+// 
 export const updateRFQDataApi = async(uploadData: {
   id: number,
   rfqUpdateData: any
@@ -182,6 +181,10 @@ export const updateRFQDataApi = async(uploadData: {
   const {id, rfqUpdateData} = uploadData
   
     let url = `${baseUrl}/procurement/rfq/${id}`
+
+
+    console.log("final data sent", rfqUpdateData, "id sent", id)
+
   
     const response = await axios.put(`${url}`,rfqUpdateData, {
         headers: {
@@ -193,4 +196,69 @@ export const updateRFQDataApi = async(uploadData: {
 }
 
 
+// bid api starts
+export const fetchBidForRfqDataApi = async(id: string) => {
+  const data = localStorage.getItem("bongsUser")
+  const { token } = data && JSON.parse(data)
+    let url = `${baseUrl}/procurement/bid/evaluation/${id}`
 
+    const response = await axios.get(`${url}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+    return response.data
+}
+
+
+export const verifyBidAccessDataApi = async(id: number) => {
+  const data = localStorage.getItem("bongsUser")
+  const { token } = data && JSON.parse(data)
+  // id of the bid
+    let url = `${baseUrl}/procurement/bid/verify-access/${id}`
+
+    const response = await axios.post(`${url}`,{}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+    return response.data
+}
+
+export const awardBidRfqDataApi = async(id: number, isAwarded: string) => {
+  const data = localStorage.getItem("bongsUser")
+  const { token } = data && JSON.parse(data)
+  // id of the bid
+
+  // https://devbongsapi.dpanalyticsolution.com/api/v1/procurement/bid/award-bid/{id}
+    let url = `${baseUrl}/procurement/bid/award-bid/${id}`
+
+
+
+   
+    const response = await axios.post(`${url}`,{
+      is_awarded: isAwarded
+    }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+    return response.data
+}
+
+export const showSingleBidRfqDataApi = async(id: string) => {
+  const data = localStorage.getItem("bongsUser")
+  const { token } = data && JSON.parse(data)
+  // id of the bid
+    let url = `${baseUrl}/procurement/bid/${id}`
+
+    const response = await axios.get(`${url}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+    return response.data
+}
+
+
+// bid api ends

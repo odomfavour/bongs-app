@@ -23,13 +23,10 @@ import {
   populateAllVendors,
 } from "@/provider/redux/procurementSlice";
 import { toggleLoading } from "@/provider/redux/modalSlice";
+import { updateDraftProcurementType } from "@/utils/types";
+import {  dateFormater } from "@/utils/usefulFunc";
 
 function ProcurementAddRequestModal() {
-  /* 
-"OEM Specific"|"3rd Party Vendors"| "Internal Procurement"
-*/
-
-
 
   const { title, draftList, procurementType, subscriber, subscriberId, procurementId, id } = useSelector(
     (state: any) => state.procurement.draftProcurementState
@@ -45,20 +42,21 @@ function ProcurementAddRequestModal() {
   const dispatch = useDispatch();
 
   const [allProject, setAllProject] = useState<
-    | {
+     {
         projectName: string;
       }[]
     | []
   >(allProjectsFromRedux);
   const [allVendors, setAllVendors] = useState<
-    | {
+     {
         vendorName: string;
+        vendorId: number
       }[]
     | []
   >(allVendorsFromRedux);
 
   const [allCategory, setAllCategory] = useState<
-    | {
+     {
         categoryName: string;
         categoryId: number
       }[]
@@ -66,11 +64,14 @@ function ProcurementAddRequestModal() {
   >(allCateryFromRedux);
 
   const [allDepartment, setAllDepartment] = useState<
-    | {
+     {
         departmentName: string;
       }[]
     | []
   >(allDepartmentsFromRedux);
+
+
+
 
   const [selectedVendor, setSelectedVendor] = useState("");
 
@@ -88,13 +89,18 @@ function ProcurementAddRequestModal() {
 
   const [RFQHeading, setRFQHeading] = useState("");
 
-  const [amount, setAmount] = useState<string | null>(null);
+  const [amount, setAmount] = useState<number | null>(null);
 
   const [isUIReady, setIsUIReady] = useState(true);
 
-  console.log("all vendors inner hhh", allVendors);
+
+
+
+ 
 
   const fetchProcurementsDataForDraft = useCallback(async () => {
+    
+  
     if (
       allCateryFromRedux !== null &&
       allVendorsFromRedux !== null &&
@@ -111,6 +117,9 @@ function ProcurementAddRequestModal() {
           fetchAllVendorDataApi(),
           fetchAllDepartmentDataApi(),
         ]);
+
+
+    
         dispatch(toggleLoading(false))
     
       const projectList = allProjectsData.data.data.map((project: any) => {
@@ -123,8 +132,9 @@ function ProcurementAddRequestModal() {
       setAllProject(projectList);
 
       const vendorsList = vendorsData.data.data.map(
-        (vendor: { vendor_name: string }) => {
+        (vendor: { vendor_name: string , id: number}) => {
           return {
+            vendorId:vendor.id,
             vendorName: vendor.vendor_name,
           };
         }
@@ -171,36 +181,60 @@ function ProcurementAddRequestModal() {
   }, []);
 
   useEffect(() => {
-    if (procurementType === "draft") {
+    
       fetchProcurementsDataForDraft();
-    }
-  }, [fetchProcurementsDataForDraft, procurementType]);
+  
+  }, [fetchProcurementsDataForDraft]);
 
 
 
 const handleUpdateRfq = async () => {
     try {
-      
-      const updateData = {
-        id, 
-        rfqUpdateData: {
-          procurement_type: RFQType,
-          subcriber_id: subscriberId,
-          procurement_id: procurementId,
-          title,
-          amount,
-          date:startDate,
-          client_project_department: "",
-          vendor_category_id:"",
-          vendors:[""]
+  console.log("this is the selectedCategory", selectedCategory)
 
 
-        }
-      }
+     
       if(!RFQType){
         toast.error("procurement type is required")
         return
       }
+
+      if(!amount ){
+        toast.error("budget is required")
+        return
+      }
+
+      if( amount < 0 || amount == 0){
+        toast.error("budget can not be negative value")
+        return
+      }
+
+    
+      if(!startDate){
+        toast.error("bidding deadline  is required")
+        return
+      }
+
+    
+
+     
+
+
+let rfqUpdeteData : any;
+const requiredFields = {
+ 
+  title,
+   subscriber_id:subscriberId, 
+   procurement_id:procurementId,
+   bidding_deadline:  dateFormater(startDate),
+   budget: amount,
+   procurement_type: RFQType,
+   currency: "NGN"
+   
+    
+}
+
+
   if(RFQType === "OEM Specific"){
     if( !selectedClient){
       toast.error("Marhant is required")
@@ -210,23 +244,39 @@ const handleUpdateRfq = async () => {
       toast.error("Vendor is required")
       return 
     }
-    
-       updateData.rfqUpdateData.client_project_department = selectedClient
-       updateData.rfqUpdateData.vendors = [selectedVendor]
-       
+    rfqUpdeteData = {
+      id,
+      rfqUpdateData: {
+        ...requiredFields,
+        client_project_department: selectedClient,
+        vendors : [selectedVendor],
+        
+      }
+     }
+      
   }
+
   if(RFQType === "3rd Party Vendors"){
     if( !selectedProject){
       toast.error("project is required")
       return
     }
     if( !selectedCategory){
-      toast.error("category is required")
+      toast.error("vendor category is required")
       return
     }
-    updateData.rfqUpdateData.client_project_department = selectedProject
-    updateData.rfqUpdateData.vendor_category_id = selectedCategory
+
+    rfqUpdeteData = {
+      id,
+      rfqUpdateData: {
+        ...requiredFields,
+        client_project_department: selectedProject,
+        vendor_category_id : Number(selectedCategory)
+      }
+     }
+  
   }
+
   if(RFQType === "Internal Procurement"){
     if(!selectedCategory){
       toast.error("vendor category is required")
@@ -235,15 +285,26 @@ const handleUpdateRfq = async () => {
     if( !selectedDepartment){
       toast.error("department is required")
     }
-    updateData.rfqUpdateData.vendor_category_id = selectedCategory
-    updateData.rfqUpdateData.client_project_department = selectedDepartment
+
+    rfqUpdeteData = {
+      id,
+      rfqUpdateData: {
+        ...requiredFields,
+        client_project_department: selectedDepartment,
+        vendor_category_id : Number(selectedCategory)
+      }
+     }
+   
   }
 
-    dispatch(toggleLoading(true))
-    console.log("data sent", updateData)
 
-    return 
-   const response =   await updateRFQDataApi(updateData)
+ 
+
+    dispatch(toggleLoading(true))
+    console.log("data sent update", rfqUpdeteData)
+
+
+   const response =   await updateRFQDataApi(rfqUpdeteData)
    
       dispatch(toggleLoading(false))
       toast.success("Procurement made successfully")
@@ -347,7 +408,7 @@ const handleUpdateRfq = async () => {
                   {allVendors?.map((item, index) => {
                     return (
                       <option
-                        value={item.vendorName}
+                        value={item.vendorId}
                         key={index}
                         className=" text-black text-sm font-normal font-['Inter']"
                       >
@@ -494,8 +555,13 @@ const handleUpdateRfq = async () => {
                 <span>NGN</span>
               </div>
               <input
-                className="flex-1 h-[40px] px-1 border-0 border-none focus:outline-none"
-                onChange={(e) => setAmount(e.target.value)}
+              min={1}
+                className="flex-1 h-[40px] px-1 border-0 border-none focus:outline-none no-spinner"
+                onChange={(e) => {
+                        const data = Number(e.target.value)
+                       
+                  setAmount(data)
+                }}
                 type="number"
               />
             </div>

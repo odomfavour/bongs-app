@@ -93,85 +93,88 @@ function MaterialRequisitionAnalysisChart({
 
 
   return (
-    <div className="">
-    
-      <div className="flex-1 flex flex-row     justify-center items-center h-full bg-white">
+       
+    <div className="w-full h-full bg-white">
      
-        {
-        data[0].value === 0 &&  data[0].value === 0  && data[0].value === 0 ? <div className="flex-1 flex flex-col justify-center items-center h-full">
-          
-          <p className="text-gray-500  mb-4 font-['Inter'] text-center ">
-       Material Requisitions Analysis
-       </p>
-          <p className="text-gray-500 text-sm mb-4 font-['Inter'] text-center ">No data found</p>
-        </div>:  <div className="flex flex-row items-center justify-center">
-            <div className="ml-2">
-            <p className="text-gray-500  mb-4 font-['Inter'] text-center ">
-       Material Requisitions Analysis
-       </p>
+    {
+    data[0].value === 0 &&  data[0].value === 0  && data[0].value === 0 ? 
+    <div className="flex-1 flex flex-col justify-center items-center h-full">
       
-          <div className="flex flex-row space-x-2 items-center">
-            <span className="w-3 h-3 rounded-full bg-[#08981FB2]" />
+      <p className="text-gray-500  mb-4 font-['Inter'] text-center ">
+   Material Requisitions Analysis
+   </p>
+      <p className="text-gray-500 text-sm mb-4 font-['Inter'] text-center ">No data found</p>
+    </div>: 
+    <div className="w-full h-full">
 
-            <span className="text-gray-500 text-sm font-medium font-['Inter']">
-              Total Material Released
-            </span>
-          </div>
-          <div className="flex flex-row space-x-2 items-center">
-            <span className="w-3 h-3 rounded-full bg-[#D8FAE7]" />
+    <p className="text-gray-500  my-4 font-['Inter'] text-center ">
+   Material Requisitions Analysis
+   </p>
+    <div className="flex flex-row justify-center items-center">
+        <div className="ml-2">
+     
+        <div className="flex flex-row space-x-2 items-center">
+        <span className="w-3 h-3 rounded-full bg-[#08981FB2]" />
 
-            <span className="text-gray-500 text-sm font-medium font-['Inter']">
-            Total Requisition Received
-            </span>
-          </div>
-          <div className="flex flex-row space-x-2 items-center">
-            <span className="w-3 h-3 rounded-full bg-[#FFF2DC]" />
-
-            <span className="text-gray-500 text-sm font-medium font-['Inter']">
-            Total Requisition Made
-            </span>
-          </div>
-        </div> 
-
-        <ResponsiveContainer width={400} height={400}>
-          <PieChart>
-            <Pie
-              data={data}
-              outerRadius={"70%"}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              label={renderCustomizedLabel}
-              dataKey="value"
-              height={"80%"}
-            >
-            
-              <Legend iconType="circle" align="right" verticalAlign="bottom" />
-              {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
-            {
-               isDesktop ?  <Tooltip 
-              content={<CustomTooltip />}
-              
-              /> :  <Tooltip  />
-            }
-           
-          </PieChart>
-        </ResponsiveContainer>
-      
-        </div>
-        }
-      
- 
+        <span className="text-gray-500 text-sm font-medium font-['Inter']">
+          Total Material Released
+        </span>
       </div>
-     
-   
+      <div className="flex flex-row space-x-2 items-center">
+        <span className="w-3 h-3 rounded-full bg-[#D8FAE7]" />
+
+        <span className="text-gray-500 text-sm font-medium font-['Inter']">
+        Total Requisition Received
+        </span>
+      </div>
+      <div className="flex flex-row space-x-2 items-center">
+        <span className="w-3 h-3 rounded-full bg-[#FFF2DC]" />
+
+        <span className="text-gray-500 text-sm font-medium font-['Inter']">
+        Total Requisition Made
+        </span>
+      </div>
+    
+    </div> 
+
+    <ResponsiveContainer width={400} height={400}>
+      <PieChart>
+        <Pie
+          data={data}
+          outerRadius={"70%"}
+          cx="50%"
+          cy="50%"
+          labelLine={false}
+          label={renderCustomizedLabel}
+          dataKey="value"
+          height={"80%"}
+        >
+        
+          <Legend iconType="circle" align="right" verticalAlign="bottom" />
+          {data.map((entry, index) => (
+            <Cell
+              key={`cell-${index}`}
+              fill={COLORS[index % COLORS.length]}
+            />
+          ))}
+        </Pie>
+        {
+           isDesktop ?  <Tooltip 
+          content={<CustomTooltip />}
+          
+          /> :  <Tooltip  />
+        }
+       
+      </PieChart>
+    </ResponsiveContainer>
+  
     </div>
+    </div>
+    
+    }
+  
+
+  </div>
   );
 }
 

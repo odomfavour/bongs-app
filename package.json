@@ -31,7 +31,8 @@
     "react-tooltip": "^5.27.0",
     "react-world-flags": "^1.6.0",
     "recharts": "^2.12.7",
-    "sweetalert2": "^11.12.1"
+    "sweetalert2": "^11.12.1",
+    "swr": "^2.2.5"
   },
   "devDependencies": {
     "@types/node": "^20",

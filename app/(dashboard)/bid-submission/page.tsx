@@ -26,8 +26,8 @@ console.log("this is the accessToken", accessToken)
         // setshowModal(false)
         const response =  await verifyBidAccessTokenApi(accessToken)
         console.log("this is the response from access", response)
-      
-       
+        const {message, data} = reponse.data
+        toast.success(message)
     } catch (error) {
         const errorMessage =
         error?.response?.data?.message ||

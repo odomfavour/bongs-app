@@ -13,11 +13,15 @@ import axios from 'axios';
 import {
   displayBargeValue,
   toggleAddBargeModal,
+  toggleLoading,
 } from '@/provider/redux/modalSlice';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import AppTable from '../AppComp/AppTable';
 import { Barge } from '@/utils/types';
+import Modal from '../dashboard/Modal';
+import ProjectViewModal from '../projects/ProjectViewModal';
+import BargeViewModal from './BargeViewModal';
 
 interface BargeListTableProps {
   data: Barge[];
@@ -113,6 +117,38 @@ const BargeListTable: React.FC<BargeListTableProps> = ({
     // dispatch(toggleAddBargeModal());
   };
 
+  const [barge, setBarge] = useState<any>({});
+
+  const [openViewModal, setOpenViewModal] = useState(false);
+  const handleViewClose = () => {
+    setOpenViewModal(false);
+  };
+
+  const handleView = async (id: number) => {
+    try {
+      dispatch(toggleLoading(true));
+      const response = await axios.get(`${process.env.BASEURL}/barge/${id}`, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      console.log('resp', response?.data?.data);
+      setBarge(response?.data?.data);
+      setOpenViewModal(true);
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  };
+
   const itemList = currentItems.map((item, index) => {
     return {
       ...item,
@@ -127,55 +163,54 @@ const BargeListTable: React.FC<BargeListTableProps> = ({
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
+        <AppTable
+          fetchedData={currentItems}
+          loadingStates={loadingStates}
+          handleDelete={handleDelete}
+          handleEdit={handleEdit}
+          handleView={handleView}
+          COLUMNS={[
+            {
+              Header: 'S/N',
+              accessor: 'S/N',
+            },
+            {
+              Header: 'Barge No',
+              accessor: 'barge_number',
+            },
+            {
+              Header: 'Name',
+              accessor: 'name',
+            },
+            {
+              Header: 'Rooms',
+              accessor: 'rooms',
+            },
+            {
+              Header: 'Stores',
+              accessor: 'store_location',
+            },
+            {
+              Header: 'Deck Level',
+              accessor: 'deck_level',
+            },
+            {
+              Header: 'Added By',
+              accessor: 'added_by',
+            },
+            {
+              Header: 'Status',
+              accessor: 'status',
+            },
+            {
+              Header: 'Created On',
+              accessor: 'created_at',
+            },
+          ]}
+          MOCK_DATA={itemList}
+        />
 
-          <AppTable
-            fetchedData={ currentItems}
-            loadingStates={ loadingStates }
-            handleDelete={handleDelete}
-            handleEdit={ handleEdit }
-            COLUMNS={[
-              {
-                Header: "S/N",
-                accessor: "S/N"
-            },
-            {
-                Header: "Barge No",
-                   accessor: "barge_number"
-            },
-            {
-                Header: "Name",
-                accessor: "name"
-            },
-            {
-                Header: "Rooms",
-                accessor: "rooms"
-            },
-            {
-                Header: "Stores",
-                accessor: "store_location"
-            },
-            {
-                Header: "Deck Level",
-                accessor: "deck_level"
-              },
-              {
-                Header: "Added By",
-                   accessor: "added_by"
-              },
-              {
-                Header: "Status",
-                accessor: "status"
-              },
-              {
-                Header: "Created On",
-                accessor: "created_at"
-              },
-              
-            ]}
-             MOCK_DATA={itemList}
-          /> 
-
-      {/*   <table className="table-auto w-full text-primary rounded-2xl mb-5">
+        {/*   <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
@@ -333,6 +368,14 @@ const BargeListTable: React.FC<BargeListTableProps> = ({
           </div>
         </div>
       )} */}
+      <Modal
+        title="Barge Detail"
+        isOpen={openViewModal}
+        onClose={handleViewClose}
+        maxWidth="40%"
+      >
+        <BargeViewModal barge={barge} />
+      </Modal>
     </div>
   );
 };

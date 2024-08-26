@@ -86,8 +86,6 @@ interface SparePart {
   user: User;
 }
 
-
-
 interface GeneratorListTableProps {
   data: SparePart[];
   fetchdata: () => void;
@@ -270,7 +268,6 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
         }
       );
 
-    
       setSelectedItems([]);
       toggleRequisition();
       toggleBulkDelete();
@@ -429,14 +426,14 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
       ...item,
       'S/N': `${index + 1}`,
       project: item?.project?.project_name,
-      description: item.description,
-      qty: item.stock_quantity,
-      partNumber: item.part_number,
+      description: item?.description,
+      qty: item?.stock_quantity,
+      partNumber: item?.part_number,
       model: item?.model_number,
-      threshold: item.threshold,
-      location: item.location.name,
-      dateAcquired: item.date_acquired,
-      warrantyDays: item.waranty_period,
+      threshold: item?.threshold,
+      location: item?.location?.name,
+      dateAcquired: item?.date_acquired,
+      warrantyDays: item?.waranty_period,
     };
   });
 

@@ -18,18 +18,20 @@ function ProjectTable({
   COLUMNS,
   handleEdit,
   handleDelete,
+  handleView,
   loadingStates,
   fetchedData,
-  hasPermission
+  hasPermission,
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
   handleEdit: (data: ProjectType) => void;
   handleDelete: (id: number) => void;
+  handleView: (id: number) => void;
   loadingStates: {
     [key: number]: boolean;
   };
-    hasPermission: (permission: string) => boolean
+  hasPermission: (permission: string) => boolean;
   fetchedData: ProjectType[];
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
@@ -73,7 +75,6 @@ function ProjectTable({
 
   const { globalFilter, pageIndex } = state;
 
-
   return (
     <>
       <div className="flex mb-4 items-center gap-2 md:w-2/5 w-full ml-auto">
@@ -98,7 +99,11 @@ function ProjectTable({
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup, index) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={index} className='border-b bg-[#E9EDF4]'>
+            <tr
+              {...headerGroup.getHeaderGroupProps()}
+              key={index}
+              className="border-b bg-[#E9EDF4]"
+            >
               {headerGroup.headers.map((column, index) => (
                 <th
                   className="py-2 text-center"
@@ -140,6 +145,18 @@ function ProjectTable({
               return (
                 <tr {...row.getRowProps()} key={_index}>
                   {row.cells.map((cell, index) => {
+                    if (cell.column.id === 'S/N') {
+                      return (
+                        <td
+                          className="text-center cursor-pointer text-blue-600"
+                          {...cell.getCellProps()}
+                          key={index}
+                          onClick={() => handleView(row.original.id)}
+                        >
+                          {cell.render('Cell')}
+                        </td>
+                      );
+                    }
                     return (
                       <td
                         className="text-center"
@@ -151,7 +168,7 @@ function ProjectTable({
                     );
                   })}
                   <td>
-                  {(hasPermission('can update project') ||
+                    {(hasPermission('can update project') ||
                       hasPermission('can delete project')) && (
                       <td className="py-2 text-center flex justify-left items-center">
                         <div className="flex gap-3">
@@ -186,7 +203,6 @@ function ProjectTable({
                         </div>
                       </td>
                     )}
-             
                   </td>
                 </tr>
               );

@@ -4,6 +4,8 @@ import Image from 'next/image';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import DocumentModal from '../dashboard/DocumentModal';
+import Modal from '../dashboard/Modal';
 
 interface ApproveRequisitionProps {
   selectedReq: number;
@@ -96,6 +98,12 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
     return URL.createObjectURL(file);
   };
 
+  const [openAttachModal, setOpenAttachModal] = useState(false);
+  const [currentDocument, setCurrentDocument] = useState('');
+  const handleAttachClose = () => {
+    setOpenAttachModal(false);
+  };
+
   return (
     <div>
       <p>Title</p>
@@ -114,12 +122,16 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
                 <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase">
                   Description
                 </th>
+
                 <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase">
                   Attachments
                 </th>
-                <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase">
-                  Actions
-                </th>
+                {user?.is_barge_master &&
+                  procurementItem?.barge_master_status !== 'approved' && (
+                    <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase">
+                      Actions
+                    </th>
+                  )}
               </tr>
             </thead>
             <tbody>
@@ -147,11 +159,15 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
                               >
                                 {file?.attachement ? (
                                   <Image
-                                    src={`/${file?.attachement}`}
+                                    src={`${file?.attachement}`}
                                     alt={`Attachment ${index + 1}`}
                                     layout="fill"
                                     objectFit="cover"
-                                    className="rounded"
+                                    className="rounded cursor-pointer"
+                                    onClick={() => {
+                                      setOpenAttachModal(true);
+                                      setCurrentDocument(file.attachement);
+                                    }}
                                   />
                                 ) : (
                                   <div className="w-16 h-16 flex items-center justify-center bg-gray-200 border border-gray-300 rounded">
@@ -168,15 +184,17 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
                         'No attachments'
                       )}
                     </td>
-                    <td className="px-6 py-3 border-b text-sm text-gray-700">
-                      <div className="flex gap-2">
-                        <button
-                          className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-2 py-1 rounded"
-                          type="button"
-                        >
-                          Attach File
-                        </button>
-                        {/* <button
+                    {user?.is_barge_master &&
+                      procurementItem?.barge_master_status !== 'approved' && (
+                        <td className="px-6 py-3 border-b text-sm text-gray-700">
+                          <div className="flex gap-2">
+                            <button
+                              className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-2 py-1 rounded"
+                              type="button"
+                            >
+                              Attach File
+                            </button>
+                            {/* <button
                             className="bg-red-500 hover:bg-red-600 text-white font-bold px-2 py-1 rounded"
                             type="button"
                             onClick={() => {
@@ -187,8 +205,9 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
                           >
                             Remove
                           </button> */}
-                      </div>
-                    </td>
+                          </div>
+                        </td>
+                      )}
                   </tr>
                 ))}
               {tableData.length === 0 && (
@@ -236,6 +255,13 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
           </div>
         </>
       ) : null}
+      <Modal
+        isOpen={openAttachModal}
+        onClose={handleAttachClose}
+        maxWidth="40%"
+      >
+        <DocumentModal documentUrl={currentDocument} />
+      </Modal>
     </div>
   );
 };

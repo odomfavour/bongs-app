@@ -19,6 +19,7 @@ function AppTable({
   COLUMNS,
   handleEdit,
   handleDelete,
+  handleView,
   loadingStates,
   fetchedData,
 }: {
@@ -26,6 +27,7 @@ function AppTable({
   COLUMNS: any[];
   handleEdit: (data: Barge) => void;
   handleDelete: (id: number) => void;
+  handleView: (id: number) => void;
   loadingStates: {
     [key: number]: boolean;
   };
@@ -97,7 +99,11 @@ function AppTable({
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup, index) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={index} className='border-b bg-[#E9EDF4]'>
+            <tr
+              {...headerGroup.getHeaderGroupProps()}
+              key={index}
+              className="border-b bg-[#E9EDF4]"
+            >
               {headerGroup.headers.map((column, index) => (
                 <th
                   className="py-2 text-center"
@@ -139,6 +145,18 @@ function AppTable({
               return (
                 <tr {...row.getRowProps()} key={index}>
                   {row.cells.map((cell, index) => {
+                    if (cell.column.id === 'S/N') {
+                      return (
+                        <td
+                          className="text-center cursor-pointer text-blue-600"
+                          {...cell.getCellProps()}
+                          key={index}
+                          onClick={() => handleView(row.original.id)}
+                        >
+                          {cell.render('Cell')}
+                        </td>
+                      );
+                    }
                     return (
                       <td
                         className="text-center"

@@ -1,6 +1,9 @@
+
 import { Anybody } from 'next/font/google';
 import DashboardWrapper from './DashboardWrapper';
 import { ReactNode } from 'react';
+
+
 
 // Define the metadata type
 interface Metadata {
@@ -25,5 +28,8 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
+
+
+
   return <DashboardWrapper>{children}</DashboardWrapper>;
 }

@@ -345,7 +345,7 @@ function GeneratorTable({
               type="search"
               value={globalFilter || ''}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              placeholder="Search here... now"
+              placeholder="Search"
               className="bg-gray-50 pl-8 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
             />
             <div className="absolute flex bottom-0 top-0 justify-center items-center left-3 text-primary cursor-pointer">

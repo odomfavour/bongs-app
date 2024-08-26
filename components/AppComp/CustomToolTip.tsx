@@ -9,6 +9,7 @@ const CustomTooltip = ({ active, payload, label, coordinate } : any) => {
     // Get screen dimensions
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
+    
 
     // Calculate tooltip position
     let left = coordinate.x + 10;

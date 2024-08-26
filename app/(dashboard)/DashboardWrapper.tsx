@@ -146,7 +146,7 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
   const path = usePathname()
 
   const [ pathName, setPathName] = useState("")
-  console.log("this is the pathNmae", path)
+
  const router = useRouter()
   useEffect(() => {
     if(path === "/bid-submission"){
@@ -161,19 +161,24 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
     setIsClient(true);
   }, []);
   if (!isClient) return null;
+  if( pathName === "/bid-submission" ){
+   return <div>
+    {children}
+    <ToastContainer />
+    </div>
+  }
   return (
     <>
       <section>
-        <MainHeader toggleSidebar={toggleSidebar} />
+      <MainHeader toggleSidebar={toggleSidebar} />
+       
         <div className="flex pt-[100px] bg-slate-50 gap-2">
           <div
             className={`fixed z-40 h-full bg-white shadow-lg lg:static lg:w-[120px] lg:block ${
               isSidebarOpen ? 'block' : 'hidden'
             }`}
           >
-           {
-            pathName === "/bid-submission" ? null : <Sidebar user={user} /> 
-           }
+          <Sidebar user={user} /> 
           </div>
           <main
             className={`flex-1 w-full px-5 min-h-[100vh] transition-all duration-300 ${

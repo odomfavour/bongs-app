@@ -44,6 +44,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
   const [formData, setFormData] = useState({
     project_id: null as number | null,
     deck_id: 0,
+    barge_id: null as number | null,
     keystore_id: 0,
     unit_of_measurement_id: 0,
     location_id: 0,
@@ -77,6 +78,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
         project_id: bargeValues.project_id,
         subscriber_id: bargeValues.subscriber_id,
         deck_id: bargeValues.deck_id,
+        barge_id: bargeValues.barge_id,
         keystore_id: bargeValues.keystore_id,
         unit_of_measurement_id: bargeValues.unit_of_measurement_id,
         location_id: bargeValues.location_id,
@@ -158,6 +160,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
       setFormData({
         project_id: null as number | null,
         deck_id: 0,
+        barge_id: null as number | null,
         keystore_id: 0,
         location_id: 0,
         vendor_id: 0,
@@ -204,6 +207,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
   };
   const [engineTypes, setEngineTypes] = useState([]);
   const [decks, setDecks] = useState([]);
+  const [barges, setBarges] = useState([]);
   const [storeItems, setStoreItems] = useState([]);
   const [projects, setProjects] = useState([]);
   const [uom, setUom] = useState([]);
@@ -218,6 +222,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
       const [
         projectsResponse,
         decksResponse,
+        bargeResponse,
         uomResponse,
         storeOnBoardResponse,
         locationResponse,
@@ -232,6 +237,11 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
           },
         }),
         axios.get(`${process.env.BASEURL}/deck`, {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }),
+        axios.get(`${process.env.BASEURL}/barge`, {
           headers: {
             Authorization: `Bearer ${user?.token}`,
           },
@@ -288,6 +298,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
       console.log('project', sparepartResponse, oalResponse);
       setProjects(projectsResponse?.data?.data?.data);
       setDecks(decksResponse?.data?.data?.data);
+      setBarges(bargeResponse?.data?.data?.data);
       setUom(uomResponse?.data?.data?.data);
       setStoreItems(storeOnBoardResponse?.data?.data?.data);
       setLocations(locationResponse?.data?.data?.data);
@@ -422,6 +433,39 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
                 </select>
               </div>
             )}
+            <div className="mb-4">
+              <label
+                htmlFor="subscriber"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Barge
+              </label>
+              <select
+                id="barge"
+                name="barge"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={
+                  formData.barge_id !== null ? formData.barge_id.toString() : ''
+                }
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    barge_id: parseInt(e.target.value),
+                  })
+                }
+              >
+                <option value="">Select Barge</option>
+                {barges?.map((barge: any) => (
+                  <option
+                    value={barge.id}
+                    key={barge.id}
+                    className="capitalize"
+                  >
+                    {barge.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             <div className="mb-4">
               <label

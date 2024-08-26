@@ -1,10 +1,14 @@
 'use client';
 import { BsXLg } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
-import { FormEvent, useEffect, useState } from 'react';
-import { toggleAddProjectModal } from '@/provider/redux/modalSlice';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
+import {
+  toggleAddProjectModal,
+  toggleLoading,
+} from '@/provider/redux/modalSlice';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 interface Subscriber {
   id: number;
@@ -56,6 +60,39 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
     }
   }, [bargeValues]);
   const [loading, setLoading] = useState(false);
+  const router = useRouter;
+  const [projectManagers, setProjectManagers] = useState<any>([]);
+  const fetchProjectManagers = useCallback(async () => {
+    dispatch(toggleLoading(true));
+    try {
+      const response = await axios.get(
+        `${process.env.BASEURL}/project-managers?subscriber_id=${user?.subscriber_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+      console.log('resp', response);
+      setProjectManagers(response?.data?.data?.project_managers);
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+
+      toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  }, [dispatch, user]);
+
+  useEffect(() => {
+    fetchProjectManagers();
+  }, [fetchProjectManagers]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -271,9 +308,11 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                 }
               >
                 <option value="">Select project manager</option>
-                <option value="1">Manager 1</option>
-                <option value="2">Manager 2</option>
-                <option value="3">Manager 3</option>
+                {projectManagers.map((projectManager: any) => (
+                  <option value={projectManager?.id} key={projectManager?.id}>
+                    Manager 1
+                  </option>
+                ))}
               </select>
             </div>
             <div className="mb-4">

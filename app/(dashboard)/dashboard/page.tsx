@@ -83,10 +83,10 @@ const {data : swrResponse, error, isLoading}  = useSWR(["inventory-data-fetch", 
   const response = await fetchDashboardDataApi({ year, month });
   return response
 },   {
-  revalidateOnFocus: true,       // Revalidate when the window is refocused
+  revalidateOnFocus: false,       // Revalidate when the window is refocused
   revalidateOnReconnect: true,   // Revalidate when reconnecting after losing connection
   refreshInterval: 3,            // Set to 0 if you don't want periodic revalidation
-  refreshWhenHidden: true,      // Set to true if you want to keep refreshing in the background
+  refreshWhenHidden: false,      // Set to true if you want to keep refreshing in the background
   refreshWhenOffline: false,     // Set to true if you want to keep refreshing when offline
 })
 
@@ -105,7 +105,7 @@ if(error){
 if(swrResponse?.status){
   const {data, message} = swrResponse
   console.log('dashboard data', data);
-  toast.success(message);
+  // toast.success(message);
   const { total_requisitions, total_approved_requisitions } =
     data.requisition_data;
   const {

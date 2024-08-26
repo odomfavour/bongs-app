@@ -3,11 +3,19 @@ import 'react-datepicker/dist/react-datepicker-cssmodules.css';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function Home() {
   const router = useRouter();
 
+  const path = usePathname()
+
   useEffect(() => {
+   
+    if(path === "bid_submission"){
+      router.push('/bid_submission');
+      return
+    }
     router.push('/login');
   }, [router]);
 

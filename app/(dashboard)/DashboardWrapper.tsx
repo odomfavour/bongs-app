@@ -5,6 +5,7 @@ import Sidebar from '@/components/dashboard/Sidebar';
 import AddLocationModal from '@/components/location/AddLocationModal';
 import AddBargeModal from '@/components/preferences/AddBargeModal';
 import AddDeckModal from '@/components/preferences/AddDeckModal';
+import { useRouter } from 'next/navigation';
 import AddStoreOnBoardModal from '@/components/preferences/AddStoreOnBoardModal';
 import AddProjectModal from '@/components/projects/AddProjectModal';
 import AddSafetyCategoryModal from '@/components/safety-category/AddSafetyCategoryModal';
@@ -27,6 +28,8 @@ import AddRoleModal from '@/components/users/AddRoleModal';
 import AddInventoryTypeModal from '@/components/inventory-category/AddInventoryTypeModal';
 import Loader from '@/components/Loader';
 import { setSubscribers } from '@/provider/redux/modalSlice';
+
+import { usePathname } from 'next/navigation';
 
 interface DashboardWrapperProps {
   children: ReactNode;
@@ -139,6 +142,19 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
     (state: any) => state.modal.isAddInventoryTypeModalOpen
   );
 
+
+  const path = usePathname()
+
+  const [ pathName, setPathName] = useState("")
+  console.log("this is the pathNmae", path)
+ const router = useRouter()
+  useEffect(() => {
+    if(path === "/bid-submission"){
+      setPathName("/bid-submission")
+    }
+  
+  }, [router]);
+
   const isLoading = useSelector((state: any) => state.modal.isLoading);
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
@@ -155,7 +171,9 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
               isSidebarOpen ? 'block' : 'hidden'
             }`}
           >
-            <Sidebar user={user} />
+           {
+            pathName === "/bid-submission" ? null : <Sidebar user={user} /> 
+           }
           </div>
           <main
             className={`flex-1 w-full px-5 min-h-[100vh] transition-all duration-300 ${

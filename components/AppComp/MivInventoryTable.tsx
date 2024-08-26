@@ -124,9 +124,7 @@ function MivInventoryTable({
           </div>
         </div>
 
-        <button className="bg-grey-400 border text-sm p-3 rounded-md">
-          Add Filter
-        </button>
+     
       </div> 
 
       <table {...getTableProps()}>

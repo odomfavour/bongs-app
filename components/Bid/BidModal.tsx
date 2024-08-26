@@ -22,6 +22,8 @@ function BidModal({
   rfq: string;
 }) {
   const dispatch = useDispatch();
+
+  console.log("bid response inner", bidList)
   return (
     <div>
       <h2 className="font-bold text-2xl text-center my-8 mx-auto">

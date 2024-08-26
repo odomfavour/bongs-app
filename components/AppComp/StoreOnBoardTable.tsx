@@ -89,9 +89,7 @@ function StoreOnBoardTable({
           </div>
         </div>
 
-        <button className=" border text-sm p-3 rounded-md ">
-          Add Filter
-        </button>
+      
       </div>
 
       <table {...getTableProps()}>

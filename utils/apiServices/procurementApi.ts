@@ -261,4 +261,13 @@ export const showSingleBidRfqDataApi = async(id: string) => {
 }
 
 
-// bid api ends
+
+  export const verifyBidAccessTokenApi = async(accessToken: number) => {
+      
+    console.log("this is the access_code", accessToken)
+    let url = `${baseUrl}/procurement/bid/verify-access`
+      const response = await axios.post(`${url}`, {
+        access_code: accessToken
+      })
+      return response.data
+  }

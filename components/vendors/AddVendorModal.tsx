@@ -8,6 +8,7 @@ import {
 } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { countries } from '@/utils/utils';
 
 interface Subscriber {
   id: number;
@@ -292,7 +293,7 @@ const AddVendorModal: React.FC<AddVendorModalProps> = ({
                 Website (Optional)
               </label>
               <input
-                type="url"
+                type="text"
                 id="vendor_website"
                 name="vendor_website"
                 placeholder="Input website"
@@ -320,10 +321,11 @@ const AddVendorModal: React.FC<AddVendorModalProps> = ({
                 }
               >
                 <option value="">Select Country</option>
-                <option value="US">United States</option>
-                <option value="CA">Canada</option>
-                <option value="FR">France</option>
-                <option value="DE">Germany</option>
+                {countries.map((country) => (
+                  <option value={country.value} key={country.name}>
+                    {country.name}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="mb-4">

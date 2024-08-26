@@ -5,6 +5,8 @@ import Image from 'next/image';
 import React, { FormEvent, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import DocumentModal from '../dashboard/DocumentModal';
+import Modal from '../dashboard/Modal';
 
 interface ReqViewFormProps {
   tableData: {
@@ -97,6 +99,12 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({
   const getPreviewUrl = (file: File) => {
     return URL.createObjectURL(file);
   };
+
+  const [openAttachModal, setOpenAttachModal] = useState(false);
+  const [currentDocument, setCurrentDocument] = useState('');
+  const handleAttachClose = () => {
+    setOpenAttachModal(false);
+  };
   return (
     <div>
       <form action="" onSubmit={handleSubmit}>
@@ -168,6 +176,12 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({
                                       layout="fill"
                                       objectFit="cover"
                                       className="rounded"
+                                      onClick={() => {
+                                        setOpenAttachModal(true);
+                                        setCurrentDocument(
+                                          getPreviewUrl(file.attachement)
+                                        );
+                                      }}
                                     />
                                   ) : (
                                     <div className="w-16 h-16 flex items-center justify-center bg-gray-200 border border-gray-300 rounded">
@@ -233,6 +247,13 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({
           </button>
         </div>
       </form>
+      <Modal
+        isOpen={openAttachModal}
+        onClose={handleAttachClose}
+        maxWidth="40%"
+      >
+        <DocumentModal documentUrl={currentDocument} />
+      </Modal>
     </div>
   );
 };

@@ -3,6 +3,7 @@
 import {
   displayBargeValue,
   toggleAddProjectModal,
+  toggleLoading,
   toggleSafetyCategoryModal,
 } from '@/provider/redux/modalSlice';
 import { formatDate } from '@/utils/utils';
@@ -18,6 +19,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import ProjectTable from '../AppComp/ProjectTable';
+import Modal from '../dashboard/Modal';
+import ProjectViewModal from './ProjectViewModal';
 interface ProjectManager {
   id: number;
   first_name: string;
@@ -71,7 +74,7 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-
+  const [project, setProject] = useState<any>({});
   // Function to change page
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -134,72 +137,99 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
     setOpenModal(true);
     // dispatch(toggleAddProjectModal());
   };
+  const [openViewModal, setOpenViewModal] = useState(false);
+  const handleViewClose = () => {
+    setOpenViewModal(false);
+  };
 
+  const handleView = async (id: number) => {
+    try {
+      dispatch(toggleLoading(true));
+      const response = await axios.get(`${process.env.BASEURL}/project/${id}`, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+      console.log('resp', response?.data?.data?.project);
+      setProject(response?.data?.data?.project);
+      setOpenViewModal(true);
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  };
 
   const itemList = currentItems.map((item, index) => {
     return {
       ...item,
-     name: `${item.project_name}`,
+      name: `${item.project_name}`,
       'S/N': `${index + 1}`,
       title: `${item.project_title}`,
       duration: `${item.project_duration}`,
       start_date: `${item.project_start_date}`,
       end_date: `${item.project_end_date}`,
       project_manager: `${item.project_manager?.first_name} ${item.project_manager?.last_name}`,
-      created_at: `${formatDate(item.created_at)}`
+      created_at: `${formatDate(item.created_at)}`,
     };
   });
-
 
   return (
     <div className="bg-white">
       <div className="overflow-x-auto">
         <ProjectTable
-       fetchedData={ currentItems}
-       loadingStates={ loadingStates }
-       handleDelete={handleDelete}
+          fetchedData={currentItems}
+          loadingStates={loadingStates}
+          handleView={handleView}
+          handleDelete={handleDelete}
           handleEdit={handleEdit}
-          hasPermission={ hasPermission }
-       COLUMNS={[
-         {
-           Header: "S/N",
-           accessor: "S/N"
-       },
-     
-       {
-           Header: "Name",
-           accessor: "name"
-       },
-       {
-           Header: "Title",
-           accessor: "title"
-       },
-       {
-           Header: "Duration",
-           accessor: "duration"
-       },
-       {
-           Header: "Start Date",
-           accessor: "start_date"
-         },
-         {
-           Header: "End Date",
-              accessor: "end_date"
-         },
-         {
-           Header: "Project managers",
-           accessor: "project_managers"
-         },
-         {
-           Header: "Created On",
-           accessor: "created_at"
-         },
-         
-       ]}
-        MOCK_DATA={itemList}
+          hasPermission={hasPermission}
+          COLUMNS={[
+            {
+              Header: 'S/N',
+              accessor: 'S/N',
+            },
+
+            {
+              Header: 'Name',
+              accessor: 'name',
+            },
+            {
+              Header: 'Title',
+              accessor: 'title',
+            },
+            {
+              Header: 'Duration',
+              accessor: 'duration',
+            },
+            {
+              Header: 'Start Date',
+              accessor: 'start_date',
+            },
+            {
+              Header: 'End Date',
+              accessor: 'end_date',
+            },
+            {
+              Header: 'Project managers',
+              accessor: 'project_managers',
+            },
+            {
+              Header: 'Created On',
+              accessor: 'created_at',
+            },
+          ]}
+          MOCK_DATA={itemList}
         />
 
-       {/*  <table className="table-auto w-full text-primary rounded-2xl mb-5">
+        {/*  <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
               <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
@@ -359,6 +389,14 @@ const ProjectsListTable: React.FC<ProjectsListTableProps> = ({
           </div>
         </div>
       )} */}
+      <Modal
+        title="Project Detail"
+        isOpen={openViewModal}
+        onClose={handleViewClose}
+        maxWidth="60%"
+      >
+        <ProjectViewModal project={project} />
+      </Modal>
     </div>
   );
 };

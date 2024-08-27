@@ -13,6 +13,22 @@ import {
   UsePaginationInstanceProps,
 } from 'react-table';
 
+interface Deck {
+  id: number;
+  name: string;
+  deck_number: string;
+  deck_type: string;
+}
+interface Location {
+  id: number;
+  name: string;
+  location_number: string;
+  address: string;
+  deck: Deck;
+  status: string;
+  created_at: string;
+}
+
 interface Inventory {
   id: number;
   description: string;
@@ -20,7 +36,8 @@ interface Inventory {
   threshold: string;
   part_number: string;
   model_number: string;
-  location: string;
+  location: Location;
+  stock_quantity: number;
 }
 
 function InventoryDbTable({

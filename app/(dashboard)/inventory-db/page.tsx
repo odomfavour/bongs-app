@@ -7,6 +7,22 @@ import { useDispatch, useSelector } from 'react-redux'; // Assuming you use Redu
 import { toast } from 'react-toastify'; // Assuming you use react-toastify for notifications
 import { toggleLoading } from '@/provider/redux/modalSlice';
 
+interface Deck {
+  id: number;
+  name: string;
+  deck_number: string;
+  deck_type: string;
+}
+interface Location {
+  id: number;
+  name: string;
+  location_number: string;
+  address: string;
+  deck: Deck;
+  status: string;
+  created_at: string;
+}
+
 interface Inventory {
   id: number;
   description: string;
@@ -14,7 +30,8 @@ interface Inventory {
   threshold: string;
   part_number: string;
   model_number: string;
-  location: string;
+  location: Location;
+  stock_quantity: number;
 }
 
 const Page = () => {

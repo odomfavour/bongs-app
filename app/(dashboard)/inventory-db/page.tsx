@@ -35,7 +35,7 @@ const Page = () => {
         },
       });
       console.log('resp', response);
-      //   setInventories(response?.data?.data?.data);
+      setInventories(response?.data?.data?.original?.data);
     } catch (error: any) {
       console.error('Error:', error);
 

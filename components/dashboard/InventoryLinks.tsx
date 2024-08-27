@@ -34,6 +34,12 @@ const links: LinkItem[] = [
     labels: ['Project', 'MIV'],
     img: 'requisition.svg',
   },
+  {
+    href: '/inventory-db',
+    label: 'Inventory DB',
+    labels: ['Project', 'MIV'],
+    img: 'requisition.svg',
+  },
 ];
 
 interface InventoryLinksProps {

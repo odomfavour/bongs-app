@@ -260,3 +260,29 @@ export type dratfProcurementType  = {
   title: string,
   draftList: draftListType 
 }
+
+
+export type creactNewBidApiType = {
+subscriber_id: number,
+request_for_qoutation_id: number,
+vendor_email: string,
+ vendor: string,
+ cost: number,
+ currency: string,
+ from_delivery_date?: string,
+ deleivery_date: string,
+ validity_period_to: string,
+ validity_period_from: string,
+ payment_term: string,
+ bid_items:any,
+//  bid_items: {
+//   quantity: number,
+//   name: string, 
+//   unitPrice: number,
+//   currency?: string
+
+//  }[],
+ bid_files: string[]
+
+
+}

@@ -52,7 +52,7 @@ const Page = () => {
     } finally {
       dispatch(toggleLoading(false));
     }
-  }, [selectedOption1, selectedOption2, selectedOption3, dispatch, router]);
+  }, [dispatch, user?.token, router]);
 
   useEffect(() => {
     fetchData();

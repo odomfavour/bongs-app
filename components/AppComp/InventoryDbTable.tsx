@@ -1,4 +1,3 @@
-import { LocationType } from '@/utils/types';
 import { formatDate } from '@/utils/utils';
 import React, { useMemo } from 'react';
 import { FaSearch } from 'react-icons/fa';
@@ -14,41 +13,26 @@ import {
   UsePaginationInstanceProps,
 } from 'react-table';
 
-interface Deck {
+interface Inventory {
   id: number;
-  name: string;
-  deck_number: string;
-  deck_type: string;
+  description: string;
+  quantity: number;
+  threshold: string;
+  part_number: string;
+  model_number: string;
+  location: string;
 }
 
-interface Location {
-  id: number;
-  name: string;
-  location_number: string;
-  address: string;
-  deck: Deck;
-  status: string;
-  created_at: string;
-}
-
-function LocationTable({
+function InventoryDbTable({
   MOCK_DATA,
   COLUMNS,
-  handleEdit,
-  confirmDelete,
-  loadingStates,
   fetchedData,
   hasPermission,
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
-  handleEdit: (data: Location) => void;
   hasPermission: (permision: string) => boolean;
-  confirmDelete: (id: number) => void;
-  loadingStates: {
-    [key: number]: boolean;
-  };
-  fetchedData: Location[];
+  fetchedData: Inventory[];
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
@@ -91,11 +75,9 @@ function LocationTable({
 
   const { globalFilter, pageIndex } = state;
 
-  console.log('the fetched data', fetchedData);
-
   return (
     <>
-      <div className="flex mb-4 items-center gap-2 md:w-2/5 w-full ml-auto">
+      <div className="flex my-4 items-center gap-2 md:w-2/5 w-full ml-auto">
         <div className="md:w-4/5 w-3/5">
           <div className="w-full relative">
             <input
@@ -144,11 +126,7 @@ function LocationTable({
                     </div>
                     <div className="mt-5">
                       <p className="font-medium text-[#475467]">
-                        No Location found
-                      </p>
-                      <p className="font-normal text-sm mt-3">
-                        Click “add location” button to get started in doing your
-                        <br /> first transaction on the platform
+                        No Inventories found
                       </p>
                     </div>
                   </div>
@@ -171,41 +149,6 @@ function LocationTable({
                       </td>
                     );
                   })}
-                  {(hasPermission('can update location') ||
-                    hasPermission('can delete location')) && (
-                    <td className="py-2 text-center flex justify-left text-sm items-center">
-                      <div className="flex gap-3">
-                        {hasPermission('can update location') && (
-                          <button
-                            className="bg-blue-700 text-white p-2 text-sm rounded-md"
-                            onClick={() => {
-                              const selectedRow = fetchedData.find(
-                                (item) => item.id == row.original.id
-                              );
-                              if (selectedRow) {
-                                return handleEdit(selectedRow);
-                              }
-                            }}
-                          >
-                            Edit
-                          </button>
-                        )}
-                        {hasPermission('can delete location') && (
-                          <button
-                            className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                            onClick={() => confirmDelete(row.original.id)}
-                            disabled={loadingStates[row.original.id]}
-                          >
-                            {loadingStates[row.original.id] ? (
-                              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                            ) : (
-                              'Delete'
-                            )}
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  )}
                 </tr>
               );
             })
@@ -233,4 +176,4 @@ function LocationTable({
   );
 }
 
-export default LocationTable;
+export default InventoryDbTable;

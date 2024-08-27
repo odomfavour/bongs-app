@@ -110,6 +110,7 @@ function GeneratorTable({
   handleQuantityChange,
   toggleRequisition,
   toggleBulkDelete,
+  hasPermission,
 }: {
   requisition: boolean;
   bulkDelete: boolean;
@@ -128,6 +129,7 @@ function GeneratorTable({
   handleSelect: (id: number) => void;
   quantities: { [key: number]: number };
   handleQuantityChange: (id: number, quatity: number) => void;
+  hasPermission: (permision: string) => boolean;
   toggleRequisition: () => void;
   toggleBulkDelete: () => void;
 }) {
@@ -471,51 +473,96 @@ function GeneratorTable({
                   })}
                   <td className="text-left text-sm py-3">
                     <div className="flex justify-left text-sm space-x-2">
-                      <button
-                        className="bg-blue-500 text-white p-2 rounded-md"
-                        onClick={() => {
-                          const selectedRow = fetchedData.find(
-                            (item) => item.id == row.original.id
-                          );
-                          if (selectedRow) {
-                            return handleEdit(selectedRow);
-                          }
-                        }}
-                      >
-                        Edit
-                      </button>
+                      {((parent === 'Engine' &&
+                        hasPermission('can update project engine spartpart')) ||
+                        (parent === 'Engine' &&
+                          hasPermission('can update MIV engine sparepart')) ||
+                        (parent === 'Deck' &&
+                          hasPermission('can update project deck sparepart')) ||
+                        (parent === 'Deck' &&
+                          hasPermission('can update MIV deck sparepart')) ||
+                        (parent === 'Hospital' &&
+                          hasPermission(
+                            'can update project hospital sparepart'
+                          )) ||
+                        (parent === 'Hospital' &&
+                          hasPermission('can update MIV hospital sparepart')) ||
+                        (parent === 'Hospital' &&
+                          hasPermission('can update MIV hospital sparepart')) ||
+                        (parent === 'Safety' &&
+                          hasPermission('can update MIV safety sparepart')) ||
+                        (parent === 'Safety' &&
+                          hasPermission(
+                            'can update project safety sparepart'
+                          ))) && (
+                        <button
+                          className="bg-blue-500 text-white p-2 rounded-md"
+                          onClick={() => {
+                            const selectedRow = fetchedData.find(
+                              (item) => item.id === row.original.id
+                            );
+                            if (selectedRow) {
+                              handleEdit(selectedRow);
+                            }
+                          }}
+                        >
+                          Edit
+                        </button>
+                      )}
 
-                      <button
-                        className="bg-red-700 p-2 rounded-md text-white cursor-pointer flex items-center justify-center
-                    "
-                        onClick={() => handleDelete([row.original.id])}
-                        disabled={loadingStates[row.original.id]} // Optional: Disable button while loading
-                      >
-                        {loadingStates[row.original.id] ? (
-                          <svg
-                            className="animate-spin h-5 w-5 mr-2 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8v8H4z"
-                            ></path>
-                          </svg>
-                        ) : (
-                          'Delete'
-                        )}
-                      </button>
+                      {((parent === 'Engine' &&
+                        hasPermission('can delete project engine spartpart')) ||
+                        (parent === 'Engine' &&
+                          hasPermission('can delete MIV engine sparepart')) ||
+                        (parent === 'Deck' &&
+                          hasPermission('can delete project deck sparepart')) ||
+                        (parent === 'Deck' &&
+                          hasPermission('can delete MIV deck sparepart')) ||
+                        (parent === 'Hospital' &&
+                          hasPermission(
+                            'can delete project hospital sparepart'
+                          )) ||
+                        (parent === 'Hospital' &&
+                          hasPermission('can delete MIV hospital sparepart')) ||
+                        (parent === 'Hospital' &&
+                          hasPermission('can delete MIV hospital sparepart')) ||
+                        (parent === 'Safety' &&
+                          hasPermission('can delete MIV safety sparepart')) ||
+                        (parent === 'Safety' &&
+                          hasPermission(
+                            'can delete project safety sparepart'
+                          ))) && (
+                        <button
+                          className="bg-red-700 p-2 rounded-md text-white cursor-pointer flex items-center justify-center"
+                          onClick={() => handleDelete([row.original.id])}
+                          disabled={loadingStates[row.original.id]} // Optional: Disable button while loading
+                        >
+                          {loadingStates[row.original.id] ? (
+                            <svg
+                              className="animate-spin h-5 w-5 mr-2 text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v8H4z"
+                              ></path>
+                            </svg>
+                          ) : (
+                            'Delete'
+                          )}
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

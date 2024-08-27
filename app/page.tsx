@@ -2,10 +2,9 @@
 import 'react-datepicker/dist/react-datepicker-cssmodules.css';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-bongs-frontend\app\(dashboard)\bid-submission\page.tsx
-import BidAccessComp from "./dashboard/bid-submission"
+
 
 export default function Home() {
   const router = useRouter();
@@ -23,9 +22,6 @@ export default function Home() {
   }, [router]);
 
 
-if(pathName){
-  return <BidAccessComp />
-}
 
   return (
     <main className="flex min-h-screen items-center justify-center">

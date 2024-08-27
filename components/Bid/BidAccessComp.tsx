@@ -260,27 +260,10 @@ function BidAccessComp() {
         });
       console.log("this is the response from access", response);
       const { message, data } = response;
-      const { rfq_id, subscriber_id, vendor_email, vendor_name, bid_items } =
-        data;
-      const newBid = bid_items.map((bid: any, index: number) => {
-        return {
-          id: index,
-          name: bid.name,
-          quantity: bid.quantity,
-          unitPrice: null,
-        };
-      });
-      setFormData({
-        rfqId: rfq_id,
-        subscriberId: subscriber_id,
-        vendorName: vendor_name,
-        vendorEmail: vendor_email,
-        bidItems: newBid,
-      });
-
       toast.success(message);
-      handleCloseModal();
-      setLoader(false);
+      dispatch(toggleLoading(true));
+    
+      
     } catch (error: any) {
       const errorMessage =
         error?.response?.data?.message ||
@@ -534,6 +517,15 @@ function BidAccessComp() {
         </div>
 
           {/* image list ends */}
+
+
+          <button
+          onClick={() => {
+        
+          }}
+          className="bg-blue-700 rounded-lg px-3 py-1 text-white ml-auto">
+            Submit
+          </button>
          
 
 

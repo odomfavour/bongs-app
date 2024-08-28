@@ -52,7 +52,7 @@ function TopTenInnventories({
      categoryNameCountPercentCountValueArray.length > 0 ?  <div className='flex-1 overflow-y-scroll'>
      { 
        categoryNameCountPercentCountValueArray.map(item => <div key={item.key} className='flex flex-row items-center space-x-2 space-y-2 px-4'>
-         <span className=' text-gray-500 w-2/6 block text-left '>
+         <span className=' text-gray-500 w-2/6 block text-left uppercase '>
            { item.categoryName}
          </span>
          <div className='flex flex-row items-center space-x-2 flex-1'>

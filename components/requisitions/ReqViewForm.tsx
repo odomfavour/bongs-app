@@ -33,7 +33,7 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({
   fetchData,
   handleClose,
 }) => {
-  console.log('taag', tableData);
+
   const dispatch = useDispatch();
   const [title, setTitle] = useState('');
   const user = useSelector((state: any) => state.user.user);

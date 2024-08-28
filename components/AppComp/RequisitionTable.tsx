@@ -113,7 +113,7 @@ function RequisitionTable({
               type="search"
               value={globalFilter || ''}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              placeholder="Search"
+              placeholder="Search here... now"
               className="bg-gray-50 pl-8 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
             />
             <div className="absolute flex bottom-0 top-0 justify-center items-center left-3 text-primary cursor-pointer">
@@ -121,8 +121,6 @@ function RequisitionTable({
             </div>
           </div>
         </div>
-
-      
       </div>
 
       <table {...getTableProps()}>
@@ -173,6 +171,32 @@ function RequisitionTable({
               return (
                 <tr {...row.getRowProps()} key={_index}>
                   {row.cells.map((cell, index) => {
+                    if (cell.column.id === 'status') {
+                      let statusColor = '';
+                      switch (cell.value) {
+                        case 'Approved':
+                          statusColor = 'text-green-700'; // or use a custom class
+                          break;
+                        case 'Pending approval':
+                          statusColor = 'text-yellow-700'; // or use a custom class
+                          break;
+                        case 'Declined':
+                          statusColor = 'text-red-500'; // or use a custom class
+                          break;
+                        default:
+                          statusColor = 'text-gray-500'; // default color
+                      }
+                      return (
+                        <td
+                          className={`text-center text-sm ${statusColor}`}
+                          {...cell.getCellProps()}
+                          key={index}
+                        >
+                          {cell.render('Cell')}
+                        </td>
+                      );
+                    }
+
                     return (
                       <td
                         className="text-center text-sm"

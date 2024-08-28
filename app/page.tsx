@@ -20,9 +20,10 @@ export default function Home() {
     router.push('/login');
   }, [path, router]);
 
-  if (pathName) {
-    return <BidAccessComp />;
-  }
+
+if(pathName){
+  return <BidAccessComp />
+}
 
   return (
     <main className="flex min-h-screen items-center justify-center">

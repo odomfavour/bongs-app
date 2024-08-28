@@ -35,6 +35,10 @@ interface Location {
   created_at: string;
 }
 
+interface SparePart {
+  id: number;
+}
+
 interface Inventory {
   id: number;
   description: string;
@@ -42,8 +46,20 @@ interface Inventory {
   threshold: string;
   part_number: string;
   model_number: string;
+  model_grade: string;
   location: Location;
   stock_quantity: number;
+  project_id: number;
+  spare_part_category: SparePart;
+  consumable_engine_category_id: number;
+  sparepart_engine_category_id: number;
+  consumable_deck_category_id: number;
+  sparepart_deck_category_id: number;
+  consumable_safety_category_id: number;
+  sparepart_safety_category_id: number;
+  consumable_hospital_category_id: number;
+  consumable_category_id: number;
+  sparepart_hospital_category_id: number;
 }
 
 interface LocationListTableProps {
@@ -93,8 +109,11 @@ const InventoryDbListTable: React.FC<LocationListTableProps> = ({
       quantity: `${item.stock_quantity || ''}`,
       threshold: `${item?.threshold || ''}`,
       part_number: `${item?.part_number || ''} `,
-      model_number: `${item?.model_number}`,
+      model_number: `${item?.model_number || item?.model_grade}`,
       location: `${item?.location?.name}`,
+      'Inventory Type': `${
+        !item?.spare_part_category ? 'Consumeable' : 'Spare part'
+      }`,
     };
   });
 
@@ -133,6 +152,10 @@ const InventoryDbListTable: React.FC<LocationListTableProps> = ({
             {
               Header: 'Location',
               accessor: 'location',
+            },
+            {
+              Header: 'Inventory Type',
+              accessor: 'Inventory Type',
             },
           ]}
           MOCK_DATA={itemList}

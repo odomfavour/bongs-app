@@ -29,15 +29,30 @@ interface Location {
   created_at: string;
 }
 
+interface SparePart {
+  id: number;
+}
 interface Inventory {
   id: number;
   description: string;
   quantity: number;
   threshold: string;
   part_number: string;
+  model_grade: string;
   model_number: string;
   location: Location;
   stock_quantity: number;
+  project_id: number;
+  spare_part_category: SparePart;
+  consumable_engine_category_id: number;
+  sparepart_engine_category_id: number;
+  consumable_deck_category_id: number;
+  sparepart_deck_category_id: number;
+  consumable_safety_category_id: number;
+  sparepart_safety_category_id: number;
+  consumable_hospital_category_id: number;
+  consumable_category_id: number;
+  sparepart_hospital_category_id: number;
 }
 
 function InventoryDbTable({
@@ -128,7 +143,7 @@ function InventoryDbTable({
                   {column.render('Header')}
                 </th>
               ))}
-              <th className="py-2 text-center">Actions</th>
+              {/* <th className="py-2 text-center">Actions</th> */}
             </tr>
           ))}
         </thead>

@@ -1,7 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-
-
 const initialState = {
   draftProcurementState: {
     subscriber: "",
@@ -10,15 +8,16 @@ const initialState = {
     title: "",
     id: null,
     draftList:{
-        stock_quantity: null,
+  stock_quantity: null,
   description: "",
   attachments: []
     }
   },
-  allCategory: null,
-  allProjects: null,
-  allVendors: null,
-  allDepartments: null
+  allCategory: [],
+  allProjects: [],
+  allVendorsCategory:[],
+  allDepartments: [],
+  allVendors: []
 };
 
 export const procurementSlice = createSlice({
@@ -27,7 +26,6 @@ export const procurementSlice = createSlice({
   reducers: {
   setDraftStateAction: (state, action) => {
 
-    console.log("data sent true action",action.payload )
        state.draftProcurementState.subscriber = action.payload.subscriber
        state.draftProcurementState.subscriberId = action.payload.subscriberId
        state.draftProcurementState.id = action.payload.id
@@ -41,11 +39,14 @@ export const procurementSlice = createSlice({
   populateAllProjects: (state, action ) => {
     state.allProjects = action.payload
    },
-   populateAllVendors: (state, action ) => {
-    state.allVendors = action.payload
+   populateAllVendorsCateroy: (state, action ) => {
+    state.allVendorsCategory = action.payload
    },
    populateAllDepartments: (state, action) => {
     state.allDepartments = action.payload
+   },
+   populateAllVendors: (state, action) => {
+    state.allVendors = action.payload
    }
 
 
@@ -59,7 +60,8 @@ export const {
   populateAllCategory,
   populateAllProjects,
   populateAllVendors,
-  populateAllDepartments
+  populateAllDepartments,
+  populateAllVendorsCateroy
 } = procurementSlice.actions;
 
 export default procurementSlice.reducer;

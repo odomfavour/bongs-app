@@ -3,7 +3,7 @@ import {
 } from "@/utils/data";
 import Image from "next/image";
 import React, { useCallback, useEffect, useState } from "react";
-import DatePicker from "react-datepicker";
+
 import "react-datepicker/dist/react-datepicker.css";
 import { FaPlus } from "react-icons/fa";
 import {  FaRegFolderClosed } from "react-icons/fa6";
@@ -12,7 +12,7 @@ import {
   fetchAllDepartmentDataApi,
   fetchAllProjectDataApi,
   fetchAllVendorCategoryDataApi,
-  fetchAllVendorDataApi,
+  fetchAllVendorsDataApi,
   updateRFQDataApi,
 } from "@/utils/apiServices/procurementApi";
 import { toast } from "react-toastify";
@@ -21,10 +21,9 @@ import {
   populateAllDepartments,
   populateAllProjects,
   populateAllVendors,
+  populateAllVendorsCateroy,
 } from "@/provider/redux/procurementSlice";
 import { toggleLoading } from "@/provider/redux/modalSlice";
-import { updateDraftProcurementType } from "@/utils/types";
-import {  dateFormater } from "@/utils/usefulFunc";
 
 function ProcurementAddRequestModal() {
 
@@ -32,11 +31,15 @@ function ProcurementAddRequestModal() {
     (state: any) => state.procurement.draftProcurementState
   );
 
+
+ 
+  
   const {
     allCategory: allCateryFromRedux,
     allProjects: allProjectsFromRedux,
     allVendors: allVendorsFromRedux,
     allDepartments: allDepartmentsFromRedux,
+    allVendorsCategory: allVendorsCategoryFromRedux,
   } = useSelector((state: any) => state.procurement);
 
   const dispatch = useDispatch();
@@ -45,29 +48,29 @@ function ProcurementAddRequestModal() {
      {
         projectName: string;
       }[]
-    | []
   >(allProjectsFromRedux);
-  const [allVendors, setAllVendors] = useState<
+  const [allVendorsCategory, setAllVendorsCategory] = useState<
      {
-        vendorName: string;
-        vendorId: number
+        vendorCategoryName: string;
+        vendorCategoryId: number
       }[]
-    | []
-  >(allVendorsFromRedux);
+  >(allVendorsCategoryFromRedux);
 
-  const [allCategory, setAllCategory] = useState<
-     {
-        categoryName: string;
-        categoryId: number
-      }[]
-    | []
-  >(allCateryFromRedux);
+
+
+
+  const [allVendors, setAllVendors] = useState<
+  {
+     vendorName: string;
+     vendorId: number
+   }[]
+
+>(allVendorsFromRedux);
 
   const [allDepartment, setAllDepartment] = useState<
      {
         departmentName: string;
       }[]
-    | []
   >(allDepartmentsFromRedux);
 
 
@@ -81,9 +84,11 @@ function ProcurementAddRequestModal() {
 
   const [selectedCategory, setSelectedCategory] = useState('');
 
+  const [selectedVendorCategory, setSelectedVendorCategory] = useState('');
+
   const [selectedDepartment, setSelectedDepartment] = useState("");
 
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState("");
 
   const [RFQType, setRFQType] = useState("");
 
@@ -102,26 +107,38 @@ function ProcurementAddRequestModal() {
     
   
     if (
-      allCateryFromRedux !== null &&
-      allVendorsFromRedux !== null &&
-      allProjectsFromRedux !== null &&
-      allDepartmentsFromRedux !== null
+      allCateryFromRedux.length !== 0 &&
+      allVendorsFromRedux.length !==  0 &&
+      allProjectsFromRedux.length !==  0 &&
+      allDepartmentsFromRedux.length !==  0 &&
+      allVendorsCategoryFromRedux.length !==  0 
+      
     )
       return;
       dispatch(toggleLoading(true))
     try {
-      const [allProjectsData, vendorCategoryData, vendorsData, departmentData] =
+      const [allProjectsData, vendorCategoryData, vendorsData, departmentData, ] =
         await Promise.all([
           fetchAllProjectDataApi(),
           fetchAllVendorCategoryDataApi(),
-          fetchAllVendorDataApi(),
-          fetchAllDepartmentDataApi(),
+          fetchAllVendorsDataApi(),
+          fetchAllDepartmentDataApi()
         ]);
 
 
-    
+
         dispatch(toggleLoading(false))
-    
+    const vendorsList = vendorsData.data.data.map((vendor: any) => {
+   return {
+    vendorName: vendor.vendor_name,
+    vendorId: vendor.id
+   }
+    })
+
+    dispatch(populateAllVendors(vendorsList));
+    setAllVendors(vendorsList)
+
+  
       const projectList = allProjectsData.data.data.map((project: any) => {
         return {
           projectName: project.project_name,
@@ -131,29 +148,29 @@ function ProcurementAddRequestModal() {
 
       setAllProject(projectList);
 
-      const vendorsList = vendorsData.data.data.map(
-        (vendor: { vendor_name: string , id: number}) => {
+      const vendorsCategoryList =  vendorCategoryData.data.data.map(
+        (vendorCategory: { name: string , id: number}) => {
           return {
-            vendorId:vendor.id,
-            vendorName: vendor.vendor_name,
+            vendorCategoryId:vendorCategory.id,
+            vendorCategoryName: vendorCategory.name,
           };
         }
       );
 
-      setAllVendors(vendorsList);
-      dispatch(populateAllVendors(vendorsList));
+      setAllVendorsCategory(vendorsCategoryList);
+      dispatch(populateAllVendorsCateroy(vendorsCategoryList));
       
-      const categoryList = vendorCategoryData.data.data.map(
-        (category: { name: string, id: number }) => {
-          return {
-            categoryName: category.name,
-            categoryId: category.id
-          };
-        }
-      );
+      // const categoryList = vendorCategoryData.data.data.map(
+      //   (category: { name: string, id: number }) => {
+      //     return {
+      //       categoryName: category.name,
+      //       categoryId: category.id
+      //     };
+      //   }
+      // );
 
-      setAllCategory(categoryList);
-      dispatch(populateAllCategory(categoryList));
+      // setAllCategory(categoryList);
+      // dispatch(populateAllCategory(categoryList));
 
       const departmentList = departmentData.data.data.map(
         (department: { department_name: string }) => {
@@ -190,15 +207,18 @@ function ProcurementAddRequestModal() {
 
 const handleUpdateRfq = async () => {
     try {
-  console.log("this is the selectedCategory", selectedCategory)
-
-
-     
       if(!RFQType){
         toast.error("procurement type is required")
         return
       }
-
+  if(allVendors.length  === 0){
+    toast.error("vendor is required")
+    return
+  }
+  if(allVendorsCategory.length  === 0){
+    toast.error("vendor caegory is required")
+    return
+  }
       if(!amount ){
         toast.error("budget is required")
         return
@@ -215,18 +235,13 @@ const handleUpdateRfq = async () => {
         return
       }
 
-    
-
-     
-
-
 let rfqUpdeteData : any;
 const requiredFields = {
  
   title,
    subscriber_id:subscriberId, 
    procurement_id:procurementId,
-   bidding_deadline:  dateFormater(startDate),
+   bidding_deadline: startDate,
    budget: amount,
    procurement_type: RFQType,
    currency: "NGN"
@@ -240,8 +255,8 @@ const requiredFields = {
       toast.error("Marhant is required")
       return
     }
-    if( !selectedVendor){
-      toast.error("Vendor is required")
+    if( !selectedVendorCategory){
+      toast.error("Vendor category is required")
       return 
     }
     rfqUpdeteData = {
@@ -277,6 +292,7 @@ const requiredFields = {
   
   }
 
+
   if(RFQType === "Internal Procurement"){
     if(!selectedCategory){
       toast.error("vendor category is required")
@@ -286,19 +302,21 @@ const requiredFields = {
       toast.error("department is required")
     }
 
+    if( !selectedVendor){
+      toast.error("Vendor is required")
+    }
+
     rfqUpdeteData = {
       id,
       rfqUpdateData: {
         ...requiredFields,
+        vendors : [selectedVendor],
         client_project_department: selectedDepartment,
         vendor_category_id : Number(selectedCategory)
       }
      }
    
   }
-
-
- 
 
     dispatch(toggleLoading(true))
     console.log("data sent update", rfqUpdeteData)
@@ -363,9 +381,7 @@ const requiredFields = {
             })}
           </select>
 
-          {/* 
-            
-            */}
+          
 
           {RFQType == "OEM Specific" && (
             <div>
@@ -463,14 +479,14 @@ const requiredFields = {
                   <option className=" text-black text-sm font-normal font-['Inter']">
                   Select vendor category
                   </option>
-                  {allCategory.map((item, index) => {
+                  {allVendorsCategory.map((item, index) => {
                     return (
                       <option
-                        value={item.categoryId}
+                        value={item.vendorCategoryId}
                         key={index}
                         className=" text-black text-sm font-normal font-['Inter']"
                       >
-                        {item.categoryName}
+                        {item.vendorCategoryName}
                       </option>
                     );
                   })}
@@ -521,22 +537,50 @@ const requiredFields = {
                   <option className=" text-black text-sm font-normal font-['Inter']">
                   Select vendor category
                   </option>
-                  {allCategory.map((item, index) => {
+                  {allVendorsCategory.map((item, index) => {
                     return (
                       <option
-                        value={item.categoryId}
+                        value={item.vendorCategoryId}
                         key={index}
                         className=" text-black text-sm font-normal font-['Inter']"
                       >
-                        {item.categoryName}
+                        {item.vendorCategoryName}
                       </option>
                     );
                   })}
                 </select>
               </div>
+
+              <div className="mt-2">
+                <p className="text-black text-lg font-normal font-['Inter']">
+                  Choose Vendor 
+                </p>
+                <select
+                  name=""
+                  id=""
+                  onChange={(e) => setSelectedVendor(e.target.value)}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
+                >
+                  <option className=" text-black text-sm font-normal font-['Inter']">
+                  Select vendor 
+                  </option>
+                   {allVendors.map((item, index) => {
+                    return (
+                      <option
+                        value={item.vendorId}
+                        key={index}
+                        className=" text-black text-sm font-normal font-['Inter']"
+                      >
+                        {item.vendorName}
+                      </option>
+                    );
+                  })} 
+                </select>
+              </div>
             </div>
           )}
 
+            
           {/* budget section starts */}
 
           <div className="mt-2">
@@ -574,16 +618,13 @@ const requiredFields = {
               Bidding deadline
             </p>
             <div></div>
-            <DatePicker
-              placeholderText="Enter Date"
-              showIcon
-              selected={startDate}
-              onChange={(date) => {
-                date && setStartDate(date);
-              }}
-            />
+           <input type="date"
+           onChange={(e) => setStartDate(e.target.value)}
+           />
           </div>
           {/* date end */}
+
+          
         </div>
       </div>
       <div className="flex-1">

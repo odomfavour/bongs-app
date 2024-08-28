@@ -18,7 +18,7 @@ import {
 
 
 
-const COLORS = ["#08981F", "#D8FAE7", "#FFF2DC"];
+const COLORS = ["#08981F", "#56A7FF", "#FDE7C1"];
 
 const RADIAN = Math.PI / 180;
 const renderCustomizedLabel = ({
@@ -85,13 +85,6 @@ function MaterialRequisitionAnalysisChart({
     { name: "Total Requisition Made", value:materialReleaseStatus.totalRequisitionMade },
   ];
  
-
-
-  console.log("data from inner material chart", data)
-
-
-
-
   return (
        
     <div className="w-full h-full bg-white">
@@ -117,18 +110,19 @@ function MaterialRequisitionAnalysisChart({
         <span className="w-3 h-3 rounded-full bg-[#08981FB2]" />
 
         <span className="text-gray-500 text-sm font-medium font-['Inter']">
-          Total Material Released
+          Total Requisition Released
         </span>
       </div>
       <div className="flex flex-row space-x-2 items-center">
-        <span className="w-3 h-3 rounded-full bg-[#D8FAE7]" />
+        <span className="w-3 h-3 rounded-full bg-[#56A7FF]" />
 
         <span className="text-gray-500 text-sm font-medium font-['Inter']">
         Total Requisition Received
         </span>
       </div>
       <div className="flex flex-row space-x-2 items-center">
-        <span className="w-3 h-3 rounded-full bg-[#FFF2DC]" />
+    
+        <span className="w-3 h-3 rounded-full bg-[#FDE7C1]" />
 
         <span className="text-gray-500 text-sm font-medium font-['Inter']">
         Total Requisition Made

@@ -36,15 +36,15 @@ function Barchart({ consumable_counts, spare_part_counts }: BarchartPropType) {
 
   
     if (consumableCountKeys[index] == "Deck") {
-      color = "#08981FB2";
+      color = "#F13D04";
     } else if (consumableCountKeys[index] == "Engine") {
-      color = "#F13D04B2";
+      color = "#08981F";
     } else if (consumableCountKeys[index] == "GalleyLaundry") {
-      color = "#C9CDD4";
+      color = "#E99D1B";
     } else if (consumableCountKeys[index] == "Hospital") {
-      color = "#007AFF1A";
+      color = "#007AFF";
     } else {
-      color = "#E4CD0099";
+      color = "#E4CD00";
     }
 
     consumableData.push({
@@ -143,7 +143,7 @@ function Barchart({ consumable_counts, spare_part_counts }: BarchartPropType) {
           <XAxis dataKey="name" />
 
           <YAxis
-            label={{ value: "counts", angle: -90, position: "insideLeft" }}
+            label={{ value: "Counts", angle: -90, position: "insideLeft" }}
           />
 
           <Tooltip />
@@ -161,7 +161,7 @@ function Barchart({ consumable_counts, spare_part_counts }: BarchartPropType) {
              } 
               {
              selectConsumableCount === "sparePart" && sparePartData.map(  (item, index) => {
-              console.log("this are the spare_part data", item)
+             
                 return <Cell key={`cell-${index}`} fill={item.color} />;
               })
              }

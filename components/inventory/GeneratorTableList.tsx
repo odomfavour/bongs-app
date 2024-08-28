@@ -487,6 +487,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
           parent={parent}
           handleSelect={handleSelect}
           selectedItems={selectedItems}
+          hasPermission={hasPermission}
           COLUMNS={[
             {
               Header: 'S/N',

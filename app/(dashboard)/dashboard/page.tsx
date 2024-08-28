@@ -151,9 +151,9 @@ const Page = () => {
       setInventoryOverTime(data.filtered_inventory_data);
 
       setMaterialRequisitionAnalysisData({
-        totalMaterialReleased: total_released_materials,
-        totalRequisitionReceived: total_approved_requisitions,
-        totalRequisitionMade: total_items_received,
+        totalMaterialReleased: total_materials,
+        totalRequisitionReceived:total_items_received,
+        totalRequisitionMade: total_requisitions,
       });
       setDashboardData([
         {

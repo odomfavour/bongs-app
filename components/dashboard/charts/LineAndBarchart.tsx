@@ -60,7 +60,7 @@ barGap={10}
 <XAxis dataKey="month" />
 
  
-<YAxis dataKey={"counts"} label={{ value: 'counts', position: 'insideLeft', angle: -90  }}
+<YAxis dataKey={"counts"} label={{ value: 'Counts', position: 'insideLeft', angle: -90  }}
 
 />
 <Tooltip />

@@ -13,7 +13,7 @@ function InventoryRequisitionAnalysis({
  
     const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0)
 
-    const [selectConsumableCount, setSelectConsumableCount] = useState(false)
+    const [selectField, setSelectField] = useState("all")
 
     const [dataToDisplay, setdataToDisplay] = useState<any[] | []>([])
     
@@ -32,10 +32,25 @@ function InventoryRequisitionAnalysis({
           <div className="flex flex-col items-center  mb-2">
         <span className='text-center text-gray-500'>Inventory to Requisition Analysis</span>
               <div className='flex flex-row justify-around  items-center mt-2 w-full'>
-              <div className="flex lg:flex-col flex-row  items-center space-x- lg:space-x-0">
+              <div className="flex  flex-row  items-center space-x- lg:space-x-0">
+        
+              <span className="flex-row flex  space-x-1">
+            <input
+               onClick={() => setSelectField('all')} 
+              defaultChecked
+              type="radio"
+              name="choose"
+              id="sparePart"
+            />
+              <label htmlFor="sparePart" >
+                <span className='text-center text-gray-500'>
+              All
+                </span>
+            </label>
+          </span>
           <span className="flex-row flex  space-x-1">
             <input
-               onClick={() => setSelectConsumableCount(false)} 
+               onClick={() => setSelectField('sparePart')} 
               defaultChecked
               type="radio"
               name="choose"
@@ -50,7 +65,7 @@ function InventoryRequisitionAnalysis({
           <span className="flex flex-row space-x-1">
             <input
            
-              onClick={() => setSelectConsumableCount(true)} 
+              onClick={() => setSelectField("consumables")} 
               type="radio"
               name="choose"
             />

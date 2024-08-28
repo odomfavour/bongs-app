@@ -122,7 +122,7 @@ export const fetchAllVendorCategoryDataApi = async () => {
   return response.data;
 };
 
-export const fetchAllVendorDataApi = async () => {
+export const fetchAllVendorsDataApi = async () => {
   const data = localStorage.getItem('bongsUser');
   const { token } = data && JSON.parse(data);
 
@@ -150,7 +150,7 @@ export const fetchAllDepartmentDataApi = async () => {
   return response.data;
 };
 
-//
+
 export const updateRFQDataApi = async (uploadData: {
   id: number;
   rfqUpdateData: any;
@@ -161,7 +161,7 @@ export const updateRFQDataApi = async (uploadData: {
 
   let url = `${baseUrl}/procurement/rfq/${id}`;
 
-  console.log('final data sent', rfqUpdateData, 'id sent', id);
+
 
   const response = await axios.put(`${url}`, rfqUpdateData, {
     headers: {
@@ -207,8 +207,6 @@ export const awardBidRfqDataApi = async (id: number, isAwarded: string) => {
   const data = localStorage.getItem('bongsUser');
   const { token } = data && JSON.parse(data);
   // id of the bid
-
-  // https://devbongsapi.dpanalyticsolution.com/api/v1/procurement/bid/award-bid/{id}
   let url = `${baseUrl}/procurement/bid/award-bid/${id}`;
 
   const response = await axios.post(
@@ -248,7 +246,6 @@ export const verifyBidAccessTokenApi = async (accessToken: string) => {
   return response.data;
 };
 
-// https://devbongsapi.dpanalyticsolution.com/api/v1/
 export const creactNewBidApi = async (bidData: creactNewBidApiType) => {
   const data = localStorage.getItem('bongsUser');
   const { token } = data && JSON.parse(data);
@@ -264,3 +261,5 @@ console.log("this is the sent bid data", bidData)
   });
   return response.data;
 }
+
+

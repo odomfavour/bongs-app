@@ -18,7 +18,7 @@ import {
 
 
 
-const COLORS = ["#08981F", "#56A7FF", "##FDE7C1"];
+const COLORS = ["#08981F", "#56A7FF", "#FDE7C1"];
 
 const RADIAN = Math.PI / 180;
 const renderCustomizedLabel = ({

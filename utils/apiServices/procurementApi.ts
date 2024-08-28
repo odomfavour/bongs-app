@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { creactNewBidApiType } from '../types';
 const baseUrl = process.env.BASEURL;
 
 export const fetchProcurementChartDataApi = async (params: {
@@ -246,3 +247,20 @@ export const verifyBidAccessTokenApi = async (accessToken: string) => {
   });
   return response.data;
 };
+
+// https://devbongsapi.dpanalyticsolution.com/api/v1/
+export const creactNewBidApi = async (bidData: creactNewBidApiType) => {
+  const data = localStorage.getItem('bongsUser');
+  const { token } = data && JSON.parse(data);
+  // id of the bid
+  let url = `${baseUrl}/procurement/bid`;
+console.log("this is the sent bid data", bidData)
+
+  const response = await axios.post(`${url}`,bidData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+}

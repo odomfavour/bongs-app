@@ -19,6 +19,22 @@ import Swal from 'sweetalert2';
 import LocationTable from '../AppComp/LocationTable';
 import InventoryDbTable from '../AppComp/InventoryDbTable';
 
+interface Deck {
+  id: number;
+  name: string;
+  deck_number: string;
+  deck_type: string;
+}
+interface Location {
+  id: number;
+  name: string;
+  location_number: string;
+  address: string;
+  deck: Deck;
+  status: string;
+  created_at: string;
+}
+
 interface Inventory {
   id: number;
   description: string;
@@ -26,7 +42,8 @@ interface Inventory {
   threshold: string;
   part_number: string;
   model_number: string;
-  location: string;
+  location: Location;
+  stock_quantity: number;
 }
 
 interface LocationListTableProps {
@@ -73,11 +90,11 @@ const InventoryDbListTable: React.FC<LocationListTableProps> = ({
       ...item,
       description: `${item.description}`,
       'S/N': `${index + 1}`,
-      quantity: `${item.quantity}`,
-      threshold: `${item.threshold || ''}`,
-      part_number: `${item.part_number || ''} `,
-      model_number: `${item.model_number}`,
-      location: `${item.location}`,
+      quantity: `${item.stock_quantity || ''}`,
+      threshold: `${item?.threshold || ''}`,
+      part_number: `${item?.part_number || ''} `,
+      model_number: `${item?.model_number}`,
+      location: `${item?.location?.name}`,
     };
   });
 

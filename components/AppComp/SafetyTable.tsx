@@ -21,13 +21,13 @@ function SafetyTable({
   handleDelete,
   loadingStates,
   fetchedData,
-  hasPermission
+  hasPermission,
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
   handleEdit: (data: SafetyCategoryType) => void;
-    handleDelete: (id: number) => void;
-  hasPermission: (permission : string) => boolean
+  handleDelete: (id: number) => void;
+  hasPermission: (permission: string) => boolean;
   loadingStates: {
     [key: number]: boolean;
   };
@@ -74,10 +74,9 @@ function SafetyTable({
 
   const { globalFilter, pageIndex } = state;
 
-
   return (
     <>
-      <div className="flex mb-4 items-center gap-2 md:w-2/5 w-full ml-auto">
+      <div className="flex mb-4 justify-end gap-2 md:w-2/5 w-full ml-auto">
         <div className="md:w-4/5 w-3/5">
           <div className="w-full relative">
             <input
@@ -92,14 +91,16 @@ function SafetyTable({
             </div>
           </div>
         </div>
-
-      
       </div>
 
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup, index) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={index} className='border-b bg-[#E9EDF4]'>
+            <tr
+              {...headerGroup.getHeaderGroupProps()}
+              key={index}
+              className="border-b bg-[#E9EDF4]"
+            >
               {headerGroup.headers.map((column, index) => (
                 <th
                   className="py-2 text-center"
@@ -151,13 +152,13 @@ function SafetyTable({
                       </td>
                     );
                   })}
-                   {(hasPermission('can update safety category') ||
-                      hasPermission('can delete safety category')) && (
-                      <td className="py-2 text-center flex justify-center items-center">
-                        <div className="flex gap-3">
-                          {hasPermission('can update safety category') && (
-                            <button
-                              className="bg-blue-700 text-white p-2 rounded-md"
+                  {(hasPermission('can update safety category') ||
+                    hasPermission('can delete safety category')) && (
+                    <td className="py-2 text-center flex justify-center items-center">
+                      <div className="flex gap-3">
+                        {hasPermission('can update safety category') && (
+                          <button
+                            className="bg-blue-700 text-white p-2 rounded-md"
                             /*  onClick={() => handleEdit(fetchedData)} */
                             onClick={() => {
                               const selectedRow = fetchedData.find(
@@ -167,26 +168,26 @@ function SafetyTable({
                                 return handleEdit(selectedRow);
                               }
                             }}
-                            >
-                              Edit
-                            </button>
-                          )}
-                          {hasPermission('can delete safety category') && (
-                            <button
-                              className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                              onClick={() => handleDelete(row.original.id)}
-                              disabled={loadingStates[row.original.id]}
-                            >
-                              {loadingStates[row.original.id] ? (
-                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                              ) : (
-                                'Delete'
-                              )}
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    )}
+                          >
+                            Edit
+                          </button>
+                        )}
+                        {hasPermission('can delete safety category') && (
+                          <button
+                            className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                            onClick={() => handleDelete(row.original.id)}
+                            disabled={loadingStates[row.original.id]}
+                          >
+                            {loadingStates[row.original.id] ? (
+                              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                            ) : (
+                              'Delete'
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  )}
                 </tr>
               );
             })

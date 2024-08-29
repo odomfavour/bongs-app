@@ -1,10 +1,10 @@
-import { setDraftStateAction } from "@/provider/redux/procurementSlice";
-import { Barge } from "@/utils/types";
-import { formatDate } from "@/utils/utils";
-import React, { useMemo } from "react";
-import { FaSearch } from "react-icons/fa";
-import { FaRegFolderClosed } from "react-icons/fa6";
-import { useDispatch } from "react-redux";
+import { setDraftStateAction } from '@/provider/redux/procurementSlice';
+import { Barge } from '@/utils/types';
+import { formatDate } from '@/utils/utils';
+import React, { useMemo } from 'react';
+import { FaSearch } from 'react-icons/fa';
+import { FaRegFolderClosed } from 'react-icons/fa6';
+import { useDispatch } from 'react-redux';
 import {
   useTable,
   usePagination,
@@ -14,7 +14,7 @@ import {
   UseGlobalFiltersInstanceProps,
   UsePaginationState,
   UsePaginationInstanceProps,
-} from "react-table";
+} from 'react-table';
 
 function RFQTable({
   MOCK_DATA,
@@ -68,18 +68,16 @@ function RFQTable({
 
   const { globalFilter, pageIndex } = state;
 
-const dispatch = useDispatch()
-
-
+  const dispatch = useDispatch();
 
   return (
     <>
-      <div className="flex mb-4 items-center gap-2 md:w-2/5 w-full ml-auto">
+      <div className="flex mb-4 justify-end gap-2 md:w-2/5 w-full ml-auto">
         <div className="md:w-4/5 w-3/5">
           <div className="w-full relative">
             <input
               type="search"
-              value={globalFilter || ""}
+              value={globalFilter || ''}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Search"
               className="bg-gray-50 pl-8 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
@@ -89,8 +87,6 @@ const dispatch = useDispatch()
             </div>
           </div>
         </div>
-
-      
       </div>
 
       <table {...getTableProps()}>
@@ -107,7 +103,7 @@ const dispatch = useDispatch()
                   {...column.getHeaderProps()}
                   key={index}
                 >
-                  {column.render("Header")}
+                  {column.render('Header')}
                 </th>
               ))}
               <th className="py-2 text-center">Actions</th>
@@ -149,7 +145,7 @@ const dispatch = useDispatch()
                         {...cell.getCellProps()}
                         key={index}
                       >
-                        {cell.render("Cell")}
+                        {cell.render('Cell')}
                       </td>
                     );
                   })}
@@ -157,38 +153,36 @@ const dispatch = useDispatch()
                     <div className="flex-row flex items-center w-max justify-center rounded-xl px-2 py-1 bg-[#a16207] cursor-pointer ">
                       <span
                         onClick={() => {
-                          const draftList = row.original.procurement.procurement_requisitions
-                          .map((item: any)  =>  {
-                            const attachments = item.attachements.map((pic: any) =>{
-                               return {
-                                attachment_uri: pic.attachment_uri
-                               }
-                            })
-                           return {
-                            stock_quantity : item.stock_quantity,
-                            description: item.description,
-                            attachments: attachments,
-                           
-                           }
-                          })
-                           
+                          const draftList =
+                            row.original.procurement.procurement_requisitions.map(
+                              (item: any) => {
+                                const attachments = item.attachements.map(
+                                  (pic: any) => {
+                                    return {
+                                      attachment_uri: pic.attachment_uri,
+                                    };
+                                  }
+                                );
+                                return {
+                                  stock_quantity: item.stock_quantity,
+                                  description: item.description,
+                                  attachments: attachments,
+                                };
+                              }
+                            );
 
-                            
                           const data = {
                             subscriber: row.original.subscriber.name,
                             procurementType: row.original.procurement_type,
-                            subscriberId:row.original.subscriber_id,
-                            procurementId:row.original.procurement_id,
+                            subscriberId: row.original.subscriber_id,
+                            procurementId: row.original.procurement_id,
                             id: row.original.id,
                             title: row.original.title,
                             draftList,
-                            
-                          }
-                        
-                      
-                    
-                          dispatch(setDraftStateAction(data))
-                              handleOpenModal();
+                          };
+
+                          dispatch(setDraftStateAction(data));
+                          handleOpenModal();
                         }}
                         className="text-center text-sm text-white"
                       >
@@ -204,7 +198,7 @@ const dispatch = useDispatch()
       </table>
       <div className="flex flex-row justify-end mt-3">
         <span>
-          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{" "}
+          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
         </span>
 
         <button
@@ -212,8 +206,8 @@ const dispatch = useDispatch()
           disabled={!canPreviousPage}
           onClick={() => previousPage()}
         >
-          {" "}
-          Previous{" "}
+          {' '}
+          Previous{' '}
         </button>
         <button disabled={!canNextPage} onClick={() => nextPage()}>
           Next

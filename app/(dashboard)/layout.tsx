@@ -28,8 +28,6 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
-
-
-
+  
   return <DashboardWrapper>{children}</DashboardWrapper>;
 }

@@ -159,9 +159,11 @@ const dispatch = useDispatch()
                         onClick={() => {
                           const draftList = row.original.procurement.procurement_requisitions
                           .map((item: any)  =>  {
-                            const attachments = item.attachements.map((pic: any) =>{
+                            const attachments = item.attachements.map((pic: any) => {
+                              console.log("pic from atachement",pic)
                                return {
-                                attachment_uri: pic.attachment_uri
+                                attachment_uri: pic.attachement
+
                                }
                             })
                            return {

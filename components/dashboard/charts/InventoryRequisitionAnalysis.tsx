@@ -31,8 +31,8 @@ function InventoryRequisitionAnalysis({
 
           <div className="flex flex-col items-center  mb-2">
         <span className='text-center text-gray-500'>Inventory to Requisition Analysis</span>
-              <div className='flex flex-row justify-around  items-center mt-2 w-full'>
-              <div className="flex  flex-row  items-center space-x- lg:space-x-0">
+              <div className='mt-2 w-full px-4'>
+              <div className="flex  flex-row items-center justify-between ">
         
               <span className="flex-row flex  space-x-1">
             <input
@@ -76,7 +76,7 @@ function InventoryRequisitionAnalysis({
                </label>
           </span>
                   </div>   
-                  <div>
+                  <div className='flex flex-row items-center justify-end mt-3'>
                       <select
                          value={selectedCategoryIndex} 
                           onChange={(e) => {

@@ -142,7 +142,7 @@ function BidTable({
           ) : (
             page.map((row, index) => {
               prepareRow(row);
-              console.log("row inner bid", row.original);
+         
               return (
                 <tr {...row.getRowProps()} key={index}>
                   {row.cells.map((cell, index) => {
@@ -188,9 +188,10 @@ function BidTable({
                             );
                             console.log(
                               "bid data fetched for single rfq",
-                              data
+                              response
                             );
-                            dispatch(toggleLoading(false));
+                             dispatch(toggleLoading(false));
+                             return
                             console.log("show data from server", response)
                         
                             const bid = response.data.data.map((bid: any) => {

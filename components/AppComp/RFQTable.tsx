@@ -153,7 +153,7 @@ function RFQTable({
                     <div className="flex-row flex items-center w-max justify-center rounded-xl px-2 py-1 bg-[#a16207] cursor-pointer ">
                       <span
                         onClick={() => {
-<<<<<<< HEAD
+
                           const draftList = row.original.procurement.procurement_requisitions
                           .map((item: any)  =>  {
                             const attachments = item.attachements.map((pic: any) => {
@@ -171,25 +171,6 @@ function RFQTable({
                            }
                           })
                            
-=======
-                          const draftList =
-                            row.original.procurement.procurement_requisitions.map(
-                              (item: any) => {
-                                const attachments = item.attachements.map(
-                                  (pic: any) => {
-                                    return {
-                                      attachment_uri: pic.attachment_uri,
-                                    };
-                                  }
-                                );
-                                return {
-                                  stock_quantity: item.stock_quantity,
-                                  description: item.description,
-                                  attachments: attachments,
-                                };
-                              }
-                            );
->>>>>>> upstream/dev
 
                           const data = {
                             subscriber: row.original.subscriber.name,

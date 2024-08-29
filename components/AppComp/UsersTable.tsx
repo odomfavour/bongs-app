@@ -2,7 +2,7 @@ import { Deck } from '@/utils/types';
 import React, { useMemo } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { FaRegFolderClosed } from 'react-icons/fa6';
-import Link from "next/link"
+import Link from 'next/link';
 import {
   useTable,
   usePagination,
@@ -34,17 +34,17 @@ function UsersTable({
   handleDelete,
   loadingStates,
   fetchedData,
-  handleEdit
+  handleEdit,
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
   handleDelete: (id: number) => void;
-  handleEdit: (data:User) =>  void
+  handleEdit: (data: User) => void;
   loadingStates: {
     [key: number]: boolean;
   };
   fetchedData: User[];
-  hasPermission: (permission: string) => boolean
+  hasPermission: (permission: string) => boolean;
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
@@ -87,10 +87,9 @@ function UsersTable({
 
   const { globalFilter, pageIndex } = state;
 
-
   return (
     <>
-      <div className="flex  items-center gap-2 md:w-2/5 w-full ml-auto my-4">
+      <div className="flex justify-end gap-2 md:w-2/5 w-full ml-auto my-4">
         <div className="md:w-4/5 w-3/5">
           <div className="w-full relative">
             <input
@@ -105,14 +104,16 @@ function UsersTable({
             </div>
           </div>
         </div>
-
-      
-      </div> 
+      </div>
 
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup, index) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={index} className='border-b bg-[#E9EDF4]'>
+            <tr
+              {...headerGroup.getHeaderGroupProps()}
+              key={index}
+              className="border-b bg-[#E9EDF4]"
+            >
               {headerGroup.headers.map((column, index) => (
                 <th
                   className="py-2 text-center"
@@ -123,11 +124,10 @@ function UsersTable({
                 </th>
               ))}
 
-              {
-                (hasPermission('can update user') ||
-                hasPermission('can delete user')) &&   <th className="py-2 text-center">Actions</th>
-              }
-            
+              {(hasPermission('can update user') ||
+                hasPermission('can delete user')) && (
+                <th className="py-2 text-center">Actions</th>
+              )}
             </tr>
           ))}
         </thead>
@@ -141,14 +141,14 @@ function UsersTable({
                       <FaRegFolderClosed className="text-4xl" />
                     </div>
                     <div className="mt-5">
-                        <p className="font-medium text-[#475467]">
-                          No Users found
-                        </p>
-                        <p className="font-normal text-sm mt-3">
-                          Click “add User” button to get started in doing your
-                          <br /> first transaction on the platform
-                        </p>
-                      </div>
+                      <p className="font-medium text-[#475467]">
+                        No Users found
+                      </p>
+                      <p className="font-normal text-sm mt-3">
+                        Click “add User” button to get started in doing your
+                        <br /> first transaction on the platform
+                      </p>
+                    </div>
                   </div>
                 </div>
               </td>
@@ -169,66 +169,66 @@ function UsersTable({
                       </td>
                     );
                   })}
-                    {(hasPermission('can update user') ||
-                      hasPermission('can delete user')) && (
-                      <td className="py-2 text-left flex justify-left items-center">
-                        <div className="flex gap-3">
-                          {hasPermission('can update user') && (
-                            <button
-                              className="bg-blue-700 text-sm text-white p-2 rounded-md"
-                              onClick={() => {
-                                const selectedRow = fetchedData.find(
-                                  (item) => item.id == row.original.id
-                                );
-                                if (selectedRow) {
-                                  return handleEdit(selectedRow);
-                                }
-                              }}
-                            >
-                              Edit
-                            </button>
-                          )}
-                          {hasPermission('can delete user') && (
-                            <button
-                              className="bg-red-700 text-sm text-white p-2 rounded-md flex items-center justify-center"
-                              onClick={() => handleDelete(row.original.id)}
-                              disabled={loadingStates[row.original.id]}
-                            >
-                              {loadingStates[row.original.id] ? (
-                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                              ) : (
-                                'Delete'
-                              )}
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    )}
+                  {(hasPermission('can update user') ||
+                    hasPermission('can delete user')) && (
+                    <td className="py-2 text-left flex justify-left items-center">
+                      <div className="flex gap-3">
+                        {hasPermission('can update user') && (
+                          <button
+                            className="bg-blue-700 text-sm text-white p-2 rounded-md"
+                            onClick={() => {
+                              const selectedRow = fetchedData.find(
+                                (item) => item.id == row.original.id
+                              );
+                              if (selectedRow) {
+                                return handleEdit(selectedRow);
+                              }
+                            }}
+                          >
+                            Edit
+                          </button>
+                        )}
+                        {hasPermission('can delete user') && (
+                          <button
+                            className="bg-red-700 text-sm text-white p-2 rounded-md flex items-center justify-center"
+                            onClick={() => handleDelete(row.original.id)}
+                            disabled={loadingStates[row.original.id]}
+                          >
+                            {loadingStates[row.original.id] ? (
+                              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                            ) : (
+                              'Delete'
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  )}
                 </tr>
               );
             })
           )}
         </tbody>
       </table>
-       {
-        page.length !== 0 &&    <div className="flex flex-row justify-end mt-3">
-        <span>
-          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
-        </span>
+      {page.length !== 0 && (
+        <div className="flex flex-row justify-end mt-3">
+          <span>
+            Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
+          </span>
 
-        <button
-          className="mx-3"
-          disabled={!canPreviousPage}
-          onClick={() => previousPage()}
-        >
-          {' '}
-          Previous{' '}
-        </button>
-        <button disabled={!canNextPage} onClick={() => nextPage()}>
-          Next
-        </button>
-      </div>
-       }
+          <button
+            className="mx-3"
+            disabled={!canPreviousPage}
+            onClick={() => previousPage()}
+          >
+            {' '}
+            Previous{' '}
+          </button>
+          <button disabled={!canNextPage} onClick={() => nextPage()}>
+            Next
+          </button>
+        </div>
+      )}
     </>
   );
 }

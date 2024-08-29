@@ -25,6 +25,8 @@ import { toast } from 'react-toastify';
 
 import BidModal from '@/components/Bid/BidModal';
 import CreateNewMemo from '@/components/procurement/CreateNewMemo';
+import { formatDate } from '@/utils/utils';
+import ApproveMemo from '@/components/procurement/ApproveMemo';
 
 function Page() {
   const [openModal, setOpenModal] = useState(false);
@@ -86,6 +88,20 @@ function Page() {
   };
 
   const handleClose = () => setOpenModal(!openModal);
+
+  //memo
+  const [openApproveModal, setOpenApproveModal] = useState(false);
+
+  const handleCloseApprove = () => {
+    setOpenApproveModal(false);
+  };
+  const [selectedMemo, setSelectedMemo] = useState(0);
+  const viewItem = (id: number) => {
+    setSelectedMemo(id);
+    setOpenApproveModal(true);
+  };
+
+  //memoclose
 
   const handleGetAllBidForSingleRfqFunc = (rfqbid: any, rfqId: any) => {
     setAllBidsForSingleRfq(rfqbid);
@@ -221,16 +237,18 @@ function Page() {
   );
 
   const itemListMemo = allMemoData.map((item, i) => {
+    console.log('data', item);
     return {
       ...item,
       'S/N': i + 1,
       bidId: `BID ${item.bid_id}`,
-      title: item.request_for_quotations.title,
-      type: item.request_for_quotations.procurement_type,
+      title: item?.request_for_quotations?.title,
+      type: item?.request_for_quotations?.procurement_type,
       status: item.status,
       signatory: 0,
-      author: `${item.author.first_name} ${item.author.last_name}`,
-      date: item.request_for_quotations.delivery_date,
+      author: `${item.author_by?.first_name} ${item.author_by?.last_name}`,
+      // date: formatDate(item?.request_for_quotations?.delivery_date || 0),
+      date: formatDate(item?.created_at || 0),
     };
   });
 
@@ -405,6 +423,7 @@ function Page() {
         <MemoTable
           fetchedData={allMemoData}
           handleOpenModal={handleOpenModal}
+          viewItem={viewItem}
           COLUMNS={[
             {
               Header: 'S/N',
@@ -607,7 +626,23 @@ function Page() {
         onClose={handleMemoClose}
         maxWidth="40%"
       >
-        <CreateNewMemo />
+        <CreateNewMemo
+          fetchMemoData={fetchProcurementsData}
+          handleMemoClose={handleMemoClose}
+        />
+      </Modal>
+
+      <Modal
+        title=""
+        isOpen={openApproveModal}
+        onClose={handleCloseApprove}
+        maxWidth="60%"
+      >
+        <ApproveMemo
+          selectedMemo={selectedMemo}
+          fetchData={fetchProcurementsData}
+          setOpenModal={setOpenApproveModal}
+        />
       </Modal>
 
       {/* modal section ends */}

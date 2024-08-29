@@ -2,7 +2,7 @@ import { Deck } from '@/utils/types';
 import React, { useMemo } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { FaRegFolderClosed } from 'react-icons/fa6';
-import Link from "next/link"
+import Link from 'next/link';
 import {
   useTable,
   usePagination,
@@ -13,8 +13,6 @@ import {
   UsePaginationState,
   UsePaginationInstanceProps,
 } from 'react-table';
-
-
 
 interface Roles {
   id: number;
@@ -38,7 +36,7 @@ function RoleTable({
     [key: number]: boolean;
   };
   fetchedData: Roles[];
-  hasPermission: (permission: string) => boolean
+  hasPermission: (permission: string) => boolean;
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
@@ -81,10 +79,9 @@ function RoleTable({
 
   const { globalFilter, pageIndex } = state;
 
-
   return (
     <>
-      <div className="flex  items-center gap-2 md:w-2/5 w-full ml-auto my-4">
+      <div className="flex justify-end gap-2 md:w-2/5 w-full ml-auto my-4">
         <div className="md:w-4/5 w-3/5">
           <div className="w-full relative">
             <input
@@ -99,14 +96,16 @@ function RoleTable({
             </div>
           </div>
         </div>
-
-      
-      </div> 
+      </div>
 
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup, index) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={index} className='border-b bg-[#E9EDF4]'>
+            <tr
+              {...headerGroup.getHeaderGroupProps()}
+              key={index}
+              className="border-b bg-[#E9EDF4]"
+            >
               {headerGroup.headers.map((column, index) => (
                 <th
                   className="py-2 text-center"
@@ -129,13 +128,11 @@ function RoleTable({
                     <div className="flex justify-center items-center">
                       <FaRegFolderClosed className="text-4xl" />
                     </div>
-                    <p className="font-medium text-[#475467]">
-                          No role found
-                        </p>
-                        <p className="font-normal text-sm mt-3">
-                          Click “add Role” button to get started in doing your
-                          <br /> first transaction on the platform
-                        </p>
+                    <p className="font-medium text-[#475467]">No role found</p>
+                    <p className="font-normal text-sm mt-3">
+                      Click “add Role” button to get started in doing your
+                      <br /> first transaction on the platform
+                    </p>
                   </div>
                 </div>
               </td>
@@ -156,60 +153,60 @@ function RoleTable({
                       </td>
                     );
                   })}
-                    <td className="py-2 text-center flex justify-center items-center">
-                      <div className="flex gap-3">
-                        <Link
-                          href={`/permissions/${row.original.id}`}
-                          className="bg-yellow-700 text-white p-2 rounded-md"
-                        >
-                          Permissions
-                        </Link>
-                        {/* <button
+                  <td className="py-2 text-center flex justify-center items-center">
+                    <div className="flex gap-3">
+                      <Link
+                        href={`/permissions/${row.original.id}`}
+                        className="bg-yellow-700 text-white p-2 rounded-md"
+                      >
+                        Permissions
+                      </Link>
+                      {/* <button
                           className="bg-blue-700 text-white p-2 rounded-md"
                           onClick={() => handleEdit(item)}
                         >
                           Edit
                         </button> */}
-                        { hasPermission('can delete roles') && (
-                          <button
-                            className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
-                            onClick={() => handleDelete(row.original.id)}
-                            disabled={loadingStates[row.original.id]}
-                          >
-                            {loadingStates[row.original.id] ? (
-                              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                            ) : (
-                              'Delete'
-                            )}
-                          </button>
-                        )}
-                      </div>
-                    </td>
+                      {hasPermission('can delete roles') && (
+                        <button
+                          className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                          onClick={() => handleDelete(row.original.id)}
+                          disabled={loadingStates[row.original.id]}
+                        >
+                          {loadingStates[row.original.id] ? (
+                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                          ) : (
+                            'Delete'
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </td>
                 </tr>
               );
             })
           )}
         </tbody>
       </table>
-       {
-        page.length !== 0 &&    <div className="flex flex-row justify-end mt-3">
-        <span>
-          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
-        </span>
+      {page.length !== 0 && (
+        <div className="flex flex-row justify-end mt-3">
+          <span>
+            Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
+          </span>
 
-        <button
-          className="mx-3"
-          disabled={!canPreviousPage}
-          onClick={() => previousPage()}
-        >
-          {' '}
-          Previous{' '}
-        </button>
-        <button disabled={!canNextPage} onClick={() => nextPage()}>
-          Next
-        </button>
-      </div>
-       }
+          <button
+            className="mx-3"
+            disabled={!canPreviousPage}
+            onClick={() => previousPage()}
+          >
+            {' '}
+            Previous{' '}
+          </button>
+          <button disabled={!canNextPage} onClick={() => nextPage()}>
+            Next
+          </button>
+        </div>
+      )}
     </>
   );
 }

@@ -109,7 +109,7 @@ function InventoryDbTable({
 
   return (
     <>
-      <div className="flex my-4 items-center gap-2 md:w-2/5 w-full ml-auto">
+      <div className="flex my-4 justify-end gap-2 md:w-2/5 w-full ml-auto">
         <div className="md:w-4/5 w-3/5">
           <div className="w-full relative">
             <input

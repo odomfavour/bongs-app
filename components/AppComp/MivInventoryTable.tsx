@@ -2,7 +2,7 @@ import { Deck } from '@/utils/types';
 import React, { useMemo } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { FaRegFolderClosed } from 'react-icons/fa6';
-import Link from "next/link"
+import Link from 'next/link';
 import {
   useTable,
   usePagination,
@@ -36,7 +36,7 @@ interface RequisitionList {
   requisition: Requisition;
   requested_by: RequestedBy;
 }
-  
+
 function MivInventoryTable({
   MOCK_DATA,
   COLUMNS,
@@ -44,19 +44,18 @@ function MivInventoryTable({
   pathname,
   viewItem,
   user,
-   approveReq, 
-   declineReq,
-   releaseItem,
-   printItem
-
+  approveReq,
+  declineReq,
+  releaseItem,
+  printItem,
 }: {
-  approveReq : (item: any) => void,
-  declineReq : (item: any) => void,
-  releaseItem : (item: any) => void,
-  printItem : (item: any) => void,
-  user: any,
-  viewItem: (id: number) => void
-  pathname: string,
+  approveReq: (item: any) => void;
+  declineReq: (item: any) => void;
+  releaseItem: (item: any) => void;
+  printItem: (item: any) => void;
+  user: any;
+  viewItem: (id: number) => void;
+  pathname: string;
   MOCK_DATA: any[];
   COLUMNS: any[];
   loadingStates: {
@@ -105,10 +104,9 @@ function MivInventoryTable({
 
   const { globalFilter, pageIndex } = state;
 
-
   return (
     <>
-      <div className="flex  items-center gap-2 md:w-2/5 w-full ml-auto my-4">
+      <div className="flex justify-end gap-2 md:w-2/5 w-full ml-auto my-4">
         <div className="md:w-4/5 w-3/5">
           <div className="w-full relative">
             <input
@@ -123,14 +121,16 @@ function MivInventoryTable({
             </div>
           </div>
         </div>
-
-     
-      </div> 
+      </div>
 
       <table {...getTableProps()}>
-        <thead>    
+        <thead>
           {headerGroups.map((headerGroup, index) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={index} className='border-b bg-[#E9EDF4]'>
+            <tr
+              {...headerGroup.getHeaderGroupProps()}
+              key={index}
+              className="border-b bg-[#E9EDF4]"
+            >
               {headerGroup.headers.map((column, index) => (
                 <th
                   className="py-2 text-center"
@@ -141,30 +141,28 @@ function MivInventoryTable({
                 </th>
               ))}
 
-          {pathname === '/requisitions' && (
+              {pathname === '/requisitions' && (
                 <th className=" text-center py-3">Actions</th>
-              )} 
-            
+              )}
             </tr>
           ))}
         </thead>
-         <tbody {...getTableBodyProps()}>
+        <tbody {...getTableBodyProps()}>
           {page.length == 0 ? (
             <tr className="text-center text-primary bg-white">
               <td className="py-2 text-center" colSpan={10}>
-              <div className="flex justify-center items-center  my-8 ">
-                    <div>
-                      <div className="flex justify-center items-center">
-                        <FaRegFolderClosed className="text-4xl" />
-                      </div>
-                      <div className="mt-5">
-                        <p className="font-medium text-[#475467]">
+                <div className="flex justify-center items-center  my-8 ">
+                  <div>
+                    <div className="flex justify-center items-center">
+                      <FaRegFolderClosed className="text-4xl" />
+                    </div>
+                    <div className="mt-5">
+                      <p className="font-medium text-[#475467]">
                         No Requisition found
-                        </p>
-                     
-                      </div>
+                      </p>
                     </div>
                   </div>
+                </div>
               </td>
             </tr>
           ) : (
@@ -183,55 +181,17 @@ function MivInventoryTable({
                       </td>
                     );
                   })}
-                   {pathname === '/requisitions' && (
-                      <td className="py-2 text-center flex justify-left text-sm items-center">
-                        <div className="flex gap-3">
-                          <button
-                            onClick={() => viewItem(row.original.id)}
-                            className="bg-blue-700 text-white p-2 text-sm rounded-md"
-                          >
-                            View
-                          </button>
-                          {!user?.is_authorized_for_release ? (
-                            <div className="flex gap-3">
-                              <button
-                                className="bg-green-700 text-white p-2 text-sm rounded-md"
-                               
-                                onClick={() => {
-                                  const selectedRow = fetchedData.find(
-                                    (item) => item.id == row.original.id
-                                  );
-                                  if (selectedRow) {
-                                    return approveReq(selectedRow);
-                                  }
-                                }}
-                              >
-                                {user?.is_hod && row.original.hod_status == 'pending'
-                                  ? 'Check'
-                                  : user?.is_barge_master &&
-                                    row.original.barge_master_status == 'pending'
-                                  ? 'Acknowledge'
-                                  : user?.is_company_rep &&
-                                    row.original.company_rep_status == 'pending'
-                                  ? 'Approve'
-                                  : ''}
-                              </button>
-                              <button
-                                className="bg-red-700 text-white p-2 text-sm rounded-md"
-                              
-                                onClick={() => {
-                                  const selectedRow = fetchedData.find(
-                                    (item) => item.id == row.original.id
-                                  );
-                                  if (selectedRow) {
-                                    return declineReq(selectedRow);
-                                  }
-                                }}
-                              >
-                                Reject
-                              </button>
-                            </div>
-                          ) : row.original.status !== 'Released By Store Keeper' ? (
+                  {pathname === '/requisitions' && (
+                    <td className="py-2 text-center flex justify-left text-sm items-center">
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => viewItem(row.original.id)}
+                          className="bg-blue-700 text-white p-2 text-sm rounded-md"
+                        >
+                          View
+                        </button>
+                        {!user?.is_authorized_for_release ? (
+                          <div className="flex gap-3">
                             <button
                               className="bg-green-700 text-white p-2 text-sm rounded-md"
                               onClick={() => {
@@ -239,50 +199,86 @@ function MivInventoryTable({
                                   (item) => item.id == row.original.id
                                 );
                                 if (selectedRow) {
-                                  return releaseItem(selectedRow);
+                                  return approveReq(selectedRow);
                                 }
                               }}
-                            
                             >
-                              Release
+                              {user?.is_hod &&
+                              row.original.hod_status == 'pending'
+                                ? 'Check'
+                                : user?.is_barge_master &&
+                                  row.original.barge_master_status == 'pending'
+                                ? 'Acknowledge'
+                                : user?.is_company_rep &&
+                                  row.original.company_rep_status == 'pending'
+                                ? 'Approve'
+                                : ''}
                             </button>
-                          ) : (
                             <button
-                              className="bg-yellow-300 p-2 text-sm rounded-md"
-                              onClick={() => printItem(row.original.id)}
-
+                              className="bg-red-700 text-white p-2 text-sm rounded-md"
+                              onClick={() => {
+                                const selectedRow = fetchedData.find(
+                                  (item) => item.id == row.original.id
+                                );
+                                if (selectedRow) {
+                                  return declineReq(selectedRow);
+                                }
+                              }}
                             >
-                              Print Item
+                              Reject
                             </button>
-                          )}
-                        </div>
-                      </td>
-                    )}
+                          </div>
+                        ) : row.original.status !==
+                          'Released By Store Keeper' ? (
+                          <button
+                            className="bg-green-700 text-white p-2 text-sm rounded-md"
+                            onClick={() => {
+                              const selectedRow = fetchedData.find(
+                                (item) => item.id == row.original.id
+                              );
+                              if (selectedRow) {
+                                return releaseItem(selectedRow);
+                              }
+                            }}
+                          >
+                            Release
+                          </button>
+                        ) : (
+                          <button
+                            className="bg-yellow-300 p-2 text-sm rounded-md"
+                            onClick={() => printItem(row.original.id)}
+                          >
+                            Print Item
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  )}
                 </tr>
               );
             })
           )}
-        </tbody> 
+        </tbody>
       </table>
-       {
-        page.length !== 0 &&    <div className="flex flex-row justify-end mt-3">
-        <span>
-          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
-        </span>
+      {page.length !== 0 && (
+        <div className="flex flex-row justify-end mt-3">
+          <span>
+            Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
+          </span>
 
-        <button
-          className="mx-3"
-          disabled={!canPreviousPage}
-          onClick={() => previousPage()}
-        >
-          {' '}
-          Previous{' '}
-        </button>
-        <button disabled={!canNextPage} onClick={() => nextPage()}>
-          Next
-        </button>
-      </div>
-       }
+          <button
+            className="mx-3"
+            disabled={!canPreviousPage}
+            onClick={() => previousPage()}
+          >
+            {' '}
+            Previous{' '}
+          </button>
+          <button disabled={!canNextPage} onClick={() => nextPage()}>
+            Next
+          </button>
+        </div>
+      )}
     </>
   );
 }

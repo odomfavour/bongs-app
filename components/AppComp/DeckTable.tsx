@@ -75,7 +75,7 @@ function DeckTable({
 
   return (
     <>
-      <div className="flex mb-4 items-center gap-2 md:w-2/5 w-full ml-auto">
+      <div className="flex mb-4 justify-end gap-2 md:w-2/5 w-full ml-auto">
         <div className="md:w-4/5 w-3/5">
           <div className="w-full relative">
             <input
@@ -90,14 +90,16 @@ function DeckTable({
             </div>
           </div>
         </div>
-
-     
       </div>
 
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup, index) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={index} className='border-b bg-[#E9EDF4]'>
+            <tr
+              {...headerGroup.getHeaderGroupProps()}
+              key={index}
+              className="border-b bg-[#E9EDF4]"
+            >
               {headerGroup.headers.map((column, index) => (
                 <th
                   className="py-2 text-center"

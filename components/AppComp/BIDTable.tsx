@@ -140,7 +140,6 @@ function BidTable({
           ) : (
             page.map((row, index) => {
               prepareRow(row);
-              console.log("row inner bid", row.original);
               return (
                 <tr {...row.getRowProps()} key={index}>
                   {row.cells.map((cell, index) => {
@@ -186,22 +185,28 @@ function BidTable({
                             );
                             console.log(
                               "bid data fetched for single rfq",
-                              data
+                              response
                             );
+                         
                             dispatch(toggleLoading(false));
                             console.log("show data from server", response)
                         
-                            const bid = response.data.data.map((bid: any) => {
+                             const bid = response.data.data.map((bid: any) => {
+                            
                               return {
                                 BID: bid.id,
                                 isAwarded: bid.is_awarded,
                                 dateReceived: dateFormater(bid.created_at),
                                 vendor: bid.vendor,
-                                pricing: currencyFormatter(bid.grandTotal),
+                                grandTotal: currencyFormatter(bid.grandTotal),
                                 paymentTerms: bid.payment_term,
-                                rate: bid.evaluation_point,
                                 deliveryPeriod: bid.delivery_date,
                                 currency: bid.currency,
+                                subtotal: bid.cost,
+                                quoteValidity: bid.quote_validity_period,
+                                wht: bid.wht,
+                                ncf: bid.ncdf,
+                                vat: bid.vat
                               };
                             });
  

@@ -274,7 +274,6 @@ vendor_email: string,
  from_delivery_date?: string,
  delivery_date: string,
  validity_period_to: string,
- validity_period_from: string,
  payment_term: string,
  bid_items:any,
 //  bid_items: {

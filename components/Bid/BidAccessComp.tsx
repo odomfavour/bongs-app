@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { IoMdAdd } from "react-icons/io";
 import { FaFilePdf } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 function BidAccessComp() {
   const [showModal, setshowModal] = useState(true);
@@ -19,6 +20,8 @@ function BidAccessComp() {
 
   const [loader, setLoader] = useState(false);
 
+
+  const router = useRouter()
   const [formData, setFormData] = useState<{
     rfqId: string;
     subscriberId: string;
@@ -88,7 +91,6 @@ function BidAccessComp() {
 
   const [paymentTerms, setPaymentTerms] = useState("");
   const [validityPeriodTo, setValidityPeriodTo] = useState("");
-  const [validityPeriodFrom, setValidityPeriodFrom] = useState("");
 
   const [deliveryScheduleFrom, setDeliveryScheduleFrom] = useState("");
   const [deliveryScheduleTo, setDeliveryScheduleTo] = useState("");
@@ -103,7 +105,7 @@ function BidAccessComp() {
       return;
     }
 
-// 
+
 
     console.log("file sent", file)
  
@@ -146,7 +148,7 @@ function BidAccessComp() {
     }
   };
 
-  console.log("this is the form data", formData);
+
   const handleBidVerification = async () => {
     if (!accessToken) {
       toast.error("Access token is requred");
@@ -223,10 +225,7 @@ function BidAccessComp() {
       toast.error("payment terms is required");
       return;
     }
-    if (!validityPeriodFrom) {
-      toast.error("validity period from is required");
-      return;
-    }
+  
     if (!validityPeriodTo) {
       toast.error("validity period to is required");
       return;
@@ -281,7 +280,7 @@ function BidAccessComp() {
         bid_items: bidList,
         delivery_date: deliveryScheduleTo,
         from_delivery_date: deliveryScheduleFrom,
-        validity_period_from: validityPeriodFrom,
+       
         validity_period_to: validityPeriodTo,
       });
 
@@ -289,6 +288,7 @@ function BidAccessComp() {
       toast.success(message);
 
       setLoader(false);
+      router.push("/bid-submission-success")
     } catch (error: any) {
       const errorMessage =
         error?.response?.data?.message ||
@@ -476,19 +476,10 @@ function BidAccessComp() {
           />
         </div>
 
+      
         <div className="flex flex-row items-center justify-between  mb-3">
           <span className="text-gray-900 text-[16px] bold">
-            Validity Period From:
-          </span>
-          <input
-            type="date"
-            className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3  w-[300px]"
-            onChange={(e) => setValidityPeriodFrom(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-row items-center justify-between  mb-3">
-          <span className="text-gray-900 text-[16px] bold">
-            Validity Period To:
+          Valid Until:
           </span>
           <input
             type="date"

@@ -46,10 +46,16 @@ function Page() {
       vendor: string;
       pricing: number;
       paymentTerms: number;
-      rate: number;
+      subtotal: number,
       deliveryPeriod: string;
       currency: string;
       isAwarded: string;
+      quoteValidity: string,
+      wht: number,
+      ncf: number,
+      vat: number,
+      grandTotal: number
+
     }[]
   >([]);
 
@@ -213,10 +219,10 @@ function Page() {
       type: item.request_for_quotations.procurement_type,
       status: item.status,
       date: item.request_for_quotations.bidding_deadline,
-      cost: `${item.bid.currency}${currencyFormatter(item.bid.cost)}`,
+   /*    cost: `${item.bid.currency}${currencyFormatter(item.bid.cost)}`, */
       timeline: item.request_for_quotations.delivery_date,
       signatory: item.memo.signatory_count,
-      vendor: item.bid.vendor,
+   /*    vendor: item.bid.vendor, */
     };
   });
 
@@ -608,7 +614,9 @@ function Page() {
         onClose={handleClose}
         maxWidth="1050px"
       >
-        <ProcurementAddRequestModal />
+        <ProcurementAddRequestModal
+        handleClose={handleClose}
+        />
       </Modal>
 
       <Modal

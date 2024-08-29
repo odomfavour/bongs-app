@@ -25,7 +25,9 @@ import {
 import { toggleLoading } from "@/provider/redux/modalSlice";
 
 
-function ProcurementAddRequestModal() {
+function ProcurementAddRequestModal({ handleClose }: {
+  handleClose: () => void
+}) {
   const {
     title,
     draftList,
@@ -297,6 +299,7 @@ function ProcurementAddRequestModal() {
 
       dispatch(toggleLoading(false));
       toast.success("Procurement made successfully");
+      handleClose()
     } catch (error: any) {
       dispatch(toggleLoading(false));
       console.error("Error:", error);

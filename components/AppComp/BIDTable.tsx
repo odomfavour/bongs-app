@@ -140,7 +140,7 @@ function BidTable({
           ) : (
             page.map((row, index) => {
               prepareRow(row);
-              console.log('row inner bid', row.original);
+              console.log("row inner bid", row.original);
               return (
                 <tr {...row.getRowProps()} key={index}>
                   {row.cells.map((cell, index) => {
@@ -179,45 +179,44 @@ function BidTable({
                       <span
                         onClick={() => {
                           const getAlBidForRfq = async () => {
-                            try {
-                              dispatch(toggleLoading(true));
-                              const response = await fetchBidForRfqDataApi(
-                                row.original.request_for_quotation_id
-                              );
-                              console.log(
-                                'bid data fetched for single rfq',
-                                data
-                              );
-                              dispatch(toggleLoading(false));
-                              console.log('show data from server', response);
-
-                              const bid = response.data.data.map((bid: any) => {
-                                return {
-                                  BID: bid.id,
-                                  isAwarded: bid.is_awarded,
-                                  dateReceived: dateFormater(bid.created_at),
-                                  vendor: bid.vendor,
-                                  pricing: currencyFormatter(bid.grandTotal),
-                                  paymentTerms: bid.payment_term,
-                                  rate: bid.evaluation_point,
-                                  deliveryPeriod: bid.delivery_date,
-                                  currency: bid.currency,
-                                };
-                              });
-
-                              const rfqId =
-                                row.original.request_for_quotation_id;
-
-                              handleGetAllBidForSingleRfqFunc(bid, rfqId);
-                              handleOpenModal();
-                            } catch (error: any) {
-                              console.error('Error:', error);
-                              const errorMessage =
-                                error?.response?.data?.message ||
-                                error?.response?.data?.errors ||
-                                error?.message ||
-                                'Unknown error';
-                              toast.error(`${errorMessage}`);
+                           try{
+                            dispatch(toggleLoading(true));
+                            const response = await fetchBidForRfqDataApi(
+                              row.original.request_for_quotation_id
+                            );
+                            console.log(
+                              "bid data fetched for single rfq",
+                              data
+                            );
+                            dispatch(toggleLoading(false));
+                            console.log("show data from server", response)
+                        
+                            const bid = response.data.data.map((bid: any) => {
+                              return {
+                                BID: bid.id,
+                                isAwarded: bid.is_awarded,
+                                dateReceived: dateFormater(bid.created_at),
+                                vendor: bid.vendor,
+                                pricing: currencyFormatter(bid.grandTotal),
+                                paymentTerms: bid.payment_term,
+                                rate: bid.evaluation_point,
+                                deliveryPeriod: bid.delivery_date,
+                                currency: bid.currency,
+                              };
+                            });
+ 
+                            const rfqId = row.original.request_for_quotation_id;
+                         
+                            handleGetAllBidForSingleRfqFunc(bid, rfqId);
+                            handleOpenModal();
+                           }catch(error: any){
+                            console.error('Error:', error);
+                          const errorMessage =
+                          error?.response?.data?.message ||
+                          error?.response?.data?.errors ||
+                          error?.message ||
+                          'Unknown error';
+                               toast.error(`${errorMessage}`);
                             }
                           };
                           getAlBidForRfq();

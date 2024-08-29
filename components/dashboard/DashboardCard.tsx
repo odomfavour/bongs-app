@@ -5,7 +5,7 @@ import { GoArrowDownRight, GoArrowUpRight } from "react-icons/go";
 function DashboardCard({
   stockCountAmount,
   stockCountPercent,
-  
+
   inventoryAmount,
   sparePartInventory,
   consumablesInventory,
@@ -23,10 +23,6 @@ function DashboardCard({
   totalMaterialRequisition,
   totalMaterialRequisitionApproved,
 }: DashboardCardType) {
-  /* 
-
-  */
-
   return (
     <div className="flex flex-row  flex-wrap space-x-6">
       <div
@@ -42,7 +38,7 @@ function DashboardCard({
               color: "rgba(0, 0, 0, 0.7)",
             }}
           >
-            Total Stock 
+            Total Stock
           </span>
           <span
             className="font-[400px] font-[inter] text-lg text-center w-full block"
@@ -55,13 +51,15 @@ function DashboardCard({
         </div>
         <div>
           <span className=" text-[#475467] font-[600px] text-[36px]">
-            {currencyFormatter(stockCountAmount)}
+            {stockCountAmount !== undefined
+              ? currencyFormatter(stockCountAmount)
+              : "No data"}
           </span>
         </div>
         <div className="flex-row flex  justify-between items-center space-x-8">
           <div className="bg-green-200 rounded-2xl px-2 py-1 flex flex-row items-center shadow">
             <span className="text-sm text-center text-green-500 pr-1">
-              %{stockCountPercent}
+              %{stockCountPercent !== undefined ? stockCountPercent : "No data"}
             </span>
             <GoArrowUpRight color="#22c55e" />
           </div>
@@ -100,8 +98,10 @@ function DashboardCard({
           </span>
         </div>
         <div>
-          <span className="font-medium text-[#475467] text-[36px]">
-            {currencyFormatter(inventoryAmount)}
+          <span className=" text-[#475467] font-[600px] text-[36px]">
+            {inventoryAmount !== undefined
+              ? currencyFormatter(inventoryAmount)
+              : "No data"}
           </span>
         </div>
         <div className="flex flex-col  justify-between items-center ">
@@ -112,7 +112,7 @@ function DashboardCard({
             }}
           >
             Spare-Parts:
-            {sparePartInventory}
+            {sparePartInventory !== undefined ? sparePartInventory : "No data"}
           </span>
           <span
             className="text-sm  font-[inter] text-[12px] text-[#475467]"
@@ -121,7 +121,9 @@ function DashboardCard({
             }}
           >
             Consumables:
-            {consumablesInventory}
+            {consumablesInventory !== undefined
+              ? consumablesInventory
+              : "No data"}
           </span>
         </div>
       </div>
@@ -151,8 +153,8 @@ function DashboardCard({
           </span>
         </div>
         <div>
-          <span className="font-medium text-[#475467 font-[600px] text-[36px]">
-            {currencyFormatter(mivAmount)}
+          <span className=" text-[#475467] font-[600px] text-[36px]">
+            {mivAmount !== undefined ? currencyFormatter(mivAmount) : "No data"}
           </span>
         </div>
         <div className="flex flex-col  justify-between items-center ">
@@ -163,7 +165,7 @@ function DashboardCard({
             }}
           >
             Spare-Parts:
-            {mivSperePart}
+            {mivSperePart !== undefined ? mivSperePart : "No data"}
           </span>
           <span
             className="text-sm  font-[inter] text-[12px] text-[#475467]"
@@ -202,16 +204,24 @@ function DashboardCard({
           </span>
         </div>
         <div>
-          <span className="font-medium text-[#475467 font-[600px] text-[36px]">
-            {currencyFormatter(materialRequisitionAmount)}
+          <span className=" text-[#475467] font-[600px] text-[36px]">
+            {materialRequisitionAmount !== undefined
+              ? currencyFormatter(materialRequisitionAmount)
+              : "No data"}
           </span>
         </div>
         <div className="flex-row flex  justify-between items-center space-x-8">
           <div className="bg-red-200 rounded-2xl px-2 py-1 flex flex-row items-center shadow">
             <span className="text-sm text-center text-red-500 pr-1">
-              %{materialReleasedPercentageChange}
+              {materialReleasedPercentageChange !== undefined
+                ? `%${materialReleasedPercentageChange}`
+                : "No data"}
             </span>
-            <GoArrowDownRight color="#F13D04" />
+            {materialReleasedPercentageChange !== undefined ? (
+              <GoArrowDownRight color="#F13D04" />
+            ) : (
+              ``
+            )}
           </div>
           <span
             className="text-sm text-[12px] text-[#475467]"
@@ -249,23 +259,24 @@ function DashboardCard({
           </span>
         </div>
         <div>
-          <span className="font-medium text-[#475467 font-[600px] text-[36px]">
-            {currencyFormatter(totalMaterialRequisition)}
+          <span className=" text-[#475467] font-[600px] text-[36px]">
+            {totalMaterialRequisition !== undefined
+              ? currencyFormatter(totalMaterialRequisition)
+              : "No data"}
           </span>
         </div>
         <div className="flex-row flex  justify-between items-center space-x-8">
-        <span
+          <span
             className="text-sm text-[12px] text-[#475467]"
             style={{
               color: "rgba(0, 0, 0, 0.7)",
             }}
           >
-          Total Approved: {
-              totalMaterialRequisitionApproved
-          }
+            Total Approved:{" "}
+            {totalMaterialRequisitionApproved !== undefined
+              ? totalMaterialRequisitionApproved
+              : "No data"}
           </span>
-         
-        
         </div>
       </div>
 
@@ -290,20 +301,29 @@ function DashboardCard({
               color: "rgba(0, 0, 0, 0.7)",
             }}
           >
-             Received
+            Received
           </span>
         </div>
         <div>
-          <span className="font-medium text-[#475467 font-[600px] text-[36px]">
-            {currencyFormatter(materialReceivedAmount)}
+          <span className=" text-[#475467] font-[600px] text-[36px]">
+            {materialReceivedAmount !== undefined
+              ? currencyFormatter(materialReceivedAmount)
+              : "No data"}
           </span>
         </div>
         <div className="flex-row flex  justify-between items-center space-x-8">
           <div className="bg-red-200 rounded-2xl px-2 py-1 flex flex-row items-center shadow">
             <span className="text-sm text-center text-red-500 pr-1">
-              %{materialReceivedPercent}
+              {materialReceivedPercent !== undefined
+                ? `%${materialReceivedPercent}`
+                : "No data"}
             </span>
-            <GoArrowDownRight color="#F13D04" />
+
+            {materialReceivedPercent !== undefined ? (
+              <GoArrowDownRight color="#F13D04" />
+            ) : (
+              ""
+            )}
           </div>
           <span
             className="text-sm text-[12px] text-[#475467]"

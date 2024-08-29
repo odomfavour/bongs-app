@@ -126,7 +126,7 @@ function Page() {
         fetchAllPurchaseOrderDataApi(),
         fetchAllQualityAssuranceDataApi(),
       ]);
-
+  console.log("fetched all rfq", allRfqData)
       setAllBidData(allBidData.data.data);
       setAllRfq(allRfqData.data.data);
       setAllMemoData(allMemo.data.data);

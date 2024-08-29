@@ -1,53 +1,13 @@
 import { RxValue } from "react-icons/rx";
 
-export const topTenInnventries = [
-  {
-    name: "Engine oil",
-    value: 6000
-  },
-  {
-    name: "Iron",
-    value: 900
-  },
-  {
-    name: "Glo",
-    value: 9000
-  },
-  {
-    name: "Lopa",
-    value: 1800
-  },
-  {
-    name: "oil",
-    value: 3000
-  },
-  {
-    name: "Malon",
-    value: 8000
-  },
-  {
-    name: "Friece",
-    value: 9000
-  },
-
-  {
-    name: "Melon",
-    value: 1740
-  },
-  {
-    name: "Lipton",
-    value: 9034
-  },
-  {
-    name: "Engine oil 3",
-    value: 4568
-  },
-  
-]
 
 export const months = [
   "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
 ]
+
+export const years = [
+  2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010,2009,2008, 2007, 2006, 2005, 2004, 2002, 2001, 2000]
+
 
 
 export const RFQTypeDataArray = [

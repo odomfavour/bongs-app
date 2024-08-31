@@ -19,10 +19,12 @@ function PurchaseOrderTable({
   COLUMNS,
   fetchedData,
   handleOpenModal,
+  viewPO,
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
   fetchedData: Barge[];
+  viewPO: (id: number) => void;
   handleOpenModal: () => void;
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
@@ -131,6 +133,7 @@ function PurchaseOrderTable({
           ) : (
             page.map((row, index) => {
               prepareRow(row);
+              const { id } = row.original;
               return (
                 <tr {...row.getRowProps()} key={index}>
                   {row.cells.map((cell, index) => {
@@ -147,9 +150,7 @@ function PurchaseOrderTable({
                   <td className="flex justify-center items-center">
                     <div className="flex-row flex items-center w-max justify-center rounded-xl px-2 py-1 bg-[#a16207] cursor-pointer ">
                       <span
-                        onClick={() => {
-                          handleOpenModal();
-                        }}
+                        onClick={() => viewPO(id)}
                         className="text-center text-sm text-white"
                       >
                         View More

@@ -27,6 +27,11 @@ import BidModal from '@/components/Bid/BidModal';
 import CreateNewMemo from '@/components/procurement/CreateNewMemo';
 import { formatDate } from '@/utils/utils';
 import ApproveMemo from '@/components/procurement/ApproveMemo';
+import CreatePurchaseOrder from '@/components/procurement/CreatePurchaseOrder';
+import { toggleLoading } from '@/provider/redux/modalSlice';
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import ApprovePurchaseOrder from '@/components/procurement/ApprovePurchaseOrder';
 
 function Page() {
   const [openModal, setOpenModal] = useState(false);
@@ -46,16 +51,15 @@ function Page() {
       vendor: string;
       pricing: number;
       paymentTerms: number;
-      subtotal: number,
+      subtotal: number;
       deliveryPeriod: string;
       currency: string;
       isAwarded: string;
-      quoteValidity: string,
-      wht: number,
-      ncf: number,
-      vat: number,
-      grandTotal: number
-
+      quoteValidity: string;
+      wht: number;
+      ncf: number;
+      vat: number;
+      grandTotal: number;
     }[]
   >([]);
 
@@ -102,9 +106,25 @@ function Page() {
     setOpenApproveModal(false);
   };
   const [selectedMemo, setSelectedMemo] = useState(0);
+  const [selectedPO, setSelectedPO] = useState(0);
   const viewItem = (id: number) => {
     setSelectedMemo(id);
     setOpenApproveModal(true);
+  };
+
+  const [openPOModal, setOpenPOModal] = useState(false);
+
+  const [openPOApproveModal, setOpenPOApproveModal] = useState(false);
+  const handlePOApproveClose = () => {
+    setOpenPOApproveModal(false);
+  };
+  const handlePOClose = () => {
+    setOpenPOModal(false);
+  };
+
+  const viewPO = (id: number) => {
+    setSelectedPO(id);
+    setOpenPOApproveModal(true);
   };
 
   //memoclose
@@ -132,7 +152,7 @@ function Page() {
         fetchAllPurchaseOrderDataApi(),
         fetchAllQualityAssuranceDataApi(),
       ]);
-  console.log("fetched all rfq", allRfqData)
+      console.log('fetched all rfq', allRfqData);
       setAllBidData(allBidData.data.data);
       setAllRfq(allRfqData.data.data);
       setAllMemoData(allMemo.data.data);
@@ -175,6 +195,44 @@ function Page() {
 
   const handleOpenBidModal = () => {
     setShowBidForRfqModal(!showBidForRfqModal);
+  };
+  const user = useSelector((state: any) => state.user.user);
+  const dispatch = useDispatch();
+
+  const printItem = async (id: number) => {
+    try {
+      dispatch(toggleLoading(true));
+      const response = await axios.get(
+        `${process.env.BASEURL}/procurement/memo/print/${id}`,
+        {
+          params: { format: 'pdf' },
+          responseType: 'blob',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `export.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      toast.success(response?.data?.message);
+    } catch (error: any) {
+      console.error('Export failed:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
   };
 
   const itemListRFQ = allRfq.map((item, i) => {
@@ -219,10 +277,10 @@ function Page() {
       type: item.request_for_quotations.procurement_type,
       status: item.status,
       date: item.request_for_quotations.bidding_deadline,
-   /*    cost: `${item.bid.currency}${currencyFormatter(item.bid.cost)}`, */
-      timeline: item.request_for_quotations.delivery_date,
-      signatory: item.memo.signatory_count,
-   /*    vendor: item.bid.vendor, */
+      cost: `${item.bid.currency}${currencyFormatter(item.bid.cost)}`,
+      timeline: item?.request_for_quotations?.delivery_date,
+      signatory: item?.memo?.signatory_count,
+      vendor: item?.bid?.vendor,
     };
   });
 
@@ -251,7 +309,7 @@ function Page() {
       title: item?.request_for_quotations?.title,
       type: item?.request_for_quotations?.procurement_type,
       status: item.status,
-      signatory: 0,
+      signatory: `${item.has_signed_count}     ${item.signatory_count}`,
       author: `${item.author_by?.first_name} ${item.author_by?.last_name}`,
       // date: formatDate(item?.request_for_quotations?.delivery_date || 0),
       date: formatDate(item?.created_at || 0),
@@ -305,6 +363,17 @@ function Page() {
           >
             <span className="text-[#1354d2] text-xl font-normal font-['Inter']">
               New Memo
+            </span>
+          </div>
+        )}
+
+        {selectedMenu === 'Purchase Orders' && (
+          <div
+            onClick={() => setOpenPOModal(true)}
+            className=" border border-[#1354d2]  rounded-xl  justify-center items-center  flex flex-row px-2  cursor-pointer "
+          >
+            <span className="text-[#1354d2] text-xl font-normal font-['Inter']">
+              New purchase Order
             </span>
           </div>
         )}
@@ -430,6 +499,7 @@ function Page() {
           fetchedData={allMemoData}
           handleOpenModal={handleOpenModal}
           viewItem={viewItem}
+          printItem={printItem}
           COLUMNS={[
             {
               Header: 'S/N',
@@ -473,6 +543,7 @@ function Page() {
         <PurchaseOrderTable
           fetchedData={allPurhaseOrderData}
           handleOpenModal={handleOpenModal}
+          viewPO={viewPO}
           COLUMNS={[
             {
               Header: 'S/N',
@@ -614,9 +685,7 @@ function Page() {
         onClose={handleClose}
         maxWidth="1050px"
       >
-        <ProcurementAddRequestModal
-        handleClose={handleClose}
-        />
+        <ProcurementAddRequestModal handleClose={handleClose} />
       </Modal>
 
       <Modal
@@ -650,6 +719,30 @@ function Page() {
           selectedMemo={selectedMemo}
           fetchData={fetchProcurementsData}
           setOpenModal={setOpenApproveModal}
+        />
+      </Modal>
+
+      <Modal
+        title=""
+        isOpen={openPOModal}
+        onClose={handlePOClose}
+        maxWidth="40%"
+      >
+        <CreatePurchaseOrder
+          fetchPOData={fetchProcurementsData}
+          handlePOClose={handlePOClose}
+        />
+      </Modal>
+      <Modal
+        title=""
+        isOpen={openPOApproveModal}
+        onClose={handlePOApproveClose}
+        maxWidth="60%"
+      >
+        <ApprovePurchaseOrder
+          selectedPO={selectedPO}
+          setOpenApprovePO={setOpenPOApproveModal}
+          fetchPOData={fetchProcurementsData}
         />
       </Modal>
 

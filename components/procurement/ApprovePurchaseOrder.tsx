@@ -40,7 +40,7 @@ const ApprovePurchaseOrder: React.FC<ApprovePOProps> = ({
       console.log('Approve Response:', response);
       const purchaseOrdeData = response?.data?.data;
       setPO(purchaseOrdeData);
-      //   setTableData(memoData?.signatories);
+      setTableData(purchaseOrdeData?.bid?.bid_items);
 
       // Check if the user is a signatory and if they have signed
       //   const userSignatory = memoData?.signatories.find(
@@ -124,7 +124,7 @@ const ApprovePurchaseOrder: React.FC<ApprovePOProps> = ({
         </div>
         <div>
           <p>Delivery Address</p>
-          <p>{}</p>
+          <p>{po?.delivery_address}</p>
         </div>
       </div>
 
@@ -164,13 +164,16 @@ const ApprovePurchaseOrder: React.FC<ApprovePOProps> = ({
                       {item?.name}
                     </td>
                     <td className="px-6 py-3 border-b text-sm text-gray-700">
-                      {item?.role}
+                      {item?.quantity}
                     </td>
                     <td className="px-6 py-3 border-b text-sm text-gray-700">
-                      {item?.hasSigned ? 'Signed' : 'Not Signed'}
+                      {item?.unit_of_measurement || 'nil'}
                     </td>
                     <td className="px-6 py-3 border-b text-sm text-gray-700">
-                      {formatDate(item?.signed_at)}
+                      {item?.unit_price || 0}
+                    </td>
+                    <td className="px-6 py-3 border-b text-sm text-gray-700">
+                      {item?.unit_price * item?.quantity || 0}
                     </td>
                   </tr>
                 ))}
@@ -178,7 +181,7 @@ const ApprovePurchaseOrder: React.FC<ApprovePOProps> = ({
               {tableData.length === 0 && (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={7}
                     className="px-6 py-3 text-center text-gray-500"
                   >
                     No signatories available.
@@ -195,34 +198,39 @@ const ApprovePurchaseOrder: React.FC<ApprovePOProps> = ({
           <div className="">
             <div className="flex gap-2">
               <p>Payment Terms: </p>
-              <p>60% Advance</p>
+              <p>{po?.bid?.payment_term}% Advance</p>
             </div>
             <div className="flex gap-2">
               <p>Buyer:</p>
-              <p>Obinna P.O</p>
+              <p>
+                {po?.memo?.author_by?.first_name}{' '}
+                {po?.memo?.author_by?.last_name}
+              </p>
             </div>
           </div>
 
           <div className="">
             <div className="flex gap-2">
               <p>Subtotal: </p>
-              <p>60% Advance</p>
+              <p>{po?.bid?.cost}</p>
             </div>
             <div className="flex gap-2">
               <p>VAT:</p>
-              <p>{po?.bid?.vat}</p>
+              <p>{po?.bid?.vat}%</p>
             </div>
             <div className="flex gap-2">
               <p>NCDT:</p>
-              <p>{po?.bid?.ncdf}</p>
+              <p>{po?.bid?.ncdf}%</p>
             </div>
             <div className="flex gap-2">
               <p>WHT:</p>
-              <p>{po?.bid?.wht}</p>
+              <p>{po?.bid?.wht}%</p>
             </div>
             <div className="flex gap-2">
               <p>Total Amount:</p>
-              <p></p>
+              <p>
+                {po?.bid?.currency} {currencyFormatter(po?.bid?.grandTotal)}
+              </p>
             </div>
           </div>
         </div>
@@ -241,27 +249,27 @@ const ApprovePurchaseOrder: React.FC<ApprovePOProps> = ({
       )}
 
       {/* Conditionally render Approve and Reject buttons based on signatory status */}
-      {isSignatory && !hasSigned && (
-        <div className="flex justify-end my-5">
-          <div className="flex gap-4">
-            <button
-              className="rounded-md bg-blue-700 text-white py-2 px-4"
-              onClick={() => handleApproveOrReject('approved')}
-            >
-              Approve
-            </button>
-            <button
-              className="rounded-md bg-red-700 text-white py-2 px-4"
-              onClick={() => {
-                setIsRejecting(true);
-                handleApproveOrReject('pending');
-              }}
-            >
-              Reject
-            </button>
-          </div>
+      {/* {isSignatory && !hasSigned && ( */}
+      <div className="flex justify-end my-5">
+        <div className="flex gap-4">
+          <button
+            className="rounded-md bg-blue-700 text-white py-2 px-4"
+            onClick={() => handleApproveOrReject('approved')}
+          >
+            Approve
+          </button>
+          <button
+            className="rounded-md bg-red-700 text-white py-2 px-4"
+            onClick={() => {
+              setIsRejecting(true);
+              handleApproveOrReject('pending');
+            }}
+          >
+            Reject
+          </button>
         </div>
-      )}
+      </div>
+      {/* )} */}
     </div>
   );
 };

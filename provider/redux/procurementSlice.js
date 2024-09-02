@@ -7,10 +7,12 @@ const initialState = {
     procurementId:"",
     title: "",
     id: null,
+    rfqStatus: "",
+    procurementType: "",
     draftList:{
-  stock_quantity: null,
-  description: "",
-  attachments: []
+     stock_quantity: null,
+      description: "",
+    attachments: []
     }
   },
   allCategory: [],
@@ -24,8 +26,9 @@ export const procurementSlice = createSlice({
   name: 'procurement',
   initialState,
   reducers: {
-  setDraftStateAction: (state, action) => {
-
+    setDraftStateAction: (state, action) => {
+      state.draftProcurementState.procurementType = action.payload.procurementType
+        state.draftProcurementState.rfqStatus = action.payload.rfqStatus
        state.draftProcurementState.subscriber = action.payload.subscriber
        state.draftProcurementState.subscriberId = action.payload.subscriberId
        state.draftProcurementState.id = action.payload.id

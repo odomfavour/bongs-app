@@ -360,7 +360,7 @@ const Page = () => {
           <div className="col-span-12 h-[55%]  rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white ">
             {mostUsedInvory && <TopTenInnventories data={mostUsedInvory} />}
           </div>
-          <div className="col-span-12 mt-[16px] h-[45%]  rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white">
+          <div className="col-span-12 mt-[16px] h-[43%]  rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white">
             <MaterialRequisitionAnalysisChart
               materialReleaseStatus={materialRequisitionAnalysisData}
             />

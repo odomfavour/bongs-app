@@ -16,6 +16,7 @@ import { TbDotsCircleHorizontal } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import BargeEquipmentTable from '../AppComp/BargeEquipmentTable';
 
 interface BargeComponent {
   id: number;
@@ -120,9 +121,63 @@ const BargeComponentCategoryListTable: React.FC<
     dispatch(displayBargeValue(item));
     setOpenModal(true);
   };
+
+  const itemList = currentItems.map((item, index) => { 
+    const {id, name, storeNo, description, status, created_at } =
+item;
+    return {
+      ...item,
+      "S/N": index + 1,
+      mainStore: `store-${id}`,
+      name: name,
+      description,
+      status: status,
+      createdAt: formatDate(created_at)
+
+    }
+  })
   return (
     <div className="bg-white">
+
+     
+      <BargeEquipmentTable
+        handleDelete={ handleDelete }
+        fetchedData={ currentItems }
+        handleEdit={ handleEdit }
+        hasPermission={ hasPermission }
+        loadingStates={ loadingStates}
+
+        COLUMNS={[
+          {
+            Header: "S/N",
+            accessor: "S/N",
+          },
+          {
+            Header: "Main Store No.",
+            accessor: "mainStore",
+          },
+          {
+            Header: "Name",
+            accessor: "name",
+          },
+          {
+            Header: "Description",
+            accessor: "description",
+          },
+          {
+            Header: "Status",
+            accessor: "status",
+          },
+          {
+            Header: "Created On",
+            accessor: "createdAt",
+          }
+        ]}
+        MOCK_DATA={itemList}
+      />
+{/* 
       <table className="table-auto w-full text-primary rounded-2xl mb-5">
+
         <thead>
           <tr className="border-b bg-[#E9EDF4]">
             <th className="text-sm text-center pl-3 py-3 rounded">S/N</th>
@@ -258,7 +313,7 @@ const BargeComponentCategoryListTable: React.FC<
             </p>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

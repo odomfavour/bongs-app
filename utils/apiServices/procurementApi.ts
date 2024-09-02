@@ -263,3 +263,16 @@ console.log("this is the sent bid data", bidData)
 }
 
 
+
+export const getVendorByCategoryApi = async (id: string) => {
+  const data = localStorage.getItem('bongsUser');
+  const { token } = data && JSON.parse(data);
+  // id of the bid
+  let url = `${baseUrl}/vendors/category/${id}`;
+  const response = await axios.get(`${url}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+}

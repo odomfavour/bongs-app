@@ -120,11 +120,11 @@ const ApprovePurchaseOrder: React.FC<ApprovePOProps> = ({
       <div className="grid grid-cols-2 gap-6 mt-5">
         <div>
           <p>Vendor</p>
-          <p>Exonn Mobil</p>
+          <p>{po?.bid?.vendor}</p>
         </div>
         <div>
           <p>Delivery Address</p>
-          <p>Westfield Subsea Ltd Plot 23, Providence Street, Lekki</p>
+          <p>{}</p>
         </div>
       </div>
 
@@ -210,15 +210,15 @@ const ApprovePurchaseOrder: React.FC<ApprovePOProps> = ({
             </div>
             <div className="flex gap-2">
               <p>VAT:</p>
-              <p>Obinna P.O</p>
+              <p>{po?.bid?.vat}</p>
             </div>
             <div className="flex gap-2">
               <p>NCDT:</p>
-              <p>Obinna P.O</p>
+              <p>{po?.bid?.ncdf}</p>
             </div>
             <div className="flex gap-2">
               <p>WHT:</p>
-              <p>Obinna P.O</p>
+              <p>{po?.bid?.wht}</p>
             </div>
             <div className="flex gap-2">
               <p>Total Amount:</p>

@@ -18,13 +18,14 @@ function PurchaseOrderTable({
   MOCK_DATA,
   COLUMNS,
   fetchedData,
-  handleOpenModal
+  handleOpenModal,
+  viewPO,
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
   fetchedData: Barge[];
-  handleOpenModal: () => void
-  
+  viewPO: (id: number) => void;
+  handleOpenModal: () => void;
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
@@ -71,7 +72,7 @@ function PurchaseOrderTable({
 
   return (
     <>
-      <div className="flex mb-4 items-center gap-2 md:w-2/5 w-full ml-auto">
+      <div className="flex mb-4 justify-end gap-2 md:w-2/5 w-full ml-auto">
         <div className="md:w-4/5 w-3/5">
           <div className="w-full relative">
             <input
@@ -86,14 +87,16 @@ function PurchaseOrderTable({
             </div>
           </div>
         </div>
-
-     
       </div>
 
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup, index) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={index} className='border-b bg-[#E9EDF4]'>
+            <tr
+              {...headerGroup.getHeaderGroupProps()}
+              key={index}
+              className="border-b bg-[#E9EDF4]"
+            >
               {headerGroup.headers.map((column, index) => (
                 <th
                   className="py-2 text-center"
@@ -117,9 +120,7 @@ function PurchaseOrderTable({
                       <FaRegFolderClosed className="text-4xl" />
                     </div>
                     <div className="mt-5">
-                      <p className="font-medium text-[#475467]">
-                        No Bid found
-                      </p>
+                      <p className="font-medium text-[#475467]">No Bid found</p>
                       <p className="font-normal text-sm mt-3">
                         Click “add new bid” button to get started in doing your
                         <br /> first transaction on the platform
@@ -132,6 +133,7 @@ function PurchaseOrderTable({
           ) : (
             page.map((row, index) => {
               prepareRow(row);
+              const { id } = row.original;
               return (
                 <tr {...row.getRowProps()} key={index}>
                   {row.cells.map((cell, index) => {
@@ -145,17 +147,14 @@ function PurchaseOrderTable({
                       </td>
                     );
                   })}
-                 <td className='flex justify-center items-center'>
+                  <td className="flex justify-center items-center">
                     <div className="flex-row flex items-center w-max justify-center rounded-xl px-2 py-1 bg-[#a16207] cursor-pointer ">
-                   <span onClick={() => {
-                    handleOpenModal()
-
-
-                   }}
-                   className='text-center text-sm text-white'
-                   >
-                    View More
-                   </span>
+                      <span
+                        onClick={() => viewPO(id)}
+                        className="text-center text-sm text-white"
+                      >
+                        View More
+                      </span>
                     </div>
                   </td>
                 </tr>

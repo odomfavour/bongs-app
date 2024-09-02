@@ -106,7 +106,7 @@ function ReleaseTable({
 
   return (
     <>
-      <div className="flex  items-center gap-2 md:w-2/5 w-full ml-auto my-4">
+      <div className="flex  justify-end gap-2 md:w-2/5 w-full ml-auto my-4">
         <div className="md:w-4/5 w-3/5">
           <div className="w-full relative">
             <input
@@ -121,8 +121,6 @@ function ReleaseTable({
             </div>
           </div>
         </div>
-
-      
       </div>
 
       <table {...getTableProps()}>

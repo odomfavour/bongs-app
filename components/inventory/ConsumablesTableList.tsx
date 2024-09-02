@@ -21,6 +21,7 @@ import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import Modal from '../dashboard/Modal';
 import { usePathname } from 'next/navigation';
+import ConsumableTable from '../AppComp/ConsumableTable';
 
 interface Deck {
   name: string;
@@ -448,6 +449,8 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
     fetchProjects();
   }, [fetchProjects]);
 
+
+ 
   return (
     <div className="bg-white pt-2">
       <div className="overflow-x-auto">
@@ -551,6 +554,9 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
             )}
           </div>
         </div>
+
+        {/*    ConsumableTable */}
+      
         <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">

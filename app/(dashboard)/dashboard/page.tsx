@@ -16,19 +16,20 @@ import {
 } from "@/utils/types";
 import TopTenInnventories from "@/components/dashboard/charts/TopTenInnventories";
 import Image from "next/image";
-import { months } from "@/utils/data";
+import { months, years } from "@/utils/data";
 import InventoryRequisitionAnalysis from "@/components/dashboard/charts/InventoryRequisitionAnalysis";
 import { useSelector } from "react-redux";
 
 import { useRouter } from "next/navigation";
 import MaterialRequisitionAnalysisChart from "@/components/dashboard/charts/MetarialRequisitionAnalysisChart";
+import { useStateManager } from "react-select";
 
 const Page = () => {
   const [dashboardData, setDashboardData] = useState<DashboardCardType[] | []>(
     []
   );
 
-  const [itemSelected, setItemSelected] = useState("one");
+  const [itemSelected, setItemSelected] = useState("all");
   const [requisitionApprovedByMonth, setRequisitionApprovedByMonth] = useState<
     string[] | []
   >([]);
@@ -80,6 +81,9 @@ const Page = () => {
   //   }
   // }, [user?.subscriber_id, year, month]);
 
+
+
+
   const {
     data: swrResponse,
     error,
@@ -93,7 +97,7 @@ const Page = () => {
     {
       revalidateOnFocus: false, // Revalidate when the window is refocused
       revalidateOnReconnect: true, // Revalidate when reconnecting after losing connection
-      refreshInterval: 3, // Set to 0 if you don't want periodic revalidation
+      refreshInterval: 0, // Set to 0 if you don't want periodic revalidation
       refreshWhenHidden: false, // Set to true if you want to keep refreshing in the background
       refreshWhenOffline: false, // Set to true if you want to keep refreshing when offline
     }
@@ -112,11 +116,32 @@ const Page = () => {
     }
 
     if (swrResponse?.status) {
+
+     
       const { data, message } = swrResponse;
-      console.log("dashboard data", data);
+      console.log("dashboard displayed received", data);
+
+      let displayedData
+      if (itemSelected === "all") { 
+        displayedData = data.all
+        console.log("dashboard displayed data all", displayedData);
+      }
+
+      if (itemSelected === "project") { 
+        displayedData = data.project
+        console.log("dashboard displayed data project", displayedData);
+      }
+
+      if (itemSelected === "miv") { 
+        displayedData = data.miv
+        console.log("dashboard displayed data miv", displayedData);
+      }
+
+     
+
       // toast.success(message);
       const { total_requisitions, total_approved_requisitions } =
-        data.requisition_data;
+        displayedData.requisition_data;
       const {
         total_inventory,
         total_project_inventory,
@@ -129,26 +154,27 @@ const Page = () => {
         consumable_counts,
         spare_part_counts,
         category_counts,
-      } = data.inventory_data;
+      } = displayedData.inventory_data;
+    
 
-      const { most_used_inventory } = data.most_used_inventory_data;
-      setmostUsedInvory(most_used_inventory);
+      const { most_used_inventory } = displayedData.most_used_inventory_data;
+      setmostUsedInvory(displayedData.most_used_inventory_data);
 
       setCategoryCounts(category_counts);
       setConsumableCounts(consumable_counts);
       setSparePartCounts(spare_part_counts);
 
       const { total_items_received, percentage_change } =
-        data.total_items_received_data;
+        displayedData.total_items_received_data;
       const {
         percentage_change: percentageChangeMaterialReleased,
         total_materials,
         released_materials_by_month,
         total_released_materials,
-      } = data.material_release_data;
+      } = displayedData.material_release_data;
 
       setRequisitionApprovedByMonth(released_materials_by_month);
-      setInventoryOverTime(data.filtered_inventory_data);
+      setInventoryOverTime(displayedData.filtered_inventory_data);
 
       setMaterialRequisitionAnalysisData({
         totalMaterialReleased: total_materials,
@@ -176,7 +202,7 @@ const Page = () => {
 
       setAppMounted(true);
     }
-  }, [error, swrResponse]);
+  }, [error, swrResponse, itemSelected]);
 
   if (isLoading && !appMounted) {
     return (
@@ -199,10 +225,10 @@ const Page = () => {
         <div className="flex flex-row items-center space-x-2">
           <div
             onClick={() => {
-              setItemSelected("one");
+              setItemSelected("all");
             }}
             className={`px-4 py-2 rounded-lg cursor-pointer flex items-center justify-center ${
-              itemSelected === "one" ? "bg-gray-300" : ""
+              itemSelected === "all" ? "bg-gray-300" : ""
             }`}
           >
             <p className="text-xl text-gray-600 font-[inter] font-light ">
@@ -212,10 +238,10 @@ const Page = () => {
 
           <div
             onClick={() => {
-              setItemSelected("two");
+              setItemSelected("project");
             }}
             className={`px-4 py-2 rounded-lg cursor-pointer flex items-center justify-center ${
-              itemSelected === "two" ? "bg-gray-300" : ""
+              itemSelected === "project" ? "bg-gray-300" : ""
             }`}
           >
             <p className="text-xl text-gray-600 font-[inter] font-light ">
@@ -225,10 +251,10 @@ const Page = () => {
 
           <div
             onClick={() => {
-              setItemSelected("three");
+              setItemSelected("miv");
             }}
             className={`px-4 py-2 rounded-lg cursor-pointer flex items-center justify-center ${
-              itemSelected === "three" ? "bg-gray-300" : ""
+              itemSelected === "miv" ? "bg-gray-300" : ""
             }`}
           >
             <p className="text-xl text-gray-600 font-[inter] font-light ">
@@ -267,13 +293,16 @@ const Page = () => {
             ))}
           </select>
           <select
-            onChange={(e) => e.target.value}
+            onChange={(e) => setYear(e.target.value)}
             name=""
             id=""
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3"
+            className="bg-gray-50 border max-h-[100px] overflow-y-scroll border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3"
           >
             <option value="">Year</option>
-            <option value={"2024"}>2024</option>
+            { 
+              years.map(year => <option key={year} value={year}>{ year }</option>
+              )
+            }
           </select>
         </div>
       </div>
@@ -289,24 +318,24 @@ const Page = () => {
 
       {/* chart section starts */}
 
-      <div className="grid grid-cols-10 gap-4 mb-4">
+      <div className="grid grid-cols-10 gap-4 mb-4  h-[80vh]">
         
 
-        <div className="col-span-6 grid grid-cols-12 gap-4">
-          <div className="grid grid-cols-12 col-span-12 gap-4">
-            <div className="col-span-6   rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white">
+        <div className="col-span-6 grid grid-cols-12 gap-4 h-full">
+          <div className="grid grid-cols-12   col-span-12 gap-4">
+            <div className="col-span-6 min-h-[45vh] rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white">
               {inventoryOverTime && (
                 <LineAndbarchart inventoryOverTime={inventoryOverTime} />
-              )}
+              )} 
             </div>
-            <div className="col-span-6   rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white ">
+            <div className="col-span-6  min-h-[45vh]   rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white ">
               <Areachart
                 requisitionApprovedByMonth={requisitionApprovedByMonth}
               />
             </div>
           </div>
-          <div className="grid grid-cols-12 col-span-12 gap-4">
-            <div className=" col-span-6   rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white">
+          <div className="grid grid-cols-12 min-h-[45vh]  col-span-12 gap-4">
+            <div className=" col-span-6 min-h-[45vh]  rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white">
               {consumableCounts && sparePartCounts && (
                 <Barchart
                   consumable_counts={consumableCounts}
@@ -314,25 +343,31 @@ const Page = () => {
                 />
               )}
             </div>
-            <div className="col-span-6   rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white">
+            <div className="col-span-6  min-h-full rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white">
               {categoryCounts && (
                 <InventoryRequisitionAnalysis categoryCounts={categoryCounts} />
               )}
             </div>
           </div>
         </div>
-        <div className="col-span-4 gap-4">
+
+
+
+
+
+
+        <div className="col-span-4 gap-4 min-h-[90vh]">
           <div className="col-span-12 h-[55%]  rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white ">
             {mostUsedInvory && <TopTenInnventories data={mostUsedInvory} />}
           </div>
-          <div className="col-span-12 mt-[16px] h-[45%]  rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white">
+          <div className="col-span-12 mt-[16px] h-[43%]  rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white">
             <MaterialRequisitionAnalysisChart
               materialReleaseStatus={materialRequisitionAnalysisData}
             />
           </div>
         </div>
-      </div>
-
+      </div>  
+ 
       {/* chart sectio ends */}
     </div>
   );

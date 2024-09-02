@@ -1,6 +1,6 @@
 import { toggleLoading } from "@/provider/redux/modalSlice";
 import { awardBidRfqDataApi } from "@/utils/apiServices/procurementApi";
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 
@@ -14,15 +14,23 @@ function BidModal({
     vendor: string;
     pricing: number;
     paymentTerms: number;
-    rate: number;
+    subtotal: number,
     deliveryPeriod: string;
     currency: string;
     isAwarded: string;
+    quoteValidity: string,
+    wht: number,
+    ncf: number,
+    vat: number,
+    grandTotal: number,
+    rating: string
   }[];
   rfq: string;
 }) {
   const dispatch = useDispatch();
 
+
+  const [isAwarded, setisAwarded] = useState(false)
   console.log("bid response inner", bidList)
   return (
     <div>
@@ -34,16 +42,20 @@ function BidModal({
         <table>
           <thead>
             <tr>
-              <th>SN</th>
-              <th>Bid</th>
-              <th>Date Received</th>
-              <th>Vendor</th>
-              <th>Pricing</th>
-              <th>Delivery Period</th>
-              <th>Payment Terms</th>
-              <th>Rating</th>
-
-              <th>Actions</th>
+              <th className="text-center">SN</th>
+              <th  className="text-center">Date Received</th>
+              <th className="text-center">Vendor</th>
+              <th className="text-center"> Payment Terms(%)</th>
+              <th className="text-center">Quote validity</th>
+              <th className="text-center">Delivery Period</th>
+              <th   className="text-center">Sub Total</th>
+              <th className="text-center">WHT(%)</th>
+              <th className="text-center">NCDF(%)</th>
+              <th className="text-center">VAT(%)</th>
+            
+              <th className="text-center">Grand Total</th>
+              <th className="text-center">Rating</th>
+              <th className="text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -51,24 +63,22 @@ function BidModal({
               bidList.map((bid, index) => (
                 <tr key={index}>
                   <td className="text-sm text-center">{index + 1}</td>
-                  <td>
-                    <div className="flex flex-row items-center">
-                      <span className="text-sm text-center">BID-</span>
-                      <span className="text-sm text-center">{bid.BID}</span>
-                    </div>
-                  </td>
                   <td className="text-sm text-center">{bid.dateReceived}</td>
                   <td className="text-sm text-center">{bid.vendor}</td>
-                  <td className="text-sm text-center">
-                    {bid.currency}
-                    {bid.pricing}
-                  </td>
-                  <td className="text-sm text-center">{bid.deliveryPeriod}</td>
                   <td className="text-sm text-center">{bid.paymentTerms}</td>
-                  <td className="text-sm text-center">{bid.rate}</td>
-                  <td className="flex justify-center items-center space-x-4">
-                    <div
+                  <td className="text-sm text-center">{bid.quoteValidity}</td>
+                  <td className="text-sm text-center">{bid.deliveryPeriod}</td>
+                  <td className="text-sm text-center">{bid.currency}{bid.subtotal}</td>
+                  <td className="text-sm text-center">{bid.wht}</td>
+                  <td className="text-sm text-center">{bid.ncf}</td>
+                  <td className="text-sm text-center">{bid.vat}</td>
+                  <td className="text-sm text-center">{bid.grandTotal}</td> 
+                  <td className="text-sm text-center">{bid.rating}</td>  
+                  <td className=" ">
+                    <button
+                      disabled={ isAwarded }
                       onClick={() => {
+                       
                         const getAlBidForRfq = async () => {
                           try {
                             dispatch(toggleLoading(true));
@@ -78,6 +88,8 @@ function BidModal({
                             );
                             const { message } = response;
                             toast.success(message);
+                            setisAwarded(true)
+                            console.log(`response obtained after bid award success`, response)
                             dispatch(toggleLoading(false));
                           } catch (error: any) {
                             dispatch(toggleLoading(false));
@@ -91,22 +103,20 @@ function BidModal({
                         };
                         getAlBidForRfq();
                       }}
-                      className="flex-row flex items-center w-max justify-center rounded-xl px-2 py-1 bg-blue-700 cursor-pointer "
+
+                  className = { `${isAwarded ? "bg-gray-500 cursor-pointer " : "bg-blue-700 cursor-pointer "} text-center text-sm text-white flex-row flex items-center  justify-center rounded-xl px-2 py-1  `}
+                   
                     >
-                      <span className="text-center text-sm text-white">
-                        Accept
+                      <span className={ ` text-center text-sm text-white `}>
+                        Award
                       </span>
-                    </div>
-                    <div className="flex-row flex items-center w-max justify-center rounded-xl px-2 py-1 bg-[#a16207] cursor-pointer ">
-                      <span className="text-center text-sm text-white ">
-                        View More
-                      </span>
-                    </div>
+                    </button>
+                  
                   </td>
                 </tr>
               ))
             ) : (
-              <tr aria-colspan={9}>
+              <tr aria-colspan={13}>
                 <span>No Bid found</span>
               </tr>
             )}

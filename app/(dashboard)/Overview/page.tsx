@@ -1,13 +1,13 @@
-"use client";
-import BIDTable from "@/components/AppComp/BIDTable";
-import RFQTable from "@/components/AppComp/RFQTable";
-import GRNTable from "@/components/AppComp/GRNTable";
-import MemoTable from "@/components/AppComp/MemoTable";
-import PurchaseOrderTable from "@/components/AppComp/PurchaseOrderTable";
-import QA_QCTable from "@/components/AppComp/QA_QCTable";
-import ProcurementCharts from "@/components/dashboard/charts/ProcurementCharts";
-import Modal from "@/components/dashboard/Modal";
-import ProcurementAddRequestModal from "@/components/procurement/ProcurementAddRequestModal";
+'use client';
+import BIDTable from '@/components/AppComp/BIDTable';
+import RFQTable from '@/components/AppComp/RFQTable';
+import GRNTable from '@/components/AppComp/GRNTable';
+import MemoTable from '@/components/AppComp/MemoTable';
+import PurchaseOrderTable from '@/components/AppComp/PurchaseOrderTable';
+import QA_QCTable from '@/components/AppComp/QA_QCTable';
+import ProcurementCharts from '@/components/dashboard/charts/ProcurementCharts';
+import Modal from '@/components/dashboard/Modal';
+import ProcurementAddRequestModal from '@/components/procurement/ProcurementAddRequestModal';
 import {
   fetchAllBidDataApi,
   fetchAllMemoDataApi,
@@ -16,21 +16,29 @@ import {
   fetchAllRfqDataApi,
   fetchBidForRfqDataApi,
   fetchProcurementChartDataApi,
-} from "@/utils/apiServices/procurementApi";
-import { procurementMenuList } from "@/utils/data";
-import { currencyFormatter } from "@/utils/usefulFunc";
-import { useRouter } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
-import { toast } from "react-toastify";
+} from '@/utils/apiServices/procurementApi';
+import { procurementMenuList } from '@/utils/data';
+import { currencyFormatter } from '@/utils/usefulFunc';
+import { useRouter } from 'next/navigation';
+import React, { useCallback, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
-import BidModal from "@/components/Bid/BidModal";
+import BidModal from '@/components/Bid/BidModal';
+import CreateNewMemo from '@/components/procurement/CreateNewMemo';
+import { formatDate } from '@/utils/utils';
+import ApproveMemo from '@/components/procurement/ApproveMemo';
+import CreatePurchaseOrder from '@/components/procurement/CreatePurchaseOrder';
+import { toggleLoading } from '@/provider/redux/modalSlice';
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import ApprovePurchaseOrder from '@/components/procurement/ApprovePurchaseOrder';
 
 function Page() {
   const [openModal, setOpenModal] = useState(false);
 
   const route = useRouter();
 
-  const [selectedMenu, setselectedMenu] = useState("RFQS");
+  const [selectedMenu, setselectedMenu] = useState('RFQS');
 
   const [isUIReady, setIsUIReady] = useState(false);
 
@@ -43,14 +51,20 @@ function Page() {
       vendor: string;
       pricing: number;
       paymentTerms: number;
-      rate: number;
+      subtotal: number;
       deliveryPeriod: string;
       currency: string;
       isAwarded: string;
+      quoteValidity: string;
+      wht: number;
+      ncf: number;
+      vat: number;
+      grandTotal: number;
+      rating: string
     }[]
   >([]);
 
-  const [rfqForGiveneBid, setRfqForGivenBid] = useState("");
+  const [rfqForGiveneBid, setRfqForGivenBid] = useState('');
 
   const [rfqStatus, setRfqStatus] = useState<{
     expired: number;
@@ -74,13 +88,47 @@ function Page() {
 
   const [allRfq, setAllRfq] = useState<any[]>([]);
 
-  const [year, setYear] = useState("");
+  const [year, setYear] = useState('');
 
-  const [yearFormServer, setYearFromServer] = useState<string>("");
+  const [yearFormServer, setYearFromServer] = useState<string>('');
 
   // type of procurement daraf items
+  const [openMemoModal, setOpenMemoModal] = useState(false);
+  const handleMemoClose = () => {
+    setOpenMemoModal(false);
+  };
 
   const handleClose = () => setOpenModal(!openModal);
+
+  //memo
+  const [openApproveModal, setOpenApproveModal] = useState(false);
+
+  const handleCloseApprove = () => {
+    setOpenApproveModal(false);
+  };
+  const [selectedMemo, setSelectedMemo] = useState(0);
+  const [selectedPO, setSelectedPO] = useState(0);
+  const viewItem = (id: number) => {
+    setSelectedMemo(id);
+    setOpenApproveModal(true);
+  };
+
+  const [openPOModal, setOpenPOModal] = useState(false);
+
+  const [openPOApproveModal, setOpenPOApproveModal] = useState(false);
+  const handlePOApproveClose = () => {
+    setOpenPOApproveModal(false);
+  };
+  const handlePOClose = () => {
+    setOpenPOModal(false);
+  };
+
+  const viewPO = (id: number) => {
+    setSelectedPO(id);
+    setOpenPOApproveModal(true);
+  };
+
+  //memoclose
 
   const handleGetAllBidForSingleRfqFunc = (rfqbid: any, rfqId: any) => {
     setAllBidsForSingleRfq(rfqbid);
@@ -105,7 +153,7 @@ function Page() {
         fetchAllPurchaseOrderDataApi(),
         fetchAllQualityAssuranceDataApi(),
       ]);
-
+      console.log('fetched all rfq', allRfqData);
       setAllBidData(allBidData.data.data);
       setAllRfq(allRfqData.data.data);
       setAllMemoData(allMemo.data.data);
@@ -126,13 +174,13 @@ function Page() {
 
       // You can similarly setStoreItems if needed
     } catch (error: any) {
-      console.error("Error:", error);
+      console.error('Error:', error);
 
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
         error?.message ||
-        "Unknown error";
+        'Unknown error';
       toast.error(`${errorMessage}`);
     } finally {
     }
@@ -149,17 +197,55 @@ function Page() {
   const handleOpenBidModal = () => {
     setShowBidForRfqModal(!showBidForRfqModal);
   };
+  const user = useSelector((state: any) => state.user.user);
+  const dispatch = useDispatch();
+
+  const printItem = async (id: number) => {
+    try {
+      dispatch(toggleLoading(true));
+      const response = await axios.get(
+        `${process.env.BASEURL}/procurement/memo/print/${id}`,
+        {
+          params: { format: 'pdf' },
+          responseType: 'blob',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `export.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      toast.success(response?.data?.message);
+    } catch (error: any) {
+      console.error('Export failed:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  };
 
   const itemListRFQ = allRfq.map((item, i) => {
     return {
       ...item,
-      "S/N": i + 1,
+      'S/N': i + 1,
       rfqId: `RFQ ${item.id}`,
       title: item.title,
       type: item.procurement_type,
       status: item.status,
       budget: `${item?.currency}${
-        item.budget !== null ? currencyFormatter(item.budget) : ""
+        item.budget !== null ? currencyFormatter(item.budget) : ''
       }`,
       date: item.bidding_deadline,
     };
@@ -168,17 +254,18 @@ function Page() {
   const itemListBid = allBidData.map((item, i) => {
     return {
       ...item,
-      "S/N": i + 1,
-      rfqId: `RFQ ${item.id}`,
+      'S/N': i + 1,
+      rfqId: `RFQ ${item.request_for_quotation_id}`,
+      bidId: `BID ${item.id}`,
       title: item.request_for_quotations.title,
       noOfBid: item.request_for_quotations.bid_count,
       status: item.status,
       awardedBids: item.request_for_quotations.awarded_bid
         ? `BID -  ${item.request_for_quotations.awarded_bid}`
-        : "Nil",
+        : 'Nil',
       performaInvoice: item.request_for_quotations.proforma_invoice
         ? `Invoive - ${item.request_for_quotations.proforma_invoice}`
-        : "Nil",
+        : 'Nil',
       deadline: item.request_for_quotations.bidding_deadline,
     };
   });
@@ -186,16 +273,16 @@ function Page() {
   const itemListPurchaseOrders = allPurhaseOrderData.map((item, i) => {
     return {
       ...item,
-      "S/N": i + 1,
+      'S/N': i + 1,
       poId: `PO ${item.id}`,
       title: item.request_for_quotations.title,
       type: item.request_for_quotations.procurement_type,
       status: item.status,
       date: item.request_for_quotations.bidding_deadline,
       cost: `${item.bid.currency}${currencyFormatter(item.bid.cost)}`,
-      timeline: item.request_for_quotations.delivery_date,
-      signatory: item.memo.signatory_count,
-      vendor: item.bid.vendor,
+      timeline: item?.request_for_quotations?.delivery_date,
+      signatory: item?.memo?.signatory_count,
+      vendor: item?.bid?.vendor,
     };
   });
 
@@ -203,7 +290,7 @@ function Page() {
     (item, i) => {
       return {
         ...item,
-        "S/N": i + 1,
+        'S/N': i + 1,
         rfqId: `RFQ ${item.id}`,
         title: item.title,
         noOfBid: item.bid_count,
@@ -216,16 +303,18 @@ function Page() {
   );
 
   const itemListMemo = allMemoData.map((item, i) => {
+    console.log('data', item);
     return {
       ...item,
-      "S/N": i + 1,
+      'S/N': i + 1,
       bidId: `BID ${item.bid_id}`,
-      title: item.request_for_quotations.title,
-      type: item.request_for_quotations.procurement_type,
+      title: item?.request_for_quotations?.title,
+      type: item?.request_for_quotations?.procurement_type,
       status: item.status,
-      signatory: 0,
-      author: `${item.author.first_name} ${item.author.last_name}`,
-      date: item.request_for_quotations.delivery_date,
+      signatory: `${item.has_signed_count}     ${item.signatory_count}`,
+      author: `${item.author_by?.first_name} ${item.author_by?.last_name}`,
+      // date: formatDate(item?.request_for_quotations?.delivery_date || 0),
+      date: formatDate(item?.created_at || 0),
     };
   });
 
@@ -250,21 +339,43 @@ function Page() {
       {/* search field */}
       <div className="flex flex-row items-center justify-between py-2 mt-8 ">
         <span className="text-black text-bold text-[32px] font-medium font-['Inter']">
-          {selectedMenu === "RFQS" && `Request For Quotations(RFQs)`}
-          {selectedMenu === "Bids" && `Bids Evaluation `}
-          {selectedMenu === "Memo" && `Memo`}
-          {selectedMenu === "Purchase Orders" && `Purchase Orders`}
-          {selectedMenu === "QA/QC" && `Quality Assurance and Control`}
-          {selectedMenu === "GRN" && `Goods Received`}
+          {selectedMenu === 'RFQS' && `Request For Quotations(RFQs)`}
+          {selectedMenu === 'Bids' && `Bids Evaluation `}
+          {selectedMenu === 'Memo' && `Memo`}
+          {selectedMenu === 'Purchase Orders' && `Purchase Orders`}
+          {selectedMenu === 'QA/QC' && `Quality Assurance and Control`}
+          {selectedMenu === 'GRN' && `Goods Received`}
         </span>
 
-        {selectedMenu === "RFQS" && (
+        {selectedMenu === 'RFQS' && (
           <div
             onClick={() => setOpenModal(!openModal)}
             className=" border border-[#1354d2]  rounded-xl  justify-center items-center  flex flex-row px-2  cursor-pointer "
           >
             <span className="text-[#1354d2] text-xl font-normal font-['Inter']">
               New Request
+            </span>
+          </div>
+        )}
+
+        {selectedMenu === 'Memo' && (
+          <div
+            onClick={() => setOpenMemoModal(true)}
+            className=" border border-[#1354d2]  rounded-xl  justify-center items-center  flex flex-row px-2  cursor-pointer "
+          >
+            <span className="text-[#1354d2] text-xl font-normal font-['Inter']">
+              New Memo
+            </span>
+          </div>
+        )}
+
+        {selectedMenu === 'Purchase Orders' && (
+          <div
+            onClick={() => setOpenPOModal(true)}
+            className=" border border-[#1354d2]  rounded-xl  justify-center items-center  flex flex-row px-2  cursor-pointer "
+          >
+            <span className="text-[#1354d2] text-xl font-normal font-['Inter']">
+              New purchase Order
             </span>
           </div>
         )}
@@ -280,20 +391,20 @@ function Page() {
             onClick={() => setselectedMenu(menu.menuHeading)}
             className={`${
               selectedMenu === menu.menuHeading
-                ? "bg-[#1E1E1E]"
-                : "bg-[#d9d9d9]"
+                ? 'bg-[#1E1E1E]'
+                : 'bg-[#d9d9d9]'
             } cursor-pointer  flex items-center justify-center flex-1 rounded-t-md min-h-[50px]`}
           >
             <span className="text-center text-white text-2xl font-medium font-['Inter']">
               {menu.menuHeading}
-              {menu.menuHeading === "RFQS" && `(${allRfq.length})`}
-              {menu.menuHeading === "Bids" && `(${allBidData.length})`}
-              {menu.menuHeading === "Memo" && `(${allMemoData.length})`}
-              {menu.menuHeading === "Purchase Orders" &&
+              {menu.menuHeading === 'RFQS' && `(${allRfq.length})`}
+              {menu.menuHeading === 'Bids' && `(${allBidData.length})`}
+              {menu.menuHeading === 'Memo' && `(${allMemoData.length})`}
+              {menu.menuHeading === 'Purchase Orders' &&
                 `(${allPurhaseOrderData.length})`}
-              {menu.menuHeading === "QA/QC" &&
+              {menu.menuHeading === 'QA/QC' &&
                 `(${allQualityAssuranceData.length})`}
-              {menu.menuHeading === "GRN" &&
+              {menu.menuHeading === 'GRN' &&
                 `(${allQualityAssuranceData.length})`}
             </span>
           </div>
@@ -305,260 +416,272 @@ function Page() {
 
       {/* table section ends */}
 
-      {selectedMenu === "RFQS" && (
+      {selectedMenu === 'RFQS' && (
         <RFQTable
           fetchedData={allRfq}
           handleOpenModal={handleOpenModal}
           COLUMNS={[
             {
-              Header: "S/N",
-              accessor: "S/N",
+              Header: 'S/N',
+              accessor: 'S/N',
             },
             {
-              Header: "RFQ ID",
-              accessor: "rfqId",
+              Header: 'RFQ ID',
+              accessor: 'rfqId',
             },
             {
-              Header: "Title",
-              accessor: "title",
+              Header: 'Title',
+              accessor: 'title',
             },
             {
-              Header: "Type",
-              accessor: "type",
+              Header: 'Type',
+              accessor: 'type',
             },
             {
-              Header: "Budget",
-              accessor: "budget",
+              Header: 'Budget',
+              accessor: 'budget',
             },
             {
-              Header: "Status",
-              accessor: "status",
+              Header: 'Status',
+              accessor: 'status',
             },
             {
-              Header: "Date",
-              accessor: "date",
+              Header: 'Date',
+              accessor: 'date',
             },
           ]}
           MOCK_DATA={itemListRFQ}
         />
       )}
-      {selectedMenu === "Bids" && (
+      {selectedMenu === 'Bids' && (
         <BIDTable
           fetchedData={allBidData}
           handleGetAllBidForSingleRfqFunc={handleGetAllBidForSingleRfqFunc}
           handleOpenModal={handleOpenBidModal}
           COLUMNS={[
+          
+          /* 
+           rfqId: `RFQ ${item.request_quotation_id}`,
+      bidId: `BID ${item.id}`,
+          */
             {
-              Header: "S/N",
-              accessor: "S/N",
+              Header: 'S/N',
+              accessor: 'S/N',
             },
             {
-              Header: "RFQ ID",
-              accessor: "rfqId",
+              Header: 'RFQ ID',
+              accessor: 'rfqId',
             },
             {
-              Header: "Title",
-              accessor: "title",
+              Header: 'BID ID',
+              accessor: 'bidId',
             },
             {
-              Header: "No. Of Bids",
-              accessor: "noOfBid",
+              Header: 'Title',
+              accessor: 'title',
             },
             {
-              Header: "Status",
-              accessor: "status",
+              Header: 'No. Of Bids',
+              accessor: 'noOfBid',
             },
             {
-              Header: "Awarded Bids",
-              accessor: "awardedBids",
+              Header: 'Status',
+              accessor: 'status',
             },
             {
-              Header: "Proforma Invoice",
-              accessor: "performaInvoice",
+              Header: 'Awarded Bids',
+              accessor: 'awardedBids',
             },
             {
-              Header: "Deadline",
-              accessor: "deadline",
+              Header: 'Proforma Invoice',
+              accessor: 'performaInvoice',
+            },
+            {
+              Header: 'Deadline',
+              accessor: 'deadline',
             },
           ]}
           MOCK_DATA={itemListBid}
         />
       )}
 
-      {selectedMenu === "Memo" && (
+      {selectedMenu === 'Memo' && (
         <MemoTable
           fetchedData={allMemoData}
           handleOpenModal={handleOpenModal}
+          viewItem={viewItem}
+          printItem={printItem}
           COLUMNS={[
             {
-              Header: "S/N",
-              accessor: "S/N",
+              Header: 'S/N',
+              accessor: 'S/N',
             },
             {
-              Header: "BID ID",
-              accessor: "bidId",
+              Header: 'BID ID',
+              accessor: 'bidId',
             },
             {
-              Header: "Title",
-              accessor: "title",
+              Header: 'Title',
+              accessor: 'title',
             },
             {
-              Header: "Type",
-              accessor: "type",
+              Header: 'Type',
+              accessor: 'type',
             },
             {
-              Header: "Signatory",
-              accessor: "signatory",
+              Header: 'Signatory',
+              accessor: 'signatory',
             },
             {
-              Header: "Author",
-              accessor: "author",
+              Header: 'Author',
+              accessor: 'author',
             },
             {
-              Header: "Status",
-              accessor: "status",
+              Header: 'Status',
+              accessor: 'status',
             },
 
             {
-              Header: "Date",
-              accessor: "date",
+              Header: 'Date',
+              accessor: 'date',
             },
           ]}
           MOCK_DATA={itemListMemo}
         />
       )}
 
-      {selectedMenu === "Purchase Orders" && (
+      {selectedMenu === 'Purchase Orders' && (
         <PurchaseOrderTable
           fetchedData={allPurhaseOrderData}
           handleOpenModal={handleOpenModal}
+          viewPO={viewPO}
           COLUMNS={[
             {
-              Header: "S/N",
-              accessor: "S/N",
+              Header: 'S/N',
+              accessor: 'S/N',
             },
             {
-              Header: "PO ID",
-              accessor: "poId",
+              Header: 'PO ID',
+              accessor: 'poId',
             },
             {
-              Header: "Title",
-              accessor: "title",
+              Header: 'Title',
+              accessor: 'title',
             },
             {
-              Header: "Type",
-              accessor: "type",
+              Header: 'Type',
+              accessor: 'type',
             },
             {
-              Header: "Vendor",
-              accessor: "vendor",
+              Header: 'Vendor',
+              accessor: 'vendor',
             },
             {
-              Header: "Cost",
-              accessor: "cost",
+              Header: 'Cost',
+              accessor: 'cost',
             },
             {
-              Header: "Signatory",
-              accessor: "signatory",
+              Header: 'Signatory',
+              accessor: 'signatory',
             },
             {
-              Header: "Timeline",
-              accessor: "timeline",
+              Header: 'Timeline',
+              accessor: 'timeline',
             },
             {
-              Header: "Status",
-              accessor: "status",
+              Header: 'Status',
+              accessor: 'status',
             },
 
             {
-              Header: "Date",
-              accessor: "date",
+              Header: 'Date',
+              accessor: 'date',
             },
           ]}
           MOCK_DATA={itemListPurchaseOrders}
         />
       )}
 
-      {selectedMenu === "QA/QC" && (
+      {selectedMenu === 'QA/QC' && (
         <QA_QCTable
           fetchedData={allQualityAssuranceData}
           handleOpenModal={handleOpenModal}
           COLUMNS={[
             {
-              Header: "S/N",
-              accessor: "S/N",
+              Header: 'S/N',
+              accessor: 'S/N',
             },
             {
-              Header: "PO ID",
-              accessor: "poId",
+              Header: 'PO ID',
+              accessor: 'poId',
             },
             {
-              Header: "Title",
-              accessor: "title",
+              Header: 'Title',
+              accessor: 'title',
             },
             {
-              Header: "Type",
-              accessor: "type",
+              Header: 'Type',
+              accessor: 'type',
             },
             {
-              Header: "Inventory",
-              accessor: "inventory",
+              Header: 'Inventory',
+              accessor: 'inventory',
             },
             {
-              Header: "Attachment",
-              accessor: "attachment",
+              Header: 'Attachment',
+              accessor: 'attachment',
             },
             {
-              Header: "Status",
-              accessor: "status",
+              Header: 'Status',
+              accessor: 'status',
             },
 
             {
-              Header: "Date",
-              accessor: "date",
+              Header: 'Date',
+              accessor: 'date',
             },
           ]}
           MOCK_DATA={itemlistAllQualityAssuranceData}
         />
       )}
 
-      {selectedMenu === "GRN" && (
+      {selectedMenu === 'GRN' && (
         <GRNTable
           fetchedData={allMemoData}
           handleOpenModal={handleOpenModal}
           COLUMNS={[
             {
-              Header: "S/N",
-              accessor: "S/N",
+              Header: 'S/N',
+              accessor: 'S/N',
             },
             {
-              Header: "PO ID",
-              accessor: "poId",
+              Header: 'PO ID',
+              accessor: 'poId',
             },
             {
-              Header: "Title",
-              accessor: "title",
+              Header: 'Title',
+              accessor: 'title',
             },
             {
-              Header: "Type",
-              accessor: "type",
+              Header: 'Type',
+              accessor: 'type',
             },
             {
-              Header: "Inventory",
-              accessor: "inventory",
+              Header: 'Inventory',
+              accessor: 'inventory',
             },
             {
-              Header: "Vendor",
-              accessor: "vendor",
+              Header: 'Vendor',
+              accessor: 'vendor',
             },
             {
-              Header: "Payment",
-              accessor: "payment",
+              Header: 'Payment',
+              accessor: 'payment',
             },
 
             {
-              Header: "Date",
-              accessor: "date",
+              Header: 'Date',
+              accessor: 'date',
             },
           ]}
           MOCK_DATA={itemListBid}
@@ -569,20 +692,69 @@ function Page() {
 
       <Modal
         isOpen={openModal}
-        title={"Request For Quotations"}
+        title={'Request For Quotations'}
         onClose={handleClose}
         maxWidth="1050px"
       >
-        <ProcurementAddRequestModal />
+        <ProcurementAddRequestModal handleClose={handleClose} />
       </Modal>
 
       <Modal
         isOpen={showBidForRfqModal}
-        title={""}
+        title={''}
         onClose={handleOpenBidModal}
         maxWidth="1050px"
       >
         <BidModal bidList={allBidsForSingleRfq} rfq={rfqForGiveneBid} />
+      </Modal>
+
+      <Modal
+        title=""
+        isOpen={openMemoModal}
+        onClose={handleMemoClose}
+        maxWidth="40%"
+      >
+        <CreateNewMemo
+          fetchMemoData={fetchProcurementsData}
+          handleMemoClose={handleMemoClose}
+        />
+      </Modal>
+
+      <Modal
+        title=""
+        isOpen={openApproveModal}
+        onClose={handleCloseApprove}
+        maxWidth="60%"
+      >
+        <ApproveMemo
+          selectedMemo={selectedMemo}
+          fetchData={fetchProcurementsData}
+          setOpenModal={setOpenApproveModal}
+        />
+      </Modal>
+
+      <Modal
+        title=""
+        isOpen={openPOModal}
+        onClose={handlePOClose}
+        maxWidth="40%"
+      >
+        <CreatePurchaseOrder
+          fetchPOData={fetchProcurementsData}
+          handlePOClose={handlePOClose}
+        />
+      </Modal>
+      <Modal
+        title=""
+        isOpen={openPOApproveModal}
+        onClose={handlePOApproveClose}
+        maxWidth="60%"
+      >
+        <ApprovePurchaseOrder
+          selectedPO={selectedPO}
+          setOpenApprovePO={setOpenPOApproveModal}
+          fetchPOData={fetchProcurementsData}
+        />
       </Modal>
 
       {/* modal section ends */}

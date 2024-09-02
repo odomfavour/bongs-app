@@ -157,7 +157,7 @@ function ProcurementCharts({
         <p className="text-gray-500 text-left  font-bold font-['Inter'] text-2xl ">
           Total RFQ’s Status
         </p>
-        <ResponsiveContainer width={"100%"} height={"90%"}>
+        <ResponsiveContainer width={"100%"} height={"80%"}>
           <PieChart>
             <Pie
               data={data}
@@ -235,7 +235,7 @@ function ProcurementCharts({
 
             {/* bid list starts */}
 
-            <div className="flex flex-col space-y-4 mt-4">
+            <div className="flex flex-col space-y-2 mt-2">
               {allBidData.slice(0, 4).map((bid, i) => {
               const {
                 dateFromNow,

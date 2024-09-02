@@ -81,7 +81,7 @@ function Barchart({ consumable_counts, spare_part_counts }: BarchartPropType) {
 
 
   return (
-    <div className="">
+    <div className="h-full">
       <div className="flex flex-col items-center justify-center mb-2">
         <span className='text-center text-gray-500'>Inventory Movement</span>
         <div className="flex flex-row justify-center items-center space-x-2">

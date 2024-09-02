@@ -2,7 +2,7 @@ import { Deck } from '@/utils/types';
 import React, { useMemo } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { FaRegFolderClosed } from 'react-icons/fa6';
-import Link from "next/link"
+import Link from 'next/link';
 import {
   useTable,
   usePagination,
@@ -19,21 +19,21 @@ interface Role {
   name: string;
 }
 interface User {
-    id: number;
-    first_name: string;
-    last_name: string;
-    email: string;
-    role: string;
-  }
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: string;
+}
 
 interface Department {
-    id: number;
-    department_name: string;
-    user: User;
-    role: Role;
-    created_at: string;
-  }
-  
+  id: number;
+  department_name: string;
+  user: User;
+  role: Role;
+  created_at: string;
+}
+
 function DepartmentTable({
   MOCK_DATA,
   COLUMNS,
@@ -41,17 +41,17 @@ function DepartmentTable({
   handleDelete,
   loadingStates,
   fetchedData,
-  handleEdit
+  handleEdit,
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
   handleDelete: (id: number) => void;
-  handleEdit: (data:Department) =>  void
+  handleEdit: (data: Department) => void;
   loadingStates: {
     [key: number]: boolean;
   };
   fetchedData: Department[];
-  hasPermission: (permission: string) => boolean
+  hasPermission: (permission: string) => boolean;
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
@@ -94,10 +94,9 @@ function DepartmentTable({
 
   const { globalFilter, pageIndex } = state;
 
-
   return (
     <>
-      <div className="flex  items-center gap-2 md:w-2/5 w-full ml-auto my-4">
+      <div className="flex  justify-end gap-2 md:w-2/5 w-full ml-auto my-4">
         <div className="md:w-4/5 w-3/5">
           <div className="w-full relative">
             <input
@@ -112,16 +111,16 @@ function DepartmentTable({
             </div>
           </div>
         </div>
-
-   
-      </div> 
+      </div>
 
       <table {...getTableProps()}>
         <thead>
-
-          
           {headerGroups.map((headerGroup, index) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={index} className='border-b bg-[#E9EDF4]'>
+            <tr
+              {...headerGroup.getHeaderGroupProps()}
+              key={index}
+              className="border-b bg-[#E9EDF4]"
+            >
               {headerGroup.headers.map((column, index) => (
                 <th
                   className="py-2 text-center"
@@ -132,11 +131,10 @@ function DepartmentTable({
                 </th>
               ))}
 
-              {
-               (hasPermission('can update department') ||
-               hasPermission('can delete department')) &&   <th className="py-2 text-center">Actions</th>
-              }
-            
+              {(hasPermission('can update department') ||
+                hasPermission('can delete department')) && (
+                <th className="py-2 text-center">Actions</th>
+              )}
             </tr>
           ))}
         </thead>
@@ -145,22 +143,21 @@ function DepartmentTable({
             <tr className="text-center text-primary bg-white">
               <td className="py-2 text-center" colSpan={10}>
                 <div className="flex justify-center items-center my-8 ">
-                    <div>
-                      <div className="flex justify-center items-center">
-                        <FaRegFolderClosed className="text-4xl" />
-                      </div>
-                      <div className="mt-5">
-                        <p className="font-medium text-[#475467]">
-                          No Department found
-                        </p>
-                        <p className="font-normal text-sm mt-3">
-                          Click “add Department” button to get started in doing
-                          your
-                          <br /> first transaction on the platform
-                        </p>
-                      </div>
+                  <div>
+                    <div className="flex justify-center items-center">
+                      <FaRegFolderClosed className="text-4xl" />
                     </div>
-              
+                    <div className="mt-5">
+                      <p className="font-medium text-[#475467]">
+                        No Department found
+                      </p>
+                      <p className="font-normal text-sm mt-3">
+                        Click “add Department” button to get started in doing
+                        your
+                        <br /> first transaction on the platform
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </td>
             </tr>
@@ -181,67 +178,65 @@ function DepartmentTable({
                     );
                   })}
                   {(hasPermission('can update department') ||
-                      hasPermission('can delete department')) && (
-                      <td className="py-2 text-center flex justify-center items-center">
-                        <div className="flex gap-3">
-                          {hasPermission('can update department') && (
-                            <button
-                              className="bg-blue-700 text-white text-sm p-2 rounded-md"
-                              onClick={() => {
-                                const selectedRow = fetchedData.find(
-                                  (item) => item.id == row.original.id
-                                );
-                                if (selectedRow) {
-                                  return handleEdit(selectedRow);
-                                }
-                              }}
-
-                            >
-                              Edit
-                            </button>
-                          )}
-                          {hasPermission('can delete department') && (
-                            <button
-                              className="bg-red-700 text-white text-sm p-2 rounded-md flex items-center justify-center"
-                              onClick={() => handleDelete(row.original.id)}
-                              disabled={loadingStates[row.original.id]}
-                            >
-                              {loadingStates[row.original.id] ? (
-                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                              ) : (
-                                'Delete'
-                              )}
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    )}
-   
+                    hasPermission('can delete department')) && (
+                    <td className="py-2 text-center flex justify-center items-center">
+                      <div className="flex gap-3">
+                        {hasPermission('can update department') && (
+                          <button
+                            className="bg-blue-700 text-white text-sm p-2 rounded-md"
+                            onClick={() => {
+                              const selectedRow = fetchedData.find(
+                                (item) => item.id == row.original.id
+                              );
+                              if (selectedRow) {
+                                return handleEdit(selectedRow);
+                              }
+                            }}
+                          >
+                            Edit
+                          </button>
+                        )}
+                        {hasPermission('can delete department') && (
+                          <button
+                            className="bg-red-700 text-white text-sm p-2 rounded-md flex items-center justify-center"
+                            onClick={() => handleDelete(row.original.id)}
+                            disabled={loadingStates[row.original.id]}
+                          >
+                            {loadingStates[row.original.id] ? (
+                              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                            ) : (
+                              'Delete'
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  )}
                 </tr>
               );
             })
           )}
         </tbody>
       </table>
-       {
-        page.length !== 0 &&    <div className="flex flex-row justify-end mt-3">
-        <span>
-          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
-        </span>
+      {page.length !== 0 && (
+        <div className="flex flex-row justify-end mt-3">
+          <span>
+            Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
+          </span>
 
-        <button
-          className="mx-3"
-          disabled={!canPreviousPage}
-          onClick={() => previousPage()}
-        >
-          {' '}
-          Previous{' '}
-        </button>
-        <button disabled={!canNextPage} onClick={() => nextPage()}>
-          Next
-        </button>
-      </div>
-       }
+          <button
+            className="mx-3"
+            disabled={!canPreviousPage}
+            onClick={() => previousPage()}
+          >
+            {' '}
+            Previous{' '}
+          </button>
+          <button disabled={!canNextPage} onClick={() => nextPage()}>
+            Next
+          </button>
+        </div>
+      )}
     </>
   );
 }

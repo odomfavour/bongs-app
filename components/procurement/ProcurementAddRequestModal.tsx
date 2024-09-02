@@ -1,18 +1,18 @@
-import {
-  RFQTypeDataArray,
-} from "@/utils/data";
+import { RFQTypeDataArray } from "@/utils/data";
 import Image from "next/image";
 import React, { useCallback, useEffect, useState } from "react";
+import { MdClose } from "react-icons/md";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { FaPlus } from "react-icons/fa";
-import {  FaRegFolderClosed } from "react-icons/fa6";
+import { FaRegFolderClosed } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAllDepartmentDataApi,
   fetchAllProjectDataApi,
   fetchAllVendorCategoryDataApi,
   fetchAllVendorsDataApi,
+  getVendorByCategoryApi,
   updateRFQDataApi,
 } from "@/utils/apiServices/procurementApi";
 import { toast } from "react-toastify";
@@ -25,15 +25,62 @@ import {
 } from "@/provider/redux/procurementSlice";
 import { toggleLoading } from "@/provider/redux/modalSlice";
 
-function ProcurementAddRequestModal() {
 
-  const { title, draftList, procurementType, subscriber, subscriberId, procurementId, id } = useSelector(
-    (state: any) => state.procurement.draftProcurementState
-  );
-
-
- 
+function ProcurementAddRequestModal({ handleClose }: {
+  handleClose: () => void
+}) {
+  const {
+    title,
+    draftList,
+    procurementType,
+    subscriber,
+    subscriberId,
+    procurementId,
+    rfqStatus,
+    id,
   
+  } = useSelector((state: any) => state.procurement.draftProcurementState);
+
+  const [attachedImage, setAttachedImage] = useState("");
+
+  const [minDate, setMinDate] = useState("");
+  useEffect(() => {
+    // Get today's date in the format 'YYYY-MM-DD'
+    const today = new Date().toISOString().split('T')[0];
+    setMinDate(today);
+  }, []);
+
+  const handleFetVendorByCategory = useCallback(async (id: string) => {
+    try {
+      if(!id) return
+      dispatch(toggleLoading(true))
+      const response = await getVendorByCategoryApi(id)
+      const dataReceived = response.data.data
+      console.log("this is the list", response)
+      const vendorsList = response.data.map((vendor: any) => {
+        return {
+          vendorName: vendor.vendor_name,
+          vendorId: vendor.id,
+        };
+      });
+
+      dispatch(populateAllVendors(vendorsList));
+      setAllVendors(vendorsList);
+      dispatch(toggleLoading(false))
+    } catch (error: any) {
+      dispatch(toggleLoading(false));
+      console.error("Error:", error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        "Unknown error";
+      toast.error(`${errorMessage}`);
+    } finally { 
+      dispatch(toggleLoading(false))
+    }
+    
+   }, [])
   const {
     allCategory: allCateryFromRedux,
     allProjects: allProjectsFromRedux,
@@ -45,36 +92,29 @@ function ProcurementAddRequestModal() {
   const dispatch = useDispatch();
 
   const [allProject, setAllProject] = useState<
-     {
-        projectName: string;
-      }[]
+    {
+      projectName: string;
+    }[]
   >(allProjectsFromRedux);
   const [allVendorsCategory, setAllVendorsCategory] = useState<
-     {
-        vendorCategoryName: string;
-        vendorCategoryId: number
-      }[]
+    {
+      vendorCategoryName: string;
+      vendorCategoryId: number;
+    }[]
   >(allVendorsCategoryFromRedux);
 
-
-
-
   const [allVendors, setAllVendors] = useState<
-  {
-     vendorName: string;
-     vendorId: number
-   }[]
-
->(allVendorsFromRedux);
+    {
+      vendorName: string;
+      vendorId: number;
+    }[]
+  >(allVendorsFromRedux);
 
   const [allDepartment, setAllDepartment] = useState<
-     {
-        departmentName: string;
-      }[]
+    {
+      departmentName: string;
+    }[]
   >(allDepartmentsFromRedux);
-
-
-
 
   const [selectedVendor, setSelectedVendor] = useState("");
 
@@ -82,9 +122,9 @@ function ProcurementAddRequestModal() {
 
   const [selectedClient, setSelectedClient] = useState("");
 
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState("");
 
-  const [selectedVendorCategory, setSelectedVendorCategory] = useState('');
+  const [selectedVendorCategory, setSelectedVendorCategory] = useState("");
 
   const [selectedDepartment, setSelectedDepartment] = useState("");
 
@@ -98,47 +138,36 @@ function ProcurementAddRequestModal() {
 
   const [isUIReady, setIsUIReady] = useState(true);
 
-
-
-
- 
-
   const fetchProcurementsDataForDraft = useCallback(async () => {
-    
-  
     if (
       allCateryFromRedux.length !== 0 &&
-      allVendorsFromRedux.length !==  0 &&
-      allProjectsFromRedux.length !==  0 &&
-      allDepartmentsFromRedux.length !==  0 &&
-      allVendorsCategoryFromRedux.length !==  0 
-      
+      allVendorsFromRedux.length !== 0 &&
+      allProjectsFromRedux.length !== 0 &&
+      allDepartmentsFromRedux.length !== 0 &&
+      allVendorsCategoryFromRedux.length !== 0
     )
       return;
-      dispatch(toggleLoading(true))
+    dispatch(toggleLoading(true));
     try {
-      const [allProjectsData, vendorCategoryData, vendorsData, departmentData, ] =
+      const [allProjectsData, vendorCategoryData, vendorsData, departmentData] =
         await Promise.all([
           fetchAllProjectDataApi(),
           fetchAllVendorCategoryDataApi(),
           fetchAllVendorsDataApi(),
-          fetchAllDepartmentDataApi()
+          fetchAllDepartmentDataApi(),
         ]);
 
+      dispatch(toggleLoading(false));
+      const vendorsList = vendorsData.data.data.map((vendor: any) => {
+        return {
+          vendorName: vendor.vendor_name,
+          vendorId: vendor.id,
+        };
+      });
 
+      dispatch(populateAllVendors(vendorsList));
+      setAllVendors(vendorsList);
 
-        dispatch(toggleLoading(false))
-    const vendorsList = vendorsData.data.data.map((vendor: any) => {
-   return {
-    vendorName: vendor.vendor_name,
-    vendorId: vendor.id
-   }
-    })
-
-    dispatch(populateAllVendors(vendorsList));
-    setAllVendors(vendorsList)
-
-  
       const projectList = allProjectsData.data.data.map((project: any) => {
         return {
           projectName: project.project_name,
@@ -148,10 +177,10 @@ function ProcurementAddRequestModal() {
 
       setAllProject(projectList);
 
-      const vendorsCategoryList =  vendorCategoryData.data.data.map(
-        (vendorCategory: { name: string , id: number}) => {
+      const vendorsCategoryList = vendorCategoryData.data.data.map(
+        (vendorCategory: { name: string; id: number }) => {
           return {
-            vendorCategoryId:vendorCategory.id,
+            vendorCategoryId: vendorCategory.id,
             vendorCategoryName: vendorCategory.name,
           };
         }
@@ -159,12 +188,12 @@ function ProcurementAddRequestModal() {
 
       setAllVendorsCategory(vendorsCategoryList);
       dispatch(populateAllVendorsCateroy(vendorsCategoryList));
-      
+
       // const categoryList = vendorCategoryData.data.data.map(
       //   (category: { name: string, id: number }) => {
       //     return {
       //       categoryName: category.name,
-      //       categoryId: category.id
+      //       categoryId: catMegory.id
       //     };
       //   }
       // );
@@ -185,7 +214,7 @@ function ProcurementAddRequestModal() {
 
       // You can similarly setStoreItems if needed
     } catch (error: any) {
-      dispatch(toggleLoading(false))
+      dispatch(toggleLoading(false));
       console.error("Error:", error);
 
       const errorMessage =
@@ -194,141 +223,127 @@ function ProcurementAddRequestModal() {
         error?.message ||
         "Unknown error";
       toast.error(`${errorMessage}`);
-    } 
+    }
   }, []);
 
   useEffect(() => {
-    
-      fetchProcurementsDataForDraft();
-  
+    fetchProcurementsDataForDraft();
   }, [fetchProcurementsDataForDraft]);
 
-
-
-const handleUpdateRfq = async () => {
+  const handleUpdateRfq = async () => {
     try {
-      if(!RFQType){
-        toast.error("procurement type is required")
-        return
+      if (!RFQType) {
+        toast.error("procurement type is required");
+        return;
       }
-  if(allVendors.length  === 0){
-    toast.error("vendor is required")
-    return
-  }
-  if(allVendorsCategory.length  === 0){
-    toast.error("vendor caegory is required")
-    return
-  }
-      if(!amount ){
-        toast.error("budget is required")
-        return
+      if (allVendors.length === 0) {
+        toast.error("vendor is required");
+        return;
       }
-
-      if( amount < 0 || amount == 0){
-        toast.error("budget can not be negative value")
-        return
+      if (allVendorsCategory.length === 0) {
+        toast.error("vendor caegory is required");
+        return;
+      }
+      if (!amount) {
+        toast.error("budget is required");
+        return;
       }
 
-    
-      if(!startDate){
-        toast.error("bidding deadline  is required")
-        return
+      if (amount < 0 || amount == 0) {
+        toast.error("budget can not be negative value");
+        return;
       }
 
-let rfqUpdeteData : any;
-const requiredFields = {
- 
-  title,
-   subscriber_id:subscriberId, 
-   procurement_id:procurementId,
-   bidding_deadline: startDate,
-   budget: amount,
-   procurement_type: RFQType,
-   currency: "NGN"
-   
-    
-}
-
-
-  if(RFQType === "OEM Specific"){
-    if( !selectedClient){
-      toast.error("Marhant is required")
-      return
-    }
-    if( !selectedVendorCategory){
-      toast.error("Vendor category is required")
-      return 
-    }
-    rfqUpdeteData = {
-      id,
-      rfqUpdateData: {
-        ...requiredFields,
-        client_project_department: selectedClient,
-        vendors : [selectedVendor],
-        
+      if (!startDate) {
+        toast.error("bidding deadline  is required");
+        return;
       }
-     }
-      
-  }
+     
 
-  if(RFQType === "3rd Party Vendors"){
-    if( !selectedProject){
-      toast.error("project is required")
-      return
-    }
-    if( !selectedCategory){
-      toast.error("vendor category is required")
-      return
-    }
+      let rfqUpdeteData: any;
+      const requiredFields = {
+        title,
+        subscriber_id: subscriberId,
+        procurement_id: procurementId,
+        bidding_deadline: startDate,
+        budget: amount,
+        procurement_type: RFQType,
+        currency: "NGN",
+      };
 
-    rfqUpdeteData = {
-      id,
-      rfqUpdateData: {
-        ...requiredFields,
-        client_project_department: selectedProject,
-        vendor_category_id : Number(selectedCategory)
+      if (RFQType === "OEM Specific") {
+        if (!selectedClient) {
+          toast.error("Marhant is required");
+          return;
+        }
+        if (!selectedVendorCategory) {
+          toast.error("Vendor category is required");
+          return;
+        }
+        rfqUpdeteData = {
+          id,
+          rfqUpdateData: {
+            ...requiredFields,
+            client_project_department: selectedClient,
+            vendors: [selectedVendor],
+          },
+        };
       }
-     }
+
+      if (RFQType === "3rd Party Vendors") {
+        if (!selectedProject) {
+          toast.error("project is required");
+          return;
+        }
+        if (!selectedCategory) {
+          toast.error("vendor category is required");
+          return;
+        }
+
+        rfqUpdeteData = {
+          id,
+          rfqUpdateData: {
+            ...requiredFields,
+            client_project_department: selectedProject,
+            vendor_category_id: Number(selectedCategory),
+          },
+        };
+      }
+
+      if (RFQType === "Internal Procurement") {
+        if (!selectedCategory) {
+          toast.error("vendor category is required");
+          return;
+        }
+        if (!selectedDepartment) {
+          toast.error("department is required");
+        }
+
+        if (!selectedVendor) {
+          toast.error("Vendor is required");
+        }
+
+        rfqUpdeteData = {
+          id,
+          rfqUpdateData: {
+            ...requiredFields,
+            vendors: [selectedVendor],
+            client_project_department: selectedDepartment,
+            vendor_category_id: Number(selectedCategory),
+          },
+        };
+      }
+
+      dispatch(toggleLoading(true));
   
-  }
 
+      const response = await updateRFQDataApi(rfqUpdeteData);
 
-  if(RFQType === "Internal Procurement"){
-    if(!selectedCategory){
-      toast.error("vendor category is required")
-      return
-    }
-    if( !selectedDepartment){
-      toast.error("department is required")
-    }
-
-    if( !selectedVendor){
-      toast.error("Vendor is required")
-    }
-
-    rfqUpdeteData = {
-      id,
-      rfqUpdateData: {
-        ...requiredFields,
-        vendors : [selectedVendor],
-        client_project_department: selectedDepartment,
-        vendor_category_id : Number(selectedCategory)
-      }
-     }
-   
-  }
-
-    dispatch(toggleLoading(true))
-    console.log("data sent update", rfqUpdeteData)
-
-
-   const response =   await updateRFQDataApi(rfqUpdeteData)
-   
-      dispatch(toggleLoading(false))
-      toast.success("Procurement made successfully")
-    
+      dispatch(toggleLoading(false));
+      toast.success("Procurement made successfully");
+      handleClose()
     } catch (error: any) {
-      dispatch(toggleLoading(false))
+      dispatch(toggleLoading(false));
       console.error("Error:", error);
 
       const errorMessage =
@@ -337,12 +352,12 @@ const requiredFields = {
         error?.message ||
         "Unknown error";
       toast.error(`${errorMessage}`);
-     
     } finally {
-      dispatch(toggleLoading(false))
+      dispatch(toggleLoading(false));
     }
+  };
 
-}
+
 
   if (!isUIReady) {
     return (
@@ -353,7 +368,29 @@ const requiredFields = {
   }
 
   return (
-    <div className="flex flex-row py-8 space-x-12 w-full">
+    <div className="flex flex-row py-8 space-x-12 w-full ">
+      {attachedImage &&
+        <div className="fixed top-0 bg-slate-700 bottom-0 right-0 left-0 bg-opacity-25 flex justify-center items-center">
+          <div className="bg-white w-3/5 h-3/5 flex justify-center items-center rounded-lg relative">
+        
+            <div
+            onClick={() => setAttachedImage("")}
+              className="absolute right-8 top-8 cursor-pointer">
+              <MdClose
+              size={24}
+              />
+         </div>
+
+          <Image
+            alt="attach"
+            src={attachedImage}
+            width={200}
+            height={200}
+          />
+         </div>
+      
+      </div>
+      }
       <div className="">
         <div>
           <p className="text-black text-lg font-normal font-['Inter']">
@@ -365,9 +402,9 @@ const requiredFields = {
             onChange={(e) => setRFQType(e.target.value)}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
           >
-           <option className=" text-black text-sm font-normal font-['Inter']">
-                  Select procurement type
-                  </option>
+            <option className=" text-black text-sm font-normal font-['Inter']">
+              Select procurement type
+            </option>
             {RFQTypeDataArray.map((item, index) => {
               return (
                 <option
@@ -381,13 +418,11 @@ const requiredFields = {
             })}
           </select>
 
-          
-
           {RFQType == "OEM Specific" && (
             <div>
               <div className="mt-2">
                 <p className="text-black text-lg font-normal font-['Inter']">
-                 Marchant/Customer
+                  Marchant/Customer
                 </p>
                 <select
                   name=""
@@ -396,15 +431,14 @@ const requiredFields = {
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
                   <option className=" text-black text-sm font-normal font-['Inter']">
-                   Select marchant
+                    Select marchant
                   </option>
                   <option
-                        value={subscriber}
-                     
-                        className=" text-black text-sm font-normal font-['Inter']"
-                      >
-                        {subscriber}
-                      </option>
+                    value={subscriber}
+                    className=" text-black text-sm font-normal font-['Inter']"
+                  >
+                    {subscriber}
+                  </option>
                 </select>
               </div>
 
@@ -450,7 +484,7 @@ const requiredFields = {
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
                   <option className=" text-black text-sm font-normal font-['Inter']">
-                   Select project
+                    Select project
                   </option>
                   {allProject.map((item, index) => {
                     return (
@@ -470,14 +504,18 @@ const requiredFields = {
                 <p className="text-black text-lg font-normal font-['Inter']">
                   Choose Vendor Category
                 </p>
+              
                 <select
                   name=""
                   id=""
-                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  onChange={(e) => { 
+                   
+                    setSelectedCategory(e.target.value)
+                  }}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
                   <option className=" text-black text-sm font-normal font-['Inter']">
-                  Select vendor category
+                    Select vendor category
                   </option>
                   {allVendorsCategory.map((item, index) => {
                     return (
@@ -508,7 +546,7 @@ const requiredFields = {
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
                   <option className=" text-black text-sm font-normal font-['Inter']">
-                   Select department
+                    Select department
                   </option>
                   {allDepartment.map((item, index) => {
                     return (
@@ -528,14 +566,18 @@ const requiredFields = {
                 <p className="text-black text-lg font-normal font-['Inter']">
                   Choose Vendor Category
                 </p>
+             {/*    handleFetVendorByCategory */}
                 <select
                   name=""
                   id=""
-                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  onChange={(e) => { 
+                    handleFetVendorByCategory(e.target.value)
+                    setSelectedCategory(e.target.value)
+                  }}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
                   <option className=" text-black text-sm font-normal font-['Inter']">
-                  Select vendor category
+                    Select vendor category
                   </option>
                   {allVendorsCategory.map((item, index) => {
                     return (
@@ -553,7 +595,7 @@ const requiredFields = {
 
               <div className="mt-2">
                 <p className="text-black text-lg font-normal font-['Inter']">
-                  Choose Vendor 
+                  Choose Vendor
                 </p>
                 <select
                   name=""
@@ -562,9 +604,9 @@ const requiredFields = {
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
                   <option className=" text-black text-sm font-normal font-['Inter']">
-                  Select vendor 
+                    Select vendor
                   </option>
-                   {allVendors.map((item, index) => {
+                  {allVendors.map((item, index) => {
                     return (
                       <option
                         value={item.vendorId}
@@ -574,13 +616,12 @@ const requiredFields = {
                         {item.vendorName}
                       </option>
                     );
-                  })} 
+                  })}
                 </select>
               </div>
             </div>
           )}
 
-            
           {/* budget section starts */}
 
           <div className="mt-2">
@@ -599,12 +640,12 @@ const requiredFields = {
                 <span>NGN</span>
               </div>
               <input
-              min={1}
+                min={1}
                 className="flex-1 h-[40px] px-1 border-0 border-none focus:outline-none no-spinner"
                 onChange={(e) => {
-                        const data = Number(e.target.value)
-                       
-                  setAmount(data)
+                  const data = Number(e.target.value);
+
+                  setAmount(data);
                 }}
                 type="number"
               />
@@ -618,13 +659,14 @@ const requiredFields = {
               Bidding deadline
             </p>
             <div></div>
-           <input type="date"
-           onChange={(e) => setStartDate(e.target.value)}
-           />
+            <input
+            min={minDate}
+              type="date" onChange={(e) => { 
+              
+           setStartDate(e.target.value)
+            }} />
           </div>
           {/* date end */}
-
-          
         </div>
       </div>
       <div className="flex-1">
@@ -675,16 +717,22 @@ const requiredFields = {
                     <td className="text-center text-sm">{list.description}</td>
                     <td>
                       <div className="flex flex-row items-center space-x-1">
-                        {list.attachments.map((pic: any, i: number) => (
-                          <Image
-                            key={i}
-                            alt="attachment"
-                            // src={ `${pic.attachment_uri}` }
-                            width={12}
-                            src={"/test"}
-                            height={12}
-                          />
-                        ))}
+                        {list.attachments.map((pic: any, i: number) => {
+                          return (
+                            <Image
+                              onClick={() =>
+                                setAttachedImage(pic.attachment_uri)
+                              }
+                              key={i}
+                              alt="attachment"
+                              src={`${pic.attachment_uri}`}
+                              width={20}
+                              height={20}
+                              objectFit="contain"
+                              className="cursor-pointer"
+                            />
+                          );
+                        })}
                       </div>
                     </td>
                     <td className="flex flex-row items-center justify-center space-x-2">
@@ -696,14 +744,12 @@ const requiredFields = {
                             : "cursor-pointer"
                         }`}
                       >
-                         <Image src={"/icons/upload.png"} 
-                     alt="upload"
-                     width={14}
-                     height={14}
-                   
-                     
-                     />
-                    
+                        <Image
+                          src={"/icons/upload.png"}
+                          alt="upload"
+                          width={14}
+                          height={14}
+                        />
                       </button>
                       <button
                         disabled={procurementType == "draft" ? true : false}
@@ -713,12 +759,12 @@ const requiredFields = {
                             : "cursor-pointer"
                         }`}
                       >
-                       <Image src={"/icons/delete.png"} 
-                      alt="delete"
-                     width={14}
-                     height={14}
-                     
-                     />
+                        <Image
+                          src={"/icons/delete.png"}
+                          alt="delete"
+                          width={14}
+                          height={14}
+                        />
                       </button>
                     </td>
                   </tr>
@@ -726,11 +772,14 @@ const requiredFields = {
               </tbody>
             </table>
             <div className="flex flex-row justify-end mt-8">
-              <button
-              onClick={() => handleUpdateRfq()}
-              className="rounded-xl bg-blue-900 text-white py-2 px-4">
+              { 
+                rfqStatus !== "Expired" &&  <button
+                onClick={() => handleUpdateRfq()}
+                className="rounded-xl bg-blue-900 text-white py-2 px-4"
+              >
                 Submit
               </button>
+              }
             </div>
           </div>
         ) : (

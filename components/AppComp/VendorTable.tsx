@@ -1,8 +1,8 @@
-import { LocationType } from "@/utils/types";
-import { formatDate } from "@/utils/utils";
-import React, { useMemo } from "react";
-import { FaSearch } from "react-icons/fa";
-import { FaRegFolderClosed } from "react-icons/fa6";
+import { LocationType } from '@/utils/types';
+import { formatDate } from '@/utils/utils';
+import React, { useMemo } from 'react';
+import { FaSearch } from 'react-icons/fa';
+import { FaRegFolderClosed } from 'react-icons/fa6';
 import {
   useTable,
   usePagination,
@@ -12,7 +12,7 @@ import {
   UseGlobalFiltersInstanceProps,
   UsePaginationState,
   UsePaginationInstanceProps,
-} from "react-table";
+} from 'react-table';
 
 interface Vendor {
   id: number;
@@ -92,16 +92,16 @@ function VendorTable({
 
   const { globalFilter, pageIndex } = state;
 
-  console.log("the fetched data", fetchedData);
+  console.log('the fetched data', fetchedData);
 
   return (
     <>
-      <div className="flex mb-4 items-center gap-2 md:w-2/5 w-full ml-auto">
+      <div className="flex mb-4 justify-end gap-2 md:w-2/5 w-full ml-auto">
         <div className="md:w-4/5 w-3/5">
           <div className="w-full relative">
             <input
               type="search"
-              value={globalFilter || ""}
+              value={globalFilter || ''}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Search"
               className="bg-gray-50 pl-8 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
@@ -127,7 +127,7 @@ function VendorTable({
                   {...column.getHeaderProps()}
                   key={index}
                 >
-                  {column.render("Header")}
+                  {column.render('Header')}
                 </th>
               ))}
               <th className="py-2 text-center">Actions</th>
@@ -168,16 +168,16 @@ function VendorTable({
                         {...cell.getCellProps()}
                         key={index}
                       >
-                        {cell.render("Cell")}
+                        {cell.render('Cell')}
                       </td>
                     );
                   })}
 
-                  {(hasPermission("can update vendor") ||
-                    hasPermission("can delete vendor")) && (
+                  {(hasPermission('can update vendor') ||
+                    hasPermission('can delete vendor')) && (
                     <td className="py-2 text-center flex justify-center items-center">
                       <div className="flex gap-3">
-                        {hasPermission("can update vendor") && (
+                        {hasPermission('can update vendor') && (
                           <button
                             className="bg-blue-700 text-white p-2 rounded-md"
                             onClick={() => {
@@ -192,7 +192,7 @@ function VendorTable({
                             Edit
                           </button>
                         )}
-                        {hasPermission("can delete vendor") && (
+                        {hasPermission('can delete vendor') && (
                           <button
                             className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
                             onClick={() => confirmDelete(row.original.id)}
@@ -201,7 +201,7 @@ function VendorTable({
                             {loadingStates[row.original.id] ? (
                               <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
                             ) : (
-                              "Delete"
+                              'Delete'
                             )}
                           </button>
                         )}
@@ -216,7 +216,7 @@ function VendorTable({
       </table>
       <div className="flex flex-row justify-end mt-3">
         <span>
-          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{" "}
+          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
         </span>
 
         <button
@@ -224,8 +224,8 @@ function VendorTable({
           disabled={!canPreviousPage}
           onClick={() => previousPage()}
         >
-          {" "}
-          Previous{" "}
+          {' '}
+          Previous{' '}
         </button>
         <button disabled={!canNextPage} onClick={() => nextPage()}>
           Next

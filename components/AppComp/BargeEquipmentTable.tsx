@@ -1,4 +1,4 @@
-import { Barge, SafetyCategoryType } from '@/utils/types';
+import { LocationType } from '@/utils/types';
 import { formatDate } from '@/utils/utils';
 import React, { useMemo } from 'react';
 import { FaSearch } from 'react-icons/fa';
@@ -14,7 +14,17 @@ import {
   UsePaginationInstanceProps,
 } from 'react-table';
 
-function SafetyTable({
+
+interface BargeComponent {
+    id: number;
+    storeNo: string;
+    name: string;
+    description: string;
+    status: string;
+    created_at: string;
+  }
+
+function BargeEquipmentTable({
   MOCK_DATA,
   COLUMNS,
   handleEdit,
@@ -25,13 +35,13 @@ function SafetyTable({
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
-  handleEdit: (data: SafetyCategoryType) => void;
+  handleEdit: (data: BargeComponent) => void;
+  hasPermission: (permision: string) => boolean;
   handleDelete: (id: number) => void;
-  hasPermission: (permission: string) => boolean;
   loadingStates: {
     [key: number]: boolean;
   };
-  fetchedData: SafetyCategoryType[];
+  fetchedData: BargeComponent[];
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
@@ -73,6 +83,8 @@ function SafetyTable({
   ) as CustomTableInstance<any>;
 
   const { globalFilter, pageIndex } = state;
+
+  console.log('the fetched data', fetchedData);
 
   return (
     <>
@@ -118,17 +130,18 @@ function SafetyTable({
           {page.length == 0 ? (
             <tr className="text-center text-primary bg-white">
               <td className="py-2 text-center" colSpan={10}>
-                <div className="flex justify-center items-center my-8">
+                <div className="flex justify-center items-center  my-8">
                   <div>
                     <div className="flex justify-center items-center">
                       <FaRegFolderClosed className="text-4xl" />
                     </div>
                     <div className="mt-5">
                       <p className="font-medium text-[#475467]">
-                        No Barge found
+                        No Barge Components found
                       </p>
                       <p className="font-normal text-sm mt-3">
-                        Click “add barge” button to get started in doing your
+                        Click “add barge components” button to get started in
+                        doing your
                         <br /> first transaction on the platform
                       </p>
                     </div>
@@ -152,14 +165,14 @@ function SafetyTable({
                       </td>
                     );
                   })}
-                  {(hasPermission('can update safety category') ||
-                    hasPermission('can delete safety category')) && (
+
+               {/*    {(hasPermission('can update vendor') ||
+                    hasPermission('can delete vendor')) && (
                     <td className="py-2 text-center flex justify-center items-center">
                       <div className="flex gap-3">
-                        {hasPermission('can update safety category') && (
+                        {hasPermission('can update vendor') && (
                           <button
                             className="bg-blue-700 text-white p-2 rounded-md"
-                            /*  onClick={() => handleEdit(fetchedData)} */
                             onClick={() => {
                               const selectedRow = fetchedData.find(
                                 (item) => item.id == row.original.id
@@ -172,7 +185,47 @@ function SafetyTable({
                             Edit
                           </button>
                         )}
-                        {hasPermission('can delete safety category') && (
+                        {hasPermission('can delete vendor') && (
+                          <button
+                            className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
+                            onClick={() => confirmDelete(row.original.id)}
+                            disabled={loadingStates[row.original.id]}
+                          >
+                            {loadingStates[row.original.id] ? (
+                              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                            ) : (
+                              'Delete'
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  )} */}
+                      
+                      {(hasPermission('can update barge component category') ||
+                    hasPermission('can delete barge component category')) && (
+                    <td className="py-2 text-center flex justify-center items-center">
+                      <div className="flex gap-3">
+                        {hasPermission(
+                          'can update barge component category'
+                        ) && (
+                          <button
+                            className="bg-blue-700 text-white p-2 rounded-md"
+                            onClick={() => {
+                                const selectedRow = fetchedData.find(
+                                  (item) => item.id == row.original.id
+                                );
+                                if (selectedRow) {
+                                  return handleEdit(selectedRow);
+                                }
+                              }}
+                          >
+                            Edit
+                          </button>
+                        )}
+                        {hasPermission(
+                          'can delete barge component category'
+                        ) && (
                           <button
                             className="bg-red-700 text-white p-2 rounded-md flex items-center justify-center"
                             onClick={() => handleDelete(row.original.id)}
@@ -215,5 +268,4 @@ function SafetyTable({
   );
 }
 
-export default SafetyTable;
--3;
+export default BargeEquipmentTable;

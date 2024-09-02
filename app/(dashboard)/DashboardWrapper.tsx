@@ -145,13 +145,21 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
 
   const path = usePathname()
 
-  const [ pathName, setPathName] = useState("")
+  const [pathName, setPathName] = useState("")
+  
+  const [ pathName2, setPathName2] = useState("")
 
  const router = useRouter()
   useEffect(() => {
-    if(path === "/bid-submission"){
+    if(path === "/bid-submission" ){
       setPathName("/bid-submission")
     }
+
+    if(path === "/bid-submission-success"  ){
+      setPathName2("/bid-submission-success")
+    }
+
+   
   
   }, [router]);
 
@@ -167,6 +175,14 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
     <ToastContainer />
     </div>
   }
+
+
+  if( pathName2 === "/bid-submission-success" ){
+    return <div>
+     {children}
+     <ToastContainer />
+     </div>
+   }
   return (
     <>
       <section>

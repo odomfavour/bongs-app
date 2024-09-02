@@ -178,9 +178,9 @@ function RequisitionTable({
                           statusColor = 'text-green-700'; // or use a custom class
                           break;
                         case 'Pending approval':
-                          statusColor = 'text-yellow-700'; // or use a custom class
+                          statusColor = 'text-black'; // or use a custom class
                           break;
-                        case 'Declined':
+                        case 'Rejected':
                           statusColor = 'text-red-500'; // or use a custom class
                           break;
                         default:

@@ -130,7 +130,7 @@ function ProcurementAddRequestModal({ handleClose }: {
 
   const [startDate, setStartDate] = useState("");
 
-  const [RFQType, setRFQType] = useState(procurementType === "draft"  ? "" : procurementType);
+  const [RFQType, setRFQType] = useState("");
 
   const [RFQHeading, setRFQHeading] = useState("");
 
@@ -396,8 +396,7 @@ function ProcurementAddRequestModal({ handleClose }: {
           <p className="text-black text-lg font-normal font-['Inter']">
             Choose Procurement Type
           </p>
-          { 
-            procurementType === "draft" ?  <select
+          <select
             name=""
             id=""
             onChange={(e) => setRFQType(e.target.value)}
@@ -417,10 +416,7 @@ function ProcurementAddRequestModal({ handleClose }: {
                 </option>
               );
             })}
-          </select> :  <p className="text-black text-sm font-normal font-['Inter']">
-                { procurementType }
-          </p>
-          }
+          </select>
 
           {RFQType == "OEM Specific" && (
             <div>

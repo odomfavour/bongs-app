@@ -25,7 +25,7 @@ function BidAccessComp() {
 
   const [loader, setLoader] = useState(false);
 
-  const [unitOfMeasurement, setUnitOfMeasurement] = useState(null);
+/*   const [unitOfMeasurement, setUnitOfMeasurement] = useState(null); */
 
   const router = useRouter();
   const [formData, setFormData] = useState<{
@@ -175,13 +175,15 @@ function BidAccessComp() {
     }
     try {
       setLoader(true);
-
+         console.log("accestoken sent", accessToken)
       const response = await verifyBidAccessTokenApi(accessToken);
       const { message, data } = response;
       const { rfq_id, subscriber_id, vendor_email, vendor_name, bid_items } =
         data;
 
-      setUnitOfMeasurement(bid_items[0].unit_of_measurement);
+      
+      console.log("response from bid", response)
+    
 
       const newBid = bid_items.map((bid: any, index: number) => {
         return {
@@ -189,6 +191,7 @@ function BidAccessComp() {
           name: bid.name,
           quantity: bid.quantity,
           unitPrice: null,
+          unit_of_measurement: bid.unit_of_measurement
         };
       });
       setFormData({
@@ -209,7 +212,7 @@ function BidAccessComp() {
         error?.message ||
         "Unknown error";
       toast.error(`${errorMessage}`);
-
+   console.log("this is the bid erroor",error)
       setLoader(false);
     }
   };

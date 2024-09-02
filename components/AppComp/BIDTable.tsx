@@ -202,11 +202,12 @@ function BidTable({
                                 paymentTerms: bid.payment_term,
                                 deliveryPeriod: bid.delivery_date,
                                 currency: bid.currency,
-                                subtotal: bid.cost,
+                                subtotal:currencyFormatter(bid.cost),
                                 quoteValidity: bid.quote_validity_period,
                                 wht: bid.wht,
                                 ncf: bid.ncdf,
-                                vat: bid.vat
+                                vat: bid.vat,
+                                rating: bid.evaluation_point
                               };
                             });
  

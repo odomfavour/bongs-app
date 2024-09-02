@@ -249,27 +249,27 @@ const ApprovePurchaseOrder: React.FC<ApprovePOProps> = ({
       )}
 
       {/* Conditionally render Approve and Reject buttons based on signatory status */}
-      {/* {isSignatory && !hasSigned && ( */}
-      <div className="flex justify-end my-5">
-        <div className="flex gap-4">
-          <button
-            className="rounded-md bg-blue-700 text-white py-2 px-4"
-            onClick={() => handleApproveOrReject('approved')}
-          >
-            Approve
-          </button>
-          <button
-            className="rounded-md bg-red-700 text-white py-2 px-4"
-            onClick={() => {
-              setIsRejecting(true);
-              handleApproveOrReject('pending');
-            }}
-          >
-            Reject
-          </button>
+      {isSignatory && !hasSigned && (
+        <div className="flex justify-end my-5">
+          <div className="flex gap-4">
+            <button
+              className="rounded-md bg-blue-700 text-white py-2 px-4"
+              onClick={() => handleApproveOrReject('approved')}
+            >
+              Approve
+            </button>
+            <button
+              className="rounded-md bg-red-700 text-white py-2 px-4"
+              onClick={() => {
+                setIsRejecting(true);
+                handleApproveOrReject('pending');
+              }}
+            >
+              Reject
+            </button>
+          </div>
         </div>
-      </div>
-      {/* )} */}
+      )}
     </div>
   );
 };

@@ -60,6 +60,7 @@ function Page() {
       ncf: number;
       vat: number;
       grandTotal: number;
+      rating: string
     }[]
   >([]);
 
@@ -254,7 +255,8 @@ function Page() {
     return {
       ...item,
       'S/N': i + 1,
-      rfqId: `RFQ ${item.id}`,
+      rfqId: `RFQ ${item.request_for_quotation_id}`,
+      bidId: `BID ${item.id}`,
       title: item.request_for_quotations.title,
       noOfBid: item.request_for_quotations.bid_count,
       status: item.status,
@@ -457,6 +459,11 @@ function Page() {
           handleGetAllBidForSingleRfqFunc={handleGetAllBidForSingleRfqFunc}
           handleOpenModal={handleOpenBidModal}
           COLUMNS={[
+          
+          /* 
+           rfqId: `RFQ ${item.request_quotation_id}`,
+      bidId: `BID ${item.id}`,
+          */
             {
               Header: 'S/N',
               accessor: 'S/N',
@@ -464,6 +471,10 @@ function Page() {
             {
               Header: 'RFQ ID',
               accessor: 'rfqId',
+            },
+            {
+              Header: 'BID ID',
+              accessor: 'bidId',
             },
             {
               Header: 'Title',

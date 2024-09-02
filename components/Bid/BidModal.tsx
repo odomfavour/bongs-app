@@ -22,7 +22,8 @@ function BidModal({
     wht: number,
     ncf: number,
     vat: number,
-    grandTotal: number
+    grandTotal: number,
+    rating: string
   }[];
   rfq: string;
 }) {
@@ -44,14 +45,16 @@ function BidModal({
               <th className="text-center">SN</th>
               <th  className="text-center">Date Received</th>
               <th className="text-center">Vendor</th>
-              <th className="text-center"> Payment Terms</th>
+              <th className="text-center"> Payment Terms(%)</th>
               <th className="text-center">Quote validity</th>
               <th className="text-center">Delivery Period</th>
               <th   className="text-center">Sub Total</th>
               <th className="text-center">WHT(%)</th>
               <th className="text-center">NCDF(%)</th>
               <th className="text-center">VAT(%)</th>
+            
               <th className="text-center">Grand Total</th>
+              <th className="text-center">Rating</th>
               <th className="text-center">Actions</th>
             </tr>
           </thead>
@@ -69,7 +72,8 @@ function BidModal({
                   <td className="text-sm text-center">{bid.wht}</td>
                   <td className="text-sm text-center">{bid.ncf}</td>
                   <td className="text-sm text-center">{bid.vat}</td>
-                  <td className="text-sm text-center">{bid.grandTotal}</td>     
+                  <td className="text-sm text-center">{bid.grandTotal}</td> 
+                  <td className="text-sm text-center">{bid.rating}</td>  
                   <td className=" ">
                     <button
                       disabled={ isAwarded }
@@ -112,7 +116,7 @@ function BidModal({
                 </tr>
               ))
             ) : (
-              <tr aria-colspan={12}>
+              <tr aria-colspan={13}>
                 <span>No Bid found</span>
               </tr>
             )}

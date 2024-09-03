@@ -1,12 +1,13 @@
 import { toggleLoading } from "@/provider/redux/modalSlice";
 import { awardBidRfqDataApi } from "@/utils/apiServices/procurementApi";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 
 function BidModal({
   bidList,
   rfq,
+  isRfqAwarded
 }: {
   bidList: {
     BID: number;
@@ -17,20 +18,30 @@ function BidModal({
     subtotal: number,
     deliveryPeriod: string;
     currency: string;
-    isAwarded: string;
+    isAwarded: number;
     quoteValidity: string,
     wht: number,
     ncf: number,
     vat: number,
     grandTotal: number,
-    rating: string
+    rating: string,
+    
   }[];
-  rfq: string;
+    rfq: string;
+    isRfqAwarded: boolean
 }) {
   const dispatch = useDispatch();
 
 
-  const [isAwarded, setisAwarded] = useState(false)
+  const [isBidAwarded, setIsBidAwarded] = useState(false)
+
+  const [disableButton, setDisablebutton] = useState(false)
+
+
+  useEffect(() => { 
+    setDisablebutton(isRfqAwarded)
+  
+  },[])
   console.log("bid response inner", bidList)
   return (
     <div>
@@ -76,7 +87,7 @@ function BidModal({
                   <td className="text-sm text-center">{bid.rating}</td>  
                   <td className=" ">
                     <button
-                      disabled={ isAwarded }
+                      disabled={ disableButton }
                       onClick={() => {
                        
                         const getAlBidForRfq = async () => {
@@ -88,8 +99,8 @@ function BidModal({
                             );
                             const { message } = response;
                             toast.success(message);
-                            setisAwarded(true)
-                            console.log(`response obtained after bid award success`, response)
+                            setIsBidAwarded(true)
+                         
                             dispatch(toggleLoading(false));
                           } catch (error: any) {
                             dispatch(toggleLoading(false));
@@ -104,11 +115,13 @@ function BidModal({
                         getAlBidForRfq();
                       }}
 
-                  className = { `${isAwarded ? "bg-gray-500 cursor-pointer " : "bg-blue-700 cursor-pointer "} text-center text-sm text-white flex-row flex items-center  justify-center rounded-xl px-2 py-1  `}
+                  className = { `${disableButton  ? bid.isAwarded ? "bg-green-500" : "bg-blue-500": "bg-gray-500 cursor-pointer "} text-center text-sm text-white flex-row flex items-center  justify-center rounded-xl px-2 py-1  `}
                    
                     >
                       <span className={ ` text-center text-sm text-white `}>
-                        Award
+                        { 
+                          disableButton ? bid.isAwarded ? "awarded" : "rejected" :  "award"
+                        }
                       </span>
                     </button>
                   

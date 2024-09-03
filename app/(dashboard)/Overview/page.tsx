@@ -54,7 +54,7 @@ function Page() {
       subtotal: number;
       deliveryPeriod: string;
       currency: string;
-      isAwarded: string;
+      isAwarded: number;
       quoteValidity: string;
       wht: number;
       ncf: number;
@@ -102,6 +102,7 @@ function Page() {
 
   //memo
   const [openApproveModal, setOpenApproveModal] = useState(false);
+  const [isRfqAwarded, setIsRfqAwarded] = useState(false)
 
   const handleCloseApprove = () => {
     setOpenApproveModal(false);
@@ -130,9 +131,10 @@ function Page() {
 
   //memoclose
 
-  const handleGetAllBidForSingleRfqFunc = (rfqbid: any, rfqId: any) => {
+  const handleGetAllBidForSingleRfqFunc = (rfqbid: any, rfqId: any, isrfqAward: boolean) => {
     setAllBidsForSingleRfq(rfqbid);
     setRfqForGivenBid(rfqId);
+    setIsRfqAwarded(isrfqAward)
   };
 
   const fetchProcurementsData = useCallback(async () => {
@@ -460,10 +462,7 @@ function Page() {
           handleOpenModal={handleOpenBidModal}
           COLUMNS={[
           
-          /* 
-           rfqId: `RFQ ${item.request_quotation_id}`,
-      bidId: `BID ${item.id}`,
-          */
+         
             {
               Header: 'S/N',
               accessor: 'S/N',
@@ -705,7 +704,7 @@ function Page() {
         onClose={handleOpenBidModal}
         maxWidth="1050px"
       >
-        <BidModal bidList={allBidsForSingleRfq} rfq={rfqForGiveneBid} />
+        <BidModal bidList={allBidsForSingleRfq} rfq={rfqForGiveneBid} isRfqAwarded={ isRfqAwarded } />
       </Modal>
 
       <Modal

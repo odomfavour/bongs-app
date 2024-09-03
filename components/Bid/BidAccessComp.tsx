@@ -14,6 +14,7 @@ import { IoMdAdd } from "react-icons/io";
 import { FaFilePdf } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { percentageData } from "@/utils/data";
+import { currencyFormatter } from "@/utils/usefulFunc";
 
 function BidAccessComp() {
 
@@ -24,8 +25,6 @@ function BidAccessComp() {
   const [accessToken, setAccessToken] = useState<null | string>(null);
 
   const [loader, setLoader] = useState(false);
-
-/*   const [unitOfMeasurement, setUnitOfMeasurement] = useState(null); */
 
   const router = useRouter();
   const [formData, setFormData] = useState<{
@@ -44,9 +43,18 @@ function BidAccessComp() {
 
 
   const [minDate, setMinDate] = useState("")
+
   const [files, setFiles] = useState<
     {
       file: string;
+      index: number;
+      originalFile: any;
+    }[]
+    >([]);
+  
+    const [excelType, setExcelType] = useState<
+    {
+      fileName: string;
       index: number;
       originalFile: any;
     }[]
@@ -57,6 +65,7 @@ function BidAccessComp() {
     "image/png",
     "application/pdf",
     "application/msword",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   ] as const;
   type ValidImageType = (typeof validImageTypes)[number];
 
@@ -119,6 +128,21 @@ function BidAccessComp() {
 
     console.log("file sent", file);
 
+    
+
+
+    if (file.type ===  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+      setExcelType([
+        ...excelType,
+        {
+          fileName: file.name,
+          index: excelType.length,
+          originalFile: file,
+        },
+      ]);
+
+      return;
+    }
     if (file.type === "application/msword") {
       setDocType([
         ...docType,
@@ -273,10 +297,10 @@ function BidAccessComp() {
       toast.error("delivery schedule from is required");
       return;
     }
-    if (files.length === 0) {
+    /* if (files.length === 0) {
       toast.error("file to upload is required");
       return;
-    }
+    } */
 
     if (!cost) {
       toast.error("cost price is required");
@@ -296,6 +320,7 @@ function BidAccessComp() {
       const imageArray = files.map((data) => data.originalFile);
       const pdfArray = pdfType.map((data) => data.originalFile);
       const docArray = docType.map((data) => data.originalFile);
+      const excelArray = excelType.map((data) => data.originalFile);
 
       console.log("files sent", [...imageArray, ...pdfArray]);
       //   files.map((data) => data.originalFile)
@@ -304,7 +329,7 @@ function BidAccessComp() {
       const response = await creactNewBidApi({
         cost: Number(cost),
         currency: "NGN",
-        bid_files: [...imageArray, ...pdfArray, ...docArray],
+        bid_files: [...imageArray, ...pdfArray, ...docArray,...excelArray],
         payment_term: Number(paymentTerms),
         subscriber_id: Number(formData.subscriberId),
         request_for_quotation_id: Number(formData.rfqId),
@@ -463,7 +488,7 @@ function BidAccessComp() {
                     <td className="text-center">{bid.quantity}</td>
                     <td className="text-center">
                       <input
-                        type="number"
+                        type="tel"
                         name=""
                         id=""
                         onChange={(e) => {
@@ -498,7 +523,7 @@ function BidAccessComp() {
           <span className="text-gray-900 text-[16px] bold">Cost:</span>
           <input
             readOnly
-            value={Number(cost)}
+            value={cost ? currencyFormatter(parseFloat(cost.toFixed(2)))  : ""}
             className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3  w-[300px]"
           />
         </div>
@@ -530,7 +555,7 @@ function BidAccessComp() {
           <span className="text-gray-900 text-[16px] bold">Subtotal:</span>
 
           <span className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3  w-[300px] min-h-10">
-            {subtotal}
+            { subtotal && currencyFormatter(parseFloat(subtotal.toFixed(2))) }
           </span>
         </div>
 
@@ -538,7 +563,7 @@ function BidAccessComp() {
           <span className="text-gray-900 text-[16px] bold">Balance:</span>
 
           <span className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3  w-[300px] min-h-10">
-            {balance}
+            {balance && currencyFormatter(parseFloat(balance.toFixed(2))) }
           </span>
         </div>
         <div className="flex flex-row items-center justify-between  mb-3">
@@ -568,6 +593,7 @@ function BidAccessComp() {
             Delivery Schedule To:
           </span>
           <input
+            min={deliveryScheduleFrom}
             type="date"
             className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3 w-[300px]"
             onChange={(e) => setDeliveryScheduleTo(e.target.value)}
@@ -614,7 +640,8 @@ function BidAccessComp() {
         {/* image list start */}
         <div className="flex flex-row items-start space-x-2 mb-3">
           {files.map((fileObj, index) => (
-            <div className={`relative w-24 h-24`} key={index}>
+            <div className={`w-24`} key={index}>
+              <div  className={`relative w-24 h-24`}>
               <Image src={fileObj.file} alt="Uploaded" layout="fill" />
               <MdCancel
                 size={24}
@@ -628,6 +655,11 @@ function BidAccessComp() {
                 className="absolute right-2 top-2 "
               />
             </div>
+                  <span className="text-sm  block text-wrap ">
+                  {fileObj.file}
+                </span>
+            </div>
+            
           ))}
 
           {pdfType.map((pdf, index) => {
@@ -656,7 +688,7 @@ function BidAccessComp() {
               </div>
             );
           })}
-
+  {/* doctype starts */}
           {docType.map((mydoc, index) => {
             // console.log("pdf created", pdf)
             return (
@@ -674,7 +706,7 @@ function BidAccessComp() {
                       const docArray = docType.filter(
                         (docList) => docList.index !== mydoc.index
                       );
-                      setPdfType([...docArray]);
+                      setDocType([...docArray]);
                     }}
                     color="red"
                     className="absolute right-2 top-2 "
@@ -683,6 +715,39 @@ function BidAccessComp() {
 
                 <span className="text-sm w-24 text-wrap z-50">
                   {mydoc.fileName}
+                </span>
+              </div>
+            );
+          })}
+{/* doctype ends */}
+          {/* excel section */}
+
+          {excelType.map((myexcel, index) => {
+            // console.log("pdf created", pdf)
+            return (
+              <div key={index} className={`w-24`}>
+                <div className={`relative w-24 h-24`}>
+                  <Image
+                    src={"/icons/excelImage.jpeg"}
+                    alt="Uploaded"
+                    layout="fill"
+                  />
+
+                  <MdCancel
+                    size={24}
+                    onClick={() => {
+                      const excelArray = excelType.filter(
+                        (excelList) => excelList.index !== myexcel.index
+                      );
+                      setExcelType([...excelArray]);
+                    }}
+                    color="red"
+                    className="absolute right-2 top-2 "
+                  />
+                </div>
+
+                <span className="text-sm w-24 text-wrap z-50">
+                  {myexcel.fileName}
                 </span>
               </div>
             );

@@ -203,7 +203,7 @@ export const verifyBidAccessDataApi = async (id: number) => {
   return response.data;
 };
 
-export const awardBidRfqDataApi = async (id: number, isAwarded: string) => {
+export const awardBidRfqDataApi = async (id: number, isAwarded: number) => {
   const data = localStorage.getItem('bongsUser');
   const { token } = data && JSON.parse(data);
   // id of the bid

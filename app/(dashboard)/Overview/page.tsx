@@ -60,7 +60,7 @@ function Page() {
       ncf: number;
       vat: number;
       grandTotal: number;
-      rating: string;
+      rating: string
     }[]
   >([]);
 
@@ -100,7 +100,7 @@ function Page() {
 
   const handleClose = () => setOpenModal(!openModal);
 
-  //memo
+
   const [openApproveModal, setOpenApproveModal] = useState(false);
   const [isRfqAwarded, setIsRfqAwarded] = useState(false)
 
@@ -129,7 +129,6 @@ function Page() {
     setOpenPOApproveModal(true);
   };
 
-  //memoclose
 
   const handleGetAllBidForSingleRfqFunc = (rfqbid: any, rfqId: any, isrfqAward: boolean) => {
     setAllBidsForSingleRfq(rfqbid);
@@ -155,7 +154,6 @@ function Page() {
         fetchAllPurchaseOrderDataApi(),
         fetchAllQualityAssuranceDataApi(),
       ]);
-      console.log('fetched all rfq', allRfqData);
       setAllBidData(allBidData.data.data);
       setAllRfq(allRfqData.data.data);
       setAllMemoData(allMemo.data.data);
@@ -305,7 +303,6 @@ function Page() {
   );
 
   const itemListMemo = allMemoData.map((item, i) => {
-    console.log('data', item);
     return {
       ...item,
       'S/N': i + 1,

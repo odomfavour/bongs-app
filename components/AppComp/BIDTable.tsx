@@ -1,12 +1,12 @@
-import { toggleLoading } from '@/provider/redux/modalSlice';
-import { fetchBidForRfqDataApi } from '@/utils/apiServices/procurementApi';
-import { Barge } from '@/utils/types';
-import { currencyFormatter, dateFormater } from '@/utils/usefulFunc';
-import { formatDate } from '@/utils/utils';
-import React, { useMemo } from 'react';
-import { FaSearch } from 'react-icons/fa';
-import { FaRegFolderClosed } from 'react-icons/fa6';
-import { useDispatch } from 'react-redux';
+import { toggleLoading } from "@/provider/redux/modalSlice";
+import { fetchBidForRfqDataApi } from "@/utils/apiServices/procurementApi";
+import { Barge } from "@/utils/types";
+import { currencyFormatter, dateFormater } from "@/utils/usefulFunc";
+import { formatDate } from "@/utils/utils";
+import React, { useMemo } from "react";
+import { FaSearch } from "react-icons/fa";
+import { FaRegFolderClosed } from "react-icons/fa6";
+import { useDispatch } from "react-redux";
 import {
   useTable,
   usePagination,
@@ -16,8 +16,8 @@ import {
   UseGlobalFiltersInstanceProps,
   UsePaginationState,
   UsePaginationInstanceProps,
-} from 'react-table';
-import { toast } from 'react-toastify';
+} from "react-table";
+import { toast } from "react-toastify";
 
 function BidTable({
   MOCK_DATA,
@@ -30,7 +30,11 @@ function BidTable({
   COLUMNS: any[];
   fetchedData: Barge[];
   handleOpenModal: () => void;
-  handleGetAllBidForSingleRfqFunc: (rfqbid: any, rfqId: any, isrfqAward: boolean) => void;
+  handleGetAllBidForSingleRfqFunc: (
+    rfqbid: any,
+    rfqId: any,
+    isrfqAward: boolean
+  ) => void;
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
@@ -75,7 +79,7 @@ function BidTable({
 
   const { globalFilter, pageIndex } = state;
 
-  console.log('the fetched data from bid', fetchedData);
+  console.log("the fetched data from bid", fetchedData);
 
   return (
     <>
@@ -84,7 +88,7 @@ function BidTable({
           <div className="w-full relative">
             <input
               type="search"
-              value={globalFilter || ''}
+              value={globalFilter || ""}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Search here"
               className="bg-gray-50 pl-8 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
@@ -110,7 +114,7 @@ function BidTable({
                   {...column.getHeaderProps()}
                   key={index}
                 >
-                  {column.render('Header')}
+                  {column.render("Header")}
                 </th>
               ))}
               <th className="py-2 text-center">Actions</th>
@@ -143,7 +147,7 @@ function BidTable({
               return (
                 <tr {...row.getRowProps()} key={index}>
                   {row.cells.map((cell, index) => {
-                    if (row.cells[index].column.Header === 'Status') {
+                    if (row.cells[index].column.Header === "Status") {
                       return (
                         <td
                           className="flex items-center justify-center"
@@ -152,9 +156,9 @@ function BidTable({
                         >
                           <span
                             className={`text-center ${
-                              row.original.status === 'pending'
-                                ? 'text-red-600 bg-red-200 rounded-xl text-sm px-2 py-1'
-                                : 'text-green-600 bg-green-200 rounded-xl text-sm px-2 py-1'
+                              row.original.status === "pending"
+                                ? "text-red-600 bg-red-200 rounded-xl text-sm px-2 py-1"
+                                : "text-green-600 bg-green-200 rounded-xl text-sm px-2 py-1"
                             }`}
                           >
                             {row.original.status}
@@ -169,7 +173,7 @@ function BidTable({
                         {...cell.getCellProps()}
                         key={index}
                       >
-                        {cell.render('Cell')}
+                        {cell.render("Cell")}
                       </td>
                     );
                   })}
@@ -178,56 +182,59 @@ function BidTable({
                       <span
                         onClick={() => {
                           const getAlBidForRfq = async () => {
-                           try{
-                            dispatch(toggleLoading(true));
-                            const response = await fetchBidForRfqDataApi(
-                              row.original.request_for_quotation_id
-                            );
-                            console.log(
-                              "bid data fetched for single rfq",
-                              response
-                            );
-                         
-                            dispatch(toggleLoading(false));
-                            console.log("show data from server", response)
-                                
-                             
-                             const isRfqAwarded = response.data.data.filter((bid:any) => bid.is_awarded === 1)
-                              
-                            console.log("isAwaerded bid list", isRfqAwarded)
-                            
-                             const bid = response.data.data.map((bid: any) => {
-                            
-                              return {
-                                BID: bid.id,
-                                isAwarded: bid.is_awarded,
-                                dateReceived: dateFormater(bid.created_at),
-                                vendor: bid.vendor,
-                                grandTotal: currencyFormatter(bid.grandTotal),
-                                paymentTerms: bid.payment_term,
-                                deliveryPeriod: bid.delivery_date,
-                                currency: bid.currency,
-                                subtotal:currencyFormatter(bid.cost),
-                                quoteValidity: bid.quote_validity_period,
-                                wht: bid.wht,
-                                ncf: bid.ncdf,
-                                vat: bid.vat,
-                                rating: bid.evaluation_point
-                              };
-                            });
- 
-                            const rfqId = row.original.request_for_quotation_id;
-                         
-                            handleGetAllBidForSingleRfqFunc(bid, rfqId, isRfqAwarded.length > 0 ? true : false);
-                            handleOpenModal();
-                           }catch(error: any){
-                            console.error('Error:', error);
-                          const errorMessage =
-                          error?.response?.data?.message ||
-                          error?.response?.data?.errors ||
-                          error?.message ||
-                          'Unknown error';
-                               toast.error(`${errorMessage}`);
+                            try {
+                              dispatch(toggleLoading(true));
+                              const response = await fetchBidForRfqDataApi(
+                                row.original.request_for_quotation_id
+                              );
+                              console.log(
+                                "bid data fetched for single rfq",
+                                response
+                              );
+
+                              dispatch(toggleLoading(false));
+                              console.log("show data from server", response);
+
+                              const isRfqAwarded = response.data.data.filter(
+                                (bid: any) => bid.is_awarded === 1
+                              );
+
+                              const bid = response.data.data.map((bid: any) => {
+                                return {
+                                  BID: bid.id,
+                                  isAwarded: bid.is_awarded,
+                                  dateReceived: dateFormater(bid.created_at),
+                                  vendor: bid.vendor,
+                                  grandTotal: currencyFormatter(bid.grandTotal),
+                                  paymentTerms: bid.payment_term,
+                                  deliveryPeriod: bid.delivery_date,
+                                  currency: bid.currency,
+                                  subtotal: currencyFormatter(bid.cost),
+                                  quoteValidity: bid.quote_validity_period,
+                                  wht: bid.wht,
+                                  ncf: bid.ncdf,
+                                  vat: bid.vat,
+                                  rating: bid.evaluation_point
+                                };
+                              });
+
+                              const rfqId =
+                                row.original.request_for_quotation_id;
+
+                              handleGetAllBidForSingleRfqFunc(
+                                bid,
+                                rfqId,
+                                isRfqAwarded.length > 0 ? true : false
+                              );
+                              handleOpenModal();
+                            } catch (error: any) {
+                              console.error("Error:", error);
+                              const errorMessage =
+                                error?.response?.data?.message ||
+                                error?.response?.data?.errors ||
+                                error?.message ||
+                                "Unknown error";
+                              toast.error(`${errorMessage}`);
                             }
                           };
                           getAlBidForRfq();
@@ -246,7 +253,7 @@ function BidTable({
       </table>
       <div className="flex flex-row justify-end mt-3">
         <span>
-          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
+          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{" "}
         </span>
 
         <button
@@ -254,8 +261,8 @@ function BidTable({
           disabled={!canPreviousPage}
           onClick={() => previousPage()}
         >
-          {' '}
-          Previous{' '}
+          {" "}
+          Previous{" "}
         </button>
         <button disabled={!canNextPage} onClick={() => nextPage()}>
           Next

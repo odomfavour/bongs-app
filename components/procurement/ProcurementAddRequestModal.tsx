@@ -17,7 +17,6 @@ import {
 } from "@/utils/apiServices/procurementApi";
 import { toast } from "react-toastify";
 import {
-  populateAllCategory,
   populateAllDepartments,
   populateAllProjects,
   populateAllVendors,
@@ -56,7 +55,7 @@ function ProcurementAddRequestModal({ handleClose }: {
       dispatch(toggleLoading(true))
       const response = await getVendorByCategoryApi(id)
       const dataReceived = response.data.data
-      console.log("this is the list", response)
+     
       const vendorsList = response.data.map((vendor: any) => {
         return {
           vendorName: vendor.vendor_name,
@@ -80,7 +79,8 @@ function ProcurementAddRequestModal({ handleClose }: {
       dispatch(toggleLoading(false))
     }
     
-   }, [])
+  }, [])
+  
   const {
     allCategory: allCateryFromRedux,
     allProjects: allProjectsFromRedux,
@@ -116,7 +116,10 @@ function ProcurementAddRequestModal({ handleClose }: {
     }[]
   >(allDepartmentsFromRedux);
 
-  const [selectedVendor, setSelectedVendor] = useState("");
+  const [selectedVendor, setSelectedVendor] = useState<{
+    name: string,
+    id: number
+  }[]>([]);
 
   const [selectedProject, setSelectedProject] = useState("");
 
@@ -285,7 +288,7 @@ function ProcurementAddRequestModal({ handleClose }: {
           rfqUpdateData: {
             ...requiredFields,
             client_project_department: selectedClient,
-            vendors: [selectedVendor],
+            vendors: [...selectedVendor.map(item => item.id)],
           },
         };
       }
@@ -319,7 +322,7 @@ function ProcurementAddRequestModal({ handleClose }: {
           toast.error("department is required");
         }
 
-        if (!selectedVendor) {
+        if (!(selectedVendor.length > 0)) {
           toast.error("Vendor is required");
         }
 
@@ -327,7 +330,7 @@ function ProcurementAddRequestModal({ handleClose }: {
           id,
           rfqUpdateData: {
             ...requiredFields,
-            vendors: [selectedVendor],
+            vendors: selectedVendor.map(item => item.id),
             client_project_department: selectedDepartment,
             vendor_category_id: Number(selectedCategory),
           },
@@ -357,7 +360,7 @@ function ProcurementAddRequestModal({ handleClose }: {
     }
   };
 
-
+console.log("selected vendors list", selectedVendor)
 
   if (!isUIReady) {
     return (
@@ -449,7 +452,10 @@ function ProcurementAddRequestModal({ handleClose }: {
                 <select
                   name=""
                   id=""
-                  onChange={(e) => setSelectedVendor(e.target.value)}
+                  onChange={(e) => { 
+                    if (!e.target.value) return
+                    setSelectedVendorCategory(e.target.value)
+                  }}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
                   <option className=" text-black text-sm font-normal font-['Inter']">
@@ -571,8 +577,10 @@ function ProcurementAddRequestModal({ handleClose }: {
                   name=""
                   id=""
                   onChange={(e) => { 
+                   if(!e.target.value)return
                     handleFetVendorByCategory(e.target.value)
                     setSelectedCategory(e.target.value)
+                    setSelectedVendor([])
                   }}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
@@ -600,10 +608,33 @@ function ProcurementAddRequestModal({ handleClose }: {
                 <select
                   name=""
                   id=""
-                  onChange={(e) => setSelectedVendor(e.target.value)}
+                  onChange={(e) => { 
+                    console.log()
+                    if(!e.target.value)return
+                    /* const data = JSON.parse(e.target.value) as {
+                      vendorName: string, 
+                    vendorId: number
+                    } */
+                    const id = Number(e.target.value)
+                     /* search if vendor already exist on the list of selected vendors */
+                    const findId = selectedVendor.find(item => item.id === id)
+                    if (findId) return
+                  
+
+                    const foundVendor = allVendors.find(vendor => vendor.vendorId === id) as {
+                      vendorName: string,
+                      vendorId: number
+                    }
+                
+                    const { vendorName, vendorId } = foundVendor
+                    
+                    
+                    setSelectedVendor([...selectedVendor, {name: vendorName, id:vendorId}])
+                   
+                  }}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
-                  <option className=" text-black text-sm font-normal font-['Inter']">
+                  <option value={""} className=" text-black text-sm font-normal font-['Inter']">
                     Select vendor
                   </option>
                   {allVendors.map((item, index) => {
@@ -618,6 +649,36 @@ function ProcurementAddRequestModal({ handleClose }: {
                     );
                   })}
                 </select>
+                 
+                
+                { 
+                   selectedVendor.length > 0 && <p className="text-black text-lg font-normal font-['Inter'] mt-4 mb-2">
+                   Vendor list
+               </p>
+                }
+                <div className="flex flex-col space-y-1">
+                { 
+                 
+                    selectedVendor.map((vendor, index) =>
+                      <div className="flex flex-row items-center justify-between w-[300px]">
+                         <span key={index} className=" text-black text-sm font-normal font-['Inter']">
+                         {vendor.name}
+                        </span>
+                        <MdClose
+                     color="red"
+                     onClick={() => { 
+                       const filteredData = selectedVendor.filter(item => item.id !== vendor.id)
+                       setSelectedVendor(filteredData)
+                     }}
+                     
+                   />
+                     </div>
+                    )
+               }
+
+                </div>
+                
+          
               </div>
             </div>
           )}

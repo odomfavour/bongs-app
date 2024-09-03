@@ -30,7 +30,7 @@ function BidTable({
   COLUMNS: any[];
   fetchedData: Barge[];
   handleOpenModal: () => void;
-  handleGetAllBidForSingleRfqFunc: (rfqbid: any, rfqId: any) => void;
+  handleGetAllBidForSingleRfqFunc: (rfqbid: any, rfqId: any, isrfqAward: boolean) => void;
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
@@ -190,7 +190,12 @@ function BidTable({
                          
                             dispatch(toggleLoading(false));
                             console.log("show data from server", response)
-                        
+                                
+                             
+                             const isRfqAwarded = response.data.data.filter((bid:any) => bid.is_awarded === 1)
+                              
+                            console.log("isAwaerded bid list", isRfqAwarded)
+                            
                              const bid = response.data.data.map((bid: any) => {
                             
                               return {
@@ -213,7 +218,7 @@ function BidTable({
  
                             const rfqId = row.original.request_for_quotation_id;
                          
-                            handleGetAllBidForSingleRfqFunc(bid, rfqId);
+                            handleGetAllBidForSingleRfqFunc(bid, rfqId, isRfqAwarded.length > 0 ? true : false);
                             handleOpenModal();
                            }catch(error: any){
                             console.error('Error:', error);

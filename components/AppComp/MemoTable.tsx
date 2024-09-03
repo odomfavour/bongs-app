@@ -19,6 +19,7 @@ function MemoTable({
   fetchedData,
   viewItem,
   printItem,
+  initiateMemo,
   handleOpenModal,
 }: {
   MOCK_DATA: any[];
@@ -26,6 +27,7 @@ function MemoTable({
   fetchedData: Barge[];
   viewItem: (id: number) => void;
   printItem: (id: number) => void;
+  initiateMemo: (id: number) => void;
   handleOpenModal: () => void;
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
@@ -134,7 +136,8 @@ function MemoTable({
           ) : (
             page.map((row, index) => {
               prepareRow(row);
-              const { has_signed_count, signatory_count, id } = row.original;
+              const { has_signed_count, signatory_count, id, is_created } =
+                row.original;
               return (
                 <tr {...row.getRowProps()} key={index}>
                   {row.cells.map((cell, index) => {
@@ -150,25 +153,34 @@ function MemoTable({
                   })}
                   <td>
                     <td className="flex justify-center items-center border-none">
-                      {/* {JSON.stringify(row.original)} */}
-                      {has_signed_count === signatory_count ? (
-                        <div className="flex-row flex items-center w-max justify-center rounded-xl px-2 py-1 bg-[#007BFF] cursor-pointer">
-                          <span
-                            className="text-center text-sm text-white"
-                            onClick={() => printItem(id)}
-                          >
+                      {!is_created ? (
+                        <button
+                          className="bg-blue-500 text-white p-2 rounded-md"
+                          onClick={() => {
+                            console.log('Initiate Memo clicked with id:', id);
+                            initiateMemo(id);
+                          }}
+                        >
+                          Create
+                        </button>
+                      ) : has_signed_count === signatory_count ? (
+                        <button
+                          className="flex-row flex items-center w-max justify-center rounded-xl px-2 py-1 bg-[#007BFF] cursor-pointer"
+                          onClick={() => printItem(id)}
+                        >
+                          <span className="text-center text-sm text-white">
                             Print
                           </span>
-                        </div>
+                        </button>
                       ) : (
-                        <div
+                        <button
                           className="flex-row flex items-center w-max justify-center rounded-xl px-2 py-1 bg-[#a16207] cursor-pointer"
                           onClick={() => viewItem(id)}
                         >
                           <span className="text-center text-sm text-white">
                             View More
                           </span>
-                        </div>
+                        </button>
                       )}
                     </td>
                   </td>

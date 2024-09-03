@@ -54,13 +54,13 @@ function Page() {
       subtotal: number;
       deliveryPeriod: string;
       currency: string;
-      isAwarded: string;
+      isAwarded: number;
       quoteValidity: string;
       wht: number;
       ncf: number;
       vat: number;
       grandTotal: number;
-      rating: string
+      rating: string;
     }[]
   >([]);
 
@@ -102,6 +102,7 @@ function Page() {
 
   //memo
   const [openApproveModal, setOpenApproveModal] = useState(false);
+  const [isRfqAwarded, setIsRfqAwarded] = useState(false)
 
   const handleCloseApprove = () => {
     setOpenApproveModal(false);
@@ -130,9 +131,10 @@ function Page() {
 
   //memoclose
 
-  const handleGetAllBidForSingleRfqFunc = (rfqbid: any, rfqId: any) => {
+  const handleGetAllBidForSingleRfqFunc = (rfqbid: any, rfqId: any, isrfqAward: boolean) => {
     setAllBidsForSingleRfq(rfqbid);
     setRfqForGivenBid(rfqId);
+    setIsRfqAwarded(isrfqAward)
   };
 
   const fetchProcurementsData = useCallback(async () => {
@@ -291,13 +293,13 @@ function Page() {
       return {
         ...item,
         'S/N': i + 1,
-        rfqId: `RFQ ${item.id}`,
+        poId: `PO ${item.purchase_order_id}`,
         title: item.title,
-        noOfBid: item.bid_count,
+        type: item?.request_for_quotations.procurement_type,
+        inventory: item?.procurement?.procurement_requisitions?.type,
+        attachments: item?.files?.length,
         status: item.status,
-        awardedBids: 0,
-        performaInvoice: 0,
-        deadline: item.bidding_deadline,
+        date: item?.bid?.delivery_date,
       };
     }
   );
@@ -325,6 +327,35 @@ function Page() {
       </div>
     );
   }
+
+  const initiateMemo = async (id: number) => {
+    try {
+      dispatch(toggleLoading(true));
+      const response = await axios.post(
+        `${process.env.BASEURL}/procurement/memo/${id}`,
+        {}, // You can pass a data payload here if needed
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+
+      toast.success(response?.data?.message);
+      fetchAllMemoDataApi();
+    } catch (error: any) {
+      console.error('Export failed:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  };
 
   return (
     <div className=" bg-[#f8f8f8]">
@@ -460,10 +491,7 @@ function Page() {
           handleOpenModal={handleOpenBidModal}
           COLUMNS={[
           
-          /* 
-           rfqId: `RFQ ${item.request_quotation_id}`,
-      bidId: `BID ${item.id}`,
-          */
+      
             {
               Header: 'S/N',
               accessor: 'S/N',
@@ -510,6 +538,7 @@ function Page() {
           fetchedData={allMemoData}
           handleOpenModal={handleOpenModal}
           viewItem={viewItem}
+          initiateMemo={initiateMemo}
           printItem={printItem}
           COLUMNS={[
             {
@@ -629,7 +658,7 @@ function Page() {
             },
             {
               Header: 'Attachment',
-              accessor: 'attachment',
+              accessor: 'attachments',
             },
             {
               Header: 'Status',
@@ -705,7 +734,7 @@ function Page() {
         onClose={handleOpenBidModal}
         maxWidth="1050px"
       >
-        <BidModal bidList={allBidsForSingleRfq} rfq={rfqForGiveneBid} />
+        <BidModal bidList={allBidsForSingleRfq} rfq={rfqForGiveneBid} isRfqAwarded={ isRfqAwarded } />
       </Modal>
 
       <Modal

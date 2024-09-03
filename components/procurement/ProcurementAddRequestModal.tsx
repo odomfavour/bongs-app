@@ -660,8 +660,8 @@ console.log("selected vendors list", selectedVendor)
                 { 
                  
                     selectedVendor.map((vendor, index) =>
-                      <div className="flex flex-row items-center justify-between w-[300px]">
-                         <span key={index} className=" text-black text-sm font-normal font-['Inter']">
+                      <div key={index}  className="flex flex-row items-center justify-between w-[300px]">
+                         <span className=" text-black text-sm font-normal font-['Inter']">
                          {vendor.name}
                         </span>
                         <MdClose

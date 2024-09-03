@@ -32,12 +32,13 @@ function Page() {
       subtotal: number;
       deliveryPeriod: string;
       currency: string;
-      isAwarded: string;
+      isAwarded: number;
       quoteValidity: string;
       wht: number;
       ncf: number;
       vat: number;
       grandTotal: number;
+      rating: string
     }[]
   >([]);
 
@@ -162,14 +163,14 @@ function Page() {
 
       {/* modal section starts */}
 
-      <Modal
+     {/*  <Modal
         isOpen={showBidForRfqModal}
         title={""}
         onClose={handleOpenBidModal}
         maxWidth="1050px"
       >
         <BidModal bidList={allBidsForSingleRfq} rfq={rfqForGiveneBid} />
-      </Modal>
+      </Modal> */}
     </div>
   );
 }

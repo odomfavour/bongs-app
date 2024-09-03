@@ -60,7 +60,7 @@ function Page() {
       ncf: number;
       vat: number;
       grandTotal: number;
-      rating: string
+      rating: string;
     }[]
   >([]);
 
@@ -293,13 +293,13 @@ function Page() {
       return {
         ...item,
         'S/N': i + 1,
-        rfqId: `RFQ ${item.id}`,
+        poId: `PO ${item.purchase_order_id}`,
         title: item.title,
-        noOfBid: item.bid_count,
+        type: item?.request_for_quotations.procurement_type,
+        inventory: item?.procurement?.procurement_requisitions?.type,
+        attachments: item?.files?.length,
         status: item.status,
-        awardedBids: 0,
-        performaInvoice: 0,
-        deadline: item.bidding_deadline,
+        date: item?.bid?.delivery_date,
       };
     }
   );
@@ -327,6 +327,35 @@ function Page() {
       </div>
     );
   }
+
+  const initiateMemo = async (id: number) => {
+    try {
+      dispatch(toggleLoading(true));
+      const response = await axios.post(
+        `${process.env.BASEURL}/procurement/memo/${id}`,
+        {}, // You can pass a data payload here if needed
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+
+      toast.success(response?.data?.message);
+      fetchAllMemoDataApi();
+    } catch (error: any) {
+      console.error('Export failed:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  };
 
   return (
     <div className=" bg-[#f8f8f8]">
@@ -462,7 +491,7 @@ function Page() {
           handleOpenModal={handleOpenBidModal}
           COLUMNS={[
           
-         
+      
             {
               Header: 'S/N',
               accessor: 'S/N',
@@ -509,6 +538,7 @@ function Page() {
           fetchedData={allMemoData}
           handleOpenModal={handleOpenModal}
           viewItem={viewItem}
+          initiateMemo={initiateMemo}
           printItem={printItem}
           COLUMNS={[
             {
@@ -628,7 +658,7 @@ function Page() {
             },
             {
               Header: 'Attachment',
-              accessor: 'attachment',
+              accessor: 'attachments',
             },
             {
               Header: 'Status',

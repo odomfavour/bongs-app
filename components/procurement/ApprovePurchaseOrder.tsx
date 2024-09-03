@@ -110,6 +110,40 @@ const ApprovePurchaseOrder: React.FC<ApprovePOProps> = ({
     }
   };
 
+  const sendPurchaseOrder = async () => {
+    dispatch(toggleLoading(true));
+    try {
+      const response = await axios.post(
+        `${process.env.BASEURL}/procurement/purchase-order/${selectedPO}`,
+        {
+          id: selectedPO,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+      console.log('Approve Response:', response);
+      if (response.status === 200) {
+        toast.success(`${response?.data?.message}`);
+      }
+      fetchPOData();
+      setOpenApprovePO(false);
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  };
+
   return (
     <div>
       <div className="flex justify-between">
@@ -254,19 +288,19 @@ const ApprovePurchaseOrder: React.FC<ApprovePOProps> = ({
         <div className="flex gap-4">
           <button
             className="rounded-md bg-blue-700 text-white py-2 px-4"
-            onClick={() => handleApproveOrReject('approved')}
+            onClick={sendPurchaseOrder}
           >
-            Approve
+            Send
           </button>
-          <button
-            className="rounded-md bg-red-700 text-white py-2 px-4"
-            onClick={() => {
-              setIsRejecting(true);
-              handleApproveOrReject('pending');
-            }}
-          >
-            Reject
-          </button>
+          {/* <button
+              className="rounded-md bg-red-700 text-white py-2 px-4"
+              onClick={() => {
+                setIsRejecting(true);
+                handleApproveOrReject('pending');
+              }}
+            >
+              Reject
+            </button> */}
         </div>
       </div>
       {/* )} */}

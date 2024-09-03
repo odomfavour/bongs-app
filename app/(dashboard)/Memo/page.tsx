@@ -307,14 +307,14 @@ function Page() {
         <ProcurementAddRequestModal handleClose={handleClose} />
       </Modal>
 
-      <Modal
+     {/*  <Modal
         isOpen={showBidForRfqModal}
         title={''}
         onClose={handleOpenBidModal}
         maxWidth="1050px"
       >
         <BidModal bidList={allBidsForSingleRfq} rfq={rfqForGiveneBid} />
-      </Modal>
+      </Modal> */}
 
       <Modal
         title=""

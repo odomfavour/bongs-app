@@ -12,6 +12,7 @@ import {
   fetchAllProjectDataApi,
   fetchAllVendorCategoryDataApi,
   fetchAllVendorsDataApi,
+  getVendorByCategoryApi,
   updateRFQDataApi,
 } from "@/utils/apiServices/procurementApi";
 import { toast } from "react-toastify";
@@ -35,11 +36,51 @@ function ProcurementAddRequestModal({ handleClose }: {
     subscriber,
     subscriberId,
     procurementId,
+    rfqStatus,
     id,
+  
   } = useSelector((state: any) => state.procurement.draftProcurementState);
 
   const [attachedImage, setAttachedImage] = useState("");
 
+  const [minDate, setMinDate] = useState("");
+  useEffect(() => {
+    // Get today's date in the format 'YYYY-MM-DD'
+    const today = new Date().toISOString().split('T')[0];
+    setMinDate(today);
+  }, []);
+
+  const handleFetVendorByCategory = useCallback(async (id: string) => {
+    try {
+      if(!id) return
+      dispatch(toggleLoading(true))
+      const response = await getVendorByCategoryApi(id)
+      const dataReceived = response.data.data
+      console.log("this is the list", response)
+      const vendorsList = response.data.map((vendor: any) => {
+        return {
+          vendorName: vendor.vendor_name,
+          vendorId: vendor.id,
+        };
+      });
+
+      dispatch(populateAllVendors(vendorsList));
+      setAllVendors(vendorsList);
+      dispatch(toggleLoading(false))
+    } catch (error: any) {
+      dispatch(toggleLoading(false));
+      console.error("Error:", error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        "Unknown error";
+      toast.error(`${errorMessage}`);
+    } finally { 
+      dispatch(toggleLoading(false))
+    }
+    
+   }, [])
   const {
     allCategory: allCateryFromRedux,
     allProjects: allProjectsFromRedux,
@@ -217,6 +258,7 @@ function ProcurementAddRequestModal({ handleClose }: {
         toast.error("bidding deadline  is required");
         return;
       }
+     
 
       let rfqUpdeteData: any;
       const requiredFields = {
@@ -293,7 +335,7 @@ function ProcurementAddRequestModal({ handleClose }: {
       }
 
       dispatch(toggleLoading(true));
-      console.log("data sent update", rfqUpdeteData);
+  
 
       const response = await updateRFQDataApi(rfqUpdeteData);
 
@@ -462,10 +504,14 @@ function ProcurementAddRequestModal({ handleClose }: {
                 <p className="text-black text-lg font-normal font-['Inter']">
                   Choose Vendor Category
                 </p>
+              
                 <select
                   name=""
                   id=""
-                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  onChange={(e) => { 
+                   
+                    setSelectedCategory(e.target.value)
+                  }}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
                   <option className=" text-black text-sm font-normal font-['Inter']">
@@ -520,10 +566,14 @@ function ProcurementAddRequestModal({ handleClose }: {
                 <p className="text-black text-lg font-normal font-['Inter']">
                   Choose Vendor Category
                 </p>
+             {/*    handleFetVendorByCategory */}
                 <select
                   name=""
                   id=""
-                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  onChange={(e) => { 
+                    handleFetVendorByCategory(e.target.value)
+                    setSelectedCategory(e.target.value)
+                  }}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
                   <option className=" text-black text-sm font-normal font-['Inter']">
@@ -609,7 +659,12 @@ function ProcurementAddRequestModal({ handleClose }: {
               Bidding deadline
             </p>
             <div></div>
-            <input type="date" onChange={(e) => setStartDate(e.target.value)} />
+            <input
+            min={minDate}
+              type="date" onChange={(e) => { 
+              
+           setStartDate(e.target.value)
+            }} />
           </div>
           {/* date end */}
         </div>
@@ -717,12 +772,14 @@ function ProcurementAddRequestModal({ handleClose }: {
               </tbody>
             </table>
             <div className="flex flex-row justify-end mt-8">
-              <button
+              { 
+                rfqStatus !== "Expired" &&  <button
                 onClick={() => handleUpdateRfq()}
                 className="rounded-xl bg-blue-900 text-white py-2 px-4"
               >
                 Submit
               </button>
+              }
             </div>
           </div>
         ) : (

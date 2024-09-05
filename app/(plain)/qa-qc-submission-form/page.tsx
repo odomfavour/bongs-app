@@ -30,6 +30,7 @@ const Page: React.FC = () => {
 
   useEffect(() => {
     const storedPurchaseOrderId = localStorage.getItem('qaVendoeDetail');
+
     if (storedPurchaseOrderId !== null) {
       try {
         const parsedData = JSON.parse(storedPurchaseOrderId);

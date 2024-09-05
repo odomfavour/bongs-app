@@ -158,7 +158,7 @@ const ApprovePurchaseOrder: React.FC<ApprovePOProps> = ({
         </div>
         <div>
           <p>Delivery Address</p>
-          <p>{po?.delivery_address}</p>
+          <p>{po?.delivery_address || 'N/A'}</p>
         </div>
       </div>
 
@@ -246,7 +246,9 @@ const ApprovePurchaseOrder: React.FC<ApprovePOProps> = ({
           <div className="">
             <div className="flex gap-2">
               <p>Subtotal: </p>
-              <p>{po?.bid?.cost}</p>
+              <p>
+                {po?.bid?.currency} {po?.bid?.cost}
+              </p>
             </div>
             <div className="flex gap-2">
               <p>VAT:</p>
@@ -287,10 +289,12 @@ const ApprovePurchaseOrder: React.FC<ApprovePOProps> = ({
       <div className="flex justify-end my-5">
         <div className="flex gap-4">
           <button
-            className="rounded-md bg-blue-700 text-white py-2 px-4"
+            className={`rounded-md ${
+              po.is_sent ? 'bg-blue-700 text-white' : 'bg-blue-500 text-white'
+            } py-2 px-4`}
             onClick={sendPurchaseOrder}
           >
-            Send
+            {po?.is_sent ? 'Resend' : 'Send'}
           </button>
           {/* <button
               className="rounded-md bg-red-700 text-white py-2 px-4"

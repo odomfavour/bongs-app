@@ -18,12 +18,13 @@ function QA_QCTable({
   MOCK_DATA,
   COLUMNS,
   fetchedData,
-  handleOpenModal,
+  viewQA,
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
   fetchedData: Barge[];
   handleOpenModal: () => void;
+  viewQA: (id: number) => void;
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => MOCK_DATA, [MOCK_DATA]);
@@ -147,9 +148,7 @@ function QA_QCTable({
                   <td>
                     <div className="flex-row flex items-center justify-center rounded-lg p-2 space-x-2 bg-[#a16207] ">
                       <button
-                        onClick={() => {
-                          handleOpenModal();
-                        }}
+                        onClick={() => viewQA(row?.original?.id)}
                         className="text-center text-white"
                       >
                         View More

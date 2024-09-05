@@ -262,7 +262,6 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
   };
 
   const addItem = () => {
-    console.log('item', formData);
     setTableData((prevData) => [...prevData, formData]);
 
     setFormData({

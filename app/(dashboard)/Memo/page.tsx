@@ -178,7 +178,6 @@ function Page() {
   };
 
   const initiateMemo = async (id: number) => {
-    console.log('clicked');
     try {
       dispatch(toggleLoading(true));
       const response = await axios.post(
@@ -193,6 +192,7 @@ function Page() {
       );
 
       toast.success(response?.data?.message);
+      fetchProcurementsData();
     } catch (error: any) {
       console.error('Export failed:', error);
       const errorMessage =
@@ -307,7 +307,7 @@ function Page() {
         <ProcurementAddRequestModal handleClose={handleClose} />
       </Modal>
 
-     {/*  <Modal
+      {/*  <Modal
         isOpen={showBidForRfqModal}
         title={''}
         onClose={handleOpenBidModal}

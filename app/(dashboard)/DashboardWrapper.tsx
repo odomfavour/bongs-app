@@ -142,26 +142,22 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
     (state: any) => state.modal.isAddInventoryTypeModalOpen
   );
 
+  const path = usePathname();
 
-  const path = usePathname()
+  const [pathName, setPathName] = useState('');
 
-  const [pathName, setPathName] = useState("")
-  
-  const [ pathName2, setPathName2] = useState("")
+  const [pathName2, setPathName2] = useState('');
 
- const router = useRouter()
+  const router = useRouter();
   useEffect(() => {
-    if(path === "/bid-submission" ){
-      setPathName("/bid-submission")
+    if (path === '/bid-submission') {
+      setPathName('/bid-submission');
     }
 
-    if(path === "/bid-submission-success"  ){
-      setPathName2("/bid-submission-success")
+    if (path === '/bid-submission-success') {
+      setPathName2('/bid-submission-success');
     }
-
-   
-  
-  }, [router]);
+  }, [path, router]);
 
   const isLoading = useSelector((state: any) => state.modal.isLoading);
   const [isClient, setIsClient] = useState(false);
@@ -169,32 +165,35 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
     setIsClient(true);
   }, []);
   if (!isClient) return null;
-  if( pathName === "/bid-submission" ){
-   return <div>
-    {children}
-    <ToastContainer />
-    </div>
+  if (pathName === '/bid-submission') {
+    return (
+      <div>
+        {children}
+        <ToastContainer />
+      </div>
+    );
   }
 
-
-  if( pathName2 === "/bid-submission-success" ){
-    return <div>
-     {children}
-     <ToastContainer />
-     </div>
-   }
+  if (pathName2 === '/bid-submission-success') {
+    return (
+      <div>
+        {children}
+        <ToastContainer />
+      </div>
+    );
+  }
   return (
     <>
       <section>
-      <MainHeader toggleSidebar={toggleSidebar} />
-       
+        <MainHeader toggleSidebar={toggleSidebar} />
+
         <div className="flex pt-[100px] bg-slate-50 gap-2">
           <div
             className={`fixed z-40 h-full bg-white shadow-lg lg:static lg:w-[120px] lg:block ${
               isSidebarOpen ? 'block' : 'hidden'
             }`}
           >
-          <Sidebar user={user} /> 
+            <Sidebar user={user} />
           </div>
           <main
             className={`flex-1 w-full px-5 min-h-[100vh] transition-all duration-300 ${

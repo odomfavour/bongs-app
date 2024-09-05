@@ -4,6 +4,7 @@ import { FaPlus, FaTrash } from 'react-icons/fa';
 import axios from 'axios';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 // Define a type for the file object, containing the actual file and its preview URL
 interface FileObject {
@@ -13,7 +14,7 @@ interface FileObject {
 
 const Page: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null); // Ref for the file input
-
+  const router = useRouter();
   // State to store form data including PO, title, and files
   const [formData, setFormData] = useState<{
     purchase_order_id: number;
@@ -88,6 +89,7 @@ const Page: React.FC = () => {
       toast.success(response.data.message);
       console.log('Form submitted successfully');
       localStorage.setItem('qaVendoeDetail', '');
+      router.push('/qa-qc-submission-success');
     } catch (error: any) {
       console.error('Error submitting form:', error);
       const errorMessage =

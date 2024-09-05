@@ -1,13 +1,13 @@
-"use client";
-import QA_QCTable from "@/components/AppComp/QA_QCTable";
-import { fetchAllQualityAssuranceDataApi } from "@/utils/apiServices/procurementApi";
-import { useRouter } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
-import { toast } from "react-toastify";
+'use client';
+import QA_QCTable from '@/components/AppComp/QA_QCTable';
+import { fetchAllQualityAssuranceDataApi } from '@/utils/apiServices/procurementApi';
+import { useRouter } from 'next/navigation';
+import React, { useCallback, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
-import { toggleLoading } from "@/provider/redux/modalSlice";
+import { toggleLoading } from '@/provider/redux/modalSlice';
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
 
 function Page() {
   const [openModal, setOpenModal] = useState(false);
@@ -34,11 +34,15 @@ function Page() {
   const handleCloseApprove = () => {
     setOpenApproveModal(false);
   };
-  const [selectedMemo, setSelectedMemo] = useState(0);
-  const [selectedPO, setSelectedPO] = useState(0);
-  const viewItem = (id: number) => {
-    setSelectedMemo(id);
-    setOpenApproveModal(true);
+  const [selectedQA, setSelectedQA] = useState(0);
+  const [openQAApproveModal, setOpenQAApproveModal] = useState(false);
+  const handleQAApproveClose = () => {
+    setOpenQAApproveModal(false);
+  };
+
+  const viewQA = (id: number) => {
+    setSelectedQA(id);
+    setOpenQAApproveModal(true);
   };
 
   //memoclose
@@ -56,13 +60,13 @@ function Page() {
 
       // You can similarly setStoreItems if needed
     } catch (error: any) {
-      console.error("Error:", error);
+      console.error('Error:', error);
 
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
         error?.message ||
-        "Unknown error";
+        'Unknown error';
       toast.error(`${errorMessage}`);
     } finally {
     }
@@ -82,7 +86,7 @@ function Page() {
     (item, i) => {
       return {
         ...item,
-        "S/N": i + 1,
+        'S/N': i + 1,
         rfqId: `RFQ ${item.id}`,
         title: item.title,
         noOfBid: item.bid_count,
@@ -114,40 +118,40 @@ function Page() {
 
       <QA_QCTable
         fetchedData={allQualityAssuranceData}
-        handleOpenModal={handleOpenModal}
+        viewQA={viewQA}
         COLUMNS={[
           {
-            Header: "S/N",
-            accessor: "S/N",
+            Header: 'S/N',
+            accessor: 'S/N',
           },
           {
-            Header: "PO ID",
-            accessor: "poId",
+            Header: 'PO ID',
+            accessor: 'poId',
           },
           {
-            Header: "Title",
-            accessor: "title",
+            Header: 'Title',
+            accessor: 'title',
           },
           {
-            Header: "Type",
-            accessor: "type",
+            Header: 'Type',
+            accessor: 'type',
           },
           {
-            Header: "Inventory",
-            accessor: "inventory",
+            Header: 'Inventory',
+            accessor: 'inventory',
           },
           {
-            Header: "Attachment",
-            accessor: "attachment",
+            Header: 'Attachment',
+            accessor: 'attachment',
           },
           {
-            Header: "Status",
-            accessor: "status",
+            Header: 'Status',
+            accessor: 'status',
           },
 
           {
-            Header: "Date",
-            accessor: "date",
+            Header: 'Date',
+            accessor: 'date',
           },
         ]}
         MOCK_DATA={itemlistAllQualityAssuranceData}

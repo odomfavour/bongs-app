@@ -125,7 +125,7 @@ function Page() {
       toast.error(`${errorMessage}`);
     } finally {
     }
-  }, [year]);
+  }, []);
 
   useEffect(() => {
     fetchProcurementsData();

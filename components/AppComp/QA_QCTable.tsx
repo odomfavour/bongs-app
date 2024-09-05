@@ -23,7 +23,6 @@ function QA_QCTable({
   MOCK_DATA: any[];
   COLUMNS: any[];
   fetchedData: Barge[];
-  handleOpenModal: () => void;
   viewQA: (id: number) => void;
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);

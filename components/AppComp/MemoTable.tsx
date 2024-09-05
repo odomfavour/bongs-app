@@ -20,7 +20,6 @@ function MemoTable({
   viewItem,
   printItem,
   initiateMemo,
-  handleOpenModal,
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];

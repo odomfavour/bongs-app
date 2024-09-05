@@ -132,6 +132,7 @@ const CreatePurchaseOrder: React.FC<CreatePurchaseOrderProps> = ({
         <div className="flex gap-3">
           <button
             className="bg-blue-600 text-white px-4 py-2 rounded-md"
+            disabled={!formData.delivery_address || !formData.bid_id}
             onClick={createPurchaseOrder}
           >
             Create

@@ -60,7 +60,7 @@ function Page() {
       ncf: number;
       vat: number;
       grandTotal: number;
-      rating: string
+      rating: string;
     }[]
   >([]);
 
@@ -100,15 +100,15 @@ function Page() {
 
   const handleClose = () => setOpenModal(!openModal);
 
-
   const [openApproveModal, setOpenApproveModal] = useState(false);
-  const [isRfqAwarded, setIsRfqAwarded] = useState(false)
+  const [isRfqAwarded, setIsRfqAwarded] = useState(false);
 
   const handleCloseApprove = () => {
     setOpenApproveModal(false);
   };
   const [selectedMemo, setSelectedMemo] = useState(0);
   const [selectedPO, setSelectedPO] = useState(0);
+  const [selectedQA, setSelectedQA] = useState(0);
   const viewItem = (id: number) => {
     setSelectedMemo(id);
     setOpenApproveModal(true);
@@ -124,16 +124,32 @@ function Page() {
     setOpenPOModal(false);
   };
 
+  const [openQAApproveModal, setOpenQAApproveModal] = useState(false);
+  const handleQAApproveClose = () => {
+    setOpenQAApproveModal(false);
+  };
+  const handleQAClose = () => {
+    setOpenPOModal(false);
+  };
+
   const viewPO = (id: number) => {
     setSelectedPO(id);
     setOpenPOApproveModal(true);
   };
 
+  const viewQA = (id: number) => {
+    setSelectedQA(id);
+    setOpenQAApproveModal(true);
+  };
 
-  const handleGetAllBidForSingleRfqFunc = (rfqbid: any, rfqId: any, isrfqAward: boolean) => {
+  const handleGetAllBidForSingleRfqFunc = (
+    rfqbid: any,
+    rfqId: any,
+    isrfqAward: boolean
+  ) => {
     setAllBidsForSingleRfq(rfqbid);
     setRfqForGivenBid(rfqId);
-    setIsRfqAwarded(isrfqAward)
+    setIsRfqAwarded(isrfqAward);
   };
 
   const fetchProcurementsData = useCallback(async () => {
@@ -294,7 +310,7 @@ function Page() {
         poId: `PO ${item.purchase_order_id}`,
         title: item.title,
         type: item?.request_for_quotations.procurement_type,
-        inventory: item?.procurement?.procurement_requisitions?.type,
+        // inventory: item?.procurement?.procurement_requisitions?.type,
         attachments: item?.files?.length,
         status: item.status,
         date: item?.bid?.delivery_date,
@@ -311,7 +327,9 @@ function Page() {
       type: item?.request_for_quotations?.procurement_type,
       status: item.status,
       signatory: `${item.has_signed_count}     ${item.signatory_count}`,
-      author: `${item.author_by?.first_name} ${item.author_by?.last_name}`,
+      author: `${item.author_by?.first_name || 'nil'} ${
+        item.author_by?.last_name
+      }`,
       // date: formatDate(item?.request_for_quotations?.delivery_date || 0),
       date: formatDate(item?.created_at || 0),
     };
@@ -340,7 +358,7 @@ function Page() {
       );
 
       toast.success(response?.data?.message);
-      fetchAllMemoDataApi();
+      fetchProcurementsData();
     } catch (error: any) {
       console.error('Export failed:', error);
       const errorMessage =
@@ -487,8 +505,6 @@ function Page() {
           handleGetAllBidForSingleRfqFunc={handleGetAllBidForSingleRfqFunc}
           handleOpenModal={handleOpenBidModal}
           COLUMNS={[
-          
-      
             {
               Header: 'S/N',
               accessor: 'S/N',
@@ -631,7 +647,7 @@ function Page() {
       {selectedMenu === 'QA/QC' && (
         <QA_QCTable
           fetchedData={allQualityAssuranceData}
-          handleOpenModal={handleOpenModal}
+          viewQA={viewQA}
           COLUMNS={[
             {
               Header: 'S/N',
@@ -648,10 +664,6 @@ function Page() {
             {
               Header: 'Type',
               accessor: 'type',
-            },
-            {
-              Header: 'Inventory',
-              accessor: 'inventory',
             },
             {
               Header: 'Attachment',
@@ -731,7 +743,11 @@ function Page() {
         onClose={handleOpenBidModal}
         maxWidth="1050px"
       >
-        <BidModal bidList={allBidsForSingleRfq} rfq={rfqForGiveneBid} isRfqAwarded={ isRfqAwarded } />
+        <BidModal
+          bidList={allBidsForSingleRfq}
+          rfq={rfqForGiveneBid}
+          isRfqAwarded={isRfqAwarded}
+        />
       </Modal>
 
       <Modal
@@ -781,6 +797,14 @@ function Page() {
           setOpenApprovePO={setOpenPOApproveModal}
           fetchPOData={fetchProcurementsData}
         />
+      </Modal>
+      <Modal
+        title=""
+        isOpen={openQAApproveModal}
+        onClose={handleQAApproveClose}
+        maxWidth="60%"
+      >
+        <div>inprogress</div>
       </Modal>
 
       {/* modal section ends */}

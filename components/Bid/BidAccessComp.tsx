@@ -1,26 +1,22 @@
-"use client";
-import React, { useState, useEffect } from "react";
+'use client';
+import React, { useState, useEffect } from 'react';
 import {
   creactNewBidApi,
   verifyBidAccessTokenApi,
-} from "@/utils/apiServices/procurementApi";
-import { toggleLoading } from "@/provider/redux/modalSlice";
-import Modal from "../dashboard/Modal";
-import Image from "next/image";
-import { MdCancel } from "react-icons/md";
-import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
-import { IoMdAdd } from "react-icons/io";
-import { FaFilePdf } from "react-icons/fa";
-import { useRouter } from "next/navigation";
-import { percentageData } from "@/utils/data";
-import { currencyFormatter } from "@/utils/usefulFunc";
+} from '@/utils/apiServices/procurementApi';
+import { toggleLoading } from '@/provider/redux/modalSlice';
+import Modal from '../dashboard/Modal';
+import Image from 'next/image';
+import { MdCancel } from 'react-icons/md';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { IoMdAdd } from 'react-icons/io';
+import { FaFilePdf } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
+import { percentageData } from '@/utils/data';
+import { currencyFormatter } from '@/utils/usefulFunc';
 
 function BidAccessComp() {
-
-
-
-
   const [showModal, setshowModal] = useState(true);
   const [accessToken, setAccessToken] = useState<null | string>(null);
 
@@ -34,15 +30,14 @@ function BidAccessComp() {
     vendorName: string;
     bidItems: any[];
   }>({
-    rfqId: "",
-    subscriberId: "",
-    vendorEmail: "",
-    vendorName: "",
+    rfqId: '',
+    subscriberId: '',
+    vendorEmail: '',
+    vendorName: '',
     bidItems: [],
   });
 
-
-  const [minDate, setMinDate] = useState("")
+  const [minDate, setMinDate] = useState('');
 
   const [files, setFiles] = useState<
     {
@@ -50,9 +45,9 @@ function BidAccessComp() {
       index: number;
       originalFile: any;
     }[]
-    >([]);
-  
-    const [excelType, setExcelType] = useState<
+  >([]);
+
+  const [excelType, setExcelType] = useState<
     {
       fileName: string;
       index: number;
@@ -61,11 +56,11 @@ function BidAccessComp() {
   >([]);
 
   const validImageTypes = [
-    "image/jpeg",
-    "image/png",
-    "application/pdf",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    'image/jpeg',
+    'image/png',
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   ] as const;
   type ValidImageType = (typeof validImageTypes)[number];
 
@@ -76,12 +71,12 @@ function BidAccessComp() {
     formData.bidItems.forEach((bid) => {
       if (bid.unitPrice !== null) {
         const result = Number(bid.unitPrice) * Number(bid.quantity);
-        console.log("result pushed", result);
+        console.log('result pushed', result);
         totalCost.push(result);
       }
     });
 
-    console.log("returned total cost", totalCost);
+    console.log('returned total cost', totalCost);
     const newCost = totalCost.reduce((initial, acc) => {
       return initial + acc;
     }, 0);
@@ -89,13 +84,11 @@ function BidAccessComp() {
     setCost(newCost);
   }, [formData.bidItems]);
 
-
-
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
     setMinDate(today);
-  }, [])
-  
+  }, []);
+
   const [pdfType, setPdfType] = useState<
     {
       fileName: string;
@@ -112,26 +105,26 @@ function BidAccessComp() {
     }[]
   >([]);
 
-  const [paymentTerms, setPaymentTerms] = useState("");
-  const [validityPeriodTo, setValidityPeriodTo] = useState("");
+  const [paymentTerms, setPaymentTerms] = useState('');
+  const [validityPeriodTo, setValidityPeriodTo] = useState('');
 
-  const [deliveryScheduleFrom, setDeliveryScheduleFrom] = useState("");
-  const [deliveryScheduleTo, setDeliveryScheduleTo] = useState("");
+  const [deliveryScheduleFrom, setDeliveryScheduleFrom] = useState('');
+  const [deliveryScheduleTo, setDeliveryScheduleTo] = useState('');
 
   const handleImageUpload = async (file: any) => {
-    console.log("seleted file 999", file);
+    console.log('seleted file 999', file);
     const maxSize = 1 * 1024 * 1024; // 1 MB in bytes
     if (file.size > maxSize) {
-      toast("File size greated the 1MB please reduce file size");
+      toast('File size greated the 1MB please reduce file size');
       return;
     }
 
-    console.log("file sent", file);
+    console.log('file sent', file);
 
-    
-
-
-    if (file.type ===  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+    if (
+      file.type ===
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    ) {
       setExcelType([
         ...excelType,
         {
@@ -143,7 +136,7 @@ function BidAccessComp() {
 
       return;
     }
-    if (file.type === "application/msword") {
+    if (file.type === 'application/msword') {
       setDocType([
         ...docType,
         {
@@ -156,7 +149,7 @@ function BidAccessComp() {
       return;
     }
 
-    if (file.type === "application/pdf") {
+    if (file.type === 'application/pdf') {
       setPdfType([
         ...pdfType,
         {
@@ -194,20 +187,18 @@ function BidAccessComp() {
   const balance = cost && subtotal ? cost - subtotal : null;
   const handleBidVerification = async () => {
     if (!accessToken) {
-      toast.error("Access token is requred");
+      toast.error('Access token is requred');
       return;
     }
     try {
       setLoader(true);
-         console.log("accestoken sent", accessToken)
+      console.log('accestoken sent', accessToken);
       const response = await verifyBidAccessTokenApi(accessToken);
       const { message, data } = response;
       const { rfq_id, subscriber_id, vendor_email, vendor_name, bid_items } =
         data;
 
-      
-      console.log("response from bid", response)
-    
+      console.log('response from bid', response);
 
       const newBid = bid_items.map((bid: any, index: number) => {
         return {
@@ -215,7 +206,7 @@ function BidAccessComp() {
           name: bid.name,
           quantity: bid.quantity,
           unitPrice: null,
-          unit_of_measurement: bid.unit_of_measurement
+          unit_of_measurement: bid.unit_of_measurement,
         };
       });
       setFormData({
@@ -234,9 +225,9 @@ function BidAccessComp() {
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
         error?.message ||
-        "Unknown error";
+        'Unknown error';
       toast.error(`${errorMessage}`);
-   console.log("this is the bid erroor",error)
+      console.log('this is the bid erroor', error);
       setLoader(false);
     }
   };
@@ -247,54 +238,54 @@ function BidAccessComp() {
 
   const handleCreateBid = async () => {
     if (!formData.subscriberId) {
-      toast.error("subscriber is required");
+      toast.error('subscriber is required');
       return;
     }
     if (!formData.rfqId) {
-      toast.error("request fro qoutation Id is required");
+      toast.error('request fro qoutation Id is required');
       return;
     }
     if (!formData.vendorEmail) {
-      toast.error("vendor email is required");
+      toast.error('vendor email is required');
       return;
     }
     if (!formData.vendorName) {
-      toast.error("vendor name is required");
+      toast.error('vendor name is required');
       return;
     }
     if (!subtotal) {
-      toast.error("subtotal is required");
+      toast.error('subtotal is required');
       return;
     }
     if (!balance) {
-      toast.error("balance is required");
+      toast.error('balance is required');
       return;
     }
     if (formData.bidItems.length > 0) {
       let error;
       const result = formData.bidItems.filter((bid) => bid.unitPrice === null);
       if (result.length > 0) {
-        toast.error("All qoutation unit price must be greater than zero");
+        toast.error('All qoutation unit price must be greater than zero');
         return;
       }
     }
     if (!paymentTerms) {
-      toast.error("payment terms is required");
+      toast.error('payment terms is required');
       return;
     }
 
     if (!validityPeriodTo) {
-      toast.error("validity period to is required");
+      toast.error('validity period to is required');
       return;
     }
 
     if (!deliveryScheduleTo) {
-      toast.error("delivery schedule to is required");
+      toast.error('delivery schedule to is required');
       return;
     }
 
     if (!deliveryScheduleFrom) {
-      toast.error("delivery schedule from is required");
+      toast.error('delivery schedule from is required');
       return;
     }
     /* if (files.length === 0) {
@@ -303,7 +294,7 @@ function BidAccessComp() {
     } */
 
     if (!cost) {
-      toast.error("cost price is required");
+      toast.error('cost price is required');
       return;
     }
 
@@ -322,14 +313,14 @@ function BidAccessComp() {
       const docArray = docType.map((data) => data.originalFile);
       const excelArray = excelType.map((data) => data.originalFile);
 
-      console.log("files sent", [...imageArray, ...pdfArray]);
+      console.log('files sent', [...imageArray, ...pdfArray]);
       //   files.map((data) => data.originalFile)
       // return
       setLoader(true);
       const response = await creactNewBidApi({
         cost: Number(cost),
-        currency: "NGN",
-        bid_files: [...imageArray, ...pdfArray, ...docArray,...excelArray],
+        currency: 'NGN',
+        bid_files: [...imageArray, ...pdfArray, ...docArray, ...excelArray],
         payment_term: Number(paymentTerms),
         subscriber_id: Number(formData.subscriberId),
         request_for_quotation_id: Number(formData.rfqId),
@@ -348,13 +339,13 @@ function BidAccessComp() {
       toast.success(message);
 
       setLoader(false);
-      router.push("/bid-submission-success");
+      router.push('/bid-submission-success');
     } catch (error: any) {
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
         error?.message ||
-        "Unknown error";
+        'Unknown error';
       console.log(error.response);
       toast.error(`${errorMessage}`);
 
@@ -366,7 +357,7 @@ function BidAccessComp() {
     return (
       <Modal
         isOpen={showModal}
-        title={""}
+        title={''}
         onClose={handleCloseModal}
         maxWidth="860px"
         hidden={true}
@@ -377,11 +368,11 @@ function BidAccessComp() {
           </div>
         )}
         <div className="flex flex-col items-center justify-center rounded-xl bg-white mx-auto">
-          <h2 className="text-2xl text-center text-black font-[inter] font-bold">
+          <h2 className="text-2xl text-center text-black  font-bold">
             Create a Bid
           </h2>
 
-          <p className="text-xl my-6 text-center text-gray-500 font-[inter]">
+          <p className="text-xl my-6 text-center text-gray-500 ">
             Please enter the unique ID sent to your email to start creating a
             bid.
           </p>
@@ -397,12 +388,12 @@ function BidAccessComp() {
               onClick={() => {
                 handleBidVerification();
               }}
-              className="text-white bg-blue-700 font-[inter] w-24 py-2 rounded-xl"
+              className="text-white bg-blue-700  w-24 py-2 rounded-xl"
             >
               Continue
             </button>
             {/* <button
-           className="bg-white text-blue-700 font-[inter] border border-blue-700 rounded-xl w-24 py-2"
+           className="bg-white text-blue-700  border border-blue-700 rounded-xl w-24 py-2"
         >Back</button> */}
           </div>
         </div>
@@ -430,7 +421,7 @@ function BidAccessComp() {
           />
         </div>
 
-        <p className="text-2xl text-center text-gray-600 font-[inter] font-bold">
+        <p className="text-2xl text-center text-gray-600  font-bold">
           Bid Submission Form
         </p>
       </div>
@@ -523,7 +514,7 @@ function BidAccessComp() {
           <span className="text-gray-900 text-[16px] bold">Cost:</span>
           <input
             readOnly
-            value={cost ? currencyFormatter(parseFloat(cost.toFixed(2)))  : ""}
+            value={cost ? currencyFormatter(parseFloat(cost.toFixed(2))) : ''}
             className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3  w-[300px]"
           />
         </div>
@@ -555,7 +546,7 @@ function BidAccessComp() {
           <span className="text-gray-900 text-[16px] bold">Subtotal:</span>
 
           <span className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3  w-[300px] min-h-10">
-            { subtotal && currencyFormatter(parseFloat(subtotal.toFixed(2))) }
+            {subtotal && currencyFormatter(parseFloat(subtotal.toFixed(2)))}
           </span>
         </div>
 
@@ -563,7 +554,7 @@ function BidAccessComp() {
           <span className="text-gray-900 text-[16px] bold">Balance:</span>
 
           <span className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3  w-[300px] min-h-10">
-            {balance && currencyFormatter(parseFloat(balance.toFixed(2))) }
+            {balance && currencyFormatter(parseFloat(balance.toFixed(2)))}
           </span>
         </div>
         <div className="flex flex-row items-center justify-between  mb-3">
@@ -618,14 +609,14 @@ function BidAccessComp() {
               className="hidden"
               onChange={(e) => {
                 let files = e.target.files;
-                console.log("selected file", files);
+                console.log('selected file', files);
 
                 if (files && files[0]) {
                   if (
                     !validImageTypes.includes(files[0].type as ValidImageType)
                   ) {
                     toast.error(
-                      "Please upload a pdf, doc file or a valid image file (JPEG or PNG)."
+                      'Please upload a pdf, doc file or a valid image file (JPEG or PNG).'
                     );
                     return;
                   }
@@ -641,25 +632,22 @@ function BidAccessComp() {
         <div className="flex flex-row items-start space-x-2 mb-3">
           {files.map((fileObj, index) => (
             <div className={`w-24`} key={index}>
-              <div  className={`relative w-24 h-24`}>
-              <Image src={fileObj.file} alt="Uploaded" layout="fill" />
-              <MdCancel
-                size={24}
-                onClick={() => {
-                  const filterImage = files.filter(
-                    (image) => image.index !== fileObj.index
-                  );
-                  setFiles([...filterImage]);
-                }}
-                color="red"
-                className="absolute right-2 top-2 "
-              />
+              <div className={`relative w-24 h-24`}>
+                <Image src={fileObj.file} alt="Uploaded" layout="fill" />
+                <MdCancel
+                  size={24}
+                  onClick={() => {
+                    const filterImage = files.filter(
+                      (image) => image.index !== fileObj.index
+                    );
+                    setFiles([...filterImage]);
+                  }}
+                  color="red"
+                  className="absolute right-2 top-2 "
+                />
+              </div>
+              <span className="text-sm  block text-wrap ">{fileObj.file}</span>
             </div>
-                  <span className="text-sm  block text-wrap ">
-                  {fileObj.file}
-                </span>
-            </div>
-            
           ))}
 
           {pdfType.map((pdf, index) => {
@@ -667,7 +655,7 @@ function BidAccessComp() {
             return (
               <div key={index} className={`w-24`}>
                 <div className={`relative w-24 h-24`}>
-                  <Image src={"/icons/pdf.jpeg"} alt="Uploaded" layout="fill" />
+                  <Image src={'/icons/pdf.jpeg'} alt="Uploaded" layout="fill" />
 
                   <MdCancel
                     size={24}
@@ -688,14 +676,14 @@ function BidAccessComp() {
               </div>
             );
           })}
-  {/* doctype starts */}
+          {/* doctype starts */}
           {docType.map((mydoc, index) => {
             // console.log("pdf created", pdf)
             return (
               <div key={index} className={`w-24`}>
                 <div className={`relative w-24 h-24`}>
                   <Image
-                    src={"/icons/wordDoc.jpeg"}
+                    src={'/icons/wordDoc.jpeg'}
                     alt="Uploaded"
                     layout="fill"
                   />
@@ -719,7 +707,7 @@ function BidAccessComp() {
               </div>
             );
           })}
-{/* doctype ends */}
+          {/* doctype ends */}
           {/* excel section */}
 
           {excelType.map((myexcel, index) => {
@@ -728,7 +716,7 @@ function BidAccessComp() {
               <div key={index} className={`w-24`}>
                 <div className={`relative w-24 h-24`}>
                   <Image
-                    src={"/icons/excelImage.jpeg"}
+                    src={'/icons/excelImage.jpeg'}
                     alt="Uploaded"
                     layout="fill"
                   />

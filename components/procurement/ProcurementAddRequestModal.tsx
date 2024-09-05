@@ -1,12 +1,12 @@
-import { RFQTypeDataArray } from "@/utils/data";
-import Image from "next/image";
-import React, { useCallback, useEffect, useState } from "react";
-import { MdClose } from "react-icons/md";
+import { RFQTypeDataArray } from '@/utils/data';
+import Image from 'next/image';
+import React, { useCallback, useEffect, useState } from 'react';
+import { MdClose } from 'react-icons/md';
 
-import "react-datepicker/dist/react-datepicker.css";
-import { FaPlus } from "react-icons/fa";
-import { FaRegFolderClosed } from "react-icons/fa6";
-import { useDispatch, useSelector } from "react-redux";
+import 'react-datepicker/dist/react-datepicker.css';
+import { FaPlus } from 'react-icons/fa';
+import { FaRegFolderClosed } from 'react-icons/fa6';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchAllDepartmentDataApi,
   fetchAllProjectDataApi,
@@ -14,19 +14,20 @@ import {
   fetchAllVendorsDataApi,
   getVendorByCategoryApi,
   updateRFQDataApi,
-} from "@/utils/apiServices/procurementApi";
-import { toast } from "react-toastify";
+} from '@/utils/apiServices/procurementApi';
+import { toast } from 'react-toastify';
 import {
   populateAllDepartments,
   populateAllProjects,
   populateAllVendors,
   populateAllVendorsCateroy,
-} from "@/provider/redux/procurementSlice";
-import { toggleLoading } from "@/provider/redux/modalSlice";
+} from '@/provider/redux/procurementSlice';
+import { toggleLoading } from '@/provider/redux/modalSlice';
 
-
-function ProcurementAddRequestModal({ handleClose }: {
-  handleClose: () => void
+function ProcurementAddRequestModal({
+  handleClose,
+}: {
+  handleClose: () => void;
 }) {
   const {
     title,
@@ -37,50 +38,51 @@ function ProcurementAddRequestModal({ handleClose }: {
     procurementId,
     rfqStatus,
     id,
-  
   } = useSelector((state: any) => state.procurement.draftProcurementState);
 
-  const [attachedImage, setAttachedImage] = useState("");
-
-  const [minDate, setMinDate] = useState("");
+  const [attachedImage, setAttachedImage] = useState('');
+  const dispatch = useDispatch();
+  const [minDate, setMinDate] = useState('');
   useEffect(() => {
     // Get today's date in the format 'YYYY-MM-DD'
     const today = new Date().toISOString().split('T')[0];
     setMinDate(today);
   }, []);
 
-  const handleFetVendorByCategory = useCallback(async (id: string) => {
-    try {
-      if(!id) return
-      dispatch(toggleLoading(true))
-      const response = await getVendorByCategoryApi(id)
-      const dataReceived = response.data.data
-     
-      const vendorsList = response.data.map((vendor: any) => {
-        return {
-          vendorName: vendor.vendor_name,
-          vendorId: vendor.id,
-        };
-      });
+  const handleFetVendorByCategory = useCallback(
+    async (id: string) => {
+      try {
+        if (!id) return;
+        dispatch(toggleLoading(true));
+        const response = await getVendorByCategoryApi(id);
+        const dataReceived = response.data.data;
 
-      dispatch(populateAllVendors(vendorsList));
-      setAllVendors(vendorsList);
-      dispatch(toggleLoading(false))
-    } catch (error: any) {
-      dispatch(toggleLoading(false));
-      console.error("Error:", error);
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.response?.data?.errors ||
-        error?.message ||
-        "Unknown error";
-      toast.error(`${errorMessage}`);
-    } finally { 
-      dispatch(toggleLoading(false))
-    }
-    
-  }, [])
-  
+        const vendorsList = response.data.map((vendor: any) => {
+          return {
+            vendorName: vendor.vendor_name,
+            vendorId: vendor.id,
+          };
+        });
+
+        dispatch(populateAllVendors(vendorsList));
+        setAllVendors(vendorsList);
+        dispatch(toggleLoading(false));
+      } catch (error: any) {
+        dispatch(toggleLoading(false));
+        console.error('Error:', error);
+        const errorMessage =
+          error?.response?.data?.message ||
+          error?.response?.data?.errors ||
+          error?.message ||
+          'Unknown error';
+        toast.error(`${errorMessage}`);
+      } finally {
+        dispatch(toggleLoading(false));
+      }
+    },
+    [dispatch]
+  );
+
   const {
     allCategory: allCateryFromRedux,
     allProjects: allProjectsFromRedux,
@@ -88,8 +90,6 @@ function ProcurementAddRequestModal({ handleClose }: {
     allDepartments: allDepartmentsFromRedux,
     allVendorsCategory: allVendorsCategoryFromRedux,
   } = useSelector((state: any) => state.procurement);
-
-  const dispatch = useDispatch();
 
   const [allProject, setAllProject] = useState<
     {
@@ -116,26 +116,28 @@ function ProcurementAddRequestModal({ handleClose }: {
     }[]
   >(allDepartmentsFromRedux);
 
-  const [selectedVendor, setSelectedVendor] = useState<{
-    name: string,
-    id: number
-  }[]>([]);
+  const [selectedVendor, setSelectedVendor] = useState<
+    {
+      name: string;
+      id: number;
+    }[]
+  >([]);
 
-  const [selectedProject, setSelectedProject] = useState("");
+  const [selectedProject, setSelectedProject] = useState('');
 
-  const [selectedClient, setSelectedClient] = useState("");
+  const [selectedClient, setSelectedClient] = useState('');
 
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState('');
 
-  const [selectedVendorCategory, setSelectedVendorCategory] = useState("");
+  const [selectedVendorCategory, setSelectedVendorCategory] = useState('');
 
-  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState('');
 
-  const [startDate, setStartDate] = useState("");
+  const [startDate, setStartDate] = useState('');
 
-  const [RFQType, setRFQType] = useState("");
+  const [RFQType, setRFQType] = useState('');
 
-  const [RFQHeading, setRFQHeading] = useState("");
+  const [RFQHeading, setRFQHeading] = useState('');
 
   const [amount, setAmount] = useState<number | null>(null);
 
@@ -218,16 +220,23 @@ function ProcurementAddRequestModal({ handleClose }: {
       // You can similarly setStoreItems if needed
     } catch (error: any) {
       dispatch(toggleLoading(false));
-      console.error("Error:", error);
+      console.error('Error:', error);
 
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
         error?.message ||
-        "Unknown error";
+        'Unknown error';
       toast.error(`${errorMessage}`);
     }
-  }, []);
+  }, [
+    allCateryFromRedux.length,
+    allDepartmentsFromRedux.length,
+    allProjectsFromRedux.length,
+    allVendorsCategoryFromRedux.length,
+    allVendorsFromRedux.length,
+    dispatch,
+  ]);
 
   useEffect(() => {
     fetchProcurementsDataForDraft();
@@ -236,32 +245,31 @@ function ProcurementAddRequestModal({ handleClose }: {
   const handleUpdateRfq = async () => {
     try {
       if (!RFQType) {
-        toast.error("procurement type is required");
+        toast.error('procurement type is required');
         return;
       }
       if (allVendors.length === 0) {
-        toast.error("vendor is required");
+        toast.error('vendor is required');
         return;
       }
       if (allVendorsCategory.length === 0) {
-        toast.error("vendor caegory is required");
+        toast.error('vendor caegory is required');
         return;
       }
       if (!amount) {
-        toast.error("budget is required");
+        toast.error('budget is required');
         return;
       }
 
       if (amount < 0 || amount == 0) {
-        toast.error("budget can not be negative value");
+        toast.error('budget can not be negative value');
         return;
       }
 
       if (!startDate) {
-        toast.error("bidding deadline  is required");
+        toast.error('bidding deadline  is required');
         return;
       }
-     
 
       let rfqUpdeteData: any;
       const requiredFields = {
@@ -271,16 +279,16 @@ function ProcurementAddRequestModal({ handleClose }: {
         bidding_deadline: startDate,
         budget: amount,
         procurement_type: RFQType,
-        currency: "NGN",
+        currency: 'NGN',
       };
 
-      if (RFQType === "OEM Specific") {
+      if (RFQType === 'OEM Specific') {
         if (!selectedClient) {
-          toast.error("Marhant is required");
+          toast.error('Marhant is required');
           return;
         }
         if (!selectedVendorCategory) {
-          toast.error("Vendor category is required");
+          toast.error('Vendor category is required');
           return;
         }
         rfqUpdeteData = {
@@ -288,18 +296,18 @@ function ProcurementAddRequestModal({ handleClose }: {
           rfqUpdateData: {
             ...requiredFields,
             client_project_department: selectedClient,
-            vendors: [...selectedVendor.map(item => item.id)],
+            vendors: [...selectedVendor.map((item) => item.id)],
           },
         };
       }
 
-      if (RFQType === "3rd Party Vendors") {
+      if (RFQType === '3rd Party Vendors') {
         if (!selectedProject) {
-          toast.error("project is required");
+          toast.error('project is required');
           return;
         }
         if (!selectedCategory) {
-          toast.error("vendor category is required");
+          toast.error('vendor category is required');
           return;
         }
 
@@ -313,24 +321,24 @@ function ProcurementAddRequestModal({ handleClose }: {
         };
       }
 
-      if (RFQType === "Internal Procurement") {
+      if (RFQType === 'Internal Procurement') {
         if (!selectedCategory) {
-          toast.error("vendor category is required");
+          toast.error('vendor category is required');
           return;
         }
         if (!selectedDepartment) {
-          toast.error("department is required");
+          toast.error('department is required');
         }
 
         if (!(selectedVendor.length > 0)) {
-          toast.error("Vendor is required");
+          toast.error('Vendor is required');
         }
 
         rfqUpdeteData = {
           id,
           rfqUpdateData: {
             ...requiredFields,
-            vendors: selectedVendor.map(item => item.id),
+            vendors: selectedVendor.map((item) => item.id),
             client_project_department: selectedDepartment,
             vendor_category_id: Number(selectedCategory),
           },
@@ -338,29 +346,28 @@ function ProcurementAddRequestModal({ handleClose }: {
       }
 
       dispatch(toggleLoading(true));
-  
 
       const response = await updateRFQDataApi(rfqUpdeteData);
 
       dispatch(toggleLoading(false));
-      toast.success("Procurement made successfully");
-      handleClose()
+      toast.success('Procurement made successfully');
+      handleClose();
     } catch (error: any) {
       dispatch(toggleLoading(false));
-      console.error("Error:", error);
+      console.error('Error:', error);
 
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
         error?.message ||
-        "Unknown error";
+        'Unknown error';
       toast.error(`${errorMessage}`);
     } finally {
       dispatch(toggleLoading(false));
     }
   };
 
-console.log("selected vendors list", selectedVendor)
+  console.log('selected vendors list', selectedVendor);
 
   if (!isUIReady) {
     return (
@@ -372,28 +379,20 @@ console.log("selected vendors list", selectedVendor)
 
   return (
     <div className="flex flex-row py-8 space-x-12 w-full ">
-      {attachedImage &&
+      {attachedImage && (
         <div className="fixed top-0 bg-slate-700 bottom-0 right-0 left-0 bg-opacity-25 flex justify-center items-center">
           <div className="bg-white w-3/5 h-3/5 flex justify-center items-center rounded-lg relative">
-        
             <div
-            onClick={() => setAttachedImage("")}
-              className="absolute right-8 top-8 cursor-pointer">
-              <MdClose
-              size={24}
-              />
-         </div>
+              onClick={() => setAttachedImage('')}
+              className="absolute right-8 top-8 cursor-pointer"
+            >
+              <MdClose size={24} />
+            </div>
 
-          <Image
-            alt="attach"
-            src={attachedImage}
-            width={200}
-            height={200}
-          />
-         </div>
-      
-      </div>
-      }
+            <Image alt="attach" src={attachedImage} width={200} height={200} />
+          </div>
+        </div>
+      )}
       <div className="">
         <div>
           <p className="text-black text-lg font-normal font-['Inter']">
@@ -421,7 +420,7 @@ console.log("selected vendors list", selectedVendor)
             })}
           </select>
 
-          {RFQType == "OEM Specific" && (
+          {RFQType == 'OEM Specific' && (
             <div>
               <div className="mt-2">
                 <p className="text-black text-lg font-normal font-['Inter']">
@@ -452,9 +451,9 @@ console.log("selected vendors list", selectedVendor)
                 <select
                   name=""
                   id=""
-                  onChange={(e) => { 
-                    if (!e.target.value) return
-                    setSelectedVendorCategory(e.target.value)
+                  onChange={(e) => {
+                    if (!e.target.value) return;
+                    setSelectedVendorCategory(e.target.value);
                   }}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
@@ -477,7 +476,7 @@ console.log("selected vendors list", selectedVendor)
             </div>
           )}
 
-          {RFQType == "3rd Party Vendors" && (
+          {RFQType == '3rd Party Vendors' && (
             <div>
               <div className="mt-2">
                 <p className="text-black text-lg font-normal font-['Inter']">
@@ -510,13 +509,12 @@ console.log("selected vendors list", selectedVendor)
                 <p className="text-black text-lg font-normal font-['Inter']">
                   Choose Vendor Category
                 </p>
-              
+
                 <select
                   name=""
                   id=""
-                  onChange={(e) => { 
-                   
-                    setSelectedCategory(e.target.value)
+                  onChange={(e) => {
+                    setSelectedCategory(e.target.value);
                   }}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
@@ -539,7 +537,7 @@ console.log("selected vendors list", selectedVendor)
             </div>
           )}
 
-          {RFQType == "Internal Procurement" && (
+          {RFQType == 'Internal Procurement' && (
             <div>
               <div className="mt-2">
                 <p className="text-black text-lg font-normal font-['Inter']">
@@ -572,15 +570,15 @@ console.log("selected vendors list", selectedVendor)
                 <p className="text-black text-lg font-normal font-['Inter']">
                   Choose Vendor Category
                 </p>
-             {/*    handleFetVendorByCategory */}
+                {/*    handleFetVendorByCategory */}
                 <select
                   name=""
                   id=""
-                  onChange={(e) => { 
-                   if(!e.target.value)return
-                    handleFetVendorByCategory(e.target.value)
-                    setSelectedCategory(e.target.value)
-                    setSelectedVendor([])
+                  onChange={(e) => {
+                    if (!e.target.value) return;
+                    handleFetVendorByCategory(e.target.value);
+                    setSelectedCategory(e.target.value);
+                    setSelectedVendor([]);
                   }}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
@@ -608,33 +606,40 @@ console.log("selected vendors list", selectedVendor)
                 <select
                   name=""
                   id=""
-                  onChange={(e) => { 
-                    console.log()
-                    if(!e.target.value)return
+                  onChange={(e) => {
+                    console.log();
+                    if (!e.target.value) return;
                     /* const data = JSON.parse(e.target.value) as {
                       vendorName: string, 
                     vendorId: number
                     } */
-                    const id = Number(e.target.value)
-                     /* search if vendor already exist on the list of selected vendors */
-                    const findId = selectedVendor.find(item => item.id === id)
-                    if (findId) return
-                  
+                    const id = Number(e.target.value);
+                    /* search if vendor already exist on the list of selected vendors */
+                    const findId = selectedVendor.find(
+                      (item) => item.id === id
+                    );
+                    if (findId) return;
 
-                    const foundVendor = allVendors.find(vendor => vendor.vendorId === id) as {
-                      vendorName: string,
-                      vendorId: number
-                    }
-                
-                    const { vendorName, vendorId } = foundVendor
-                    
-                    
-                    setSelectedVendor([...selectedVendor, {name: vendorName, id:vendorId}])
-                   
+                    const foundVendor = allVendors.find(
+                      (vendor) => vendor.vendorId === id
+                    ) as {
+                      vendorName: string;
+                      vendorId: number;
+                    };
+
+                    const { vendorName, vendorId } = foundVendor;
+
+                    setSelectedVendor([
+                      ...selectedVendor,
+                      { name: vendorName, id: vendorId },
+                    ]);
                   }}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
-                  <option value={""} className=" text-black text-sm font-normal font-['Inter']">
+                  <option
+                    value={''}
+                    className=" text-black text-sm font-normal font-['Inter']"
+                  >
                     Select vendor
                   </option>
                   {allVendors.map((item, index) => {
@@ -649,36 +654,33 @@ console.log("selected vendors list", selectedVendor)
                     );
                   })}
                 </select>
-                 
-                
-                { 
-                   selectedVendor.length > 0 && <p className="text-black text-lg font-normal font-['Inter'] mt-4 mb-2">
-                   Vendor list
-               </p>
-                }
-                <div className="flex flex-col space-y-1">
-                { 
-                 
-                    selectedVendor.map((vendor, index) =>
-                      <div key={index}  className="flex flex-row items-center justify-between w-[300px]">
-                         <span className=" text-black text-sm font-normal font-['Inter']">
-                         {vendor.name}
-                        </span>
-                        <MdClose
-                     color="red"
-                     onClick={() => { 
-                       const filteredData = selectedVendor.filter(item => item.id !== vendor.id)
-                       setSelectedVendor(filteredData)
-                     }}
-                     
-                   />
-                     </div>
-                    )
-               }
 
+                {selectedVendor.length > 0 && (
+                  <p className="text-black text-lg font-normal font-['Inter'] mt-4 mb-2">
+                    Vendor list
+                  </p>
+                )}
+                <div className="flex flex-col space-y-1">
+                  {selectedVendor.map((vendor, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-row items-center justify-between w-[300px]"
+                    >
+                      <span className=" text-black text-sm font-normal font-['Inter']">
+                        {vendor.name}
+                      </span>
+                      <MdClose
+                        color="red"
+                        onClick={() => {
+                          const filteredData = selectedVendor.filter(
+                            (item) => item.id !== vendor.id
+                          );
+                          setSelectedVendor(filteredData);
+                        }}
+                      />
+                    </div>
+                  ))}
                 </div>
-                
-          
               </div>
             </div>
           )}
@@ -696,7 +698,7 @@ console.log("selected vendors list", selectedVendor)
                   className="w-8 h-6 rounded"
                   width={54}
                   height={54}
-                  src={"/icons/flag.jpeg"}
+                  src={'/icons/flag.jpeg'}
                 />
                 <span>NGN</span>
               </div>
@@ -721,11 +723,12 @@ console.log("selected vendors list", selectedVendor)
             </p>
             <div></div>
             <input
-            min={minDate}
-              type="date" onChange={(e) => { 
-              
-           setStartDate(e.target.value)
-            }} />
+              min={minDate}
+              type="date"
+              onChange={(e) => {
+                setStartDate(e.target.value);
+              }}
+            />
           </div>
           {/* date end */}
         </div>
@@ -741,7 +744,7 @@ console.log("selected vendors list", selectedVendor)
             readOnly={title ? true : false}
             name=""
             id=""
-            value={title ? title : ""}
+            value={title ? title : ''}
             onChange={(e) => setRFQHeading(e.target.value)}
             placeholder="Input RFQ title"
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 flex-1"
@@ -749,7 +752,7 @@ console.log("selected vendors list", selectedVendor)
           <div className=" bg-[#d9d9d9] rounded-[10px] border justify-center items-center flex flex-row space-x-1 cursor-pointer p-2">
             <FaPlus />
             <button
-              disabled={procurementType == "draft" ? true : false}
+              disabled={procurementType == 'draft' ? true : false}
               className="text-black text-xl font-normal font-['Inter']"
             >
               Add More
@@ -798,30 +801,30 @@ console.log("selected vendors list", selectedVendor)
                     </td>
                     <td className="flex flex-row items-center justify-center space-x-2">
                       <button
-                        disabled={procurementType == "draft" ? true : false}
+                        disabled={procurementType == 'draft' ? true : false}
                         className={` text-white text-sm  ${
-                          procurementType == "draft"
-                            ? "cursor-not-allowed"
-                            : "cursor-pointer"
+                          procurementType == 'draft'
+                            ? 'cursor-not-allowed'
+                            : 'cursor-pointer'
                         }`}
                       >
                         <Image
-                          src={"/icons/upload.png"}
+                          src={'/icons/upload.png'}
                           alt="upload"
                           width={14}
                           height={14}
                         />
                       </button>
                       <button
-                        disabled={procurementType == "draft" ? true : false}
+                        disabled={procurementType == 'draft' ? true : false}
                         className={`  ${
-                          procurementType == "draft"
-                            ? "cursor-not-allowed"
-                            : "cursor-pointer"
+                          procurementType == 'draft'
+                            ? 'cursor-not-allowed'
+                            : 'cursor-pointer'
                         }`}
                       >
                         <Image
-                          src={"/icons/delete.png"}
+                          src={'/icons/delete.png'}
                           alt="delete"
                           width={14}
                           height={14}
@@ -833,14 +836,14 @@ console.log("selected vendors list", selectedVendor)
               </tbody>
             </table>
             <div className="flex flex-row justify-end mt-8">
-              { 
-                rfqStatus !== "Expired" &&  <button
-                onClick={() => handleUpdateRfq()}
-                className="rounded-xl bg-blue-900 text-white py-2 px-4"
-              >
-                Submit
-              </button>
-              }
+              {rfqStatus !== 'Expired' && (
+                <button
+                  onClick={() => handleUpdateRfq()}
+                  className="rounded-xl bg-blue-900 text-white py-2 px-4"
+                >
+                  Submit
+                </button>
+              )}
             </div>
           </div>
         ) : (

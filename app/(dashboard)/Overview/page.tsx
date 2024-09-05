@@ -650,7 +650,7 @@ function Page() {
           viewQA={viewQA}
           COLUMNS={[
             {
-              Header: 'S/N',s
+              Header: 'S/N',
               accessor: 'S/N',
             },
             {

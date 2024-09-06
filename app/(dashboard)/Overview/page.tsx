@@ -32,6 +32,7 @@ import { toggleLoading } from '@/provider/redux/modalSlice';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import ApprovePurchaseOrder from '@/components/procurement/ApprovePurchaseOrder';
+import QaTable from '@/components/procurement/QaTable';
 
 function Page() {
   const [openModal, setOpenModal] = useState(false);
@@ -120,6 +121,7 @@ function Page() {
   const handlePOApproveClose = () => {
     setOpenPOApproveModal(false);
   };
+
   const handlePOClose = () => {
     setOpenPOModal(false);
   };
@@ -132,6 +134,10 @@ function Page() {
     setOpenPOModal(false);
   };
 
+  const createPO = (id: number) => {
+    setSelectedPO(id);
+    setOpenPOModal(true);
+  };
   const viewPO = (id: number) => {
     setSelectedPO(id);
     setOpenPOApproveModal(true);
@@ -596,6 +602,7 @@ function Page() {
         <PurchaseOrderTable
           fetchedData={allPurhaseOrderData}
           handleOpenModal={handleOpenModal}
+          createPO={createPO}
           viewPO={viewPO}
           COLUMNS={[
             {
@@ -784,6 +791,7 @@ function Page() {
         <CreatePurchaseOrder
           fetchPOData={fetchProcurementsData}
           handlePOClose={handlePOClose}
+          poId={selectedPO}
         />
       </Modal>
       <Modal
@@ -804,7 +812,7 @@ function Page() {
         onClose={handleQAApproveClose}
         maxWidth="60%"
       >
-        <div>inprogress</div>
+        <QaTable />
       </Modal>
 
       {/* modal section ends */}

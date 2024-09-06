@@ -7,58 +7,58 @@ import { toast } from 'react-toastify';
 interface CreatePurchaseOrderProps {
   handlePOClose: () => void;
   fetchPOData: () => void;
+  poId: number;
 }
 
 const CreatePurchaseOrder: React.FC<CreatePurchaseOrderProps> = ({
   fetchPOData,
   handlePOClose,
+  poId,
 }) => {
   const dispatch = useDispatch();
-  const [bidIDS, setBidIDS] = useState<any[]>([]);
   const user = useSelector((state: any) => state.user.user);
 
-  const fetchBids = useCallback(async () => {
-    dispatch(toggleLoading(true));
-    try {
-      const response = await axios.get(
-        `${process.env.BASEURL}/procurement/bid?awarded=true`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
-      setBidIDS(response?.data?.data?.data);
-    } catch (error: any) {
-      console.error('Error:', error);
+  // const fetchBids = useCallback(async () => {
+  //   dispatch(toggleLoading(true));
+  //   try {
+  //     const response = await axios.get(
+  //       `${process.env.BASEURL}/procurement/bid?awarded=true`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${user?.token}`,
+  //         },
+  //       }
+  //     );
+  //     setBidIDS(response?.data?.data?.data);
+  //   } catch (error: any) {
+  //     console.error('Error:', error);
 
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.response?.data?.errors ||
-        error?.message ||
-        'Unknown error';
+  //     const errorMessage =
+  //       error?.response?.data?.message ||
+  //       error?.response?.data?.errors ||
+  //       error?.message ||
+  //       'Unknown error';
 
-      toast.error(`${errorMessage}`);
-    } finally {
-      dispatch(toggleLoading(false));
-    }
-  }, [dispatch, user]);
+  //     toast.error(`${errorMessage}`);
+  //   } finally {
+  //     dispatch(toggleLoading(false));
+  //   }
+  // }, [dispatch, user]);
 
-  useEffect(() => {
-    fetchBids();
-  }, [fetchBids]);
+  // useEffect(() => {
+  //   fetchBids();
+  // }, [fetchBids]);
 
   const [formData, setFormData] = useState({
     subscriber_id: user?.subscriber_id,
-    bid_id: '',
     delivery_address: '',
   });
 
   const createPurchaseOrder = async () => {
     dispatch(toggleLoading(true));
     try {
-      const response = await axios.post(
-        `${process.env.BASEURL}/procurement/purchase-order`,
+      const response = await axios.put(
+        `${process.env.BASEURL}/procurement/purchase-order/${poId}`,
         formData,
         {
           headers: {
@@ -97,18 +97,16 @@ const CreatePurchaseOrder: React.FC<CreatePurchaseOrderProps> = ({
       <div className="w-1/2 mx-auto">
         <div className="text-center my-4">
           <input
-            list="bid-id-list"
             placeholder="Start typing Bid ID..."
             className="border rounded p-2 w-full"
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, bid_id: e.target.value }))
-            }
+            value={poId}
+            readOnly
           />
-          <datalist id="bid-id-list">
+          {/* <datalist id="bid-id-list">
             {bidIDS.map((bid: any) => (
               <option key={bid.id} value={bid.id} />
             ))}
-          </datalist>
+          </datalist> */}
         </div>
         <div className="mb-4">
           <input
@@ -132,7 +130,7 @@ const CreatePurchaseOrder: React.FC<CreatePurchaseOrderProps> = ({
         <div className="flex gap-3">
           <button
             className="bg-blue-600 text-white px-4 py-2 rounded-md"
-            disabled={!formData.delivery_address || !formData.bid_id}
+            disabled={!formData.delivery_address || !poId}
             onClick={createPurchaseOrder}
           >
             Create

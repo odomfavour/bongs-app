@@ -20,11 +20,13 @@ function PurchaseOrderTable({
   fetchedData,
   handleOpenModal,
   viewPO,
+  createPO,
 }: {
   MOCK_DATA: any[];
   COLUMNS: any[];
   fetchedData: Barge[];
   viewPO: (id: number) => void;
+  createPO: (id: number) => void;
   handleOpenModal: () => void;
 }) {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
@@ -133,7 +135,7 @@ function PurchaseOrderTable({
           ) : (
             page.map((row, index) => {
               prepareRow(row);
-              const { id } = row.original;
+              const { id, delivery_address } = row.original;
               return (
                 <tr {...row.getRowProps()} key={index}>
                   {row.cells.map((cell, index) => {
@@ -148,14 +150,29 @@ function PurchaseOrderTable({
                     );
                   })}
                   <td className="flex justify-center items-center">
-                    <div className="flex-row flex items-center w-max justify-center rounded-xl px-2 py-1 bg-[#a16207] cursor-pointer ">
-                      <span
-                        onClick={() => viewPO(id)}
-                        className="text-center text-sm text-white"
+                    {delivery_address ? (
+                      <div
+                        className={`flex-row flex items-center w-max justify-center rounded-xl px-2 py-1 bg-[#a16207] cursor-pointer`}
                       >
-                        View More
-                      </span>
-                    </div>
+                        <span
+                          onClick={() => viewPO(id)}
+                          className="text-center text-sm text-white"
+                        >
+                          View More
+                        </span>
+                      </div>
+                    ) : (
+                      <div
+                        className={`flex-row flex items-center w-max justify-center rounded-xl px-2 py-1 bg-blue-400 cursor-pointer`}
+                      >
+                        <span
+                          onClick={() => createPO(id)}
+                          className="text-center text-sm text-white"
+                        >
+                          Create
+                        </span>
+                      </div>
+                    )}
                   </td>
                 </tr>
               );

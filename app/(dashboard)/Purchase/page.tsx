@@ -1,38 +1,31 @@
-"use client";
+'use client';
 
-import PurchaseOrderTable from "@/components/AppComp/PurchaseOrderTable";
-import ProcurementCharts from "@/components/dashboard/charts/ProcurementCharts";
-import Modal from "@/components/dashboard/Modal";
-import ProcurementAddRequestModal from "@/components/procurement/ProcurementAddRequestModal";
-import {
-  fetchAllPurchaseOrderDataApi,
-} from "@/utils/apiServices/procurementApi";
-import { currencyFormatter } from "@/utils/usefulFunc";
-import { useRouter } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import PurchaseOrderTable from '@/components/AppComp/PurchaseOrderTable';
+import ProcurementCharts from '@/components/dashboard/charts/ProcurementCharts';
+import Modal from '@/components/dashboard/Modal';
+import ProcurementAddRequestModal from '@/components/procurement/ProcurementAddRequestModal';
+import { fetchAllPurchaseOrderDataApi } from '@/utils/apiServices/procurementApi';
+import { currencyFormatter } from '@/utils/usefulFunc';
+import { useRouter } from 'next/navigation';
+import React, { useCallback, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
+import ApproveMemo from '@/components/procurement/ApproveMemo';
+import CreatePurchaseOrder from '@/components/procurement/CreatePurchaseOrder';
 
-import ApproveMemo from "@/components/procurement/ApproveMemo";
-import CreatePurchaseOrder from "@/components/procurement/CreatePurchaseOrder";
-
-import { useDispatch, useSelector } from "react-redux";
-import ApprovePurchaseOrder from "@/components/procurement/ApprovePurchaseOrder";
+import { useDispatch, useSelector } from 'react-redux';
+import ApprovePurchaseOrder from '@/components/procurement/ApprovePurchaseOrder';
 
 function Page() {
   const [openModal, setOpenModal] = useState(false);
 
   const route = useRouter();
 
-
-
   const [isUIReady, setIsUIReady] = useState(false);
 
   const [showBidForRfqModal, setShowBidForRfqModal] = useState(false);
 
-
-
-  const [rfqForGiveneBid, setRfqForGivenBid] = useState("");
+  const [rfqForGiveneBid, setRfqForGivenBid] = useState('');
 
   const [rfqStatus, setRfqStatus] = useState<{
     expired: number;
@@ -51,12 +44,9 @@ function Page() {
   const [allMemoData, setAllMemoData] = useState<any[]>([]);
   const [allPurhaseOrderData, setAllPurhaseOrderData] = useState<any[]>([]);
 
-
   const [allRfq, setAllRfq] = useState<any[]>([]);
 
-  const [year, setYear] = useState("");
-
-
+  const [year, setYear] = useState('');
 
   // type of procurement daraf items
   const [openMemoModal, setOpenMemoModal] = useState(false);
@@ -93,41 +83,36 @@ function Page() {
     setSelectedPO(id);
     setOpenPOApproveModal(true);
   };
+  const createPO = (id: number) => {
+    setSelectedPO(id);
+    setOpenPOModal(true);
+  };
 
   //memoclose
-
-
 
   const fetchProcurementsData = useCallback(async () => {
     setIsUIReady(false);
     try {
-      const [
-       
-        allPurchaseOrder,
-     
-      ] = await Promise.all([
-
+      const [allPurchaseOrder] = await Promise.all([
         fetchAllPurchaseOrderDataApi(),
-   
       ]);
-     
 
       setAllPurhaseOrderData(allPurchaseOrder.data.data);
       setIsUIReady(true);
 
       // You can similarly setStoreItems if needed
     } catch (error: any) {
-      console.error("Error:", error);
+      console.error('Error:', error);
 
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
         error?.message ||
-        "Unknown error";
+        'Unknown error';
       toast.error(`${errorMessage}`);
     } finally {
     }
-  }, [year]);
+  }, []);
 
   useEffect(() => {
     fetchProcurementsData();
@@ -140,14 +125,10 @@ function Page() {
   const user = useSelector((state: any) => state.user.user);
   const dispatch = useDispatch();
 
-
-
-
-
   const itemListPurchaseOrders = allPurhaseOrderData.map((item, i) => {
     return {
       ...item,
-      "S/N": i + 1,
+      'S/N': i + 1,
       poId: `PO ${item.id}`,
       title: item.request_for_quotations.title,
       type: item.request_for_quotations.procurement_type,
@@ -160,9 +141,6 @@ function Page() {
     };
   });
 
-
-
-
   if (!isUIReady) {
     return (
       <div className="h-screen flex  justify-center items-center">
@@ -173,7 +151,6 @@ function Page() {
 
   return (
     <div className=" bg-[#f8f8f8]">
-    
       {/* search field */}
       <div className="flex flex-row items-center justify-between py-2">
         <span className="text-black text-bold text-[32px] font-medium font-['Inter']">
@@ -190,58 +167,56 @@ function Page() {
         </div>
       </div>
 
-     
-      
-
       <PurchaseOrderTable
-          fetchedData={allPurhaseOrderData}
-          handleOpenModal={handleOpenModal}
-          viewPO={viewPO}
-          COLUMNS={[
-            {
-              Header: "S/N",
-              accessor: "S/N",
-            },
-            {
-              Header: "PO ID",
-              accessor: "poId",
-            },
-            {
-              Header: "Title",
-              accessor: "title",
-            },
-            {
-              Header: "Type",
-              accessor: "type",
-            },
-            {
-              Header: "Vendor",
-              accessor: "vendor",
-            },
-            {
-              Header: "Cost",
-              accessor: "cost",
-            },
-            {
-              Header: "Signatory",
-              accessor: "signatory",
-            },
-            {
-              Header: "Timeline",
-              accessor: "timeline",
-            },
-            {
-              Header: "Status",
-              accessor: "status",
-            },
+        fetchedData={allPurhaseOrderData}
+        handleOpenModal={handleOpenModal}
+        createPO={createPO}
+        viewPO={viewPO}
+        COLUMNS={[
+          {
+            Header: 'S/N',
+            accessor: 'S/N',
+          },
+          {
+            Header: 'PO ID',
+            accessor: 'poId',
+          },
+          {
+            Header: 'Title',
+            accessor: 'title',
+          },
+          {
+            Header: 'Type',
+            accessor: 'type',
+          },
+          {
+            Header: 'Vendor',
+            accessor: 'vendor',
+          },
+          {
+            Header: 'Cost',
+            accessor: 'cost',
+          },
+          {
+            Header: 'Signatory',
+            accessor: 'signatory',
+          },
+          {
+            Header: 'Timeline',
+            accessor: 'timeline',
+          },
+          {
+            Header: 'Status',
+            accessor: 'status',
+          },
 
-            {
-              Header: "Date",
-              accessor: "date",
-            },
-          ]}
-          MOCK_DATA={itemListPurchaseOrders}
-        />
+          {
+            Header: 'Date',
+            accessor: 'date',
+          },
+        ]}
+        MOCK_DATA={itemListPurchaseOrders}
+      />
 
       <Modal
         title=""
@@ -252,6 +227,7 @@ function Page() {
         <CreatePurchaseOrder
           fetchPOData={fetchProcurementsData}
           handlePOClose={handlePOClose}
+          poId={selectedPO}
         />
       </Modal>
       <Modal

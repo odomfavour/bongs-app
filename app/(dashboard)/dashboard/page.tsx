@@ -1,35 +1,35 @@
-"use client";
-import useSWR from "swr";
-import React, { useCallback, useEffect, useState } from "react";
-import Areachart from "@/components/dashboard/charts/Areachart";
-import Barchart from "@/components/dashboard/charts/Barchart";
-import LineAndbarchart from "@/components/dashboard/charts/LineAndBarchart";
-import DashboardCard from "@/components/dashboard/DashboardCard";
-import { fetchDashboardDataApi } from "@/utils/apiServices/dashboard";
-import { toast } from "react-toastify";
+'use client';
+import useSWR from 'swr';
+import React, { useCallback, useEffect, useState } from 'react';
+import Areachart from '@/components/dashboard/charts/Areachart';
+import Barchart from '@/components/dashboard/charts/Barchart';
+import LineAndbarchart from '@/components/dashboard/charts/LineAndBarchart';
+import DashboardCard from '@/components/dashboard/DashboardCard';
+import { fetchDashboardDataApi } from '@/utils/apiServices/dashboard';
+import { toast } from 'react-toastify';
 import {
   categoryCountType,
   consumableCountType,
   DashboardCardType,
   signMostUsedItemProp,
   sparePartCountType,
-} from "@/utils/types";
-import TopTenInnventories from "@/components/dashboard/charts/TopTenInnventories";
-import Image from "next/image";
-import { months, years } from "@/utils/data";
-import InventoryRequisitionAnalysis from "@/components/dashboard/charts/InventoryRequisitionAnalysis";
-import { useSelector } from "react-redux";
+} from '@/utils/types';
+import TopTenInnventories from '@/components/dashboard/charts/TopTenInnventories';
+import Image from 'next/image';
+import { months, years } from '@/utils/data';
+import InventoryRequisitionAnalysis from '@/components/dashboard/charts/InventoryRequisitionAnalysis';
+import { useSelector } from 'react-redux';
 
-import { useRouter } from "next/navigation";
-import MaterialRequisitionAnalysisChart from "@/components/dashboard/charts/MetarialRequisitionAnalysisChart";
-import { useStateManager } from "react-select";
+import { useRouter } from 'next/navigation';
+import MaterialRequisitionAnalysisChart from '@/components/dashboard/charts/MetarialRequisitionAnalysisChart';
+import { useStateManager } from 'react-select';
 
 const Page = () => {
   const [dashboardData, setDashboardData] = useState<DashboardCardType[] | []>(
     []
   );
 
-  const [itemSelected, setItemSelected] = useState("all");
+  const [itemSelected, setItemSelected] = useState('all');
   const [requisitionApprovedByMonth, setRequisitionApprovedByMonth] = useState<
     string[] | []
   >([]);
@@ -57,8 +57,8 @@ const Page = () => {
     signMostUsedItemProp[] | []
   >([]);
 
-  const [year, setYear] = useState("");
-  const [month, setMonth] = useState("");
+  const [year, setYear] = useState('');
+  const [month, setMonth] = useState('');
 
   const [appMounted, setAppMounted] = useState(false);
 
@@ -81,15 +81,12 @@ const Page = () => {
   //   }
   // }, [user?.subscriber_id, year, month]);
 
-
-
-
   const {
     data: swrResponse,
     error,
     isLoading,
   } = useSWR(
-    ["inventory-data-fetch", year, month],
+    ['inventory-data-fetch', year, month],
     async () => {
       const response = await fetchDashboardDataApi({ year, month });
       return response;
@@ -103,41 +100,32 @@ const Page = () => {
     }
   );
 
- 
-
   useEffect(() => {
     if (error) {
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
         error?.message ||
-        "Unknown error";
-      toast.error(`${errorMessage}`);
+        'Unknown error';
+      // toast.error(`${errorMessage}`);
     }
 
     if (swrResponse?.status) {
-
-     
       const { data, message } = swrResponse;
-      console.log("dashboard displayed received", data);
 
-      let displayedData
-      if (itemSelected === "all") { 
-        displayedData = data.all
-        console.log("dashboard displayed data all", displayedData);
+      let displayedData;
+      if (itemSelected === 'all') {
+        displayedData = data.all;
       }
 
-      if (itemSelected === "project") { 
-        displayedData = data.project
-        console.log("dashboard displayed data project", displayedData);
+      if (itemSelected === 'project') {
+        displayedData = data.project;
+        console.log('dashboard displayed data project', displayedData);
       }
 
-      if (itemSelected === "miv") { 
-        displayedData = data.miv
-        console.log("dashboard displayed data miv", displayedData);
+      if (itemSelected === 'miv') {
+        displayedData = data.miv;
       }
-
-     
 
       // toast.success(message);
       const { total_requisitions, total_approved_requisitions } =
@@ -155,7 +143,6 @@ const Page = () => {
         spare_part_counts,
         category_counts,
       } = displayedData.inventory_data;
-    
 
       const { most_used_inventory } = displayedData.most_used_inventory_data;
       setmostUsedInvory(displayedData.most_used_inventory_data);
@@ -178,7 +165,7 @@ const Page = () => {
 
       setMaterialRequisitionAnalysisData({
         totalMaterialReleased: total_materials,
-        totalRequisitionReceived:total_items_received,
+        totalRequisitionReceived: total_items_received,
         totalRequisitionMade: total_requisitions,
       });
       setDashboardData([
@@ -215,7 +202,7 @@ const Page = () => {
   return (
     <div
       style={{
-        backgroundColor: "rgb(244,245,246)",
+        backgroundColor: 'rgb(244,245,246)',
       }}
       className="p-2"
     >
@@ -225,41 +212,35 @@ const Page = () => {
         <div className="flex flex-row items-center space-x-2">
           <div
             onClick={() => {
-              setItemSelected("all");
+              setItemSelected('all');
             }}
             className={`px-4 py-2 rounded-lg cursor-pointer flex items-center justify-center ${
-              itemSelected === "all" ? "bg-gray-300" : ""
+              itemSelected === 'all' ? 'bg-gray-300' : ''
             }`}
           >
-            <p className="text-xl text-gray-600 font-[inter] font-light ">
-              All
-            </p>
+            <p className="text-xl text-gray-600  font-light ">All</p>
           </div>
 
           <div
             onClick={() => {
-              setItemSelected("project");
+              setItemSelected('project');
             }}
             className={`px-4 py-2 rounded-lg cursor-pointer flex items-center justify-center ${
-              itemSelected === "project" ? "bg-gray-300" : ""
+              itemSelected === 'project' ? 'bg-gray-300' : ''
             }`}
           >
-            <p className="text-xl text-gray-600 font-[inter] font-light ">
-              Project
-            </p>
+            <p className="text-xl text-gray-600  font-light ">Project</p>
           </div>
 
           <div
             onClick={() => {
-              setItemSelected("miv");
+              setItemSelected('miv');
             }}
             className={`px-4 py-2 rounded-lg cursor-pointer flex items-center justify-center ${
-              itemSelected === "miv" ? "bg-gray-300" : ""
+              itemSelected === 'miv' ? 'bg-gray-300' : ''
             }`}
           >
-            <p className="text-xl text-gray-600 font-[inter] font-light ">
-              MIV
-            </p>
+            <p className="text-xl text-gray-600  font-light ">MIV</p>
           </div>
         </div>
         <div>
@@ -272,7 +253,7 @@ const Page = () => {
         </div>
         <div className="flex flex-row justify-end items-center space-x-2 mb-4">
           <Image
-            src={"/icons/filterPic.png"}
+            src={'/icons/filterPic.png'}
             alt="filter"
             className="w-[27px] h-[30px]"
             width={27}
@@ -285,7 +266,7 @@ const Page = () => {
             id=""
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3"
           >
-            <option value={""}>month</option>
+            <option value={''}>month</option>
             {months.map((item) => (
               <option key={item} value={item}>
                 {item}
@@ -299,10 +280,11 @@ const Page = () => {
             className="bg-gray-50 border max-h-[100px] overflow-y-scroll border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3"
           >
             <option value="">Year</option>
-            { 
-              years.map(year => <option key={year} value={year}>{ year }</option>
-              )
-            }
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -319,14 +301,12 @@ const Page = () => {
       {/* chart section starts */}
 
       <div className="grid grid-cols-10 gap-4 mb-4  h-[80vh]">
-        
-
         <div className="col-span-6 grid grid-cols-12 gap-4 h-full">
           <div className="grid grid-cols-12   col-span-12 gap-4">
             <div className="col-span-6 min-h-[45vh] rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white">
               {inventoryOverTime && (
                 <LineAndbarchart inventoryOverTime={inventoryOverTime} />
-              )} 
+              )}
             </div>
             <div className="col-span-6  min-h-[45vh]   rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white ">
               <Areachart
@@ -351,11 +331,6 @@ const Page = () => {
           </div>
         </div>
 
-
-
-
-
-
         <div className="col-span-4 gap-4 min-h-[90vh]">
           <div className="col-span-12 h-[55%]  rounded-[23px] p-2 border-[1.2px] border-slate-300 bg-white ">
             {mostUsedInvory && <TopTenInnventories data={mostUsedInvory} />}
@@ -366,8 +341,8 @@ const Page = () => {
             />
           </div>
         </div>
-      </div>  
- 
+      </div>
+
       {/* chart sectio ends */}
     </div>
   );

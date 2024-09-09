@@ -1,7 +1,67 @@
-import React, { useState } from 'react';
+import { toggleLoading } from '@/provider/redux/modalSlice';
+import axios from 'axios';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
-const QaTable = () => {
+interface ApprovePOProps {
+  selectedQA: number;
+  // setOpenApprovePO: (isOpen: boolean) => void;
+  fetchQAData: () => void;
+}
+
+const QaTable: React.FC<ApprovePOProps> = ({
+  selectedQA,
+  // setOpenApprovePO,
+  fetchQAData,
+}) => {
+  const user = useSelector((state: any) => state.user.user);
   const [tableData, setTableData] = useState([]);
+  const [QA, setQA] = useState<any>({});
+  const dispatch = useDispatch();
+  const fetchQA = useCallback(async () => {
+    dispatch(toggleLoading(true));
+    try {
+      const response = await axios.get(
+        `${process.env.BASEURL}/procurement/quality-assurance/${selectedQA}`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+        }
+      );
+      console.log('Approve Response:', response);
+      const qualityAssuranceData = response?.data?.data;
+      console.log('quality', qualityAssuranceData);
+      setQA(qualityAssuranceData);
+      setTableData(qualityAssuranceData?.bid?.bid_items);
+
+      // Check if the user is a signatory and if they have signed
+      //   const userSignatory = memoData?.signatories.find(
+      //     (signatory: any) => signatory?.email === user?.email
+      //   );
+
+      //   if (userSignatory) {
+      //     setIsSignatory(true);
+      //     setHasSigned(userSignatory?.hasSigned);
+      //   }
+    } catch (error: any) {
+      console.error('Error:', error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors ||
+        error?.message ||
+        'Unknown error';
+      toast.error(`${errorMessage}`);
+    } finally {
+      dispatch(toggleLoading(false));
+    }
+  }, [dispatch, selectedQA, user?.token]);
+
+  useEffect(() => {
+    fetchQA();
+  }, [fetchQA]);
   return (
     <div>
       <div className="mt-3">
@@ -13,10 +73,10 @@ const QaTable = () => {
                   S/N
                 </th>
                 <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase">
-                  Quantity
+                  Name
                 </th>
                 <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase">
-                  Description
+                  Quantity
                 </th>
                 <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase">
                   Attachments
@@ -28,16 +88,16 @@ const QaTable = () => {
             </thead>
             <tbody>
               {tableData.length > 0 &&
-                tableData.map((item, index) => (
+                tableData.map((item: any, index: number) => (
                   <tr key={index}>
                     <td className="px-6 py-3 border-b text-sm text-gray-700">
                       {index + 1}
                     </td>
                     <td className="px-6 py-3 border-b text-sm text-gray-700">
-                      {/* {item.stock_quantity} */}
+                      {item.name}
                     </td>
                     <td className="px-6 py-3 border-b text-sm text-gray-700">
-                      {/* {item.description} */}
+                      {item.quantity}
                     </td>
                     <td className="px-6 py-3 border-b text-sm text-gray-700">
                       {/* Render attachments if any */}
@@ -105,9 +165,9 @@ const QaTable = () => {
                           className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-2 py-1 rounded"
                           type="button"
                         >
-                          Attach File
+                          approve
                         </button>
-                        <button
+                        {/* <button
                           className="bg-red-500 hover:bg-red-600 text-white font-bold px-2 py-1 rounded"
                           type="button"
                           onClick={() => {
@@ -117,7 +177,7 @@ const QaTable = () => {
                           }}
                         >
                           Remove
-                        </button>
+                        </button> */}
                       </div>
                     </td>
                   </tr>

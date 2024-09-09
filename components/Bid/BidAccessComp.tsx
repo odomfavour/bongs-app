@@ -13,7 +13,7 @@ import { toast } from 'react-toastify';
 import { IoMdAdd } from 'react-icons/io';
 import { FaFilePdf } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
-import { percentageData } from '@/utils/data';
+import { percentageData, warrantyData } from '@/utils/data';
 import { currencyFormatter } from '@/utils/usefulFunc';
 
 function BidAccessComp() {
@@ -28,15 +28,17 @@ function BidAccessComp() {
     subscriberId: string;
     vendorEmail: string;
     vendorName: string;
+    vendor_id: string;
     bidItems: any[];
   }>({
     rfqId: '',
     subscriberId: '',
     vendorEmail: '',
     vendorName: '',
+    vendor_id: '',
     bidItems: [],
   });
-
+  const [updatedData, setUpdatedData] = useState<any>({});
   const [minDate, setMinDate] = useState('');
 
   const [files, setFiles] = useState<
@@ -69,8 +71,14 @@ function BidAccessComp() {
   useEffect(() => {
     const totalCost = [] as number[];
     formData.bidItems.forEach((bid) => {
-      if (bid.unitPrice !== null) {
+      console.log('dfbvvd', bid);
+      if (bid.unitPrice) {
         const result = Number(bid.unitPrice) * Number(bid.quantity);
+        console.log('result pushed', result);
+        totalCost.push(result);
+      }
+      if (bid.unit_price) {
+        const result = Number(bid.unit_price) * Number(bid.quantity);
         console.log('result pushed', result);
         totalCost.push(result);
       }
@@ -106,6 +114,7 @@ function BidAccessComp() {
   >([]);
 
   const [paymentTerms, setPaymentTerms] = useState('');
+  const [warrantyPeriod, setWarrantyPeriod] = useState(0);
   const [validityPeriodTo, setValidityPeriodTo] = useState('');
 
   const [deliveryScheduleFrom, setDeliveryScheduleFrom] = useState('');
@@ -175,13 +184,47 @@ function BidAccessComp() {
   };
 
   const calculateSubTotal = () => {
-    if (paymentTerms && cost) {
-      const result = (Number(paymentTerms) / 100) * cost;
+    if (
+      (paymentTerms || updatedData?.payment_term) &&
+      (cost || updatedData?.cost)
+    ) {
+      const result =
+        (Number(paymentTerms || updatedData.payment_term) / 100) *
+        (cost || updatedData?.cost);
       return result;
     } else {
       return null;
     }
   };
+
+  useEffect(() => {
+    if (updatedData.id) {
+      let pay = (Number(updatedData.payment_term) * 10).toString();
+
+      setPaymentTerms(pay);
+      setDeliveryScheduleFrom(updatedData.from_delivery_date);
+      setDeliveryScheduleTo(updatedData.delivery_date);
+      setWarrantyPeriod(updatedData.warranty);
+      const days = parseInt(
+        updatedData.quote_validity_period.split(' ')[0],
+        10
+      ); // Extract the number part, e.g., "2"
+
+      // Get today's date
+      const today = new Date();
+
+      // Add the number of days
+      const validityDate = new Date(today);
+      validityDate.setDate(today.getDate() + days); // Add the extracted days
+
+      // Format the date as 'YYYY-MM-DD'
+      const formattedDate = validityDate.toISOString().split('T')[0];
+
+      // Inject the date back into the state
+      setValidityPeriodTo(formattedDate);
+    }
+  }, [updatedData]);
+
   const subtotal = calculateSubTotal();
 
   const balance = cost && subtotal ? cost - subtotal : null;
@@ -195,8 +238,20 @@ function BidAccessComp() {
       console.log('accestoken sent', accessToken);
       const response = await verifyBidAccessTokenApi(accessToken);
       const { message, data } = response;
-      const { rfq_id, subscriber_id, vendor_email, vendor_name, bid_items } =
-        data;
+
+      console.log('data', data.bid_items);
+      const {
+        id,
+        rfq_id,
+        subscriber_id,
+        vendor_email,
+        vendor_name,
+        bid_items,
+        vendor_id,
+      } = data;
+      if (id) {
+        setUpdatedData(data);
+      }
 
       console.log('response from bid', response);
 
@@ -210,11 +265,12 @@ function BidAccessComp() {
         };
       });
       setFormData({
-        rfqId: rfq_id,
-        subscriberId: subscriber_id,
-        vendorName: vendor_name,
-        vendorEmail: vendor_email,
-        bidItems: newBid,
+        rfqId: id ? data?.request_for_quotation_id : rfq_id,
+        subscriberId: id ? data?.subscriber_id : subscriber_id,
+        vendorName: id ? data.vendor : vendor_name,
+        vendorEmail: id ? data.vendor_email : vendor_email,
+        vendor_id: id ? data.vendor_id : vendor_id,
+        bidItems: id ? data?.bid_items : newBid,
       });
 
       toast.success(message);
@@ -300,6 +356,7 @@ function BidAccessComp() {
 
     try {
       const bidList = formData.bidItems.map((bid) => {
+        console.log('first', bid);
         return {
           name: bid.name,
           quantity: bid.quantity,
@@ -322,16 +379,17 @@ function BidAccessComp() {
         currency: 'NGN',
         bid_files: [...imageArray, ...pdfArray, ...docArray, ...excelArray],
         payment_term: Number(paymentTerms),
+        warranty: Number(warrantyPeriod),
         subscriber_id: Number(formData.subscriberId),
+        vendor_id: Number(formData.vendor_id),
         request_for_quotation_id: Number(formData.rfqId),
         vendor_email: formData.vendorEmail,
         vendor: formData.vendorName,
-        bid_items: bidList,
+        bid_items: updatedData?.id ? updatedData?.bid_list : bidList,
         delivery_date: deliveryScheduleTo,
         from_delivery_date: deliveryScheduleFrom,
         balance: Number(balance),
         subTotal: Number(subtotal),
-
         validity_period_to: validityPeriodTo,
       });
 
@@ -482,6 +540,7 @@ function BidAccessComp() {
                         type="tel"
                         name=""
                         id=""
+                        value={bid?.id ? bid?.unit_price : ''}
                         onChange={(e) => {
                           const result = formData.bidItems.map((bid) => {
                             if (bid.id === index) {
@@ -489,7 +548,9 @@ function BidAccessComp() {
                                 id: index,
                                 name: bid.name,
                                 quantity: bid.quantity,
-                                unitPrice: Number(e.target.value),
+                                unitPrice: Number(
+                                  e.target.value || bid?.unit_price
+                                ),
                               };
                             }
                             return bid;
@@ -514,11 +575,16 @@ function BidAccessComp() {
           <span className="text-gray-900 text-[16px] bold">Cost:</span>
           <input
             readOnly
-            value={cost ? currencyFormatter(parseFloat(cost.toFixed(2))) : ''}
+            value={
+              cost
+                ? currencyFormatter(parseFloat(cost.toFixed(2)))
+                : updatedData.id
+                ? updatedData.cost
+                : ''
+            }
             className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3  w-[300px]"
           />
         </div>
-
         <div className="flex flex-row items-center justify-between   mb-3">
           <span className="text-gray-900 text-[16px] bold">
             Payment Terms(%):
@@ -526,6 +592,11 @@ function BidAccessComp() {
           <select
             name=""
             id=""
+            value={
+              updatedData.id
+                ? Number(updatedData.payment_term) * 10
+                : Number(paymentTerms)
+            }
             className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3  w-[300px]"
             onChange={(e) => setPaymentTerms(e.target.value)}
           >
@@ -537,6 +608,29 @@ function BidAccessComp() {
                 key={index}
               >
                 {data}%
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex flex-row items-center justify-between   mb-3">
+          <span className="text-gray-900 text-[16px] bold">
+            Warranty (month(s)):
+          </span>
+          <select
+            name=""
+            id=""
+            value={updatedData.id ? updatedData.warranty : warrantyPeriod}
+            className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3  w-[300px]"
+            onChange={(e) => setWarrantyPeriod(Number(e.target.value))}
+          >
+            <option value="">Select Warranty Period</option>
+            {warrantyData.map((monthNumber, index) => (
+              <option
+                className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3  w-[300px]"
+                value={monthNumber}
+                key={index}
+              >
+                {monthNumber} month{monthNumber === 1 ? '' : "'s"}
               </option>
             ))}
           </select>
@@ -575,6 +669,11 @@ function BidAccessComp() {
             type="date"
             placeholder="Delivery schedule from "
             className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3 w-[300px]"
+            value={
+              updatedData?.id
+                ? updatedData?.from_delivery_date
+                : deliveryScheduleFrom
+            }
             onChange={(e) => setDeliveryScheduleFrom(e.target.value)}
           />
         </div>
@@ -586,6 +685,11 @@ function BidAccessComp() {
           <input
             min={deliveryScheduleFrom}
             type="date"
+            value={
+              updatedData?.id
+                ? updatedData?.delivery_date
+                : deliveryScheduleFrom
+            }
             className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3 w-[300px]"
             onChange={(e) => setDeliveryScheduleTo(e.target.value)}
           />

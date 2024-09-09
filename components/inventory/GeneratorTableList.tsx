@@ -307,7 +307,7 @@ const GeneratorTableList: React.FC<GeneratorListTableProps> = ({
   const [isProjectActive, setIsProjectActive] = useState(true);
   const [projects, setProjects] = useState([]);
   const [formData, setFormData] = useState({
-    project_id: 0 as null | number,
+    project_id: null as null | number,
     is_project: true,
   });
 

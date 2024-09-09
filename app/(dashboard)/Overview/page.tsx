@@ -812,7 +812,7 @@ function Page() {
         onClose={handleQAApproveClose}
         maxWidth="60%"
       >
-        <QaTable />
+        <QaTable selectedQA={selectedQA} fetchQAData={fetchProcurementsData} />
       </Modal>
 
       {/* modal section ends */}

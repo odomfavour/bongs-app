@@ -278,7 +278,11 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
             ? 'hospital'
             : 'galleylaundry'
         }/requisition`,
-        { items: selectedQuantities },
+        {
+          subscriber_id: user?.subscriber_id,
+          ...formData,
+          items: selectedQuantities,
+        },
         {
           headers: {
             Authorization: `Bearer ${user?.token}`,
@@ -326,7 +330,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
   const [isProjectActive, setIsProjectActive] = useState(true);
   const [projects, setProjects] = useState([]);
   const [formData, setFormData] = useState({
-    project_id: 0 as null | number,
+    project_id: null as null | number,
     is_project: true,
   });
 
@@ -449,8 +453,6 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
     fetchProjects();
   }, [fetchProjects]);
 
-
- 
   return (
     <div className="bg-white pt-2">
       <div className="overflow-x-auto">
@@ -556,7 +558,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
         </div>
 
         {/*    ConsumableTable */}
-      
+
         <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">

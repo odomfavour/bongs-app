@@ -44,7 +44,7 @@ const links = [
     label: 'GRN',
     labels: [''],
     img: 'GRNIcon.png',
-  }
+  },
 ];
 
 interface PreferencesLinksProps {
@@ -59,29 +59,27 @@ const PreferencesLinks: React.FC<PreferencesLinksProps> = ({
   return (
     <div>
       <ul>
-        {links.map(
-          (link, index) =>
-            <li key={index} className="text-center py-3 pl-2">
-          <Link href={link.href} onClick={closeInnerSidebar}>
-            <div
-              className="w-full flex gap-3 items-center"
-              onClick={closeInnerSidebar}
-            >
-              <div className="relative w-[28px] h-[28px]">
-                <Image
-                  src={`/icons/${link.img}`}
-                  width={28}
-                  height={38}
-                  priority
-                  alt="avatar"
-                />
+        {links.map((link, index) => (
+          <li key={index} className="text-center py-3 pl-2">
+            <Link href={link.href} onClick={closeInnerSidebar}>
+              <div
+                className="w-full flex gap-3 items-center"
+                onClick={closeInnerSidebar}
+              >
+                <div className="relative w-[28px] h-[28px]">
+                  <Image
+                    src={`/icons/${link.img}`}
+                    width={28}
+                    height={38}
+                    priority
+                    alt="avatar"
+                  />
+                </div>
+                <p className="text-[14px]">{link.label}</p>
               </div>
-              <p className="text-[14px]">{link.label}</p>
-            </div>
-          </Link>
-        </li>
-           
-        )}
+            </Link>
+          </li>
+        ))}
       </ul>
     </div>
   );

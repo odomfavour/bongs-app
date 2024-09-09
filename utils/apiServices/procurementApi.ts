@@ -150,7 +150,6 @@ export const fetchAllDepartmentDataApi = async () => {
   return response.data;
 };
 
-
 export const updateRFQDataApi = async (uploadData: {
   id: number;
   rfqUpdateData: any;
@@ -160,8 +159,6 @@ export const updateRFQDataApi = async (uploadData: {
   const { id, rfqUpdateData } = uploadData;
 
   let url = `${baseUrl}/procurement/rfq/${id}`;
-
-
 
   const response = await axios.put(`${url}`, rfqUpdateData, {
     headers: {
@@ -251,18 +248,16 @@ export const creactNewBidApi = async (bidData: creactNewBidApiType) => {
   const { token } = data && JSON.parse(data);
   // id of the bid
   let url = `${baseUrl}/procurement/bid`;
-console.log("this is the sent bid data", bidData)
+  console.log('this is the sent bid data', bidData);
 
-  const response = await axios.post(`${url}`,bidData, {
+  const response = await axios.post(`${url}`, bidData, {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'multipart/form-data',
     },
   });
   return response.data;
-}
-
-
+};
 
 export const getVendorByCategoryApi = async (id: string) => {
   const data = localStorage.getItem('bongsUser');
@@ -275,4 +270,4 @@ export const getVendorByCategoryApi = async (id: string) => {
     },
   });
   return response.data;
-}
+};

@@ -57,6 +57,13 @@ function Page() {
       currency: string;
       isAwarded: number;
       quoteValidity: string;
+      budget_alignment_point: string;
+      cost_competitive_point: string;
+      evaluation_point: string;
+      payment_flexibilty_point: string;
+      quote_validity_point: string;
+      warranty_point: string;
+      delivery_date_point: string;
       wht: number;
       ncf: number;
       vat: number;
@@ -301,7 +308,7 @@ function Page() {
       type: item.request_for_quotations.procurement_type,
       status: item.status,
       date: item.request_for_quotations.bidding_deadline,
-      cost: `${item.bid.currency}${currencyFormatter(item.bid.cost)}`,
+      cost: `${item?.bid?.currency}${currencyFormatter(item?.bid?.cost)}`,
       timeline: item?.request_for_quotations?.delivery_date,
       signatory: item?.memo?.signatory_count,
       vendor: item?.bid?.vendor,
@@ -748,7 +755,7 @@ function Page() {
         isOpen={showBidForRfqModal}
         title={''}
         onClose={handleOpenBidModal}
-        maxWidth="1050px"
+        maxWidth="90%"
       >
         <BidModal
           bidList={allBidsForSingleRfq}

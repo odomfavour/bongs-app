@@ -11,9 +11,9 @@ export const fetchProcurementChartDataApi = async (params: {
 
   let url;
   if (year) {
-    url = url = `${baseUrl}/procurement/analytics?year=${year}`;
+    url = url = `${baseUrl}/procurement/rfq/analytics?year=${year}`;
   } else {
-    url = `${baseUrl}/procurement/analytics`;
+    url = `${baseUrl}/procurement/rfq/analytics`;
   }
 
   const response = await axios.get(`${url}`, {

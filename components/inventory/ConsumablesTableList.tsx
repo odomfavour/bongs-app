@@ -645,7 +645,12 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
                     ) : selectedItems.length > 0 && requisition ? (
                       <td></td>
                     ) : null}
-                    <td className="py-2 text-left text-sm">{description}</td>
+                    <td className="py-2 text-left text-sm" title={description}>
+                      {description?.length > 100
+                        ? `${description.slice(0, 100)}...`
+                        : description}
+                    </td>
+
                     <td className="py-2 text-left text-sm">{stock_quantity}</td>
                     {/* <td className="py-2 text-center">{part_number}</td> */}
                     <td className="py-2 text-left text-sm">

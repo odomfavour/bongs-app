@@ -429,7 +429,7 @@ function GeneratorTable({
                           intervalDelay={0}
                           precision={3}
                           renderer={(props) => (
-                            <td className="text-center">
+                            <td className="text-left text-sm">
                               {props.days}d {props.hours}h {props.minutes}m{' '}
                               {props.seconds}s
                             </td>
@@ -463,7 +463,7 @@ function GeneratorTable({
 
                     return (
                       <td
-                        className="text-center"
+                        className="text-left text-sm"
                         {...cell.getCellProps()}
                         key={index}
                       >

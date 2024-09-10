@@ -302,10 +302,11 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
       console.error('Error:', error);
 
       const errorMessage =
+        error?.response?.data?.message.items[0] ||
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
-        error?.message ||
-        'Unknown error';
+        error?.message;
+      ('Unknown error');
       toast.error(`${errorMessage}`);
     } finally {
       dispatch(toggleLoading(false));
@@ -645,7 +646,12 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
                     ) : selectedItems.length > 0 && requisition ? (
                       <td></td>
                     ) : null}
-                    <td className="py-2 text-left text-sm">{description}</td>
+                    <td className="py-2 text-left text-sm" title={description}>
+                      {description?.length > 100
+                        ? `${description.slice(0, 100)}...`
+                        : description}
+                    </td>
+
                     <td className="py-2 text-left text-sm">{stock_quantity}</td>
                     {/* <td className="py-2 text-center">{part_number}</td> */}
                     <td className="py-2 text-left text-sm">
@@ -825,6 +831,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
                   project_id: e.target.value ? parseInt(e.target.value) : null,
                 })
               }
+              disabled={pathname == '/miv-inventories'}
             >
               <option value="">Select Project</option>
               {projects?.map((project: any) => (

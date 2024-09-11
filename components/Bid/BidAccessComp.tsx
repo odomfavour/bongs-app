@@ -540,9 +540,10 @@ function BidAccessComp() {
                         name=""
                         id=""
                         onChange={(e) => {
-                          const result = formData.bidItems.map((bid) => {
-                            if (bid.item_id) {
+                          const result = formData.bidItems.map((bid, index) => {
+                            if (bid.id === index) {
                               return {
+                                id: index,
                                 item_id: bid.item_id,
                                 name: bid.name,
                                 quantity: bid.quantity,

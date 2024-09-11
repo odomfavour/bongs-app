@@ -183,7 +183,7 @@ const ApproveMemo: React.FC<ApproveMemoProps> = ({
               </tr>
             </thead>
             <tbody>
-              {tableData.length > 0 &&
+              {tableData?.length > 0 &&
                 tableData.map((item: any, index) => (
                   <tr key={index}>
                     <td className="px-6 py-3 border-b text-sm text-gray-700">

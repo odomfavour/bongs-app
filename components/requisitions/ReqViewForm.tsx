@@ -33,7 +33,6 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({
   fetchData,
   handleClose,
 }) => {
-
   const dispatch = useDispatch();
   const [title, setTitle] = useState('');
   const user = useSelector((state: any) => state.user.user);
@@ -145,8 +144,8 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {tableData.length > 0 &&
-                  tableData.map((item, index) => (
+                {tableData?.length > 0 &&
+                  tableData?.map((item, index) => (
                     <tr key={index}>
                       <td className="px-6 py-3 border-b text-sm text-gray-700">
                         {index + 1}

@@ -69,6 +69,7 @@ function BidAccessComp() {
   const [cost, setCost] = useState<null | number>(null);
 
   useEffect(() => {
+    console.log('fhjhf', formData);
     const totalCost = [] as number[];
     formData.bidItems.forEach((bid) => {
       console.log('dfbvvd', bid);
@@ -77,17 +78,19 @@ function BidAccessComp() {
         console.log('result pushed', result);
         totalCost.push(result);
       }
-      if (bid.unit_price) {
-        const result = Number(bid.unit_price) * Number(bid.quantity);
-        console.log('result pushed', result);
-        totalCost.push(result);
-      }
+      // console.log('returned total cost', totalCost);
+      // if (bid.unit_price) {
+      //   const result = Number(bid.unit_price) * Number(bid.quantity);
+      //   console.log('result pushedbnnbbn', result);
+      //   totalCost.push(result);
+      // }
     });
 
     console.log('returned total cost', totalCost);
     const newCost = totalCost.reduce((initial, acc) => {
       return initial + acc;
     }, 0);
+    console.log('returned total cost', newCost);
 
     setCost(newCost);
   }, [formData.bidItems]);
@@ -184,13 +187,8 @@ function BidAccessComp() {
   };
 
   const calculateSubTotal = () => {
-    if (
-      (paymentTerms || updatedData?.payment_term) &&
-      (cost || updatedData?.cost)
-    ) {
-      const result =
-        (Number(paymentTerms || updatedData.payment_term) / 100) *
-        (cost || updatedData?.cost);
+    if (paymentTerms && cost) {
+      const result = Number(paymentTerms) * cost;
       return result;
     } else {
       return null;
@@ -257,7 +255,7 @@ function BidAccessComp() {
 
       const newBid = bid_items.map((bid: any, index: number) => {
         return {
-          id: index,
+          item_id: bid.item_id,
           name: bid.name,
           quantity: bid.quantity,
           unitPrice: null,
@@ -358,6 +356,7 @@ function BidAccessComp() {
       const bidList = formData.bidItems.map((bid) => {
         console.log('first', bid);
         return {
+          item_id: bid.item_id,
           name: bid.name,
           quantity: bid.quantity,
           unit_price: bid.unitPrice,
@@ -540,17 +539,14 @@ function BidAccessComp() {
                         type="tel"
                         name=""
                         id=""
-                        value={bid?.id ? bid?.unit_price : ''}
                         onChange={(e) => {
                           const result = formData.bidItems.map((bid) => {
-                            if (bid.id === index) {
+                            if (bid.item_id) {
                               return {
-                                id: index,
+                                item_id: bid.item_id,
                                 name: bid.name,
                                 quantity: bid.quantity,
-                                unitPrice: Number(
-                                  e.target.value || bid?.unit_price
-                                ),
+                                unitPrice: Number(e.target.value),
                               };
                             }
                             return bid;

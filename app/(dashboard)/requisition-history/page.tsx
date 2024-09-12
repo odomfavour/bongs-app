@@ -55,7 +55,6 @@ const Page = () => {
           },
         }
       );
-      console.log('resp', response.data.data);
       setRequisitions(response?.data?.data?.data);
     } catch (error: any) {
       console.error('Error:', error);

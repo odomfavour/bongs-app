@@ -56,7 +56,6 @@ const BargeComponentPage = () => {
             },
           }
         );
-        console.log('ree', response);
         setBargeComponent(response?.data?.data?.data);
       }
     } catch (error: any) {

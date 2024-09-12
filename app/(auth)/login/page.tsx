@@ -32,13 +32,10 @@ const Login: React.FC = () => {
         `${process.env.BASEURL}/login`,
         formData
       );
-      console.log('Login successful:', response.data?.data?.user);
-      console.log('resp', response);
       let currentUser = {
         ...response?.data?.data?.user,
         token: response?.data?.data?.token,
       };
-      console.log('first', currentUser);
       dispatch(setUser(currentUser));
       if (typeof window !== 'undefined') {
         localStorage.setItem('bongsUser', JSON.stringify(currentUser));

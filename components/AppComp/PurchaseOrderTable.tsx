@@ -70,7 +70,7 @@ function PurchaseOrderTable({
 
   const { globalFilter, pageIndex } = state;
 
-  console.log('the fetched data from purchase order', fetchedData);
+  // console.log('the fetched data from purchase order', fetchedData);
 
   return (
     <>

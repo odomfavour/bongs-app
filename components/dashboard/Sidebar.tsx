@@ -42,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   const [showInnerSidebar, setShowInnerSidebar] = useState(false);
   const [activeTab, setActiveTab] = useState<string>('');
   const innerSidebarRef = useRef<HTMLDivElement>(null);
-  console.log(user);
+
   const handleTabClick = (tab: string) => {
     if (activeTab === tab) {
       setShowInnerSidebar(!showInnerSidebar);

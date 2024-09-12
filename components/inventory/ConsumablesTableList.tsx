@@ -278,7 +278,11 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
             ? 'hospital'
             : 'galleylaundry'
         }/requisition`,
-        { items: selectedQuantities },
+        {
+          subscriber_id: user?.subscriber_id,
+          ...formData,
+          items: selectedQuantities,
+        },
         {
           headers: {
             Authorization: `Bearer ${user?.token}`,
@@ -298,10 +302,11 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
       console.error('Error:', error);
 
       const errorMessage =
+        error?.response?.data?.message.items[0] ||
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
-        error?.message ||
-        'Unknown error';
+        error?.message;
+      ('Unknown error');
       toast.error(`${errorMessage}`);
     } finally {
       dispatch(toggleLoading(false));
@@ -326,7 +331,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
   const [isProjectActive, setIsProjectActive] = useState(true);
   const [projects, setProjects] = useState([]);
   const [formData, setFormData] = useState({
-    project_id: 0 as null | number,
+    project_id: null as null | number,
     is_project: true,
   });
 
@@ -449,8 +454,6 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
     fetchProjects();
   }, [fetchProjects]);
 
-
- 
   return (
     <div className="bg-white pt-2">
       <div className="overflow-x-auto">
@@ -556,7 +559,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
         </div>
 
         {/*    ConsumableTable */}
-      
+
         <table className="table-auto w-full text-primary rounded-2xl mb-5">
           <thead>
             <tr className="border-b bg-[#E9EDF4]">
@@ -643,7 +646,12 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
                     ) : selectedItems.length > 0 && requisition ? (
                       <td></td>
                     ) : null}
-                    <td className="py-2 text-left text-sm">{description}</td>
+                    <td className="py-2 text-left text-sm" title={description}>
+                      {description?.length > 100
+                        ? `${description.slice(0, 100)}...`
+                        : description}
+                    </td>
+
                     <td className="py-2 text-left text-sm">{stock_quantity}</td>
                     {/* <td className="py-2 text-center">{part_number}</td> */}
                     <td className="py-2 text-left text-sm">
@@ -823,6 +831,7 @@ const ConsumablesableList: React.FC<ConsumablesListTableProps> = ({
                   project_id: e.target.value ? parseInt(e.target.value) : null,
                 })
               }
+              disabled={pathname == '/miv-inventories'}
             >
               <option value="">Select Project</option>
               {projects?.map((project: any) => (

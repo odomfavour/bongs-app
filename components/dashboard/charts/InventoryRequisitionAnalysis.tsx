@@ -22,7 +22,7 @@ function InventoryRequisitionAnalysis({
     const categoryCountValues = Object?.values(categoryCounts);
 
 
-    console.log("category counts", categoryCounts)
+    // console.log("category counts", categoryCounts)
     
   return (
     <div>

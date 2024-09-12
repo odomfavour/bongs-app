@@ -54,7 +54,6 @@ const ConsGalleyStrip: React.FC<ConsGalleyStripProps> = ({
           }
         );
 
-        console.log('Bulk upload successful:', response.data);
       } catch (error: any) {
         console.error('Bulk upload failed:', error);
         const errorMessage =

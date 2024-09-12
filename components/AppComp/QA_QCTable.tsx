@@ -66,7 +66,7 @@ function QA_QCTable({
 
   const { globalFilter, pageIndex } = state;
 
-  console.log('the fetched data', fetchedData);
+  // console.log('the fetched data', fetchedData);
 
   return (
     <>

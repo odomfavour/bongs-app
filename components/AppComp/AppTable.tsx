@@ -74,7 +74,6 @@ function AppTable({
 
   const { globalFilter, pageIndex } = state;
 
-  console.log('the fetched data', fetchedData);
 
   return (
     <>

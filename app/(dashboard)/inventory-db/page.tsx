@@ -73,7 +73,6 @@ const Page = () => {
           Authorization: `Bearer ${user?.token}`,
         },
       });
-      console.log('resp', response?.data?.data?.original?.data);
       setInventories(response?.data?.data?.original?.data);
       setFilteredInventories(response?.data?.data?.original?.data); // Initially set to all data
     } catch (error: any) {
@@ -240,7 +239,6 @@ const Page = () => {
         return true;
       });
     }
-    console.log('filtered', filteredData);
 
     setFilteredInventories(filteredData);
   }, [selectedOption1, selectedOption2, selectedOption3, inventories]);
@@ -258,18 +256,6 @@ const Page = () => {
       <div className="flex gap-3 mb-5">
         <div>
           <select
-            id="selectedOption1"
-            value={selectedOption1}
-            onChange={(e) => setSelectedOption1(e.target.value)}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-          >
-            <option value="">All</option>
-            <option value="spareparts">Spareparts</option>
-            <option value="consumable">Consumable</option>
-          </select>
-        </div>
-        <div>
-          <select
             id="selectedOption2"
             value={selectedOption2}
             onChange={(e) => setSelectedOption2(e.target.value)}
@@ -278,6 +264,18 @@ const Page = () => {
             <option value="">All</option>
             <option value="miv">MIV</option>
             <option value="project">Project</option>
+          </select>
+        </div>
+        <div>
+          <select
+            id="selectedOption1"
+            value={selectedOption1}
+            onChange={(e) => setSelectedOption1(e.target.value)}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+          >
+            <option value="">All</option>
+            <option value="spareparts">Spareparts</option>
+            <option value="consumable">Consumable</option>
           </select>
         </div>
         <div>

@@ -88,7 +88,6 @@ const Page: React.FC = () => {
       );
 
       toast.success(response.data.message);
-      console.log('Form submitted successfully');
       localStorage.setItem('qaVendoeDetail', '');
       router.push('/qa-qc-submission-success');
     } catch (error: any) {

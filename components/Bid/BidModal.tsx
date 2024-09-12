@@ -44,8 +44,8 @@ function BidModal({
 
   useEffect(() => {
     setDisablebutton(isRfqAwarded);
-  }, []);
-  console.log('bid response inner', bidList);
+  }, [isRfqAwarded]);
+  // console.log('bid response inner', bidList);
   return (
     <div>
       <h2 className="font-bold text-2xl text-center my-8 mx-auto">
@@ -66,12 +66,12 @@ function BidModal({
               <th className="text-center text-sm">WHT(%)</th>
               <th className="text-center text-sm">NCDF(%)</th>
               <th className="text-center text-sm">VAT(%)</th>
-              <th className="text-center text-sm">BAP(%)</th>
-              <th className="text-center text-sm">CCP(%)</th>
-              <th className="text-center text-sm">DDP(%)</th>
-              <th className="text-center text-sm">QVP(%)</th>
-              <th className="text-center text-sm">PFP(%)</th>
-              <th className="text-center text-sm">WP(%)</th>
+              <th className="text-center text-sm">Budget Alignment Point</th>
+              <th className="text-center text-sm">Cost Competitive Point</th>
+              <th className="text-center text-sm">Delivery Date Point</th>
+              <th className="text-center text-sm">Quote Validity Point</th>
+              <th className="text-center text-sm">Payment Flexibility Point</th>
+              <th className="text-center text-sm">Warranty Point</th>
               <th className="text-center text-sm">WP(%)</th>
               {/* budget_alignment_point (20%) - cost_competitive_point (25%) -
               delivery_date_point (20%) - quote_validity_point (10%) -

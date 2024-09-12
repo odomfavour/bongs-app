@@ -75,7 +75,6 @@ const Page = () => {
           },
         }
       );
-      console.log('resp', response);
 
       setRequisitions(response?.data?.data?.data);
     } catch (error: any) {

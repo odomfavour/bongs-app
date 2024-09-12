@@ -62,7 +62,6 @@ const SafetyCategoryPage = () => {
             },
           }
         );
-        console.log('resp', response);
         setSafetyCat(response?.data?.data?.data);
       }
     } catch (error: any) {

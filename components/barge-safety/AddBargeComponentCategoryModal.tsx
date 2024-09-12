@@ -70,7 +70,6 @@ const AddBargeComponentCategoryModal: React.FC<
           Authorization: `Bearer ${user?.token}`,
         },
       });
-      console.log('Response:', response);
       // if (response?.status == 200) {
       toast.success(`${response?.data?.message}`);
       // }

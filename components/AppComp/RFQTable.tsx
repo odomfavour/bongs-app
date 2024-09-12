@@ -171,7 +171,7 @@ function RFQTable({
                            }
                           })
                            
-                          console.log("this is the status", row.original)
+                          // console.log("this is the status", row.original)
                        
                           const data = {
                             rfqStatus:row.original.status,

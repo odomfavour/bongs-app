@@ -62,7 +62,6 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
               },
             }
           );
-          console.log('resp', response);
           dispatch(setSubscribers(response?.data?.data?.data));
         }
       } catch (error: any) {
@@ -79,7 +78,6 @@ const DashboardWrapper: React.FC<DashboardWrapperProps> = ({ children }) => {
     };
 
     if (hasPermission('can read subscriber')) {
-      console.log('here');
       getSubscribers();
     }
   }, [dispatch, user?.permissions, user?.token]);

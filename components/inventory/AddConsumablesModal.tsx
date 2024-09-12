@@ -153,7 +153,6 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
           Authorization: `Bearer ${user?.token}`,
         },
       });
-      console.log('Response:', response);
 
       toast.success(`${response?.data?.message}`);
 
@@ -295,7 +294,7 @@ const AddConsumablesModal: React.FC<AddProjectModalProps> = ({
           }
         ),
       ]);
-      console.log('project', sparepartResponse, oalResponse);
+      
       setProjects(projectsResponse?.data?.data?.data);
       setDecks(decksResponse?.data?.data?.data);
       setBarges(bargeResponse?.data?.data?.data);

@@ -61,7 +61,7 @@ const ConsEngineStrip: React.FC<ConsEngineStripProps> = ({
   }, []);
 
   const handleBulkUpload = async (event: ChangeEvent<HTMLInputElement>) => {
-    console.log('here');
+   
     const file = event.target.files?.[0];
     if (file) {
       const formData = new FormData();

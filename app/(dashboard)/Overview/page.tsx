@@ -817,7 +817,7 @@ function Page() {
         title=""
         isOpen={openQAApproveModal}
         onClose={handleQAApproveClose}
-        maxWidth="60%"
+        maxWidth="70%"
       >
         <QaTable selectedQA={selectedQA} fetchQAData={fetchProcurementsData} />
       </Modal>

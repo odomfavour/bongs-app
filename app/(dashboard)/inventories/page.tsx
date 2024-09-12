@@ -42,7 +42,6 @@ const Page = () => {
   const [bulkDelete, setBulkDelete] = useState(false);
   const toggleRequisition = () => {
     setRequisition(!requisition);
-    console.log('req', requisition);
   };
   const toggleBulkDelete = () => {
     setBulkDelete(!bulkDelete);
@@ -100,9 +99,7 @@ const Page = () => {
       });
 
       setCategories(response?.data?.data?.data);
-      console.log('Response:', response);
-
-      console.log('resp', response);
+      
     } catch (error: any) {
       console.error('Error:', error);
 

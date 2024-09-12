@@ -70,7 +70,7 @@ function MemoTable({
 
   const { globalFilter, pageIndex } = state;
 
-  console.log('the fetched data memo', fetchedData);
+  // console.log('the fetched data memo', fetchedData);
 
   return (
     <>
@@ -156,8 +156,7 @@ function MemoTable({
                         <button
                           className="bg-blue-500 text-white p-2 rounded-md"
                           onClick={() => {
-                            console.log('Initiate Memo clicked with id:', id);
-                            initiateMemo(id);
+                          initiateMemo(id);
                           }}
                         >
                           Create

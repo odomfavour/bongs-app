@@ -74,7 +74,7 @@ function ProcurementCharts({
   total_budget: number;
   allBidData: any[];
 }) {
-  console.log("total_budget new", total_budget);
+  // console.log("total_budget new", total_budget);
 
   const data = [
     { name: "Pending", value: rfq_status.sent },

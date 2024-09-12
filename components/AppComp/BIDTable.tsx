@@ -79,7 +79,6 @@ function BidTable({
 
   const { globalFilter, pageIndex } = state;
 
-  console.log('the fetched data from bid', fetchedData);
 
   return (
     <>
@@ -187,13 +186,12 @@ function BidTable({
                               const response = await fetchBidForRfqDataApi(
                                 row.original.request_for_quotation_id
                               );
-                              console.log(
-                                'bid data fetched for single rfq',
-                                response
-                              );
+                              // console.log(
+                              //   'bid data fetched for single rfq',
+                              //   response
+                              // );
 
                               dispatch(toggleLoading(false));
-                              console.log('show data from server', response);
 
                               const isRfqAwarded = response.data.data.filter(
                                 (bid: any) => bid.is_awarded === 1

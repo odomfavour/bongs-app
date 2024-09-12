@@ -70,7 +70,6 @@ const Page = () => {
             Authorization: `Bearer ${user?.token}`,
           },
         });
-        console.log('resp roles', response);
         let role_name = response?.data?.data?.data.find(
           (role: any) => role.id == id
         )?.name;
@@ -106,7 +105,6 @@ const Page = () => {
             },
           }
         );
-        console.log('resp', response);
         const rolePerms = response?.data?.data || [];
         setRolePermission(rolePerms);
 

@@ -26,7 +26,7 @@ function Page() {
     setIsUIReady(false);
     try {
       const [allRfqData] = await Promise.all([fetchAllRfqDataApi()]);
-      console.log("fetched all rfq", allRfqData);
+      // console.log("fetched all rfq", allRfqData);
 
       setAllRfq(allRfqData.data.data);
       setIsUIReady(true);
@@ -47,7 +47,7 @@ function Page() {
 
   useEffect(() => {
     fetchProcurementsData();
-  }, [route]);
+  }, [fetchProcurementsData, route]);
 
   const handleOpenModal = () => {
     setOpenModal(!openModal);

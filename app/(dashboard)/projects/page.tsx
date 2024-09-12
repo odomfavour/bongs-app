@@ -60,7 +60,6 @@ const ProjectsPage = () => {
             Authorization: `Bearer ${user?.token}`,
           },
         });
-        console.log('resp', response);
         setProjects(response?.data?.data?.data);
       }
     } catch (error: any) {

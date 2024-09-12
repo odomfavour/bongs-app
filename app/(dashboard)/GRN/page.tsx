@@ -207,7 +207,6 @@ function Page() {
   };
 
   const itemListMemo = allMemoData.map((item, i) => {
-    console.log('data', item);
     return {
       ...item,
       'S/N': i + 1,

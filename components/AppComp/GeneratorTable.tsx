@@ -186,7 +186,7 @@ function GeneratorTable({
   ) as CustomTableInstance<any>;
 
   const { globalFilter, pageIndex } = state;
-  console.log('generatorData', generatorData, 'columns', COLUMNS);
+  // console.log('generatorData', generatorData, 'columns', COLUMNS);
   const dispatch = useDispatch();
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);

@@ -60,7 +60,6 @@ const LocationPage = () => {
             Authorization: `Bearer ${user?.token}`,
           },
         });
-        console.log('resp', response);
         setLocations(response?.data?.data?.data);
       }
     } catch (error: any) {

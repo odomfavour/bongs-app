@@ -92,7 +92,6 @@ const BargeComponentCategoryListTable: React.FC<
             },
           }
         );
-        console.log('Delete Response:', response);
         fetchdata();
 
         if (response.status === 200) {

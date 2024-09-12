@@ -120,7 +120,6 @@ const Page = () => {
 
       if (itemSelected === 'project') {
         displayedData = data.project;
-        console.log('dashboard displayed data project', displayedData);
       }
 
       if (itemSelected === 'miv') {

@@ -50,14 +50,13 @@ const Page = () => {
         urlPath = 'sparepart-hospital-category';
         break;
     }
-    console.log('log', selectedOption, urlPath);
+
     try {
       const response = await axios.get(`${process.env.BASEURL}/${urlPath}`, {
         headers: {
           Authorization: `Bearer ${user?.token}`,
         },
       });
-      console.log('category', response);
       setSpareParts(response?.data?.data?.data);
       setSparePartsFetched(true);
     } catch (error: any) {
@@ -99,7 +98,6 @@ const Page = () => {
           Authorization: `Bearer ${user?.token}`,
         },
       });
-      console.log('category', response);
       setConsumables(response?.data?.data?.data);
       setConsumablesFetched(true);
     } catch (error: any) {

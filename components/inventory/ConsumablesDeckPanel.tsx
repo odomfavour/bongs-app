@@ -38,7 +38,6 @@ const ConsumablesEnginePanel: React.FC<CEnginePanelProps> = ({
   bulkDelete,
   toggleBulkDelete,
 }) => {
-  console.log('engine', deckCategories?.[0]?.name);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
   const [consumables, setConsumables] = useState<any[]>([]);

@@ -64,7 +64,7 @@ const VendorsPage = () => {
             Authorization: `Bearer ${user?.token}`,
           },
         });
-        console.log('resp', response);
+       
         setVendors(response?.data?.data?.data);
       }
       // You can similarly setStoreItems if needed
@@ -94,7 +94,6 @@ const VendorsPage = () => {
             },
           }
         );
-        console.log('resp', response);
         setVendorCats(response?.data?.data?.data);
         // You can similarly setStoreItems if needed
       }

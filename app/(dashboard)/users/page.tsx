@@ -107,7 +107,6 @@ const Page = () => {
         },
       });
 
-      console.log("users response", usersResponse)
       setUsers(usersResponse?.data?.data?.data);
     } catch (error: any) {
       handleApiError(error);
@@ -133,7 +132,6 @@ const Page = () => {
           },
         }
       );
-      console.log('role', rolesResponse);
       setRoles(
         user?.subscriber_id
           ? rolesResponse?.data?.data

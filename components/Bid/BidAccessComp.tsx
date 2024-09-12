@@ -40,6 +40,7 @@ function BidAccessComp() {
   });
   const [updatedData, setUpdatedData] = useState<any>({});
   const [minDate, setMinDate] = useState('');
+ 
 
   const [files, setFiles] = useState<
     {
@@ -69,30 +70,11 @@ function BidAccessComp() {
   const [cost, setCost] = useState<null | number>(null);
 
   useEffect(() => {
-    console.log('fhjhf', formData);
-    const totalCost = [] as number[];
-    formData.bidItems.forEach((bid) => {
-      console.log('dfbvvd', bid);
-      if (bid.unitPrice) {
-        const result = Number(bid.unitPrice) * Number(bid.quantity);
-        console.log('result pushed', result);
-        totalCost.push(result);
-      }
-      // console.log('returned total cost', totalCost);
-      // if (bid.unit_price) {
-      //   const result = Number(bid.unit_price) * Number(bid.quantity);
-      //   console.log('result pushedbnnbbn', result);
-      //   totalCost.push(result);
-      // }
-    });
-
-    console.log('returned total cost', totalCost);
-    const newCost = totalCost.reduce((initial, acc) => {
-      return initial + acc;
+    const totalCost = formData.bidItems.reduce((acc, item) => {
+      const itemCost = Number(item.unitPrice) * Number(item.quantity);
+      return acc + (isNaN(itemCost) ? 0 : itemCost);
     }, 0);
-    console.log('returned total cost', newCost);
-
-    setCost(newCost);
+    setCost(totalCost);
   }, [formData.bidItems]);
 
   useEffect(() => {
@@ -124,14 +106,12 @@ function BidAccessComp() {
   const [deliveryScheduleTo, setDeliveryScheduleTo] = useState('');
 
   const handleImageUpload = async (file: any) => {
-    console.log('seleted file 999', file);
     const maxSize = 1 * 1024 * 1024; // 1 MB in bytes
     if (file.size > maxSize) {
       toast('File size greated the 1MB please reduce file size');
       return;
     }
 
-    console.log('file sent', file);
 
     if (
       file.type ===
@@ -195,33 +175,33 @@ function BidAccessComp() {
     }
   };
 
-  useEffect(() => {
-    if (updatedData.id) {
-      let pay = (Number(updatedData.payment_term) * 10).toString();
+  // useEffect(() => {
+  //   if (updatedData.id) {
+  //     let pay = (Number(updatedData.payment_term) * 10).toString();
 
-      setPaymentTerms(pay);
-      setDeliveryScheduleFrom(updatedData.from_delivery_date);
-      setDeliveryScheduleTo(updatedData.delivery_date);
-      setWarrantyPeriod(updatedData.warranty);
-      const days = parseInt(
-        updatedData.quote_validity_period.split(' ')[0],
-        10
-      ); // Extract the number part, e.g., "2"
+  //     setPaymentTerms(pay);
+  //     setDeliveryScheduleFrom(updatedData.from_delivery_date);
+  //     setDeliveryScheduleTo(updatedData.delivery_date);
+  //     setWarrantyPeriod(updatedData.warranty);
+  //     const days = parseInt(
+  //       updatedData.quote_validity_period.split(' ')[0],
+  //       10
+  //     ); // Extract the number part, e.g., "2"
 
-      // Get today's date
-      const today = new Date();
+  //     // Get today's date
+  //     const today = new Date();
 
-      // Add the number of days
-      const validityDate = new Date(today);
-      validityDate.setDate(today.getDate() + days); // Add the extracted days
+  //     // Add the number of days
+  //     const validityDate = new Date(today);
+  //     validityDate.setDate(today.getDate() + days); // Add the extracted days
 
-      // Format the date as 'YYYY-MM-DD'
-      const formattedDate = validityDate.toISOString().split('T')[0];
+  //     // Format the date as 'YYYY-MM-DD'
+  //     const formattedDate = validityDate.toISOString().split('T')[0];
 
-      // Inject the date back into the state
-      setValidityPeriodTo(formattedDate);
-    }
-  }, [updatedData]);
+  //     // Inject the date back into the state
+  //     setValidityPeriodTo(formattedDate);
+  //   }
+  // }, [updatedData]);
 
   const subtotal = calculateSubTotal();
 
@@ -233,11 +213,9 @@ function BidAccessComp() {
     }
     try {
       setLoader(true);
-      console.log('accestoken sent', accessToken);
       const response = await verifyBidAccessTokenApi(accessToken);
       const { message, data } = response;
 
-      console.log('data', data.bid_items);
       const {
         id,
         rfq_id,
@@ -281,16 +259,54 @@ function BidAccessComp() {
         error?.message ||
         'Unknown error';
       toast.error(`${errorMessage}`);
-      console.log('this is the bid erroor', error);
       setLoader(false);
     }
   };
+
+
+  useEffect(() => {
+    if (updatedData) {
+      setFormData({
+        rfqId: updatedData.request_for_quotation_id?.toString() || '',
+        subscriberId: updatedData.subscriber_id?.toString() || '',
+        vendorEmail: updatedData.vendor_email || '',
+        vendorName: updatedData.vendor || '',
+        vendor_id: updatedData.vendor_id?.toString() || '',
+        bidItems: updatedData.bid_items?.map((item: any) => ({
+          item_id: item.item_id,
+          name: item.name,
+          quantity: item.quantity,
+          unitPrice: item.unit_price,
+          unit_of_measurement: item.unit_of_measurement,
+        })) || [],
+      });
+      setCost(updatedData.cost || 0);
+      setPaymentTerms(updatedData.payment_term?.toString() || '');
+      setWarrantyPeriod(updatedData.warranty || 0);
+      setDeliveryScheduleFrom(updatedData.from_delivery_date || '');
+      setDeliveryScheduleTo(updatedData.delivery_date || '');
+      
+      // Calculate validity period date
+      const validityPeriodString = updatedData.quote_validity_period || '';
+      const daysMatch = validityPeriodString.match(/\d+/);
+      if (daysMatch) {
+        const days = parseInt(daysMatch[0], 10);
+        const validityDate = new Date();
+        validityDate.setDate(validityDate.getDate() + days);
+        const formattedDate = validityDate.toISOString().split('T')[0];
+        setValidityPeriodTo(formattedDate);
+      } else {
+        setValidityPeriodTo('');
+      }
+    }
+  }, [updatedData]);
 
   const handleCloseModal = () => {
     return setshowModal(!showModal);
   };
 
   const handleCreateBid = async () => {
+    console.log(formData)
     if (!formData.subscriberId) {
       toast.error('subscriber is required');
       return;
@@ -354,7 +370,7 @@ function BidAccessComp() {
 
     try {
       const bidList = formData.bidItems.map((bid) => {
-        console.log('first', bid);
+    
         return {
           item_id: bid.item_id,
           name: bid.name,
@@ -369,7 +385,7 @@ function BidAccessComp() {
       const docArray = docType.map((data) => data.originalFile);
       const excelArray = excelType.map((data) => data.originalFile);
 
-      console.log('files sent', [...imageArray, ...pdfArray]);
+      // console.log('files sent', [...imageArray, ...pdfArray]);
       //   files.map((data) => data.originalFile)
       // return
       setLoader(true);
@@ -384,7 +400,7 @@ function BidAccessComp() {
         request_for_quotation_id: Number(formData.rfqId),
         vendor_email: formData.vendorEmail,
         vendor: formData.vendorName,
-        bid_items: updatedData?.id ? updatedData?.bid_list : bidList,
+        bid_items: bidList,
         delivery_date: deliveryScheduleTo,
         from_delivery_date: deliveryScheduleFrom,
         balance: Number(balance),
@@ -529,37 +545,30 @@ function BidAccessComp() {
             </thead>
             <tbody>
               {formData.bidItems.map((bid, index) => {
+
                 return (
                   <tr key={index}>
                     <td className="text-center">{index + 1}</td>
                     <td className="text-center">{bid.name}</td>
                     <td className="text-center">{bid.quantity}</td>
                     <td className="text-center">
-                      <input
-                        type="tel"
-                        name=""
-                        id=""
-                        onChange={(e) => {
-                          const result = formData.bidItems.map((bid) => {
-                            if (bid.id === index) {
-                              return {
-                                id: index,
-                                item_id: bid.item_id,
-                                name: bid.name,
-                                quantity: bid.quantity,
-                                unitPrice: Number(e.target.value),
-                              };
-                            }
-                            return bid;
-                          });
-                          setFormData({
-                            ...formData,
-                            bidItems: result,
-                          });
-                        }}
-                        placeholder="Enter Price"
-                        className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[200px] p-3 "
-                      />
+                    <input
+                    type="number"
+                    value={bid.unitPrice || ''}
+                    onChange={(e) => {
+                      const newBidItems = [...formData.bidItems];
+                      newBidItems[index] = {
+                        ...newBidItems[index],
+                        unitPrice: e.target.value,
+                      };
+                      setFormData({
+                        ...formData,
+                        bidItems: newBidItems,
+                      });
+                    }}
+                    placeholder="Enter Price"
+                    className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[200px] p-3"
+                  />
                     </td>
                   </tr>
                 );
@@ -572,13 +581,7 @@ function BidAccessComp() {
           <span className="text-gray-900 text-[16px] bold">Cost:</span>
           <input
             readOnly
-            value={
-              cost
-                ? currencyFormatter(parseFloat(cost.toFixed(2)))
-                : updatedData.id
-                ? updatedData.cost
-                : ''
-            }
+            value={cost ? currencyFormatter(parseFloat(cost.toFixed(2))) : ''}
             className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3  w-[300px]"
           />
         </div>
@@ -589,10 +592,7 @@ function BidAccessComp() {
           <select
             name=""
             id=""
-            value={
-              updatedData.id
-                ? Number(updatedData.payment_term) * 10
-                : Number(paymentTerms)
+            value={ Number(paymentTerms)
             }
             className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3  w-[300px]"
             onChange={(e) => setPaymentTerms(e.target.value)}
@@ -616,7 +616,7 @@ function BidAccessComp() {
           <select
             name=""
             id=""
-            value={updatedData.id ? updatedData.warranty : warrantyPeriod}
+            value={ warrantyPeriod}
             className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3  w-[300px]"
             onChange={(e) => setWarrantyPeriod(Number(e.target.value))}
           >
@@ -653,6 +653,7 @@ function BidAccessComp() {
           <input
             type="date"
             className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3 w-[300px]"
+            value={validityPeriodTo}
             min={minDate}
             onChange={(e) => setValidityPeriodTo(e.target.value)}
           />
@@ -666,11 +667,7 @@ function BidAccessComp() {
             type="date"
             placeholder="Delivery schedule from "
             className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3 w-[300px]"
-            value={
-              updatedData?.id
-                ? updatedData?.from_delivery_date
-                : deliveryScheduleFrom
-            }
+            value={deliveryScheduleFrom}
             onChange={(e) => setDeliveryScheduleFrom(e.target.value)}
           />
         </div>
@@ -682,11 +679,7 @@ function BidAccessComp() {
           <input
             min={deliveryScheduleFrom}
             type="date"
-            value={
-              updatedData?.id
-                ? updatedData?.delivery_date
-                : deliveryScheduleFrom
-            }
+            value={deliveryScheduleTo}
             className="bg-gray-50 pl-4 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-3 w-[300px]"
             onChange={(e) => setDeliveryScheduleTo(e.target.value)}
           />
@@ -710,7 +703,6 @@ function BidAccessComp() {
               className="hidden"
               onChange={(e) => {
                 let files = e.target.files;
-                console.log('selected file', files);
 
                 if (files && files[0]) {
                   if (

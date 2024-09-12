@@ -73,7 +73,6 @@ const Page = () => {
           Authorization: `Bearer ${user?.token}`,
         },
       });
-      console.log('resp', response?.data?.data?.original?.data);
       setInventories(response?.data?.data?.original?.data);
       setFilteredInventories(response?.data?.data?.original?.data); // Initially set to all data
     } catch (error: any) {
@@ -240,7 +239,6 @@ const Page = () => {
         return true;
       });
     }
-    console.log('filtered', filteredData);
 
     setFilteredInventories(filteredData);
   }, [selectedOption1, selectedOption2, selectedOption3, inventories]);

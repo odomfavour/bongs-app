@@ -220,7 +220,7 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({
                       </td>
                     </tr>
                   ))}
-                {tableData.length === 0 && (
+                {tableData?.length === 0 && (
                   <tr>
                     <td
                       colSpan={5}

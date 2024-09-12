@@ -136,7 +136,6 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
           Authorization: `Bearer ${user?.token}`,
         },
       });
-      console.log('Response:', response);
 
       toast.success(`${response?.data?.message}`);
 
@@ -263,7 +262,6 @@ const AddEngineModal: React.FC<AddProjectModalProps> = ({
           }
         ),
       ]);
-      console.log('project', storeOnBoardResponse?.data?.data?.data);
       setProjects(projectsResponse?.data?.data?.data);
       setDecks(decksResponse?.data?.data?.data);
       setBarges(bargeResponse?.data?.data?.data);

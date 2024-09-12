@@ -59,7 +59,6 @@ const VendorCategoryPage = () => {
             },
           }
         );
-        console.log('resp', response);
         setVendorCat(response?.data?.data?.data);
         // You can similarly setStoreItems if needed
       }

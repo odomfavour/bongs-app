@@ -79,7 +79,6 @@ const ConsSafetyStrip: React.FC<ConsSafetyStripProps> = ({
           }
         );
 
-        console.log('Bulk upload successful:', response.data);
       } catch (error: any) {
         console.error('Bulk upload failed:', error);
         const errorMessage =

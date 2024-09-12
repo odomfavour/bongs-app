@@ -677,7 +677,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
             </thead>
             <tbody>
               {tableData?.length > 0 &&
-                tableData.map((item, index) => (
+                tableData?.map((item, index) => (
                   <tr key={index}>
                     <td className="px-6 py-3 border-b text-sm text-gray-700">
                       {index + 1}
@@ -726,7 +726,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                                           (_: any, i: number) => i !== fileIndex
                                         );
                                       setTableData(
-                                        tableData.map((data, idx) =>
+                                        tableData?.map((data, idx) =>
                                           idx === index
                                             ? {
                                                 ...data,
@@ -761,7 +761,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                           type="button"
                           onClick={() => {
                             setTableData(
-                              tableData.filter((_, i) => i !== index)
+                              tableData?.filter((_, i) => i !== index)
                             );
                           }}
                         >
@@ -771,7 +771,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                     </td>
                   </tr>
                 ))}
-              {tableData.length === 0 && (
+              {tableData?.length === 0 && (
                 <tr>
                   <td
                     colSpan={5}

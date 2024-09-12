@@ -76,7 +76,6 @@ const Page = () => {
           },
         }
       );
-      console.log('resp', response);
       setMaterials(response?.data?.data?.materials);
     } catch (error: any) {
       console.error('Error:', error);

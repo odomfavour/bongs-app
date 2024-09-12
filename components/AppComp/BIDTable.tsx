@@ -204,6 +204,7 @@ function BidTable({
                                   dateReceived: dateFormater(bid.created_at),
                                   vendor: bid.vendor,
                                   grandTotal: currencyFormatter(bid.grandTotal),
+                                  balance: currencyFormatter(bid.balance),
                                   paymentTerms: bid.payment_term,
                                   deliveryPeriod: bid.delivery_date,
                                   currency: bid.currency,

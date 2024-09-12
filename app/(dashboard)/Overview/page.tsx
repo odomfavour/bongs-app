@@ -52,6 +52,7 @@ function Page() {
       vendor: string;
       pricing: number;
       paymentTerms: number;
+      balance: number;
       subtotal: number;
       deliveryPeriod: string;
       currency: string;
@@ -340,8 +341,8 @@ function Page() {
       type: item?.request_for_quotations?.procurement_type,
       status: item.status,
       signatory: `${item.has_signed_count}     ${item.signatory_count}`,
-      author: `${item.author_by?.first_name || 'nil'} ${
-        item.author_by?.last_name
+      author: `${item.author_by?.first_name || ''} ${
+        item.author_by?.last_name || ''
       }`,
       // date: formatDate(item?.request_for_quotations?.delivery_date || 0),
       date: formatDate(item?.created_at || 0),

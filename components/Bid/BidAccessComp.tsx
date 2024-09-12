@@ -168,7 +168,7 @@ function BidAccessComp() {
 
   const calculateSubTotal = () => {
     if (paymentTerms && cost) {
-      const result = Number(paymentTerms) * cost;
+      const result = (Number(paymentTerms) * cost)/100;
       return result;
     } else {
       return null;

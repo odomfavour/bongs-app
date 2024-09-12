@@ -15,6 +15,7 @@ function BidModal({
     vendor: string;
     pricing: number;
     paymentTerms: number;
+    balance: number;
     subtotal: number;
     deliveryPeriod: string;
     currency: string;
@@ -45,7 +46,7 @@ function BidModal({
   useEffect(() => {
     setDisablebutton(isRfqAwarded);
   }, [isRfqAwarded]);
-  // console.log('bid response inner', bidList);
+  console.log('bid response inner', bidList);
   return (
     <div>
       <h2 className="font-bold text-2xl text-center my-8 mx-auto">
@@ -63,21 +64,24 @@ function BidModal({
               <th className="text-center text-sm">Quote validity</th>
               <th className="text-center text-sm">Delivery Period</th>
               <th className="text-center text-sm">Sub Total</th>
+              <th className="text-center text-sm">Deposit</th>
+              <th className="text-center text-sm">Balance</th>
               <th className="text-center text-sm">WHT(%)</th>
               <th className="text-center text-sm">NCDF(%)</th>
               <th className="text-center text-sm">VAT(%)</th>
-              <th className="text-center text-sm">Budget Alignment Point</th>
-              <th className="text-center text-sm">Cost Competitive Point</th>
-              <th className="text-center text-sm">Delivery Date Point</th>
-              <th className="text-center text-sm">Quote Validity Point</th>
-              <th className="text-center text-sm">Payment Flexibility Point</th>
-              <th className="text-center text-sm">Warranty Point</th>
-              <th className="text-center text-sm">WP(%)</th>
+              <th className="text-center text-sm">Budget Alignment Point (5)</th>
+              <th className="text-center text-sm">Cost Competitive Point (5)</th>
+              <th className="text-center text-sm">Delivery Date Point (5)</th>
+              <th className="text-center text-sm">Quote Validity Point (5)</th>
+              <th className="text-center text-sm">Payment Flexibility Point (5)</th>
+              <th className="text-center text-sm">Warranty Point (5)</th>
               {/* budget_alignment_point (20%) - cost_competitive_point (25%) -
               delivery_date_point (20%) - quote_validity_point (10%) -
               payment_flexibilty_point (15%) - warranty_point (10%) */}
-              <th className="text-center text-sm">Evaluation point</th>
-              <th className="text-center text-sm">Rating</th>
+              <th className="text-center text-sm">Evaluation point (5
+              )
+              </th>
+              <th className="text-center text-sm">Rating (5)</th>
               <th className="text-center text-sm">Actions</th>
             </tr>
           </thead>
@@ -95,10 +99,11 @@ function BidModal({
                     {bid.currency}
                     {bid.subtotal}
                   </td>
+                  <td className="text-sm text-center">{bid.currency} {bid.grandTotal}</td>
+                  <td className="text-sm text-center">{bid.balance || 'N/A'}</td>
                   <td className="text-sm text-center">{bid.wht}</td>
                   <td className="text-sm text-center">{bid.ncf}</td>
                   <td className="text-sm text-center">{bid.vat}</td>
-                  <td className="text-sm text-center">{bid.grandTotal}</td>
                   <td className="text-sm text-center">
                     {bid?.budget_alignment_point || 'N/A'}
                   </td>

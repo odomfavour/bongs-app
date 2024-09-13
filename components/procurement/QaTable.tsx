@@ -1,5 +1,6 @@
 import { toggleLoading } from "@/provider/redux/modalSlice";
 import axios from "axios";
+import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -14,10 +15,7 @@ const QaTable: React.FC<ApprovePOProps> = ({
   fetchQAData,
 }) => {
   const user = useSelector((state: any) => state.user.user);
-  const [tableData, setTableData] = useState([
-    { id: 1, name: "Item A", quantity: 100, delivered: 50, awaiting: 50, specMatch: "Yes", comment: "" },
-    { id: 2, name: "Item B", quantity: 200, delivered: 180, awaiting: 20, specMatch: "No", comment: "" }
-  ]);
+  const [tableData, setTableData] = useState<any[]>([]);
   const [QA, setQA] = useState<any>({});
   const dispatch = useDispatch();
 
@@ -35,7 +33,7 @@ const QaTable: React.FC<ApprovePOProps> = ({
       console.log("Approve Response:", response);
       const qualityAssuranceData = response?.data?.data;
       setQA(qualityAssuranceData);
-      // setTableData(qualityAssuranceData?.bid?.bid_items);
+      setTableData(qualityAssuranceData?.bid?.bid_items);
     } catch (error: any) {
       console.error("Error:", error);
       const errorMessage =
@@ -64,16 +62,24 @@ const QaTable: React.FC<ApprovePOProps> = ({
   return (
     <div>
       <div className="flex justify-between">
-        <div className="w-1/3">
+        <div className="w-1/4">
           <p>Vendor</p>
           <p>Crown Energy Nigeria Enterprises</p>
           <p>03, Gbenga Ademulegun Lane, Parkview, Ikoyi, Lagos, Nigeria.</p>
+
+          <div className="mt-5">
+            <p>Attachments:</p>
+          </div>
+          <div className="mt-2">
+          <Link href="#" className="text-blue-400 text-sm">View Delivery History</Link>
+          </div>
         </div>
-        <div className="w-1/3">
+        {/* <div className="w-1/4"></div> */}
+        <div className="w-1/2">
           <div className="flex gap-3">
-            <div className="flex items-center mb-4">
+            <div className="flex gap-3 items-center mb-4">
               <label htmlFor="default-checkbox" className="ms-2 text-sm font-medium text-gray-900">
-                Acknowledge
+                Acknowledge Delivery
               </label>
               <input
                 id="default-checkbox"
@@ -84,8 +90,23 @@ const QaTable: React.FC<ApprovePOProps> = ({
             </div>
             <p>2/08/2024</p>
           </div>
+          <div className="flex gap-3">
+            <div className="flex gap-3 items-center mb-4">
+              <label htmlFor="default-checkbox" className="ms-2 text-sm font-medium text-gray-900">
+                Recognize Delivery
+              </label>
+              <input
+                id="default-checkbox"
+                type="checkbox"
+                value=""
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+              />
+            </div>
+            <p>2/08/2024</p>
+          </div>
+         
 
-          <div className="flex">
+          <div className="flex gap-3">
             <div className="flex items-center ps-4 border border-gray-200 rounded">
               <input
                 id="bordered-radio-1"
@@ -94,8 +115,8 @@ const QaTable: React.FC<ApprovePOProps> = ({
                 name="bordered-radio"
                 className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
               />
-              <label htmlFor="bordered-radio-1" className="w-full py-4 ms-2 text-sm font-medium text-gray-900">
-                Default radio
+              <label htmlFor="bordered-radio-1" className="w-full pl-4 ms-2 text-sm font-medium text-gray-900">
+               Complete Delivery
               </label>
             </div>
             <div className="flex items-center ps-4 border border-gray-200 rounded">
@@ -107,8 +128,8 @@ const QaTable: React.FC<ApprovePOProps> = ({
                 name="bordered-radio"
                 className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
               />
-              <label htmlFor="bordered-radio-2" className="w-full py-4 ms-2 text-sm font-medium text-gray-900">
-                Checked state
+              <label htmlFor="bordered-radio-2" className="w-full pl-4 ms-2 text-sm font-medium text-gray-900">
+               Partial Delivery
               </label>
             </div>
           </div>
@@ -138,18 +159,29 @@ const QaTable: React.FC<ApprovePOProps> = ({
                   <td className="px-6 py-3 border-b text-sm text-gray-700">
                     <input
                       type="text"
-                      value={item.delivered}
-                      onChange={(e) => handleInputChange(index, 'delivered', e.target.value)}
+                      value={item.delivered_quantity}
+                      onChange={(e) => {
+                        const newDelivered = parseInt(e.target.value) || 0;
+                        handleInputChange(index, "delivered_quantity", newDelivered);
+                        handleInputChange(index, "remaining_quantity", item.quantity - newDelivered >= 0 ? item.quantity - newDelivered : 0);
+                      }}
                       className="border p-2 rounded"
                     />
                   </td>
-                  <td className="px-6 py-3 border-b text-sm text-gray-700">{item.awaiting}</td>
-                  <td className="px-6 py-3 border-b text-sm text-gray-700">{item.specMatch}</td>
+                  <td className="px-6 py-3 border-b text-sm text-gray-700">{item.remaining_quantity}</td>
+                  <td className="px-6 py-3 border-b text-sm text-gray-700">
+                    <input
+                      type="checkbox"
+                      checked={item.spec_match === 1}
+                      onChange={(e) => handleInputChange(index, "spec_match", e.target.checked ? 1 : 0)}
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded"
+                    />
+                  </td>
                   <td className="px-6 py-3 border-b text-sm text-gray-700">
                     <input
                       type="text"
-                      value={item.comment}
-                      onChange={(e) => handleInputChange(index, 'comment', e.target.value)}
+                      value={item.comment || ""}
+                      onChange={(e) => handleInputChange(index, "comment", e.target.value)}
                       className="border p-2 rounded"
                     />
                   </td>
@@ -162,6 +194,11 @@ const QaTable: React.FC<ApprovePOProps> = ({
               )}
             </tbody>
           </table>
+          <div className="flex justify-end mt-3">
+            <button className="p-2 rounded bg-blue-500 text-white">
+              Update Changes
+            </button>
+          </div>
         </div>
       </div>
     </div>

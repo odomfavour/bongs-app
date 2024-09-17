@@ -1,11 +1,11 @@
-import { toggleLoading } from '@/provider/redux/modalSlice';
-import axios from 'axios';
-import Image from 'next/image';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
-import DocumentModal from '../dashboard/DocumentModal';
-import Modal from '../dashboard/Modal';
+import { toggleLoading } from "@/provider/redux/modalSlice";
+import axios from "axios";
+import Image from "next/image";
+import React, { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import DocumentModal from "../dashboard/DocumentModal";
+import Modal from "../dashboard/Modal";
 
 interface ApproveRequisitionProps {
   selectedReq: number;
@@ -35,19 +35,19 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
           },
         }
       );
-      console.log('Approve Response:', response);
+      console.log("Approve Response:", response);
 
       setProcurementItem(response?.data?.data?.procurement);
 
       setTableData(response?.data?.data?.procurement.procurement_requisitions);
     } catch (error: any) {
-      console.error('Error:', error);
+      console.error("Error:", error);
 
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
         error?.message ||
-        'Unknown error';
+        "Unknown error";
       toast.error(`${errorMessage}`);
     } finally {
       dispatch(toggleLoading(false));
@@ -58,7 +58,7 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
     fetchReq();
   }, [fetchReq]);
 
-  const handleApproveOrReject = async (status: 'approved' | 'rejected') => {
+  const handleApproveOrReject = async (status: "approved" | "rejected") => {
     dispatch(toggleLoading(true));
     try {
       const response = await axios.post(
@@ -74,20 +74,20 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
           },
         }
       );
-      console.log('Approve Response:', response);
+      console.log("Approve Response:", response);
       if (response.status === 200) {
         toast.success(`${response?.data?.message}`);
       }
       fetchData();
       setOpenModal(false);
     } catch (error: any) {
-      console.error('Error:', error);
+      console.error("Error:", error);
 
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
         error?.message ||
-        'Unknown error';
+        "Unknown error";
       toast.error(`${errorMessage}`);
     } finally {
       dispatch(toggleLoading(false));
@@ -99,7 +99,7 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
   };
 
   const [openAttachModal, setOpenAttachModal] = useState(false);
-  const [currentDocument, setCurrentDocument] = useState('');
+  const [currentDocument, setCurrentDocument] = useState("");
   const handleAttachClose = () => {
     setOpenAttachModal(false);
   };
@@ -122,16 +122,19 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
                 <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase">
                   Description
                 </th>
+                <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase">
+                  Remark
+                </th>
 
                 <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase">
                   Attachments
                 </th>
                 {user?.is_barge_master &&
-                  procurementItem?.barge_master_status !== 'approved' && (
-                    <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase">
-                      Actions
-                    </th>
-                  )}
+                procurementItem?.barge_master_status !== "approved" ? (
+                  <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase">
+                    Actions
+                  </th>
+                ) : null}
               </tr>
             </thead>
             <tbody>
@@ -146,6 +149,9 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
                     </td>
                     <td className="px-6 py-3 border-b text-sm text-gray-700">
                       {item.description}
+                    </td>
+                    <td className="px-6 py-3 border-b text-sm text-gray-700">
+                      {item.remark}
                     </td>
                     <td className="px-6 py-3 border-b text-sm text-gray-700">
                       {/* Render attachments if any */}
@@ -181,20 +187,20 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
                           )}
                         </div>
                       ) : (
-                        'No attachments'
+                        "No attachments"
                       )}
                     </td>
                     {user?.is_barge_master &&
-                      procurementItem?.barge_master_status !== 'approved' && (
-                        <td className="px-6 py-3 border-b text-sm text-gray-700">
-                          <div className="flex gap-2">
-                            <button
-                              className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-2 py-1 rounded"
-                              type="button"
-                            >
-                              Attach File
-                            </button>
-                            {/* <button
+                    procurementItem?.barge_master_status !== "approved" ? (
+                      <td className="px-6 py-3 border-b text-sm text-gray-700">
+                        <div className="flex gap-2">
+                          <button
+                            className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-2 py-1 rounded"
+                            type="button"
+                          >
+                            Attach File
+                          </button>
+                          {/* <button
                             className="bg-red-500 hover:bg-red-600 text-white font-bold px-2 py-1 rounded"
                             type="button"
                             onClick={() => {
@@ -205,9 +211,9 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
                           >
                             Remove
                           </button> */}
-                          </div>
-                        </td>
-                      )}
+                        </div>
+                      </td>
+                    ) : null}
                   </tr>
                 ))}
               {tableData.length === 0 && (
@@ -225,7 +231,7 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
         </div>
       </div>
       {user?.is_barge_master &&
-      procurementItem?.barge_master_status !== 'approved' ? (
+      procurementItem?.barge_master_status !== "approved" ? (
         <>
           <div className="mt-5">
             <label htmlFor="comment">Comment</label>
@@ -241,13 +247,13 @@ const ApproveMRequisition: React.FC<ApproveRequisitionProps> = ({
             <div className="flex gap-4">
               <button
                 className="rounded-md border border-red-700 text-red-700 py-2 px-4"
-                onClick={() => handleApproveOrReject('rejected')}
+                onClick={() => handleApproveOrReject("rejected")}
               >
                 Decline
               </button>
               <button
                 className="rounded-md bg-blue-700 text-white py-2 px-4"
-                onClick={() => handleApproveOrReject('approved')}
+                onClick={() => handleApproveOrReject("approved")}
               >
                 Approve
               </button>

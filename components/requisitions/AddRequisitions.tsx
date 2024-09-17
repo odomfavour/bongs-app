@@ -1,12 +1,12 @@
-import { toggleLoading } from '@/provider/redux/modalSlice';
-import axios from 'axios';
-import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import React, { FormEvent, useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
-import Modal from '../dashboard/Modal';
-import ReqViewForm from './ReqViewForm';
+import { toggleLoading } from "@/provider/redux/modalSlice";
+import axios from "axios";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import React, { FormEvent, useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import Modal from "../dashboard/Modal";
+import ReqViewForm from "./ReqViewForm";
 interface FormData {
   uom_id: number;
   stock_quantity: number | string;
@@ -47,15 +47,15 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
   const [formData, setFormData] = useState({
     uom_id: 0,
     stock_quantity: 0 as number | string,
-    critical_level: '',
-    part_number: '',
-    model_number: '',
-    description: '',
-    type: 'sparepart',
-    remark: '',
-    barge_category: '',
-    barge_asset: '',
-    barge_asset_id: '',
+    critical_level: "",
+    part_number: "",
+    model_number: "",
+    description: "",
+    type: "sparepart",
+    remark: "",
+    barge_category: "",
+    barge_asset: "",
+    barge_asset_id: "",
     attachements: [] as File[],
     inventoryable_id: null,
   });
@@ -74,8 +74,8 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
         description: bargeValues.description,
         remark: bargeValues.remark,
         barge_category: bargeValues.barge_category,
-        barge_asset: '',
-        barge_asset_id: '',
+        barge_asset: "",
+        barge_asset_id: "",
         attachements: bargeValues.attachements,
         inventoryable_id: bargeValues.inventoryable_id,
       });
@@ -139,7 +139,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
           },
         }),
       ]);
-      console.log('project', storeOnBoardResponse?.data?.data?.data);
+      console.log("project", storeOnBoardResponse?.data?.data?.data);
       setProjects(projectsResponse?.data?.data?.data);
       setDecks(decksResponse?.data?.data?.data);
       setUom(uomResponse?.data?.data?.data);
@@ -150,13 +150,13 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
       //   setEngineTypes(sparepartResponse?.data?.data?.data);
       // You can similarly setStoreItems if needed
     } catch (error: any) {
-      console.error('Error:', error);
+      console.error("Error:", error);
 
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
         error?.message ||
-        'Unknown error';
+        "Unknown error";
       toast.error(`${errorMessage}`);
     } finally {
       dispatch(toggleLoading(false));
@@ -173,43 +173,43 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
     const fetchBargeAssets = async () => {
       const { type, barge_category } = formData;
 
-      let endpoint = '';
+      let endpoint = "";
 
-      if (type === 'sparepart') {
+      if (type === "sparepart") {
         switch (barge_category) {
-          case 'engine':
-            endpoint = 'sparepart-engine-category';
+          case "engine":
+            endpoint = "sparepart-engine-category";
             break;
-          case 'deck':
-            endpoint = 'sparepart-deck-category';
+          case "deck":
+            endpoint = "sparepart-deck-category";
             break;
-          case 'safety':
-            endpoint = 'safety-category';
+          case "safety":
+            endpoint = "safety-category";
             break;
-          case 'hospital':
-            endpoint = 'sparepart-hospital-category';
+          case "hospital":
+            endpoint = "sparepart-hospital-category";
             break;
           default:
-            endpoint = 'sparepart-engine-category';
+            endpoint = "sparepart-engine-category";
             break;
         }
-      } else if (type === 'consumable') {
+      } else if (type === "consumable") {
         // You can define the endpoints for consumable categories here
         switch (barge_category) {
-          case 'engine':
-            endpoint = 'consumable/getEngineCategories';
+          case "engine":
+            endpoint = "consumable/getEngineCategories";
             break;
-          case 'deck':
-            endpoint = 'consumable/getDeckCategories';
+          case "deck":
+            endpoint = "consumable/getDeckCategories";
             break;
-          case 'safety':
-            endpoint = 'consumable/getSafetyCategories';
+          case "safety":
+            endpoint = "consumable/getSafetyCategories";
             break;
-          case 'hospital':
-            endpoint = 'consumable/getHospitalCategories';
+          case "hospital":
+            endpoint = "consumable/getHospitalCategories";
             break;
           default:
-            endpoint = 'consumable/getGalleyLaundryCategories';
+            endpoint = "consumable/getGalleyLaundryCategories";
             break;
         }
       }
@@ -224,7 +224,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
         // handle the fetched data
         setBargeAssets(response?.data?.data?.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
     fetchBargeAssets();
@@ -267,15 +267,15 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
     setFormData({
       uom_id: 0,
       stock_quantity: 0 as number | string,
-      critical_level: '',
-      part_number: '',
-      model_number: '',
-      description: '',
-      type: 'sparepart',
-      remark: '',
-      barge_category: '',
-      barge_asset: '',
-      barge_asset_id: '',
+      critical_level: "",
+      part_number: "",
+      model_number: "",
+      description: "",
+      type: "sparepart",
+      remark: "",
+      barge_category: "",
+      barge_asset: "",
+      barge_asset_id: "",
       attachements: [] as File[],
       inventoryable_id: null,
     });
@@ -294,8 +294,8 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                 value="sparepart"
                 name="inventory_type"
                 className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
-                checked={formData.type === 'sparepart'}
-                onChange={() => setFormData({ ...formData, type: 'sparepart' })}
+                checked={formData.type === "sparepart"}
+                onChange={() => setFormData({ ...formData, type: "sparepart" })}
               />
               <label
                 htmlFor="bordered-radio-1"
@@ -311,9 +311,9 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                 value="consumable"
                 name="inventory_type"
                 className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600"
-                checked={formData.type === 'consumable'}
+                checked={formData.type === "consumable"}
                 onChange={() =>
-                  setFormData({ ...formData, type: 'consumable' })
+                  setFormData({ ...formData, type: "consumable" })
                 }
               />
               <label
@@ -380,7 +380,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                 <option value="safety">Safety</option>
                 <option value="engine">Engine</option>
                 <option value="deck">Deck</option>
-                {formData.type === 'consumable' && (
+                {formData.type === "consumable" && (
                   <option value="galley">Galley Laundry</option>
                 )}
                 <option value="hospital">Hospital</option>
@@ -409,32 +409,26 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
               ></textarea>
             </div>
             <div className="mb-4">
-              <div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="stock_quantity"
-                    className="block mb-2 text-sm font-medium text-gray-900"
-                  >
-                    Stock Quantity
-                  </label>
-
-                  <input
-                    type="number"
-                    id="stock_number"
-                    name="stock_number"
-                    placeholder="Input Stock quantity"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                    value={formData.stock_quantity}
-                    min="0"
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        stock_quantity: parseInt(e.target.value),
-                      })
-                    }
-                  />
-                </div>
-              </div>
+              <label
+                htmlFor="project_description"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Remarks
+              </label>
+              <textarea
+                id="project_description"
+                name="project_description"
+                rows={4}
+                className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Input remarks"
+                value={formData.remark}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    remark: e.target.value,
+                  })
+                }
+              ></textarea>
             </div>
           </div>
           <div>
@@ -462,13 +456,13 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                 {bargeAssets?.map((engineType: any) => (
                   <option value={engineType.id} key={engineType.id}>
                     {engineType.name
-                      .split(' ')
+                      .split(" ")
                       .map(
                         (word: any) =>
                           word.charAt(0).toUpperCase() +
                           word.slice(1).toLowerCase()
                       )
-                      .join(' ')}
+                      .join(" ")}
                   </option>
                 ))}
               </select>
@@ -490,6 +484,25 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                 value={formData.part_number}
                 onChange={(e) =>
                   setFormData({ ...formData, part_number: e.target.value })
+                }
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="model_number"
+                className="block mb-2 text-sm font-medium"
+              >
+                Model Number
+              </label>
+              <input
+                type="text"
+                id="model_number"
+                name="model_number"
+                placeholder="Input model number"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                value={formData.model_number}
+                onChange={(e) =>
+                  setFormData({ ...formData, model_number: e.target.value })
                 }
               />
             </div>
@@ -517,29 +530,6 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                 <option value="mid">Mid</option>
                 <option value="high">High</option>
               </select>
-            </div>
-
-            <div className="mb-4">
-              <label
-                htmlFor="project_description"
-                className="block mb-2 text-sm font-medium text-gray-900"
-              >
-                Remarks
-              </label>
-              <textarea
-                id="project_description"
-                name="project_description"
-                rows={4}
-                className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Input remarks"
-                value={formData.remark}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    remark: e.target.value,
-                  })
-                }
-              ></textarea>
             </div>
           </div>
           <div>
@@ -571,24 +561,34 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
               </select>
             </div>
             <div className="mb-4">
-              <label
-                htmlFor="model_number"
-                className="block mb-2 text-sm font-medium"
-              >
-                Model Number
-              </label>
-              <input
-                type="text"
-                id="model_number"
-                name="model_number"
-                placeholder="Input model number"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                value={formData.model_number}
-                onChange={(e) =>
-                  setFormData({ ...formData, model_number: e.target.value })
-                }
-              />
+              <div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="stock_quantity"
+                    className="block mb-2 text-sm font-medium text-gray-900"
+                  >
+                    Stock Quantity
+                  </label>
+
+                  <input
+                    type="number"
+                    id="stock_number"
+                    name="stock_number"
+                    placeholder="Input Stock quantity"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
+                    value={formData.stock_quantity}
+                    min="0"
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        stock_quantity: parseInt(e.target.value),
+                      })
+                    }
+                  />
+                </div>
+              </div>
             </div>
+
             <div className="mb-4">
               <label
                 htmlFor="attachments"
@@ -643,7 +643,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
           <button
             type="button"
             className={`bg-blue-600 text-white p-3 rounded-lg ${
-              loading ? 'opacity-50 cursor-not-allowed' : ''
+              loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={loading}
             onClick={addItem}
@@ -694,14 +694,14 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                         <div className="flex gap-2">
                           {item?.attachements.map(
                             (file: any, fileIndex: number) => {
-                              console.log('file', file);
+                              console.log("file", file);
                               return (
                                 <div
                                   key={fileIndex}
                                   className="relative h-[30px] w-[30px]"
                                 >
                                   {file?.attachement?.type.startsWith(
-                                    'image/'
+                                    "image/"
                                   ) ? (
                                     <Image
                                       src={getPreviewUrl(file.attachement)}
@@ -745,7 +745,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
                           )}
                         </div>
                       ) : (
-                        'No attachments'
+                        "No attachments"
                       )}
                     </td>
                     <td className="px-6 py-3 border-b text-sm text-gray-700">
@@ -789,7 +789,7 @@ const AddRequisitions: React.FC<AddRequisitionsModalProps> = ({
             <button
               type="button"
               className={`bg-blue-600 text-white p-3 rounded-lg ${
-                loading ? 'opacity-50 cursor-not-allowed' : ''
+                loading ? "opacity-50 cursor-not-allowed" : ""
               }`}
               disabled={loading}
               onClick={() => {

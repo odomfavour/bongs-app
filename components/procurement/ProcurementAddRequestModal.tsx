@@ -1,12 +1,12 @@
-import { RFQTypeDataArray } from '@/utils/data';
-import Image from 'next/image';
-import React, { useCallback, useEffect, useState } from 'react';
-import { MdClose } from 'react-icons/md';
+import { RFQTypeDataArray } from "@/utils/data";
+import Image from "next/image";
+import React, { useCallback, useEffect, useState } from "react";
+import { MdClose } from "react-icons/md";
 
-import 'react-datepicker/dist/react-datepicker.css';
-import { FaPlus } from 'react-icons/fa';
-import { FaRegFolderClosed } from 'react-icons/fa6';
-import { useDispatch, useSelector } from 'react-redux';
+import "react-datepicker/dist/react-datepicker.css";
+import { FaPlus } from "react-icons/fa";
+import { FaRegFolderClosed } from "react-icons/fa6";
+import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAllDepartmentDataApi,
   fetchAllProjectDataApi,
@@ -14,15 +14,15 @@ import {
   fetchAllVendorsDataApi,
   getVendorByCategoryApi,
   updateRFQDataApi,
-} from '@/utils/apiServices/procurementApi';
-import { toast } from 'react-toastify';
+} from "@/utils/apiServices/procurementApi";
+import { toast } from "react-toastify";
 import {
   populateAllDepartments,
   populateAllProjects,
   populateAllVendors,
   populateAllVendorsCateroy,
-} from '@/provider/redux/procurementSlice';
-import { toggleLoading } from '@/provider/redux/modalSlice';
+} from "@/provider/redux/procurementSlice";
+import { toggleLoading } from "@/provider/redux/modalSlice";
 
 function ProcurementAddRequestModal({
   handleClose,
@@ -40,12 +40,12 @@ function ProcurementAddRequestModal({
     id,
   } = useSelector((state: any) => state.procurement.draftProcurementState);
 
-  const [attachedImage, setAttachedImage] = useState('');
+  const [attachedImage, setAttachedImage] = useState("");
   const dispatch = useDispatch();
-  const [minDate, setMinDate] = useState('');
+  const [minDate, setMinDate] = useState("");
   useEffect(() => {
     // Get today's date in the format 'YYYY-MM-DD'
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().split("T")[0];
     setMinDate(today);
   }, []);
 
@@ -69,12 +69,12 @@ function ProcurementAddRequestModal({
         dispatch(toggleLoading(false));
       } catch (error: any) {
         dispatch(toggleLoading(false));
-        console.error('Error:', error);
+        console.error("Error:", error);
         const errorMessage =
           error?.response?.data?.message ||
           error?.response?.data?.errors ||
           error?.message ||
-          'Unknown error';
+          "Unknown error";
         toast.error(`${errorMessage}`);
       } finally {
         dispatch(toggleLoading(false));
@@ -123,21 +123,21 @@ function ProcurementAddRequestModal({
     }[]
   >([]);
 
-  const [selectedProject, setSelectedProject] = useState('');
+  const [selectedProject, setSelectedProject] = useState("");
 
-  const [selectedClient, setSelectedClient] = useState('');
+  const [selectedClient, setSelectedClient] = useState("");
 
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState("");
 
-  const [selectedVendorCategory, setSelectedVendorCategory] = useState('');
+  const [selectedVendorCategory, setSelectedVendorCategory] = useState("");
 
-  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState("");
 
-  const [startDate, setStartDate] = useState('');
+  const [startDate, setStartDate] = useState("");
 
-  const [RFQType, setRFQType] = useState('');
+  const [RFQType, setRFQType] = useState("");
 
-  const [RFQHeading, setRFQHeading] = useState('');
+  const [RFQHeading, setRFQHeading] = useState("");
 
   const [amount, setAmount] = useState<number | null>(null);
 
@@ -220,13 +220,13 @@ function ProcurementAddRequestModal({
       // You can similarly setStoreItems if needed
     } catch (error: any) {
       dispatch(toggleLoading(false));
-      console.error('Error:', error);
+      console.error("Error:", error);
 
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
         error?.message ||
-        'Unknown error';
+        "Unknown error";
       toast.error(`${errorMessage}`);
     }
   }, [
@@ -245,29 +245,29 @@ function ProcurementAddRequestModal({
   const handleUpdateRfq = async () => {
     try {
       if (!RFQType) {
-        toast.error('procurement type is required');
+        toast.error("procurement type is required");
         return;
       }
       if (allVendors.length === 0) {
-        toast.error('vendor is required');
+        toast.error("vendor is required");
         return;
       }
       if (allVendorsCategory.length === 0) {
-        toast.error('vendor caegory is required');
+        toast.error("vendor caegory is required");
         return;
       }
       if (!amount) {
-        toast.error('budget is required');
+        toast.error("budget is required");
         return;
       }
 
       if (amount < 0 || amount == 0) {
-        toast.error('budget can not be negative value');
+        toast.error("budget can not be negative value");
         return;
       }
 
       if (!startDate) {
-        toast.error('bidding deadline  is required');
+        toast.error("bidding deadline  is required");
         return;
       }
 
@@ -279,16 +279,16 @@ function ProcurementAddRequestModal({
         bidding_deadline: startDate,
         budget: amount,
         procurement_type: RFQType,
-        currency: 'NGN',
+        currency: "NGN",
       };
 
-      if (RFQType === 'OEM Specific') {
+      if (RFQType === "OEM Specific") {
         if (!selectedClient) {
-          toast.error('Marhant is required');
+          toast.error("Marhant is required");
           return;
         }
         if (!selectedVendorCategory) {
-          toast.error('Vendor category is required');
+          toast.error("Vendor category is required");
           return;
         }
         rfqUpdeteData = {
@@ -301,13 +301,13 @@ function ProcurementAddRequestModal({
         };
       }
 
-      if (RFQType === '3rd Party Vendors') {
+      if (RFQType === "3rd Party Vendors") {
         if (!selectedProject) {
-          toast.error('project is required');
+          toast.error("project is required");
           return;
         }
         if (!selectedCategory) {
-          toast.error('vendor category is required');
+          toast.error("vendor category is required");
           return;
         }
 
@@ -321,17 +321,17 @@ function ProcurementAddRequestModal({
         };
       }
 
-      if (RFQType === 'Internal Procurement') {
+      if (RFQType === "Internal Procurement") {
         if (!selectedCategory) {
-          toast.error('vendor category is required');
+          toast.error("vendor category is required");
           return;
         }
         if (!selectedDepartment) {
-          toast.error('department is required');
+          toast.error("department is required");
         }
 
         if (!(selectedVendor.length > 0)) {
-          toast.error('Vendor is required');
+          toast.error("Vendor is required");
         }
 
         rfqUpdeteData = {
@@ -350,24 +350,24 @@ function ProcurementAddRequestModal({
       const response = await updateRFQDataApi(rfqUpdeteData);
 
       dispatch(toggleLoading(false));
-      toast.success('Procurement made successfully');
+      toast.success("Procurement made successfully");
       handleClose();
     } catch (error: any) {
       dispatch(toggleLoading(false));
-      console.error('Error:', error);
+      console.error("Error:", error);
 
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
         error?.message ||
-        'Unknown error';
+        "Unknown error";
       toast.error(`${errorMessage}`);
     } finally {
       dispatch(toggleLoading(false));
     }
   };
 
-  console.log('selected vendors list', selectedVendor);
+  console.log("selected vendors list", selectedVendor);
 
   if (!isUIReady) {
     return (
@@ -383,7 +383,7 @@ function ProcurementAddRequestModal({
         <div className="fixed top-0 bg-slate-700 bottom-0 right-0 left-0 bg-opacity-25 flex justify-center items-center">
           <div className="bg-white w-3/5 h-3/5 flex justify-center items-center rounded-lg relative">
             <div
-              onClick={() => setAttachedImage('')}
+              onClick={() => setAttachedImage("")}
               className="absolute right-8 top-8 cursor-pointer"
             >
               <MdClose size={24} />
@@ -420,7 +420,7 @@ function ProcurementAddRequestModal({
             })}
           </select>
 
-          {RFQType == 'OEM Specific' && (
+          {RFQType == "OEM Specific" && (
             <div>
               <div className="mt-2">
                 <p className="text-black text-lg font-normal font-['Inter']">
@@ -476,7 +476,7 @@ function ProcurementAddRequestModal({
             </div>
           )}
 
-          {RFQType == '3rd Party Vendors' && (
+          {RFQType == "3rd Party Vendors" && (
             <div>
               <div className="mt-2">
                 <p className="text-black text-lg font-normal font-['Inter']">
@@ -537,7 +537,7 @@ function ProcurementAddRequestModal({
             </div>
           )}
 
-          {RFQType == 'Internal Procurement' && (
+          {RFQType == "Internal Procurement" && (
             <div>
               <div className="mt-2">
                 <p className="text-black text-lg font-normal font-['Inter']">
@@ -637,7 +637,7 @@ function ProcurementAddRequestModal({
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 w-[332px] mb-2"
                 >
                   <option
-                    value={''}
+                    value={""}
                     className=" text-black text-sm font-normal font-['Inter']"
                   >
                     Select vendor
@@ -698,7 +698,7 @@ function ProcurementAddRequestModal({
                   className="w-8 h-6 rounded"
                   width={54}
                   height={54}
-                  src={'/icons/flag.jpeg'}
+                  src={"/icons/flag.jpeg"}
                 />
                 <span>NGN</span>
               </div>
@@ -744,12 +744,12 @@ function ProcurementAddRequestModal({
             readOnly={title ? true : false}
             name=""
             id=""
-            value={title ? title : ''}
+            value={title ? title : ""}
             onChange={(e) => setRFQHeading(e.target.value)}
             placeholder="Input RFQ title"
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  p-3 flex-1"
           />
-          <div className=" bg-[#d9d9d9] rounded-[10px] border justify-center items-center flex flex-row space-x-1 cursor-pointer p-2">
+          {/* <div className=" bg-[#d9d9d9] rounded-[10px] border justify-center items-center flex flex-row space-x-1 cursor-pointer p-2">
             <FaPlus />
             <button
               disabled={procurementType == 'draft' ? true : false}
@@ -757,86 +757,102 @@ function ProcurementAddRequestModal({
             >
               Add More
             </button>
-          </div>
+          </div> */}
         </div>
         {draftList.length > 0 ? (
           <div className="mt-2 flex-col">
-            <table className="flex-1">
-              <thead>
-                <tr>
-                  <td className="text-center text-black">S/N</td>
-                  <td className="text-center text-black">Quantity</td>
-                  <td className="text-center text-black">Description</td>
-                  <td className="text-center text-black">Attachment</td>
-                  <td className="text-center text-black">Actions</td>
-                </tr>
-              </thead>
-              <tbody>
-                {draftList.map((list: any, index: number) => (
-                  <tr key={index}>
-                    <td className="text-center text-sm">{index + 1}</td>
-                    <td className="text-center text-sm">
-                      {list.stock_quantity}
-                    </td>
-                    <td className="text-center text-sm">{list.description}</td>
-                    <td>
-                      <div className="flex flex-row items-center space-x-1">
-                        {list.attachments.map((pic: any, i: number) => {
-                          return (
-                            <Image
-                              onClick={() =>
-                                setAttachedImage(pic.attachment_uri)
-                              }
-                              key={i}
-                              alt="attachment"
-                              src={`${pic.attachment_uri}`}
-                              width={20}
-                              height={20}
-                              objectFit="contain"
-                              className="cursor-pointer"
-                            />
-                          );
-                        })}
-                      </div>
-                    </td>
-                    <td className="flex flex-row items-center justify-center space-x-2">
-                      <button
-                        disabled={procurementType == 'draft' ? true : false}
-                        className={` text-white text-sm  ${
-                          procurementType == 'draft'
-                            ? 'cursor-not-allowed'
-                            : 'cursor-pointer'
-                        }`}
-                      >
-                        <Image
-                          src={'/icons/upload.png'}
-                          alt="upload"
-                          width={14}
-                          height={14}
-                        />
-                      </button>
-                      <button
-                        disabled={procurementType == 'draft' ? true : false}
-                        className={`  ${
-                          procurementType == 'draft'
-                            ? 'cursor-not-allowed'
-                            : 'cursor-pointer'
-                        }`}
-                      >
-                        <Image
-                          src={'/icons/delete.png'}
-                          alt="delete"
-                          width={14}
-                          height={14}
-                        />
-                      </button>
-                    </td>
+            <div className="overflow-x-scroll">
+              <table className="flex-1">
+                <thead>
+                  <tr>
+                    <td className="text-center text-black">S/N</td>
+                    <td className="text-center text-black">Quantity</td>
+                    <td className="text-center text-black">Description</td>
+                    <td className="text-center text-black">Part Num</td>
+                    <td className="text-center text-black">Model Num</td>
+                    <td className="text-center text-black">Remarks</td>
+                    <td className="text-center text-black">Attachment</td>
+                    <td className="text-center text-black">Actions</td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {draftList.map((list: any, index: number) => (
+                    <tr key={index}>
+                      <td className="text-center text-sm">{index + 1}</td>
+                      <td className="text-center text-sm">
+                        {list.stock_quantity}
+                      </td>
+                      <td className="text-center text-sm">
+                        {list.description}
+                      </td>
+                      <td className="text-center text-sm">
+                        {list.description}
+                      </td>
+                      <td className="text-center text-sm">
+                        {list.description}
+                      </td>
+                      <td className="text-center text-sm">
+                        {list.description}
+                      </td>
+                      <td>
+                        <div className="flex flex-row items-center space-x-1">
+                          {list.attachments.map((pic: any, i: number) => {
+                            return (
+                              <Image
+                                onClick={() =>
+                                  setAttachedImage(pic.attachment_uri)
+                                }
+                                key={i}
+                                alt="attachment"
+                                src={`${pic.attachment_uri}`}
+                                width={20}
+                                height={20}
+                                objectFit="contain"
+                                className="cursor-pointer"
+                              />
+                            );
+                          })}
+                        </div>
+                      </td>
+                      <td className="flex flex-row items-center justify-center space-x-2">
+                        <button
+                          disabled={procurementType == "draft" ? true : false}
+                          className={` text-white text-sm  ${
+                            procurementType == "draft"
+                              ? "cursor-not-allowed"
+                              : "cursor-pointer"
+                          }`}
+                        >
+                          <Image
+                            src={"/icons/upload.png"}
+                            alt="upload"
+                            width={14}
+                            height={14}
+                          />
+                        </button>
+                        <button
+                          disabled={procurementType == "draft" ? true : false}
+                          className={`  ${
+                            procurementType == "draft"
+                              ? "cursor-not-allowed"
+                              : "cursor-pointer"
+                          }`}
+                        >
+                          <Image
+                            src={"/icons/delete.png"}
+                            alt="delete"
+                            width={14}
+                            height={14}
+                          />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             <div className="flex flex-row justify-end mt-8">
-              {rfqStatus !== 'Expired' && (
+              {rfqStatus !== "Expired" && (
                 <button
                   onClick={() => handleUpdateRfq()}
                   className="rounded-xl bg-blue-900 text-white py-2 px-4"

@@ -38,17 +38,23 @@ function Page() {
       ncf: number;
       vat: number;
       grandTotal: number;
-      rating: string
+      rating: string;
     }[]
   >([]);
 
   const [rfqForGiveneBid, setRfqForGivenBid] = useState("");
+  const [rfqTitle, setRfqTitle] = useState("");
 
   const [allBidData, setAllBidData] = useState<any[]>([]);
 
-  const handleGetAllBidForSingleRfqFunc = (rfqbid: any, rfqId: any) => {
+  const handleGetAllBidForSingleRfqFunc = (
+    rfqbid: any,
+    rfqId: any,
+    rfqTitle: any
+  ) => {
     setAllBidsForSingleRfq(rfqbid);
     setRfqForGivenBid(rfqId);
+    setRfqTitle(rfqTitle);
   };
 
   const fetchBidsData = useCallback(async () => {
@@ -82,8 +88,7 @@ function Page() {
     setShowBidForRfqModal(!showBidForRfqModal);
   };
 
-
-  console.log("allBidData", allBidData)
+  console.log("allBidData", allBidData);
   const itemListBid = allBidData.map((item, i) => {
     return {
       ...item,
@@ -115,9 +120,8 @@ function Page() {
       {/* search field */}
       <div className="flex flex-row items-center justify-between py-2">
         <span className="text-black text-bold text-[32px] font-medium font-['Inter']">
-          Bids Evaluation   {`(${allBidData.length})`}
+          Bids Evaluation {`(${allBidData.length})`}
         </span>
-      
       </div>
 
       <BIDTable
@@ -163,7 +167,7 @@ function Page() {
 
       {/* modal section starts */}
 
-     {/*  <Modal
+      {/*  <Modal
         isOpen={showBidForRfqModal}
         title={""}
         onClose={handleOpenBidModal}

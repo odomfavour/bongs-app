@@ -1,12 +1,12 @@
-import { toggleLoading } from '@/provider/redux/modalSlice';
-import axios from 'axios';
-import { subscribe } from 'diagnostics_channel';
-import Image from 'next/image';
-import React, { FormEvent, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
-import DocumentModal from '../dashboard/DocumentModal';
-import Modal from '../dashboard/Modal';
+import { toggleLoading } from "@/provider/redux/modalSlice";
+import axios from "axios";
+import { subscribe } from "diagnostics_channel";
+import Image from "next/image";
+import React, { FormEvent, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import DocumentModal from "../dashboard/DocumentModal";
+import Modal from "../dashboard/Modal";
 
 interface ReqViewFormProps {
   tableData: {
@@ -34,7 +34,7 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({
   handleClose,
 }) => {
   const dispatch = useDispatch();
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState("");
   const user = useSelector((state: any) => state.user.user);
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -52,7 +52,7 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({
         {
           headers: {
             Authorization: `Bearer ${user?.token}`,
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -80,18 +80,18 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({
       //    handleClose();
       // Handle success (e.g., close modal, show success message)
     } catch (error: any) {
-      console.error('Error:', error);
+      console.error("Error:", error);
 
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errors ||
         error?.message ||
-        'Unknown error';
+        "Unknown error";
       toast.error(`${errorMessage}`);
       // Handle error (e.g., show error message)
     } finally {
       //    setLoading(false);
-      dispatch(toggleLoading(true));
+      dispatch(toggleLoading(false));
     }
   };
 
@@ -100,7 +100,7 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({
   };
 
   const [openAttachModal, setOpenAttachModal] = useState(false);
-  const [currentDocument, setCurrentDocument] = useState('');
+  const [currentDocument, setCurrentDocument] = useState("");
   const handleAttachClose = () => {
     setOpenAttachModal(false);
   };
@@ -167,7 +167,7 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({
                                   className="relative h-[30px] w-[30px]"
                                 >
                                   {file?.attachement?.type.startsWith(
-                                    'image/'
+                                    "image/"
                                   ) ? (
                                     <Image
                                       src={getPreviewUrl(file.attachement)}
@@ -194,7 +194,7 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({
                             )}
                           </div>
                         ) : (
-                          'No attachments'
+                          "No attachments"
                         )}
                       </td>
                       <td className="px-6 py-3 border-b text-sm text-gray-700">
@@ -238,7 +238,7 @@ const ReqViewForm: React.FC<ReqViewFormProps> = ({
           <button
             type="submit"
             className={`bg-blue-600 text-white p-3 rounded-lg ${
-              !title ? 'opacity-50 cursor-not-allowed' : ''
+              !title ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={!title}
           >

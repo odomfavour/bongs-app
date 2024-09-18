@@ -231,6 +231,9 @@ export interface mostUsedInventoryPropType {
 export type draftListType = {
   stock_quantity: number;
   description: string;
+  remark: string;
+  part_number: string;
+  model_number: string;
   attachments: any;
 }[];
 

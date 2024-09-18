@@ -1,10 +1,10 @@
-import { setDraftStateAction } from '@/provider/redux/procurementSlice';
-import { Barge } from '@/utils/types';
-import { formatDate } from '@/utils/utils';
-import React, { useMemo } from 'react';
-import { FaSearch } from 'react-icons/fa';
-import { FaRegFolderClosed } from 'react-icons/fa6';
-import { useDispatch } from 'react-redux';
+import { setDraftStateAction } from "@/provider/redux/procurementSlice";
+import { Barge } from "@/utils/types";
+import { formatDate } from "@/utils/utils";
+import React, { useMemo } from "react";
+import { FaSearch } from "react-icons/fa";
+import { FaRegFolderClosed } from "react-icons/fa6";
+import { useDispatch } from "react-redux";
 import {
   useTable,
   usePagination,
@@ -14,7 +14,7 @@ import {
   UseGlobalFiltersInstanceProps,
   UsePaginationState,
   UsePaginationInstanceProps,
-} from 'react-table';
+} from "react-table";
 
 function RFQTable({
   MOCK_DATA,
@@ -77,7 +77,7 @@ function RFQTable({
           <div className="w-full relative">
             <input
               type="search"
-              value={globalFilter || ''}
+              value={globalFilter || ""}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Search"
               className="bg-gray-50 pl-8 outline-none border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
@@ -103,7 +103,7 @@ function RFQTable({
                   {...column.getHeaderProps()}
                   key={index}
                 >
-                  {column.render('Header')}
+                  {column.render("Header")}
                 </th>
               ))}
               <th className="py-2 text-center">Actions</th>
@@ -135,6 +135,7 @@ function RFQTable({
             </tr>
           ) : (
             page.map((row, index) => {
+              console.log("row", row);
               prepareRow(row);
               return (
                 <tr {...row.getRowProps()} key={index}>
@@ -145,7 +146,7 @@ function RFQTable({
                         {...cell.getCellProps()}
                         key={index}
                       >
-                        {cell.render('Cell')}
+                        {cell.render("Cell")}
                       </td>
                     );
                   })}
@@ -153,34 +154,43 @@ function RFQTable({
                     <div className="flex-row flex items-center w-max justify-center rounded-xl px-2 py-1 bg-[#a16207] cursor-pointer ">
                       <span
                         onClick={() => {
+                          const draftList =
+                            row.original.procurement.procurement_requisitions.map(
+                              (item: any) => {
+                                const attachments = item.attachements.map(
+                                  (pic: any) => {
+                                    return {
+                                      attachment_uri: pic.attachement,
+                                    };
+                                  }
+                                );
+                                return {
+                                  stock_quantity: item.stock_quantity,
+                                  description: item.description,
+                                  part_number: item.part_number,
+                                  model_number: item.model_number,
+                                  remark: item.remark,
+                                  attachments: attachments,
+                                };
+                              }
+                            );
 
-                          const draftList = row.original.procurement.procurement_requisitions
-                          .map((item: any)  =>  {
-                            const attachments = item.attachements.map((pic: any) => {
-                             
-                               return {
-                                attachment_uri: pic.attachement
-
-                               }
-                            })
-                           return {
-                            stock_quantity : item.stock_quantity,
-                            description: item.description,
-                            attachments: attachments,
-                           
-                           }
-                          })
-                           
                           // console.log("this is the status", row.original)
-                       
+
                           const data = {
-                            rfqStatus:row.original.status,
+                            rfqStatus: row.original.status,
                             subscriber: row.original.subscriber.name,
                             procurementType: row.original.procurement_type,
                             subscriberId: row.original.subscriber_id,
                             procurementId: row.original.procurement_id,
                             id: row.original.id,
                             title: row.original.title,
+                            departmentId:
+                              row.original.client_project_department,
+                            budget: row.original.budget,
+                            bidding_deadline: row.original.bidding_deadline,
+                            vendors: row.original.vendors,
+                            vendor_category: row.original.vendor_category_id,
                             draftList,
                           };
 
@@ -201,7 +211,7 @@ function RFQTable({
       </table>
       <div className="flex flex-row justify-end mt-3">
         <span>
-          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{' '}
+          Page <strong>{pageIndex + 1}</strong> of {pageOptions.length}{" "}
         </span>
 
         <button
@@ -209,8 +219,8 @@ function RFQTable({
           disabled={!canPreviousPage}
           onClick={() => previousPage()}
         >
-          {' '}
-          Previous{' '}
+          {" "}
+          Previous{" "}
         </button>
         <button disabled={!canNextPage} onClick={() => nextPage()}>
           Next
